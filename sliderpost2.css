@@ -41,5 +41,5 @@
   .carousel-control .glyphicon-chevron-left,.carousel-control .icon-prev{margin-left:-10px;}
   .carousel-control .glyphicon-chevron-right,.carousel-control .icon-next{margin-right:-10px;}
   .carousel-caption{right:20%;left:20%;padding-bottom:30px;}
-  .carousel-indicators{bottom:20px;}
+  .carousel-indicators{left:-20px;}
 ;}
