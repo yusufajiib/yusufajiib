@@ -1,2 +1,2 @@
 # javascriptku
-sliderpost.js https://raw.githack.com/
+LANDING PAGE nurfawaiq.github.io-master
