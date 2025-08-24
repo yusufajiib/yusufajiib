@@ -40,44 +40,80 @@
             <h2 class="text-4xl font-bold text-gray-800 mb-4">Selamat Datang</h2>
             <p class="text-xl text-gray-600 mb-8">Jelajahi berbagai kategori konten yang tersedia</p>
             
-            <!-- Featured Categories Grid -->
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                <div class="category-card bg-white rounded-xl shadow-md p-6 cursor-pointer" onclick="loadCategory('teknologi')">
-                    <div class="text-4xl mb-4">💻</div>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Teknologi</h3>
-                    <p class="text-gray-600">Artikel dan tutorial seputar teknologi terkini</p>
-                </div>
-                
-                <div class="category-card bg-white rounded-xl shadow-md p-6 cursor-pointer" onclick="loadCategory('bisnis')">
-                    <div class="text-4xl mb-4">💼</div>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Bisnis</h3>
-                    <p class="text-gray-600">Tips dan strategi untuk mengembangkan bisnis</p>
-                </div>
-                
-                <div class="category-card bg-white rounded-xl shadow-md p-6 cursor-pointer" onclick="loadCategory('kesehatan')">
-                    <div class="text-4xl mb-4">🏥</div>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Kesehatan</h3>
-                    <p class="text-gray-600">Informasi kesehatan dan gaya hidup sehat</p>
-                </div>
-                
-                <div class="category-card bg-white rounded-xl shadow-md p-6 cursor-pointer" onclick="loadCategory('pendidikan')">
-                    <div class="text-4xl mb-4">📚</div>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Pendidikan</h3>
-                    <p class="text-gray-600">Materi pembelajaran dan pengembangan diri</p>
-                </div>
-                
-                <div class="category-card bg-white rounded-xl shadow-md p-6 cursor-pointer" onclick="loadCategory('travel')">
-                    <div class="text-4xl mb-4">✈️</div>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Travel</h3>
-                    <p class="text-gray-600">Panduan wisata dan destinasi menarik</p>
-                </div>
-                
-                <div class="category-card bg-white rounded-xl shadow-md p-6 cursor-pointer" onclick="loadCategory('kuliner')">
-                    <div class="text-4xl mb-4">🍽️</div>
-                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Kuliner</h3>
-                    <p class="text-gray-600">Resep masakan dan review kuliner</p>
+            <!-- Search Bar -->
+            <div class="max-w-md mx-auto mb-8">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        placeholder="Cari kategori atau konten..." 
+                        class="w-full px-4 py-3 pl-12 pr-4 text-gray-700 bg-white border border-gray-300 rounded-full focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                        oninput="performSearch()"
+                    >
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <button 
+                        id="clear-search" 
+                        class="absolute inset-y-0 right-0 flex items-center pr-4 hidden"
+                        onclick="clearSearch()"
+                    >
+                        <svg class="w-5 h-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
                 </div>
             </div>
+
+            <!-- Search Results -->
+            <div id="search-results" class="hidden mb-8">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Hasil Pencarian</h3>
+                <div id="search-results-content" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Search results will appear here -->
+                </div>
+                <button onclick="clearSearch()" class="mt-4 text-blue-600 hover:text-blue-800 font-medium">
+                    ← Kembali ke Semua Kategori
+                </button>
+            </div>
+            
+            <!-- Categories Grid -->
+            <div id="categories-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Categories will be loaded here -->
+            </div>
+            
+            <!-- Pagination -->
+            <div id="pagination" class="flex justify-center items-center space-x-2 mb-8">
+                <button 
+                    id="prev-page" 
+                    onclick="changePage(-1)" 
+                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled
+                >
+                    ← Sebelumnya
+                </button>
+                
+                <div id="page-info" class="px-4 py-2 text-gray-600 font-medium">
+                    Halaman 1 dari 2
+                </div>
+                
+                <button 
+                    id="next-page" 
+                    onclick="changePage(1)" 
+                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    Selanjutnya →
+                </button>
+            </div>
+            
+            <!-- View All Categories Button -->
+            <button 
+                onclick="showAllCategoriesPage()" 
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+                Lihat Semua 12 Kategori
+            </button>
         </div>
 
         <!-- Category Content Section -->
@@ -103,6 +139,21 @@
                 <div id="content-list" class="space-y-3">
                     <!-- Content items will be loaded here -->
                 </div>
+            </div>
+        </div>
+
+        <!-- All Categories Section -->
+        <div id="all-categories-section" class="hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Semua Kategori</h2>
+                <p class="text-gray-600 mb-6">Jelajahi semua 12 kategori yang tersedia</p>
+                <button onclick="showHome()" class="text-blue-600 hover:text-blue-800 font-medium">
+                    ← Kembali ke Beranda
+                </button>
+            </div>
+            
+            <div id="all-categories-grid" class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- All categories will be loaded here -->
             </div>
         </div>
 
@@ -210,19 +261,275 @@
                     { file: 'street-food.html', title: 'Jajanan Kaki Lima Favorit' },
                     { file: 'cooking-tips.html', title: 'Tips Memasak untuk Pemula' }
                 ]
+            },
+            olahraga: {
+                title: 'Olahraga',
+                description: 'Tips olahraga, fitness, dan aktivitas fisik untuk kesehatan optimal',
+                icon: '⚽',
+                contents: [
+                    { file: 'home-workout.html', title: 'Workout di Rumah Tanpa Alat' },
+                    { file: 'running-guide.html', title: 'Panduan Lari untuk Pemula' },
+                    { file: 'yoga-basics.html', title: 'Dasar-dasar Yoga untuk Relaksasi' },
+                    { file: 'sports-nutrition.html', title: 'Nutrisi untuk Atlet' }
+                ]
+            },
+            seni: {
+                title: 'Seni & Budaya',
+                description: 'Eksplorasi seni, budaya, dan kreativitas dalam berbagai bentuk',
+                icon: '🎨',
+                contents: [
+                    { file: 'digital-art.html', title: 'Seni Digital untuk Pemula' },
+                    { file: 'traditional-crafts.html', title: 'Kerajinan Tradisional Indonesia' },
+                    { file: 'music-theory.html', title: 'Teori Musik Dasar' },
+                    { file: 'photography-tips.html', title: 'Tips Fotografi Mobile' }
+                ]
+            },
+            keuangan: {
+                title: 'Keuangan Personal',
+                description: 'Panduan mengelola keuangan pribadi, investasi, dan perencanaan finansial',
+                icon: '💰',
+                contents: [
+                    { file: 'budgeting-basics.html', title: 'Dasar-dasar Budgeting' },
+                    { file: 'investment-guide.html', title: 'Panduan Investasi untuk Pemula' },
+                    { file: 'saving-strategies.html', title: 'Strategi Menabung Efektif' },
+                    { file: 'financial-planning.html', title: 'Perencanaan Keuangan Jangka Panjang' }
+                ]
+            },
+            lifestyle: {
+                title: 'Lifestyle',
+                description: 'Tips gaya hidup modern, produktivitas, dan keseimbangan hidup',
+                icon: '🌟',
+                contents: [
+                    { file: 'minimalism.html', title: 'Hidup Minimalis di Era Modern' },
+                    { file: 'productivity-hacks.html', title: 'Hack Produktivitas Sehari-hari' },
+                    { file: 'work-life-balance.html', title: 'Mencapai Work-Life Balance' },
+                    { file: 'self-care.html', title: 'Self Care untuk Mental Health' }
+                ]
+            },
+            otomotif: {
+                title: 'Otomotif',
+                description: 'Informasi seputar kendaraan, perawatan, dan teknologi otomotif',
+                icon: '🚗',
+                contents: [
+                    { file: 'car-maintenance.html', title: 'Perawatan Mobil Harian' },
+                    { file: 'motorcycle-tips.html', title: 'Tips Berkendara Motor Aman' },
+                    { file: 'electric-vehicles.html', title: 'Masa Depan Kendaraan Listrik' },
+                    { file: 'driving-safety.html', title: 'Keselamatan Berkendara' }
+                ]
+            },
+            properti: {
+                title: 'Properti & Investasi',
+                description: 'Panduan investasi properti, tips membeli rumah, dan tren real estate',
+                icon: '🏠',
+                contents: [
+                    { file: 'home-buying-guide.html', title: 'Panduan Membeli Rumah Pertama' },
+                    { file: 'property-investment.html', title: 'Investasi Properti untuk Pemula' },
+                    { file: 'home-design.html', title: 'Desain Interior Rumah Minimalis' },
+                    { file: 'real-estate-trends.html', title: 'Tren Properti 2024' }
+                ]
             }
         };
 
         let currentCategory = '';
+        let currentPage = 1;
+        const categoriesPerPage = 6;
+        const categoryKeys = Object.keys(categories);
+        const totalPages = Math.ceil(categoryKeys.length / categoriesPerPage);
 
         function showHome() {
             document.getElementById('home-section').classList.remove('hidden');
             document.getElementById('category-section').classList.add('hidden');
             document.getElementById('content-section').classList.add('hidden');
+            document.getElementById('all-categories-section').classList.add('hidden');
+            document.getElementById('search-results').classList.add('hidden');
+            loadCategoriesPage();
         }
 
         function showAllCategories() {
             showHome();
+        }
+
+        function showAllCategoriesPage() {
+            document.getElementById('home-section').classList.add('hidden');
+            document.getElementById('category-section').classList.add('hidden');
+            document.getElementById('content-section').classList.add('hidden');
+            document.getElementById('all-categories-section').classList.remove('hidden');
+            document.getElementById('search-results').classList.add('hidden');
+            loadAllCategories();
+        }
+
+        function loadCategoriesPage() {
+            const startIndex = (currentPage - 1) * categoriesPerPage;
+            const endIndex = startIndex + categoriesPerPage;
+            const pageCategories = categoryKeys.slice(startIndex, endIndex);
+            
+            const grid = document.getElementById('categories-grid');
+            grid.innerHTML = '';
+            
+            pageCategories.forEach(key => {
+                const category = categories[key];
+                const categoryCard = createCategoryCard(key, category);
+                grid.appendChild(categoryCard);
+            });
+            
+            updatePagination();
+        }
+
+        function loadAllCategories() {
+            const grid = document.getElementById('all-categories-grid');
+            grid.innerHTML = '';
+            
+            categoryKeys.forEach(key => {
+                const category = categories[key];
+                const categoryCard = createCategoryCard(key, category);
+                grid.appendChild(categoryCard);
+            });
+        }
+
+        function createCategoryCard(key, category) {
+            const card = document.createElement('div');
+            card.className = 'category-card bg-white rounded-xl shadow-md p-6 cursor-pointer';
+            card.onclick = () => loadCategory(key);
+            
+            card.innerHTML = `
+                <div class="text-4xl mb-4">${category.icon}</div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">${category.title}</h3>
+                <p class="text-gray-600">${category.description}</p>
+            `;
+            
+            return card;
+        }
+
+        function updatePagination() {
+            document.getElementById('page-info').textContent = `Halaman ${currentPage} dari ${totalPages}`;
+            
+            const prevBtn = document.getElementById('prev-page');
+            const nextBtn = document.getElementById('next-page');
+            
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
+
+        function changePage(direction) {
+            const newPage = currentPage + direction;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                loadCategoriesPage();
+            }
+        }
+
+        function performSearch() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            const clearBtn = document.getElementById('clear-search');
+            
+            if (searchTerm.length === 0) {
+                clearSearch();
+                return;
+            }
+            
+            clearBtn.classList.remove('hidden');
+            
+            const searchResults = [];
+            
+            // Search in categories
+            categoryKeys.forEach(key => {
+                const category = categories[key];
+                if (category.title.toLowerCase().includes(searchTerm) || 
+                    category.description.toLowerCase().includes(searchTerm)) {
+                    searchResults.push({
+                        type: 'category',
+                        key: key,
+                        category: category,
+                        matchType: 'Kategori'
+                    });
+                }
+                
+                // Search in content
+                category.contents.forEach(content => {
+                    if (content.title.toLowerCase().includes(searchTerm)) {
+                        searchResults.push({
+                            type: 'content',
+                            key: key,
+                            category: category,
+                            content: content,
+                            matchType: 'Konten'
+                        });
+                    }
+                });
+            });
+            
+            displaySearchResults(searchResults, searchTerm);
+        }
+
+        function displaySearchResults(results, searchTerm) {
+            const searchResultsSection = document.getElementById('search-results');
+            const searchResultsContent = document.getElementById('search-results-content');
+            
+            searchResultsContent.innerHTML = '';
+            
+            if (results.length === 0) {
+                searchResultsContent.innerHTML = `
+                    <div class="col-span-full text-center py-8">
+                        <div class="text-6xl mb-4">🔍</div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Tidak ada hasil ditemukan</h3>
+                        <p class="text-gray-600">Coba gunakan kata kunci yang berbeda</p>
+                    </div>
+                `;
+            } else {
+                results.forEach(result => {
+                    const resultCard = document.createElement('div');
+                    resultCard.className = 'bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-shadow';
+                    
+                    if (result.type === 'category') {
+                        resultCard.onclick = () => {
+                            clearSearch();
+                            loadCategory(result.key);
+                        };
+                        resultCard.innerHTML = `
+                            <div class="flex items-start space-x-3">
+                                <div class="text-2xl">${result.category.icon}</div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${result.matchType}</span>
+                                    </div>
+                                    <h4 class="font-semibold text-gray-800">${result.category.title}</h4>
+                                    <p class="text-sm text-gray-600 mt-1">${result.category.description}</p>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        resultCard.onclick = () => {
+                            clearSearch();
+                            loadContent(result.key, result.content.file, result.content.title);
+                        };
+                        resultCard.innerHTML = `
+                            <div class="flex items-start space-x-3">
+                                <div class="text-2xl">${result.category.icon}</div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-2 mb-1">
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">${result.matchType}</span>
+                                        <span class="text-xs text-gray-500">${result.category.title}</span>
+                                    </div>
+                                    <h4 class="font-semibold text-gray-800">${result.content.title}</h4>
+                                    <p class="text-sm text-gray-600 mt-1">${result.key}/${result.content.file}</p>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    searchResultsContent.appendChild(resultCard);
+                });
+            }
+            
+            searchResultsSection.classList.remove('hidden');
+            document.getElementById('categories-grid').parentElement.style.display = 'none';
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('clear-search').classList.add('hidden');
+            document.getElementById('search-results').classList.add('hidden');
+            document.getElementById('categories-grid').parentElement.style.display = 'block';
         }
 
         function loadCategory(categoryName) {
@@ -359,7 +666,9 @@
         }
 
         // Initialize
-        showHome();
+        document.addEventListener('DOMContentLoaded', function() {
+            showHome();
+        });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9740751cc447fe86',t:'MTc1NjAxMzQyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974081f290b9fcdf',t:'MTc1NjAxMzk1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
