@@ -387,9 +387,13 @@
         }
 
         function createCategoryCard(key, category) {
-            const card = document.createElement('div');
-            card.className = 'category-card bg-white rounded-xl shadow-md p-6 cursor-pointer';
-            card.onclick = () => loadCategory(key);
+            const card = document.createElement('a');
+            card.href = `${key}/index.html`;
+            card.className = 'category-card bg-white rounded-xl shadow-md p-6 cursor-pointer block hover:no-underline';
+            card.onclick = (e) => {
+                e.preventDefault();
+                loadCategory(key);
+            };
             
             card.innerHTML = `
                 <div class="text-4xl mb-4">${category.icon}</div>
@@ -477,11 +481,14 @@
                 `;
             } else {
                 results.forEach(result => {
-                    const resultCard = document.createElement('div');
-                    resultCard.className = 'bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-shadow';
+                    let resultCard;
                     
                     if (result.type === 'category') {
-                        resultCard.onclick = () => {
+                        resultCard = document.createElement('a');
+                        resultCard.href = `${result.key}/index.html`;
+                        resultCard.className = 'bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-shadow block hover:no-underline';
+                        resultCard.onclick = (e) => {
+                            e.preventDefault();
                             clearSearch();
                             loadCategory(result.key);
                         };
@@ -498,7 +505,11 @@
                             </div>
                         `;
                     } else {
-                        resultCard.onclick = () => {
+                        resultCard = document.createElement('a');
+                        resultCard.href = `${result.key}/${result.content.file}`;
+                        resultCard.className = 'bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-shadow block hover:no-underline';
+                        resultCard.onclick = (e) => {
+                            e.preventDefault();
                             clearSearch();
                             loadContent(result.key, result.content.file, result.content.title);
                         };
@@ -553,9 +564,13 @@
             contentList.innerHTML = '';
             
             category.contents.forEach(content => {
-                const contentItem = document.createElement('div');
-                contentItem.className = 'flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer';
-                contentItem.onclick = () => loadContent(categoryName, content.file, content.title);
+                const contentItem = document.createElement('a');
+                contentItem.href = `${categoryName}/${content.file}`;
+                contentItem.className = 'flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer block hover:no-underline';
+                contentItem.onclick = (e) => {
+                    e.preventDefault();
+                    loadContent(categoryName, content.file, content.title);
+                };
                 
                 contentItem.innerHTML = `
                     <div>
@@ -670,5 +685,5 @@
             showHome();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974081f290b9fcdf',t:'MTc1NjAxMzk1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97423c71678bea7f',t:'MTc1NjAzMjA3NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
