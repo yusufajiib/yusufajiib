@@ -1,1 +1,365 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Resto catalogue for you"><link rel="icon" href="./favicon.png"><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"><link rel="manifest" href="./app.webmanifest"><meta name="theme-color" content="#DB0000"/><link rel="apple-touch-icon" href="/icons/icon-192x192.png"><link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous"><title>Resto Catalogue</title><script defer="defer" src="192.bundle.js"></script><script defer="defer" src="2.bundle.js"></script><script defer="defer" src="app~a51fa3f5.bundle.js"></script><script defer="defer" src="app~e4317507.bundle.js"></script><script defer="defer" src="app~8a5603d9.bundle.js"></script><script defer="defer" src="app~ca0940c6.bundle.js"></script><script defer="defer" src="app~309f7e27.bundle.js"></script><script defer="defer" src="app~d47061cd.bundle.js"></script></head><body><a href="#maincontent" class="skip-link">Menuju ke konten</a><header class="app-bar"><div class="app-bar__menu"><button id="hamburgerButton">☰</button></div><div class="app-bar__brand"><h1>Restoran Puyuh Asap's</h1></div><nav id="navigationDrawer" class="app-bar__navigation"><ul><li><a href="#/now-resto">Daftar Cabang</a></li><li><a href="#/like">Favorite</a></li><li><a href="https://www.facebook.com/yusufajiib" target="_blank" rel="noopener noreferrer">About us</a></li></ul></nav></header><main id="mainContent"></main><footer><div id="footerTools"><button id="subscribePushNotification" class="btn">Subscribe Push Notification</button> <button id="unsubscribePushNotification" class="btn">Unsubscribe Push Notification</button></div><p>All data obtained from <a href="https://restaurant-api.dicoding.dev" target="_blank" rel="noreferrer">restaurant-api.dicoding</a></p></footer></body></html>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Multi Kategori</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .category-card {
+            transition: all 0.3s ease;
+        }
+        .category-card:hover {
+            transform: translateY(-5px);
+        }
+        .content-frame {
+            min-height: 600px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-3xl font-bold text-gray-800 cursor-pointer" onclick="showHome()">
+                    🌟 Website Multi Kategori
+                </h1>
+                <nav class="hidden md:flex space-x-6">
+                    <button onclick="showHome()" class="text-gray-600 hover:text-blue-600 font-medium">Beranda</button>
+                    <button onclick="showAllCategories()" class="text-gray-600 hover:text-blue-600 font-medium">Semua Kategori</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Home Section -->
+        <div id="home-section" class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Selamat Datang</h2>
+            <p class="text-xl text-gray-600 mb-8">Jelajahi berbagai kategori konten yang tersedia</p>
+            
+            <!-- Featured Categories Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="category-card bg-white rounded-xl shadow-md p-6 cursor-pointer" onclick="loadCategory('teknologi')">
+                    <div class="text-4xl mb-4">💻</div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Teknologi</h3>
+                    <p class="text-gray-600">Artikel dan tutorial seputar teknologi terkini</p>
+                </div>
+                
+                <div class="category-card bg-white rounded-xl shadow-md p-6 cursor-pointer" onclick="loadCategory('bisnis')">
+                    <div class="text-4xl mb-4">💼</div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Bisnis</h3>
+                    <p class="text-gray-600">Tips dan strategi untuk mengembangkan bisnis</p>
+                </div>
+                
+                <div class="category-card bg-white rounded-xl shadow-md p-6 cursor-pointer" onclick="loadCategory('kesehatan')">
+                    <div class="text-4xl mb-4">🏥</div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Kesehatan</h3>
+                    <p class="text-gray-600">Informasi kesehatan dan gaya hidup sehat</p>
+                </div>
+                
+                <div class="category-card bg-white rounded-xl shadow-md p-6 cursor-pointer" onclick="loadCategory('pendidikan')">
+                    <div class="text-4xl mb-4">📚</div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Pendidikan</h3>
+                    <p class="text-gray-600">Materi pembelajaran dan pengembangan diri</p>
+                </div>
+                
+                <div class="category-card bg-white rounded-xl shadow-md p-6 cursor-pointer" onclick="loadCategory('travel')">
+                    <div class="text-4xl mb-4">✈️</div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Travel</h3>
+                    <p class="text-gray-600">Panduan wisata dan destinasi menarik</p>
+                </div>
+                
+                <div class="category-card bg-white rounded-xl shadow-md p-6 cursor-pointer" onclick="loadCategory('kuliner')">
+                    <div class="text-4xl mb-4">🍽️</div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">Kuliner</h3>
+                    <p class="text-gray-600">Resep masakan dan review kuliner</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Content Section -->
+        <div id="category-section" class="hidden">
+            <!-- Breadcrumb -->
+            <nav class="mb-6">
+                <ol class="flex items-center space-x-2 text-sm text-gray-600">
+                    <li><button onclick="showHome()" class="hover:text-blue-600">Beranda</button></li>
+                    <li>/</li>
+                    <li id="current-category" class="font-medium text-gray-800"></li>
+                </ol>
+            </nav>
+
+            <!-- Category Header -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                <h2 id="category-title" class="text-3xl font-bold text-gray-800 mb-2"></h2>
+                <p id="category-description" class="text-gray-600"></p>
+            </div>
+
+            <!-- Content List -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Daftar Konten</h3>
+                <div id="content-list" class="space-y-3">
+                    <!-- Content items will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Viewer Section -->
+        <div id="content-section" class="hidden">
+            <!-- Breadcrumb -->
+            <nav class="mb-6">
+                <ol class="flex items-center space-x-2 text-sm text-gray-600">
+                    <li><button onclick="showHome()" class="hover:text-blue-600">Beranda</button></li>
+                    <li>/</li>
+                    <li><button id="breadcrumb-category" onclick="goBackToCategory()" class="hover:text-blue-600"></button></li>
+                    <li>/</li>
+                    <li id="current-content" class="font-medium text-gray-800"></li>
+                </ol>
+            </nav>
+
+            <!-- Content Frame -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6 border-b">
+                    <h2 id="content-title" class="text-2xl font-bold text-gray-800"></h2>
+                    <button onclick="goBackToCategory()" class="mt-2 text-blue-600 hover:text-blue-800 font-medium">
+                        ← Kembali ke Kategori
+                    </button>
+                </div>
+                <div id="content-frame" class="content-frame p-6">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2024 Website Multi Kategori. Dibuat untuk GitHub Pages.</p>
+            <p class="mt-2 text-gray-400">Struktur: website-utama/folder-kategori/konten.html</p>
+        </div>
+    </footer>
+
+    <script>
+        // Data struktur website
+        const categories = {
+            teknologi: {
+                title: 'Teknologi',
+                description: 'Artikel dan tutorial seputar teknologi terkini, programming, dan inovasi digital',
+                icon: '💻',
+                contents: [
+                    { file: 'artificial-intelligence.html', title: 'Artificial Intelligence dan Masa Depan' },
+                    { file: 'web-development.html', title: 'Panduan Web Development Modern' },
+                    { file: 'mobile-apps.html', title: 'Tren Aplikasi Mobile 2024' },
+                    { file: 'cybersecurity.html', title: 'Keamanan Siber untuk Pemula' }
+                ]
+            },
+            bisnis: {
+                title: 'Bisnis',
+                description: 'Tips dan strategi untuk mengembangkan bisnis, entrepreneurship, dan manajemen',
+                icon: '💼',
+                contents: [
+                    { file: 'startup-guide.html', title: 'Panduan Memulai Startup' },
+                    { file: 'digital-marketing.html', title: 'Strategi Digital Marketing' },
+                    { file: 'financial-planning.html', title: 'Perencanaan Keuangan Bisnis' },
+                    { file: 'leadership.html', title: 'Kepemimpinan Efektif' }
+                ]
+            },
+            kesehatan: {
+                title: 'Kesehatan',
+                description: 'Informasi kesehatan, tips hidup sehat, dan panduan medis',
+                icon: '🏥',
+                contents: [
+                    { file: 'healthy-lifestyle.html', title: 'Gaya Hidup Sehat Modern' },
+                    { file: 'mental-health.html', title: 'Kesehatan Mental di Era Digital' },
+                    { file: 'nutrition-guide.html', title: 'Panduan Nutrisi Seimbang' },
+                    { file: 'exercise-tips.html', title: 'Tips Olahraga di Rumah' }
+                ]
+            },
+            pendidikan: {
+                title: 'Pendidikan',
+                description: 'Materi pembelajaran, pengembangan diri, dan metode belajar efektif',
+                icon: '📚',
+                contents: [
+                    { file: 'online-learning.html', title: 'Efektivitas Pembelajaran Online' },
+                    { file: 'study-methods.html', title: 'Metode Belajar yang Efektif' },
+                    { file: 'skill-development.html', title: 'Pengembangan Skill di Era Digital' },
+                    { file: 'career-guidance.html', title: 'Panduan Karir untuk Fresh Graduate' }
+                ]
+            },
+            travel: {
+                title: 'Travel',
+                description: 'Panduan wisata, destinasi menarik, dan tips perjalanan',
+                icon: '✈️',
+                contents: [
+                    { file: 'indonesia-destinations.html', title: 'Destinasi Wisata Indonesia Tersembunyi' },
+                    { file: 'budget-travel.html', title: 'Tips Traveling dengan Budget Minim' },
+                    { file: 'solo-travel.html', title: 'Panduan Solo Traveling Aman' },
+                    { file: 'cultural-tourism.html', title: 'Wisata Budaya Nusantara' }
+                ]
+            },
+            kuliner: {
+                title: 'Kuliner',
+                description: 'Resep masakan, review kuliner, dan tips memasak',
+                icon: '🍽️',
+                contents: [
+                    { file: 'traditional-recipes.html', title: 'Resep Masakan Tradisional' },
+                    { file: 'healthy-cooking.html', title: 'Memasak Sehat dan Lezat' },
+                    { file: 'street-food.html', title: 'Jajanan Kaki Lima Favorit' },
+                    { file: 'cooking-tips.html', title: 'Tips Memasak untuk Pemula' }
+                ]
+            }
+        };
+
+        let currentCategory = '';
+
+        function showHome() {
+            document.getElementById('home-section').classList.remove('hidden');
+            document.getElementById('category-section').classList.add('hidden');
+            document.getElementById('content-section').classList.add('hidden');
+        }
+
+        function showAllCategories() {
+            showHome();
+        }
+
+        function loadCategory(categoryName) {
+            currentCategory = categoryName;
+            const category = categories[categoryName];
+            
+            if (!category) {
+                alert('Kategori tidak ditemukan!');
+                return;
+            }
+
+            // Update breadcrumb
+            document.getElementById('current-category').textContent = category.title;
+            
+            // Update category info
+            document.getElementById('category-title').textContent = category.icon + ' ' + category.title;
+            document.getElementById('category-description').textContent = category.description;
+            
+            // Load content list
+            const contentList = document.getElementById('content-list');
+            contentList.innerHTML = '';
+            
+            category.contents.forEach(content => {
+                const contentItem = document.createElement('div');
+                contentItem.className = 'flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer';
+                contentItem.onclick = () => loadContent(categoryName, content.file, content.title);
+                
+                contentItem.innerHTML = `
+                    <div>
+                        <h4 class="font-medium text-gray-800">${content.title}</h4>
+                        <p class="text-sm text-gray-600">${categoryName}/${content.file}</p>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                `;
+                
+                contentList.appendChild(contentItem);
+            });
+            
+            // Show category section
+            document.getElementById('home-section').classList.add('hidden');
+            document.getElementById('category-section').classList.remove('hidden');
+            document.getElementById('content-section').classList.add('hidden');
+        }
+
+        function loadContent(categoryName, fileName, title) {
+            // Update breadcrumbs
+            document.getElementById('breadcrumb-category').textContent = categories[categoryName].title;
+            document.getElementById('current-content').textContent = title;
+            document.getElementById('content-title').textContent = title;
+            
+            // Simulate loading content
+            const contentFrame = document.getElementById('content-frame');
+            contentFrame.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p class="text-gray-600">Memuat konten dari ${categoryName}/${fileName}...</p>
+                </div>
+            `;
+            
+            // Simulate content loading delay
+            setTimeout(() => {
+                contentFrame.innerHTML = `
+                    <div class="prose max-w-none">
+                        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-blue-700">
+                                        <strong>Demo Mode:</strong> Ini adalah contoh konten. Untuk implementasi nyata, buat file HTML di folder <code>${categoryName}/${fileName}</code>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <h1 class="text-3xl font-bold mb-4">${title}</h1>
+                        
+                        <p class="text-lg text-gray-600 mb-6">Ini adalah contoh konten yang akan dimuat dari file <strong>${categoryName}/${fileName}</strong></p>
+                        
+                        <h2 class="text-2xl font-semibold mb-3">Struktur Folder yang Direkomendasikan:</h2>
+                        <div class="bg-gray-100 p-4 rounded-lg font-mono text-sm mb-6">
+                            website-utama/<br>
+                            ├── index.html (file ini)<br>
+                            ├── ${categoryName}/<br>
+                            │   ├── ${fileName}<br>
+                            │   ├── artificial-intelligence.html<br>
+                            │   ├── web-development.html<br>
+                            │   └── ...<br>
+                            ├── bisnis/<br>
+                            │   ├── startup-guide.html<br>
+                            │   └── ...<br>
+                            └── kategori-lain/
+                        </div>
+                        
+                        <h2 class="text-2xl font-semibold mb-3">Cara Implementasi:</h2>
+                        <ol class="list-decimal list-inside space-y-2 mb-6">
+                            <li>Buat folder untuk setiap kategori</li>
+                            <li>Buat file HTML untuk setiap konten dalam folder kategori</li>
+                            <li>Upload semua file ke repository GitHub</li>
+                            <li>Aktifkan GitHub Pages di pengaturan repository</li>
+                            <li>Website akan dapat diakses di username.github.io/repository-name</li>
+                        </ol>
+                        
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <h3 class="font-semibold text-green-800 mb-2">💡 Tips:</h3>
+                            <ul class="text-green-700 space-y-1">
+                                <li>• Gunakan nama file yang SEO-friendly (tanpa spasi, gunakan dash)</li>
+                                <li>• Tambahkan meta tags untuk SEO di setiap halaman</li>
+                                <li>• Pastikan semua link menggunakan path relatif</li>
+                                <li>• Gunakan GitHub Actions untuk otomasi deployment</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }, 1000);
+            
+            // Show content section
+            document.getElementById('home-section').classList.add('hidden');
+            document.getElementById('category-section').classList.add('hidden');
+            document.getElementById('content-section').classList.remove('hidden');
+        }
+
+        function goBackToCategory() {
+            if (currentCategory) {
+                loadCategory(currentCategory);
+            } else {
+                showHome();
+            }
+        }
+
+        // Initialize
+        showHome();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9740751cc447fe86',t:'MTc1NjAxMzQyNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
