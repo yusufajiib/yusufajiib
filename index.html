@@ -627,40 +627,45 @@
                         
                         <h1 class="text-3xl font-bold mb-4">${title}</h1>
                         
-                        <p class="text-lg text-gray-600 mb-6">Ini adalah contoh konten yang akan dimuat dari file <strong>${categoryName}/${fileName}</strong></p>
+                        <p class="text-lg text-gray-600 mb-6">Selamat datang di halaman konten <strong>${title}</strong>. Konten ini berada di lokasi <code>${categoryName}/${fileName}</code></p>
                         
-                        <h2 class="text-2xl font-semibold mb-3">Struktur Folder yang Direkomendasikan:</h2>
-                        <div class="bg-gray-100 p-4 rounded-lg font-mono text-sm mb-6">
-                            website-utama/<br>
-                            ├── index.html (file ini)<br>
-                            ├── ${categoryName}/<br>
-                            │   ├── ${fileName}<br>
-                            │   ├── artificial-intelligence.html<br>
-                            │   ├── web-development.html<br>
-                            │   └── ...<br>
-                            ├── bisnis/<br>
-                            │   ├── startup-guide.html<br>
-                            │   └── ...<br>
-                            └── kategori-lain/
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg mb-6">
+                            <h2 class="text-2xl font-semibold text-gray-800 mb-3">Tentang Konten Ini</h2>
+                            <p class="text-gray-700 leading-relaxed">
+                                Ini adalah halaman konten yang dapat Anda kustomisasi sesuai kebutuhan. 
+                                Anda dapat menambahkan artikel, tutorial, gambar, video, atau konten multimedia lainnya di sini.
+                            </p>
                         </div>
                         
-                        <h2 class="text-2xl font-semibold mb-3">Cara Implementasi:</h2>
-                        <ol class="list-decimal list-inside space-y-2 mb-6">
-                            <li>Buat folder untuk setiap kategori</li>
-                            <li>Buat file HTML untuk setiap konten dalam folder kategori</li>
-                            <li>Upload semua file ke repository GitHub</li>
-                            <li>Aktifkan GitHub Pages di pengaturan repository</li>
-                            <li>Website akan dapat diakses di username.github.io/repository-name</li>
-                        </ol>
-                        
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <h3 class="font-semibold text-green-800 mb-2">💡 Tips:</h3>
-                            <ul class="text-green-700 space-y-1">
-                                <li>• Gunakan nama file yang SEO-friendly (tanpa spasi, gunakan dash)</li>
-                                <li>• Tambahkan meta tags untuk SEO di setiap halaman</li>
-                                <li>• Pastikan semua link menggunakan path relatif</li>
-                                <li>• Gunakan GitHub Actions untuk otomasi deployment</li>
+                        <div class="prose max-w-none">
+                            <h3 class="text-xl font-semibold mb-3">Contoh Konten</h3>
+                            <p class="mb-4">
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                            </p>
+                            
+                            <h4 class="text-lg font-medium mb-2">Poin-poin Penting:</h4>
+                            <ul class="list-disc list-inside space-y-1 mb-4">
+                                <li>Konten dapat disesuaikan dengan topik kategori</li>
+                                <li>Gunakan format yang mudah dibaca</li>
+                                <li>Tambahkan gambar atau media pendukung</li>
+                                <li>Sertakan call-to-action jika diperlukan</li>
                             </ul>
+                            
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-6">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-yellow-700">
+                                            <strong>Catatan:</strong> Ini adalah template konten. Ganti dengan konten asli sesuai dengan topik yang dibahas.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -685,5 +690,5 @@
             showHome();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97423c71678bea7f',t:'MTc1NjAzMjA3NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97425985637bc5f0',t:'MTc1NjAzMzI2NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
