@@ -15,6 +15,12 @@
         .content-frame {
             min-height: 600px;
         }
+        .search-highlight {
+            background-color: #fef08a;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
@@ -49,6 +55,7 @@
                         placeholder="Cari kategori atau konten..." 
                         class="w-full px-4 py-3 pl-12 pr-4 text-gray-700 bg-white border border-gray-300 rounded-full focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         oninput="performSearch()"
+                        onkeydown="handleSearchKeydown(event)"
                     >
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,55 +72,65 @@
                         </svg>
                     </button>
                 </div>
+                <div class="mt-2 text-xs text-gray-500 text-center">
+                    Tekan Enter untuk mencari, Escape untuk membersihkan
+                </div>
             </div>
 
             <!-- Search Results -->
             <div id="search-results" class="hidden mb-8">
-                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Hasil Pencarian</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 id="search-results-title" class="text-2xl font-semibold text-gray-800">Hasil Pencarian</h3>
+                    <button onclick="clearSearch()" class="text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span>Tutup Pencarian</span>
+                    </button>
+                </div>
                 <div id="search-results-content" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <!-- Search results will appear here -->
                 </div>
-                <button onclick="clearSearch()" class="mt-4 text-blue-600 hover:text-blue-800 font-medium">
-                    ← Kembali ke Semua Kategori
-                </button>
             </div>
             
             <!-- Categories Grid -->
-            <div id="categories-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                <!-- Categories will be loaded here -->
-            </div>
-            
-            <!-- Pagination -->
-            <div id="pagination" class="flex justify-center items-center space-x-2 mb-8">
-                <button 
-                    id="prev-page" 
-                    onclick="changePage(-1)" 
-                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled
-                >
-                    ← Sebelumnya
-                </button>
-                
-                <div id="page-info" class="px-4 py-2 text-gray-600 font-medium">
-                    Halaman 1 dari 2
+            <div id="categories-container" class="mb-8">
+                <div id="categories-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Categories will be loaded here -->
                 </div>
                 
+                <!-- Pagination -->
+                <div id="pagination" class="flex justify-center items-center space-x-2 mb-8">
+                    <button 
+                        id="prev-page" 
+                        onclick="changePage(-1)" 
+                        class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled
+                    >
+                        ← Sebelumnya
+                    </button>
+                    
+                    <div id="page-info" class="px-4 py-2 text-gray-600 font-medium">
+                        Halaman 1 dari 2
+                    </div>
+                    
+                    <button 
+                        id="next-page" 
+                        onclick="changePage(1)" 
+                        class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Selanjutnya →
+                    </button>
+                </div>
+                
+                <!-- View All Categories Button -->
                 <button 
-                    id="next-page" 
-                    onclick="changePage(1)" 
-                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    onclick="showAllCategoriesPage()" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
                 >
-                    Selanjutnya →
+                    Lihat Semua 12 Kategori
                 </button>
             </div>
-            
-            <!-- View All Categories Button -->
-            <button 
-                onclick="showAllCategoriesPage()" 
-                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-            >
-                Lihat Semua 12 Kategori
-            </button>
         </div>
 
         <!-- Category Content Section -->
@@ -341,7 +358,7 @@
             document.getElementById('category-section').classList.add('hidden');
             document.getElementById('content-section').classList.add('hidden');
             document.getElementById('all-categories-section').classList.add('hidden');
-            document.getElementById('search-results').classList.add('hidden');
+            clearSearch();
             loadCategoriesPage();
         }
 
@@ -354,7 +371,7 @@
             document.getElementById('category-section').classList.add('hidden');
             document.getElementById('content-section').classList.add('hidden');
             document.getElementById('all-categories-section').classList.remove('hidden');
-            document.getElementById('search-results').classList.add('hidden');
+            clearSearch();
             loadAllCategories();
         }
 
@@ -423,7 +440,10 @@
         }
 
         function performSearch() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            const searchInput = document.getElementById('search-input');
+            if (!searchInput) return;
+            
+            const searchTerm = searchInput.value.toLowerCase().trim();
             const clearBtn = document.getElementById('clear-search');
             
             if (searchTerm.length === 0) {
@@ -431,15 +451,20 @@
                 return;
             }
             
-            clearBtn.classList.remove('hidden');
+            if (clearBtn) {
+                clearBtn.classList.remove('hidden');
+            }
             
             const searchResults = [];
             
             // Search in categories
             categoryKeys.forEach(key => {
                 const category = categories[key];
-                if (category.title.toLowerCase().includes(searchTerm) || 
-                    category.description.toLowerCase().includes(searchTerm)) {
+                const titleMatch = category.title.toLowerCase().includes(searchTerm);
+                const descMatch = category.description.toLowerCase().includes(searchTerm);
+                const keyMatch = key.toLowerCase().includes(searchTerm);
+                
+                if (titleMatch || descMatch || keyMatch) {
                     searchResults.push({
                         type: 'category',
                         key: key,
@@ -450,7 +475,10 @@
                 
                 // Search in content
                 category.contents.forEach(content => {
-                    if (content.title.toLowerCase().includes(searchTerm)) {
+                    const contentTitleMatch = content.title.toLowerCase().includes(searchTerm);
+                    const fileMatch = content.file.toLowerCase().includes(searchTerm);
+                    
+                    if (contentTitleMatch || fileMatch) {
                         searchResults.push({
                             type: 'content',
                             key: key,
@@ -465,59 +493,84 @@
             displaySearchResults(searchResults, searchTerm);
         }
 
+        function handleSearchKeydown(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                performSearch();
+            } else if (event.key === 'Escape') {
+                clearSearch();
+            }
+        }
+
         function displaySearchResults(results, searchTerm) {
             const searchResultsSection = document.getElementById('search-results');
             const searchResultsContent = document.getElementById('search-results-content');
+            const searchTitle = document.getElementById('search-results-title');
+            const categoriesContainer = document.getElementById('categories-container');
             
+            if (!searchResultsSection || !searchResultsContent || !searchTitle) return;
+            
+            searchTitle.textContent = `Hasil Pencarian untuk "${searchTerm}" (${results.length} hasil)`;
             searchResultsContent.innerHTML = '';
             
             if (results.length === 0) {
                 searchResultsContent.innerHTML = `
-                    <div class="col-span-full text-center py-8">
+                    <div class="col-span-full text-center py-12">
                         <div class="text-6xl mb-4">🔍</div>
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Tidak ada hasil ditemukan</h3>
-                        <p class="text-gray-600">Coba gunakan kata kunci yang berbeda</p>
+                        <p class="text-gray-600 mb-4">Tidak ditemukan kategori atau konten yang cocok dengan "<strong>${searchTerm}</strong>"</p>
+                        <div class="text-sm text-gray-500 bg-gray-50 p-4 rounded-lg max-w-md mx-auto">
+                            <p class="font-medium mb-2">💡 Tips pencarian:</p>
+                            <ul class="text-left space-y-1">
+                                <li>• Coba kata kunci yang lebih umum</li>
+                                <li>• Periksa ejaan kata kunci</li>
+                                <li>• Gunakan sinonim atau kata yang berkaitan</li>
+                                <li>• Coba kata dalam bahasa Inggris</li>
+                            </ul>
+                        </div>
                     </div>
                 `;
             } else {
-                results.forEach(result => {
-                    let resultCard;
+                results.forEach((result, index) => {
+                    const resultCard = document.createElement('div');
+                    resultCard.className = 'bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-all duration-200';
                     
                     if (result.type === 'category') {
-                        resultCard = document.createElement('a');
-                        resultCard.href = `${result.key}/index.html`;
-                        resultCard.className = 'bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-shadow block hover:no-underline';
-                        resultCard.onclick = (e) => {
-                            e.preventDefault();
+                        resultCard.onclick = () => {
                             clearSearch();
                             loadCategory(result.key);
                         };
+                        
                         resultCard.innerHTML = `
                             <div class="flex items-start space-x-3">
-                                <div class="text-2xl">${result.category.icon}</div>
+                                <div class="text-3xl">${result.category.icon}</div>
                                 <div class="flex-1">
-                                    <div class="flex items-center space-x-2 mb-1">
-                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${result.matchType}</span>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">${result.matchType}</span>
+                                        <span class="text-xs text-gray-400">#${index + 1}</span>
                                     </div>
-                                    <h4 class="font-semibold text-gray-800">${result.category.title}</h4>
-                                    <p class="text-sm text-gray-600 mt-1">${result.category.description}</p>
+                                    <h4 class="font-semibold text-gray-800 mb-1">${result.category.title}</h4>
+                                    <p class="text-sm text-gray-600 leading-relaxed">${result.category.description}</p>
+                                    <div class="mt-2 text-xs text-gray-500">
+                                        <span class="bg-gray-100 px-2 py-1 rounded">${result.category.contents.length} konten tersedia</span>
+                                    </div>
                                 </div>
                             </div>
                         `;
                     } else {
-                        resultCard = document.createElement('a');
-                        resultCard.href = `${result.key}/${result.content.file}`;
-                        resultCard.className = 'bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-shadow block hover:no-underline';
                         resultCard.innerHTML = `
                             <div class="flex items-start space-x-3">
-                                <div class="text-2xl">${result.category.icon}</div>
+                                <div class="text-3xl">${result.category.icon}</div>
                                 <div class="flex-1">
-                                    <div class="flex items-center space-x-2 mb-1">
-                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">${result.matchType}</span>
-                                        <span class="text-xs text-gray-500">${result.category.title}</span>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">${result.matchType}</span>
+                                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">${result.category.title}</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400">#${index + 1}</span>
                                     </div>
-                                    <h4 class="font-semibold text-gray-800">${result.content.title}</h4>
-                                    <p class="text-sm text-gray-600 mt-1">${result.key}/${result.content.file}</p>
+                                    <h4 class="font-semibold text-gray-800 mb-1">${result.content.title}</h4>
+                                    <p class="text-sm text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">${result.key}/${result.content.file}</p>
                                 </div>
                             </div>
                         `;
@@ -528,14 +581,21 @@
             }
             
             searchResultsSection.classList.remove('hidden');
-            document.getElementById('categories-grid').parentElement.style.display = 'none';
+            if (categoriesContainer) {
+                categoriesContainer.style.display = 'none';
+            }
         }
 
         function clearSearch() {
-            document.getElementById('search-input').value = '';
-            document.getElementById('clear-search').classList.add('hidden');
-            document.getElementById('search-results').classList.add('hidden');
-            document.getElementById('categories-grid').parentElement.style.display = 'block';
+            const searchInput = document.getElementById('search-input');
+            const clearBtn = document.getElementById('clear-search');
+            const searchResults = document.getElementById('search-results');
+            const categoriesContainer = document.getElementById('categories-container');
+            
+            if (searchInput) searchInput.value = '';
+            if (clearBtn) clearBtn.classList.add('hidden');
+            if (searchResults) searchResults.classList.add('hidden');
+            if (categoriesContainer) categoriesContainer.style.display = 'block';
         }
 
         function loadCategory(categoryName) {
@@ -547,14 +607,10 @@
                 return;
             }
 
-            // Update breadcrumb
             document.getElementById('current-category').textContent = category.title;
-            
-            // Update category info
             document.getElementById('category-title').textContent = category.icon + ' ' + category.title;
             document.getElementById('category-description').textContent = category.description;
             
-            // Load content list
             const contentList = document.getElementById('content-list');
             contentList.innerHTML = '';
             
@@ -576,96 +632,9 @@
                 contentList.appendChild(contentItem);
             });
             
-            // Show category section
             document.getElementById('home-section').classList.add('hidden');
             document.getElementById('category-section').classList.remove('hidden');
             document.getElementById('content-section').classList.add('hidden');
-        }
-
-        function loadContent(categoryName, fileName, title) {
-            // Update breadcrumbs
-            document.getElementById('breadcrumb-category').textContent = categories[categoryName].title;
-            document.getElementById('current-content').textContent = title;
-            document.getElementById('content-title').textContent = title;
-            
-            // Simulate loading content
-            const contentFrame = document.getElementById('content-frame');
-            contentFrame.innerHTML = `
-                <div class="text-center py-8">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <p class="text-gray-600">Memuat konten dari ${categoryName}/${fileName}...</p>
-                </div>
-            `;
-            
-            // Simulate content loading delay
-            setTimeout(() => {
-                contentFrame.innerHTML = `
-                    <div class="prose max-w-none">
-                        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
-                            <div class="flex">
-                                <div class="flex-shrink-0">
-                                    <svg class="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm text-blue-700">
-                                        <strong>Demo Mode:</strong> Ini adalah contoh konten. Untuk implementasi nyata, buat file HTML di folder <code>${categoryName}/${fileName}</code>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <h1 class="text-3xl font-bold mb-4">${title}</h1>
-                        
-                        <p class="text-lg text-gray-600 mb-6">Selamat datang di halaman konten <strong>${title}</strong>. Konten ini berada di lokasi <code>${categoryName}/${fileName}</code></p>
-                        
-                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg mb-6">
-                            <h2 class="text-2xl font-semibold text-gray-800 mb-3">Tentang Konten Ini</h2>
-                            <p class="text-gray-700 leading-relaxed">
-                                Ini adalah halaman konten yang dapat Anda kustomisasi sesuai kebutuhan. 
-                                Anda dapat menambahkan artikel, tutorial, gambar, video, atau konten multimedia lainnya di sini.
-                            </p>
-                        </div>
-                        
-                        <div class="prose max-w-none">
-                            <h3 class="text-xl font-semibold mb-3">Contoh Konten</h3>
-                            <p class="mb-4">
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                            </p>
-                            
-                            <h4 class="text-lg font-medium mb-2">Poin-poin Penting:</h4>
-                            <ul class="list-disc list-inside space-y-1 mb-4">
-                                <li>Konten dapat disesuaikan dengan topik kategori</li>
-                                <li>Gunakan format yang mudah dibaca</li>
-                                <li>Tambahkan gambar atau media pendukung</li>
-                                <li>Sertakan call-to-action jika diperlukan</li>
-                            </ul>
-                            
-                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-6">
-                                <div class="flex">
-                                    <div class="flex-shrink-0">
-                                        <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm text-yellow-700">
-                                            <strong>Catatan:</strong> Ini adalah template konten. Ganti dengan konten asli sesuai dengan topik yang dibahas.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }, 1000);
-            
-            // Show content section
-            document.getElementById('home-section').classList.add('hidden');
-            document.getElementById('category-section').classList.add('hidden');
-            document.getElementById('content-section').classList.remove('hidden');
         }
 
         function goBackToCategory() {
@@ -681,5 +650,5 @@
             showHome();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9742e65ec25dea82',t:'MTc1NjAzOTAzNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974681fde46b4adc',t:'MTc1NjA3Njg2Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
