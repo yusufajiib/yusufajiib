@@ -3,527 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal Madrasah - Sistem Informasi Terpadu</title>
+    <title>Madrasah Al-Hikmah - Pendidikan Islam Terpadu</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .category-card {
+        .hero-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .card-hover {
             transition: all 0.3s ease;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        .category-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        .content-section {
-            display: none;
-            animation: fadeIn 0.5s ease-in;
-        }
-        .content-section.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .spreadsheet-table {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-    <!-- Header -->
-    <header class="bg-white shadow-lg">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold text-xl">M</span>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-green-800 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center">
+                        <span class="text-green-800 font-bold text-lg">🕌</span>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-800">Portal Madrasah</h1>
-                        <p class="text-sm text-gray-600">Sistem Informasi Terpadu</p>
+                        <h1 class="text-xl font-bold">Madrasah Al-Hikmah</h1>
+                        <p class="text-green-200 text-sm">Pendidikan Islam Terpadu</p>
                     </div>
                 </div>
-                <button id="refreshData" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-                    🔄 Refresh Data
+                <div class="hidden md:flex space-x-6">
+                    <a href="#beranda" class="hover:text-yellow-300 transition-colors">Beranda</a>
+                    <a href="#kategori" class="hover:text-yellow-300 transition-colors">Kategori</a>
+                    <a href="#tentang" class="hover:text-yellow-300 transition-colors">Tentang</a>
+                    <a href="#kontak" class="hover:text-yellow-300 transition-colors">Kontak</a>
+                </div>
+                <button id="mobile-menu-btn" class="md:hidden">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
                 </button>
             </div>
-        </div>
-    </header>
-
-    <!-- Navigation -->
-    <nav class="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div class="container mx-auto px-6">
-            <div class="flex space-x-8 overflow-x-auto">
-                <button class="nav-btn active py-4 px-2 border-b-2 border-blue-600 text-blue-600 font-medium whitespace-nowrap" data-category="home">
-                    🏠 Beranda
-                </button>
-                <button class="nav-btn py-4 px-2 border-b-2 border-transparent text-gray-600 hover:text-blue-600 font-medium whitespace-nowrap" data-category="kurikulum">
-                    📚 Kurikulum
-                </button>
-                <button class="nav-btn py-4 px-2 border-b-2 border-transparent text-gray-600 hover:text-blue-600 font-medium whitespace-nowrap" data-category="kesiswaan">
-                    👥 Kesiswaan
-                </button>
-                <button class="nav-btn py-4 px-2 border-b-2 border-transparent text-gray-600 hover:text-blue-600 font-medium whitespace-nowrap" data-category="perijinan">
-                    📋 Perijinan
-                </button>
-                <button class="nav-btn py-4 px-2 border-b-2 border-transparent text-gray-600 hover:text-blue-600 font-medium whitespace-nowrap" data-category="sarana">
-                    🏢 Sarana Prasarana
-                </button>
-                <button class="nav-btn py-4 px-2 border-b-2 border-transparent text-gray-600 hover:text-blue-600 font-medium whitespace-nowrap" data-category="keuangan">
-                    💰 Keuangan
-                </button>
+            <div id="mobile-menu" class="hidden md:hidden pb-4">
+                <a href="#beranda" class="block py-2 hover:text-yellow-300">Beranda</a>
+                <a href="#kategori" class="block py-2 hover:text-yellow-300">Kategori</a>
+                <a href="#tentang" class="block py-2 hover:text-yellow-300">Tentang</a>
+                <a href="#kontak" class="block py-2 hover:text-yellow-300">Kontak</a>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-6 py-8">
-        <!-- Home Section -->
-        <section id="home" class="content-section active">
-            <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">Selamat Datang di Portal Madrasah</h2>
-                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Akses semua informasi dan layanan madrasah dalam satu platform terpadu. Pilih kategori di bawah untuk melihat data terkini.</p>
-            </div>
-
-            <!-- Category Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                <div class="category-card rounded-xl p-6 text-white cursor-pointer" onclick="showCategory('kurikulum')">
-                    <div class="text-4xl mb-4">📚</div>
-                    <h3 class="text-xl font-semibold mb-2">Kurikulum</h3>
-                    <p class="text-blue-100">Mata pelajaran, jadwal, dan struktur kurikulum madrasah</p>
-                    <div class="mt-4 text-sm bg-white bg-opacity-20 rounded-lg px-3 py-1 inline-block">
-                        <span id="kurikulum-count">12</span> item tersedia
-                    </div>
-                </div>
-
-                <div class="category-card rounded-xl p-6 text-white cursor-pointer" onclick="showCategory('kesiswaan')">
-                    <div class="text-4xl mb-4">👥</div>
-                    <h3 class="text-xl font-semibold mb-2">Kesiswaan</h3>
-                    <p class="text-blue-100">Data siswa, prestasi, dan kegiatan ekstrakurikuler</p>
-                    <div class="mt-4 text-sm bg-white bg-opacity-20 rounded-lg px-3 py-1 inline-block">
-                        <span id="kesiswaan-count">8</span> item tersedia
-                    </div>
-                </div>
-
-                <div class="category-card rounded-xl p-6 text-white cursor-pointer" onclick="showCategory('perijinan')">
-                    <div class="text-4xl mb-4">📋</div>
-                    <h3 class="text-xl font-semibold mb-2">Perijinan</h3>
-                    <p class="text-blue-100">Dokumen perijinan dan sertifikasi madrasah</p>
-                    <div class="mt-4 text-sm bg-white bg-opacity-20 rounded-lg px-3 py-1 inline-block">
-                        <span id="perijinan-count">6</span> item tersedia
-                    </div>
-                </div>
-
-                <div class="category-card rounded-xl p-6 text-white cursor-pointer" onclick="showCategory('sarana')">
-                    <div class="text-4xl mb-4">🏢</div>
-                    <h3 class="text-xl font-semibold mb-2">Sarana Prasarana</h3>
-                    <p class="text-blue-100">Inventaris fasilitas dan infrastruktur madrasah</p>
-                    <div class="mt-4 text-sm bg-white bg-opacity-20 rounded-lg px-3 py-1 inline-block">
-                        <span id="sarana-count">15</span> item tersedia
-                    </div>
-                </div>
-
-                <div class="category-card rounded-xl p-6 text-white cursor-pointer" onclick="showCategory('keuangan')">
-                    <div class="text-4xl mb-4">💰</div>
-                    <h3 class="text-xl font-semibold mb-2">Keuangan</h3>
-                    <p class="text-blue-100">Laporan keuangan dan anggaran madrasah</p>
-                    <div class="mt-4 text-sm bg-white bg-opacity-20 rounded-lg px-3 py-1 inline-block">
-                        <span id="keuangan-count">10</span> item tersedia
-                    </div>
-                </div>
-
-                <div class="category-card rounded-xl p-6 text-white cursor-pointer" onclick="openSpreadsheetConfig()">
-                    <div class="text-4xl mb-4">⚙️</div>
-                    <h3 class="text-xl font-semibold mb-2">Konfigurasi Data</h3>
-                    <p class="text-blue-100">Hubungkan dengan Google Spreadsheet Anda</p>
-                    <div class="mt-4 text-sm bg-white bg-opacity-20 rounded-lg px-3 py-1 inline-block">
-                        Setup Required
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Stats -->
-            <div class="bg-white rounded-xl p-8 shadow-lg">
-                <h3 class="text-2xl font-bold text-gray-800 mb-6">Statistik Cepat</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-blue-600">324</div>
-                        <div class="text-gray-600">Total Siswa</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-green-600">28</div>
-                        <div class="text-gray-600">Guru & Staff</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-purple-600">12</div>
-                        <div class="text-gray-600">Kelas Aktif</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-orange-600">95%</div>
-                        <div class="text-gray-600">Tingkat Kehadiran</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Dynamic Content Sections -->
-        <section id="kurikulum" class="content-section">
-            <div class="bg-white rounded-xl p-8 shadow-lg">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">📚 Data Kurikulum</h2>
-                <div class="spreadsheet-table">
-                    <div class="p-6 border-b border-gray-200">
-                        <div class="flex justify-between items-center">
-                            <h3 class="text-lg font-semibold">Struktur Kurikulum Madrasah</h3>
-                            <button onclick="loadSpreadsheetData('kurikulum')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                                📊 Muat Data
-                            </button>
-                        </div>
-                    </div>
-                    <div id="kurikulum-data" class="p-6">
-                        <div class="text-center py-8 text-gray-500">
-                            <div class="text-4xl mb-4">📋</div>
-                            <p>Klik "Muat Data" untuk menampilkan informasi kurikulum dari spreadsheet</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="kesiswaan" class="content-section">
-            <div class="bg-white rounded-xl p-8 shadow-lg">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">👥 Data Kesiswaan</h2>
-                <div class="spreadsheet-table">
-                    <div class="p-6 border-b border-gray-200">
-                        <div class="flex justify-between items-center">
-                            <h3 class="text-lg font-semibold">Informasi Siswa dan Kegiatan</h3>
-                            <button onclick="loadSpreadsheetData('kesiswaan')" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
-                                📊 Muat Data
-                            </button>
-                        </div>
-                    </div>
-                    <div id="kesiswaan-data" class="p-6">
-                        <div class="text-center py-8 text-gray-500">
-                            <div class="text-4xl mb-4">👥</div>
-                            <p>Klik "Muat Data" untuk menampilkan informasi kesiswaan dari spreadsheet</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="perijinan" class="content-section">
-            <div class="bg-white rounded-xl p-8 shadow-lg">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">📋 Data Perijinan</h2>
-                <div class="spreadsheet-table">
-                    <div class="p-6 border-b border-gray-200">
-                        <div class="flex justify-between items-center">
-                            <h3 class="text-lg font-semibold">Dokumen dan Sertifikasi</h3>
-                            <button onclick="loadSpreadsheetData('perijinan')" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">
-                                📊 Muat Data
-                            </button>
-                        </div>
-                    </div>
-                    <div id="perijinan-data" class="p-6">
-                        <div class="text-center py-8 text-gray-500">
-                            <div class="text-4xl mb-4">📋</div>
-                            <p>Klik "Muat Data" untuk menampilkan informasi perijinan dari spreadsheet</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="sarana" class="content-section">
-            <div class="bg-white rounded-xl p-8 shadow-lg">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">🏢 Sarana Prasarana</h2>
-                <div class="spreadsheet-table">
-                    <div class="p-6 border-b border-gray-200">
-                        <div class="flex justify-between items-center">
-                            <h3 class="text-lg font-semibold">Inventaris Fasilitas</h3>
-                            <button onclick="loadSpreadsheetData('sarana')" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700">
-                                📊 Muat Data
-                            </button>
-                        </div>
-                    </div>
-                    <div id="sarana-data" class="p-6">
-                        <div class="text-center py-8 text-gray-500">
-                            <div class="text-4xl mb-4">🏢</div>
-                            <p>Klik "Muat Data" untuk menampilkan data sarana prasarana dari spreadsheet</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="keuangan" class="content-section">
-            <div class="bg-white rounded-xl p-8 shadow-lg">
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">💰 Data Keuangan</h2>
-                <div class="spreadsheet-table">
-                    <div class="p-6 border-b border-gray-200">
-                        <div class="flex justify-between items-center">
-                            <h3 class="text-lg font-semibold">Laporan Keuangan</h3>
-                            <button onclick="loadSpreadsheetData('keuangan')" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
-                                📊 Muat Data
-                            </button>
-                        </div>
-                    </div>
-                    <div id="keuangan-data" class="p-6">
-                        <div class="text-center py-8 text-gray-500">
-                            <div class="text-4xl mb-4">💰</div>
-                            <p>Klik "Muat Data" untuk menampilkan informasi keuangan dari spreadsheet</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Configuration Modal -->
-    <div id="configModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="p-6 border-b border-gray-200">
-                <h3 class="text-xl font-bold text-gray-800">Konfigurasi Google Spreadsheet</h3>
-            </div>
-            <div class="p-6">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">URL Google Spreadsheet (Published as CSV)</label>
-                        <input type="url" id="spreadsheetUrl" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="https://docs.google.com/spreadsheets/d/...">
-                    </div>
-                    <div class="bg-blue-50 p-4 rounded-lg">
-                        <h4 class="font-medium text-blue-800 mb-2">Cara Setup:</h4>
-                        <ol class="text-sm text-blue-700 space-y-1 list-decimal list-inside">
-                            <li>Buka Google Spreadsheet Anda</li>
-                            <li>Klik File → Share → Publish to web</li>
-                            <li>Pilih sheet yang ingin dipublikasi</li>
-                            <li>Format: Comma-separated values (.csv)</li>
-                            <li>Copy URL yang dihasilkan dan paste di atas</li>
-                        </ol>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Format Data Spreadsheet:</label>
-                        <div class="bg-gray-50 p-4 rounded-lg text-sm">
-                            <p class="font-medium mb-2">Kolom yang diperlukan:</p>
-                            <ul class="space-y-1 text-gray-600">
-                                <li>• <strong>Kategori:</strong> kurikulum, kesiswaan, perijinan, sarana, keuangan</li>
-                                <li>• <strong>Judul:</strong> Nama item/dokumen</li>
-                                <li>• <strong>Deskripsi:</strong> Penjelasan singkat</li>
-                                <li>• <strong>Status:</strong> Aktif, Pending, Selesai, dll</li>
-                                <li>• <strong>Tanggal:</strong> Tanggal terkait (opsional)</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
-                <button onclick="closeConfigModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Batal</button>
-                <button onclick="saveSpreadsheetConfig()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Simpan Konfigurasi</button>
+    <!-- Hero Section -->
+    <section id="beranda" class="bg-gradient-to-r from-green-700 to-green-900 text-white py-20 hero-pattern">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl md:text-6xl font-bold mb-6">Selamat Datang di Madrasah Al-Hikmah</h2>
+            <p class="text-xl md:text-2xl mb-8 text-green-100">Membentuk Generasi Qurani yang Berakhlak Mulia</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="scrollToSection('kategori')" class="bg-yellow-500 hover:bg-yellow-600 text-green-900 px-8 py-3 rounded-lg font-semibold transition-colors">
+                    Jelajahi Kategori
+                </button>
+                <button onclick="scrollToSection('tentang')" class="border-2 border-white hover:bg-white hover:text-green-900 px-8 py-3 rounded-lg font-semibold transition-colors">
+                    Pelajari Lebih Lanjut
+                </button>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section id="kategori" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Kategori Pembelajaran</h3>
+                <p class="text-gray-600 text-lg">Temukan berbagai program dan layanan pendidikan Islam kami</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="categories-grid">
+                <!-- Categories will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="tentang" class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h3 class="text-3xl font-bold text-gray-800 mb-6">Tentang Madrasah Al-Hikmah</h3>
+                    <p class="text-gray-600 mb-4">
+                        Madrasah Al-Hikmah adalah lembaga pendidikan Islam yang berkomitmen untuk membentuk generasi 
+                        yang beriman, bertakwa, berakhlak mulia, dan berprestasi dalam ilmu pengetahuan.
+                    </p>
+                    <p class="text-gray-600 mb-6">
+                        Dengan kurikulum yang mengintegrasikan pendidikan agama dan umum, kami berusaha menciptakan 
+                        lingkungan belajar yang kondusif untuk pengembangan potensi siswa secara optimal.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center p-4 bg-white rounded-lg shadow">
+                            <div class="text-2xl font-bold text-green-700">500+</div>
+                            <div class="text-gray-600">Siswa Aktif</div>
+                        </div>
+                        <div class="text-center p-4 bg-white rounded-lg shadow">
+                            <div class="text-2xl font-bold text-green-700">50+</div>
+                            <div class="text-gray-600">Tenaga Pengajar</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-green-100 p-8 rounded-lg">
+                    <div class="text-center">
+                        <div class="text-6xl mb-4">🕌</div>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Visi Kami</h4>
+                        <p class="text-gray-600">
+                            "Menjadi madrasah unggul yang menghasilkan generasi Qurani, berakhlak mulia, 
+                            berprestasi, dan siap menghadapi tantangan zaman"
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="kontak" class="py-16 bg-green-800 text-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl font-bold mb-4">Hubungi Kami</h3>
+                <p class="text-green-200">Kami siap membantu Anda dengan informasi lebih lanjut</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="text-4xl mb-4">📍</div>
+                    <h4 class="font-semibold mb-2">Alamat</h4>
+                    <p class="text-green-200">Jl. Pendidikan No. 123<br>Jakarta Selatan, 12345</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl mb-4">📞</div>
+                    <h4 class="font-semibold mb-2">Telepon</h4>
+                    <p class="text-green-200">(021) 1234-5678<br>0812-3456-7890</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl mb-4">✉️</div>
+                    <h4 class="font-semibold mb-2">Email</h4>
+                    <p class="text-green-200">info@madrasah-alhikmah.sch.id<br>admin@madrasah-alhikmah.sch.id</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-8 mt-16">
-        <div class="container mx-auto px-6 text-center">
-            <p>&copy; 2024 Portal Madrasah. Sistem Informasi Terpadu untuk Madrasah Modern.</p>
-            <p class="text-gray-400 mt-2">Data diambil secara real-time dari Google Spreadsheet</p>
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
+                            <span class="text-green-800 font-bold">🕌</span>
+                        </div>
+                        <span class="font-bold">Madrasah Al-Hikmah</span>
+                    </div>
+                    <p class="text-gray-400">Pendidikan Islam Terpadu untuk masa depan yang gemilang</p>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Link Cepat</h5>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#beranda" class="hover:text-white transition-colors">Beranda</a></li>
+                        <li><a href="#kategori" class="hover:text-white transition-colors">Kategori</a></li>
+                        <li><a href="#tentang" class="hover:text-white transition-colors">Tentang</a></li>
+                        <li><a href="#kontak" class="hover:text-white transition-colors">Kontak</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h5 class="font-semibold mb-4">Ikuti Kami</h5>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">Facebook</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">Instagram</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">YouTube</a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 Madrasah Al-Hikmah. Semua hak dilindungi.</p>
+            </div>
         </div>
     </footer>
 
     <script>
-        // Sample data structure for demonstration
-        const sampleData = {
-            kurikulum: [
-                { judul: "Bahasa Arab", deskripsi: "Kurikulum Bahasa Arab Kelas 1-6", status: "Aktif", tanggal: "2024-01-15" },
-                { judul: "Al-Quran Hadits", deskripsi: "Pembelajaran Al-Quran dan Hadits", status: "Aktif", tanggal: "2024-01-15" },
-                { judul: "Fiqih", deskripsi: "Mata pelajaran Fiqih untuk semua tingkat", status: "Aktif", tanggal: "2024-01-15" },
-                { judul: "Akidah Akhlak", deskripsi: "Pembentukan karakter dan akhlak mulia", status: "Aktif", tanggal: "2024-01-15" }
-            ],
-            kesiswaan: [
-                { judul: "Pramuka", deskripsi: "Kegiatan ekstrakurikuler pramuka", status: "Aktif", tanggal: "2024-02-01" },
-                { judul: "Tahfidz", deskripsi: "Program menghafal Al-Quran", status: "Aktif", tanggal: "2024-02-01" },
-                { judul: "Olimpiade Sains", deskripsi: "Persiapan olimpiade sains nasional", status: "Pending", tanggal: "2024-03-15" }
-            ],
-            perijinan: [
-                { judul: "Ijin Operasional", deskripsi: "Surat ijin operasional madrasah", status: "Aktif", tanggal: "2023-08-01" },
-                { judul: "Akreditasi A", deskripsi: "Sertifikat akreditasi peringkat A", status: "Aktif", tanggal: "2023-12-15" },
-                { judul: "NPSN", deskripsi: "Nomor Pokok Sekolah Nasional", status: "Aktif", tanggal: "2020-01-01" }
-            ],
-            sarana: [
-                { judul: "Ruang Kelas", deskripsi: "12 ruang kelas dengan AC", status: "Baik", tanggal: "2024-01-01" },
-                { judul: "Perpustakaan", deskripsi: "Perpustakaan dengan 2000+ buku", status: "Baik", tanggal: "2024-01-01" },
-                { judul: "Lab Komputer", deskripsi: "Laboratorium komputer 30 unit", status: "Baik", tanggal: "2024-01-01" }
-            ],
-            keuangan: [
-                { judul: "Anggaran 2024", deskripsi: "Rencana anggaran tahun 2024", status: "Approved", tanggal: "2024-01-01" },
-                { judul: "SPP Januari", deskripsi: "Laporan SPP bulan Januari", status: "Selesai", tanggal: "2024-01-31" },
-                { judul: "Bantuan Pemerintah", deskripsi: "Dana BOS dan bantuan lainnya", status: "Diterima", tanggal: "2024-02-15" }
-            ]
-        };
-
-        // Navigation functionality
-        function showCategory(category) {
-            // Hide all sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Show selected section
-            document.getElementById(category).classList.add('active');
-            
-            // Update navigation
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active', 'border-blue-600', 'text-blue-600');
-                btn.classList.add('border-transparent', 'text-gray-600');
-            });
-            
-            const activeBtn = document.querySelector(`[data-category="${category}"]`);
-            if (activeBtn) {
-                activeBtn.classList.add('active', 'border-blue-600', 'text-blue-600');
-                activeBtn.classList.remove('border-transparent', 'text-gray-600');
+        // Categories data with folder structure
+        const categories = [
+            {
+                title: "Pendidikan Agama",
+                description: "Pembelajaran Al-Quran, Hadits, Fiqh, dan Akidah Akhlak",
+                icon: "📖",
+                folder: "pendidikan-agama",
+                items: ["Al-Quran dan Tajwid", "Hadits dan Sirah", "Fiqh Ibadah", "Akidah Akhlak"],
+                color: "from-green-500 to-green-600"
+            },
+            {
+                title: "Pendidikan Umum",
+                description: "Mata pelajaran umum sesuai kurikulum nasional",
+                icon: "🎓",
+                folder: "pendidikan-umum",
+                items: ["Matematika", "Bahasa Indonesia", "IPA", "IPS"],
+                color: "from-blue-500 to-blue-600"
+            },
+            {
+                title: "Bahasa Arab",
+                description: "Pembelajaran bahasa Arab dari dasar hingga mahir",
+                icon: "🔤",
+                folder: "bahasa-arab",
+                items: ["Nahwu Sharaf", "Muhadatsah", "Qiroah", "Kitabah"],
+                color: "from-purple-500 to-purple-600"
+            },
+            {
+                title: "Kegiatan Ekstrakurikuler",
+                description: "Berbagai kegiatan pengembangan bakat dan minat",
+                icon: "🎨",
+                folder: "ekstrakurikuler",
+                items: ["Pramuka", "Seni Kaligrafi", "Olahraga", "Sains Club"],
+                color: "from-orange-500 to-orange-600"
+            },
+            {
+                title: "Tahfidz Al-Quran",
+                description: "Program menghafal Al-Quran dengan metode terpadu",
+                icon: "📿",
+                folder: "tahfidz",
+                items: ["Tahfidz Juz 30", "Tahfidz Juz 1-5", "Muraja'ah", "Tilawah"],
+                color: "from-emerald-500 to-emerald-600"
+            },
+            {
+                title: "Informasi Sekolah",
+                description: "Informasi terkini tentang kegiatan dan pengumuman",
+                icon: "📢",
+                folder: "informasi",
+                items: ["Pengumuman", "Agenda Kegiatan", "Prestasi Siswa", "Berita Terkini"],
+                color: "from-red-500 to-red-600"
             }
-        }
+        ];
 
-        // Navigation event listeners
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const category = btn.getAttribute('data-category');
-                showCategory(category);
-            });
-        });
-
-        // Load spreadsheet data (demo version)
-        function loadSpreadsheetData(category) {
-            const dataContainer = document.getElementById(`${category}-data`);
-            const data = sampleData[category] || [];
+        // Populate categories
+        function populateCategories() {
+            const grid = document.getElementById('categories-grid');
             
-            if (data.length === 0) {
-                dataContainer.innerHTML = `
-                    <div class="text-center py-8 text-gray-500">
-                        <div class="text-4xl mb-4">📊</div>
-                        <p>Belum ada data untuk kategori ${category}</p>
-                        <p class="text-sm mt-2">Pastikan spreadsheet sudah dikonfigurasi dengan benar</p>
+            categories.forEach(category => {
+                const categoryCard = document.createElement('div');
+                categoryCard.className = 'card-hover bg-white rounded-xl shadow-lg overflow-hidden cursor-pointer';
+                categoryCard.onclick = () => navigateToCategory(category.folder);
+                
+                categoryCard.innerHTML = `
+                    <div class="bg-gradient-to-r ${category.color} p-6 text-white">
+                        <div class="text-4xl mb-3">${category.icon}</div>
+                        <h4 class="text-xl font-bold mb-2">${category.title}</h4>
+                        <p class="text-sm opacity-90">${category.description}</p>
+                    </div>
+                    <div class="p-6">
+                        <h5 class="font-semibold text-gray-800 mb-3">Materi Pembelajaran:</h5>
+                        <ul class="space-y-2">
+                            ${category.items.map(item => `
+                                <li class="flex items-center text-gray-600">
+                                    <span class="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                                    ${item}
+                                </li>
+                            `).join('')}
+                        </ul>
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <span class="text-green-600 font-semibold hover:text-green-700 transition-colors">
+                                Pelajari Selengkapnya →
+                            </span>
+                        </div>
                     </div>
                 `;
-                return;
-            }
-
-            let tableHTML = `
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Judul</th>
-                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Deskripsi</th>
-                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
-                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Tanggal</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200">
-            `;
-
-            data.forEach((item, index) => {
-                const statusColor = getStatusColor(item.status);
-                tableHTML += `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-3 font-medium text-gray-900">${item.judul}</td>
-                        <td class="px-4 py-3 text-gray-600">${item.deskripsi}</td>
-                        <td class="px-4 py-3">
-                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColor}">
-                                ${item.status}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-gray-600">${formatDate(item.tanggal)}</td>
-                    </tr>
-                `;
-            });
-
-            tableHTML += `
-                        </tbody>
-                    </table>
-                </div>
-                <div class="mt-4 text-sm text-gray-500 text-center">
-                    Menampilkan ${data.length} item dari spreadsheet
-                </div>
-            `;
-
-            dataContainer.innerHTML = tableHTML;
-        }
-
-        function getStatusColor(status) {
-            const colors = {
-                'Aktif': 'bg-green-100 text-green-800',
-                'Pending': 'bg-yellow-100 text-yellow-800',
-                'Selesai': 'bg-blue-100 text-blue-800',
-                'Approved': 'bg-green-100 text-green-800',
-                'Baik': 'bg-green-100 text-green-800',
-                'Diterima': 'bg-blue-100 text-blue-800'
-            };
-            return colors[status] || 'bg-gray-100 text-gray-800';
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('id-ID', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
+                
+                grid.appendChild(categoryCard);
             });
         }
 
-        // Configuration modal functions
-        function openSpreadsheetConfig() {
-            document.getElementById('configModal').classList.remove('hidden');
+        // Navigate to category (simulated)
+        function navigateToCategory(folder) {
+            // In a real implementation, this would navigate to: ./${folder}/index.html
+            alert(`Navigasi ke folder: ${folder}/\n\nDalam implementasi nyata, ini akan membuka halaman:\n./${folder}/index.html\n\nStruktur folder yang disarankan:\n- ${folder}/\n  - index.html\n  - [nama-materi].html`);
         }
 
-        function closeConfigModal() {
-            document.getElementById('configModal').classList.add('hidden');
+        // Smooth scrolling
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({
+                behavior: 'smooth'
+            });
         }
 
-        function saveSpreadsheetConfig() {
-            const url = document.getElementById('spreadsheetUrl').value;
-            if (url) {
-                localStorage.setItem('spreadsheetUrl', url);
-                alert('Konfigurasi berhasil disimpan! Sekarang Anda dapat memuat data dari spreadsheet.');
-                closeConfigModal();
-            } else {
-                alert('Mohon masukkan URL spreadsheet yang valid.');
-            }
-        }
-
-        // Refresh data function
-        document.getElementById('refreshData').addEventListener('click', () => {
-            // In a real implementation, this would fetch fresh data from the spreadsheet
-            alert('Data berhasil diperbarui dari spreadsheet!');
-            
-            // Update counters with random numbers for demo
-            document.getElementById('kurikulum-count').textContent = Math.floor(Math.random() * 20) + 5;
-            document.getElementById('kesiswaan-count').textContent = Math.floor(Math.random() * 15) + 3;
-            document.getElementById('perijinan-count').textContent = Math.floor(Math.random() * 10) + 2;
-            document.getElementById('sarana-count').textContent = Math.floor(Math.random() * 25) + 10;
-            document.getElementById('keuangan-count').textContent = Math.floor(Math.random() * 15) + 5;
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
         });
 
-        // Load saved configuration on page load
-        window.addEventListener('load', () => {
-            const savedUrl = localStorage.getItem('spreadsheetUrl');
-            if (savedUrl) {
-                document.getElementById('spreadsheetUrl').value = savedUrl;
-            }
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+                // Close mobile menu if open
+                document.getElementById('mobile-menu').classList.add('hidden');
+            });
         });
 
-        // Close modal when clicking outside
-        document.getElementById('configModal').addEventListener('click', (e) => {
-            if (e.target.id === 'configModal') {
-                closeConfigModal();
-            }
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            populateCategories();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974be73b452f1333',t:'MTc1NjEzMzQ0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974ead87704af46d',t:'MTc1NjE2MjUzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
