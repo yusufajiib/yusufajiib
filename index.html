@@ -560,7 +560,7 @@
                     } else {
                         resultCard.onclick = () => {
                             clearSearch();
-                            loadContent(result.key, result.content.file, result.content.title);
+                            window.location.href = `${result.key}/${result.content.file}`;
                         };
                         
                         resultCard.innerHTML = `
@@ -593,7 +593,7 @@
             
             searchResultsSection.classList.remove('hidden');
             if (categoriesContainer) {
-                categoriesContainer.style.display = 'none';
+                categoriesContainer.classList.add('hidden');
             }
         }
 
@@ -606,7 +606,7 @@
             if (searchInput) searchInput.value = '';
             if (clearBtn) clearBtn.classList.add('hidden');
             if (searchResults) searchResults.classList.add('hidden');
-            if (categoriesContainer) categoriesContainer.style.display = 'block';
+            if (categoriesContainer) categoriesContainer.classList.remove('hidden');
         }
 
         function loadCategory(categoryName) {
@@ -629,10 +629,7 @@
                 const contentItem = document.createElement('a');
                 contentItem.href = `${categoryName}/${content.file}`;
                 contentItem.className = 'flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer block hover:no-underline';
-                contentItem.onclick = (e) => {
-                    e.preventDefault();
-                    loadContent(categoryName, content.file, content.title);
-                };
+                // Remove onclick to allow normal navigation to actual files
                 
                 contentItem.innerHTML = `
                     <div>
@@ -754,5 +751,5 @@
             showHome();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9747c0c1f6a9fdfd',t:'MTc1NjA4OTkyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9747d310a4d8fd85',t:'MTc1NjA5MDY3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
