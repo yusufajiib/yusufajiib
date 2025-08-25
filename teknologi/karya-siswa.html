@@ -92,6 +92,25 @@
         let projectsData = [];
         let isLoading = true;
 
+        // Function to generate creative project names (fallback only)
+        function generateProjectName(studentName, category) {
+            const gameNames = [
+                'Space Adventure', 'Racing Pro', 'Puzzle Master', 'Action Hero', 'Strategy King',
+                'Adventure Quest', 'Battle Arena', 'Magic World', 'Speed Runner', 'Brain Teaser',
+                'Retro Arcade', 'Fantasy RPG', 'Shooting Star', 'Platform Jump', 'Card Master'
+            ];
+            
+            const appNames = [
+                'Study Planner', 'Task Manager', 'Health Tracker', 'Budget Calculator', 'Note Keeper',
+                'Schedule Organizer', 'Fitness Coach', 'Recipe Book', 'Weather App', 'Music Player',
+                'Photo Editor', 'Language Learner', 'Quiz Master', 'Timer Pro', 'Calculator Plus'
+            ];
+            
+            const names = category === 'game' ? gameNames : appNames;
+            const hash = studentName.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+            return names[hash % names.length];
+        }
+
         // Function to fetch data from Google Sheets
         async function fetchFromSpreadsheet() {
             try {
@@ -134,6 +153,7 @@
                         timestamp: project.timestamp || new Date().toISOString().split('T')[0],
                         nama: project.nama || 'Unknown',
                         kelas: project.kelas || 'Unknown',
+                        namakarya: project.namakarya || generateProjectName(project.nama || 'Unknown', project.kategori || 'aplikasi'),
                         kategori: (project.kategori || 'aplikasi').toLowerCase(),
                         link: project.link || '#',
                         thumbnail: project.gambar || project.thumbnail || generateDefaultThumbnail(project.nama, project.kategori),
@@ -251,34 +271,114 @@
         function loadDemoData() {
             projectsData = [
                 {
-                    timestamp: "2024-01-15",
+                    timestamp: "2024-01-20",
                     nama: "Andi Pratama",
                     kelas: "XII IPA 1",
+                    namakarya: "Space Adventure",
                     kategori: "game",
-                    link: "https://example.com/game1",
-                    thumbnail: generateDefaultThumbnail("Space Adventure", "game"),
+                    link: "https://canva-code-game1.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop",
                     rating: 4.8,
                     versi: "1.2"
                 },
                 {
-                    timestamp: "2024-01-14",
+                    timestamp: "2024-01-19",
                     nama: "Sari Dewi",
                     kelas: "XI IPS 2",
+                    namakarya: "Study Planner",
                     kategori: "aplikasi",
-                    link: "https://example.com/app1",
-                    thumbnail: generateDefaultThumbnail("Study Planner", "aplikasi"),
+                    link: "https://canva-code-app1.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop",
                     rating: 4.5,
                     versi: "2.0"
                 },
                 {
-                    timestamp: "2024-01-13",
+                    timestamp: "2024-01-18",
                     nama: "Budi Santoso",
                     kelas: "XII IPA 2",
+                    namakarya: "Racing Pro",
                     kategori: "game",
-                    link: "https://example.com/game2",
-                    thumbnail: generateDefaultThumbnail("Racing Pro", "game"),
+                    link: "https://canva-code-game2.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=400&h=300&fit=crop",
                     rating: 4.7,
                     versi: "1.5"
+                },
+                {
+                    timestamp: "2024-01-17",
+                    nama: "Maya Putri",
+                    kelas: "XI IPA 3",
+                    namakarya: "Task Manager",
+                    kategori: "aplikasi",
+                    link: "https://canva-code-app2.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400&h=300&fit=crop",
+                    rating: 4.6,
+                    versi: "1.8"
+                },
+                {
+                    timestamp: "2024-01-16",
+                    nama: "Rizki Hakim",
+                    kelas: "XII IPS 1",
+                    namakarya: "Battle Arena",
+                    kategori: "game",
+                    link: "https://canva-code-game3.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop",
+                    rating: 4.9,
+                    versi: "2.1"
+                },
+                {
+                    timestamp: "2024-01-15",
+                    nama: "Lina Sari",
+                    kelas: "XI IPS 1",
+                    namakarya: "Health Tracker",
+                    kategori: "aplikasi",
+                    link: "https://canva-code-app3.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop",
+                    rating: 4.4,
+                    versi: "1.3"
+                },
+                {
+                    timestamp: "2024-01-14",
+                    nama: "Doni Wijaya",
+                    kelas: "XII IPA 3",
+                    namakarya: "Puzzle Master",
+                    kategori: "game",
+                    link: "https://canva-code-game4.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop",
+                    rating: 4.3,
+                    versi: "1.0"
+                },
+                {
+                    timestamp: "2024-01-13",
+                    nama: "Fitri Handayani",
+                    kelas: "XI IPA 2",
+                    namakarya: "Budget Calculator",
+                    kategori: "aplikasi",
+                    link: "https://canva-code-app4.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=300&fit=crop",
+                    rating: 4.7,
+                    versi: "1.6"
+                },
+                {
+                    timestamp: "2024-01-12",
+                    nama: "Agus Setiawan",
+                    kelas: "XII IPS 2",
+                    namakarya: "Action Hero",
+                    kategori: "game",
+                    link: "https://canva-code-game5.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop",
+                    rating: 4.5,
+                    versi: "1.4"
+                },
+                {
+                    timestamp: "2024-01-11",
+                    nama: "Nina Rahayu",
+                    kelas: "XI IPS 3",
+                    namakarya: "Note Keeper",
+                    kategori: "aplikasi",
+                    link: "https://canva-code-app5.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop",
+                    rating: 4.8,
+                    versi: "2.2"
                 }
             ];
             
@@ -310,7 +410,8 @@
                 const matchesFilter = currentFilter === 'all' || project.kategori === currentFilter;
                 const matchesSearch = currentSearch === '' || 
                     project.nama.toLowerCase().includes(currentSearch.toLowerCase()) ||
-                    project.kelas.toLowerCase().includes(currentSearch.toLowerCase());
+                    project.kelas.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                    project.namakarya.toLowerCase().includes(currentSearch.toLowerCase());
                 return matchesFilter && matchesSearch;
             });
 
@@ -341,11 +442,14 @@
                             <span class="text-sm text-gray-500">v${project.versi}</span>
                         </div>
                         
-                        <p class="text-gray-600 mb-4">
-                            <span class="inline-flex items-center">
+                        <div class="text-gray-600 mb-4 space-y-2">
+                            <p class="inline-flex items-center">
                                 🎓 ${project.kelas}
-                            </span>
-                        </p>
+                            </p>
+                            <p class="text-sm font-medium ${project.kategori === 'game' ? 'text-purple-600' : 'text-blue-600'}">
+                                ${project.kategori === 'game' ? '🎮' : '📱'} ${project.namakarya}
+                            </p>
+                        </div>
                         
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center">
@@ -408,8 +512,25 @@
         }
 
         function openProject(link) {
-            // In a real implementation, this would open the actual project link
-            alert(`Membuka karya: ${link}\n\nCatatan: Ini adalah demo. Dalam implementasi nyata, link akan membuka karya siswa yang sebenarnya.`);
+            // Validate the link
+            if (!link || link === '#' || link === '') {
+                alert('⚠️ Link karya belum tersedia atau tidak valid');
+                return;
+            }
+            
+            // Ensure the link has proper protocol
+            let validLink = link;
+            if (!link.startsWith('http://') && !link.startsWith('https://')) {
+                validLink = 'https://' + link;
+            }
+            
+            // Open the project in a new tab
+            try {
+                window.open(validLink, '_blank', 'noopener,noreferrer');
+            } catch (error) {
+                console.error('Error opening link:', error);
+                alert('❌ Gagal membuka link. Pastikan URL valid dan dapat diakses.');
+            }
         }
 
         // Search functionality
@@ -436,7 +557,7 @@
                         <div class="bg-white rounded-lg p-6">
                             <h4 class="text-lg font-semibold text-gray-800 mb-3">📋 1. Siapkan Google Spreadsheet</h4>
                             <ul class="text-sm text-gray-600 space-y-2 list-disc list-inside">
-                                <li>Buat spreadsheet dengan kolom: <code class="bg-gray-100 px-2 py-1 rounded">timestamp, nama, kelas, kategori, link, gambar, rating, versi</code></li>
+                                <li>Buat spreadsheet dengan kolom: <code class="bg-gray-100 px-2 py-1 rounded">timestamp, nama, kelas, namakarya, kategori, link, gambar, rating, versi</code></li>
                                 <li>Pastikan spreadsheet dapat diakses publik (Share → Anyone with the link can view)</li>
                                 <li>Salin ID spreadsheet dari URL (bagian setelah /d/ dan sebelum /edit)</li>
                             </ul>
@@ -462,7 +583,7 @@
                                 <div>API_KEY: 'API_KEY_ANDA'</div>
                             </div>
                         </div>
-                        
+
                         <div class="text-center">
                             <button onclick="retryConnection()" 
                                     class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
@@ -477,6 +598,5 @@
         // Initial render
         initializeApp();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9741df1846ddc613',t:'MTc1NjAyODI1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97494a3797cbf8fe',t:'MTc1NjEwNjAzOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
