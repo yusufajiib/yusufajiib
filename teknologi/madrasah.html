@@ -75,6 +75,20 @@
             <div class="text-center mb-12">
                 <h3 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Kategori Pembelajaran</h3>
                 <p class="text-gray-600 text-lg">Temukan berbagai program dan layanan pendidikan Islam kami</p>
+                
+                <!-- Admin Controls -->
+                <div class="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <button onclick="refreshCategories()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                        <span id="refresh-icon">🔄</span>
+                        <span id="refresh-text">Refresh Data</span>
+                    </button>
+                    <button onclick="showSpreadsheetInfo()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        📊 Info Database
+                    </button>
+                    <button onclick="downloadTemplate()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        📥 Template CSV
+                    </button>
+                </div>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="categories-grid">
@@ -82,6 +96,62 @@
             </div>
         </div>
     </section>
+
+    <!-- Spreadsheet Info Modal -->
+    <div id="spreadsheet-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full max-h-96 overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-xl font-bold text-gray-800">Informasi Database Spreadsheet</h4>
+                    <button onclick="hideSpreadsheetInfo()" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="space-y-4 text-sm">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h5 class="font-semibold text-blue-800 mb-2">Format Spreadsheet yang Diperlukan:</h5>
+                        <div class="grid grid-cols-2 gap-2 text-blue-700">
+                            <div><strong>Kolom A:</strong> Judul Kategori</div>
+                            <div><strong>Kolom B:</strong> Deskripsi</div>
+                            <div><strong>Kolom C:</strong> Icon (emoji)</div>
+                            <div><strong>Kolom D:</strong> Nama Folder</div>
+                            <div><strong>Kolom E:</strong> Materi (pisahkan dengan |)</div>
+                            <div><strong>Kolom F:</strong> Warna Gradient</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h5 class="font-semibold text-green-800 mb-2">Cara Setup Google Sheets:</h5>
+                        <ol class="list-decimal list-inside text-green-700 space-y-1">
+                            <li>Buat Google Sheets baru dengan format di atas</li>
+                            <li>Klik File → Share → Publish to web</li>
+                            <li>Pilih format CSV dan publish</li>
+                            <li>Copy URL CSV dan ganti di konfigurasi</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h5 class="font-semibold text-yellow-800 mb-2">Contoh Warna Gradient:</h5>
+                        <div class="text-yellow-700 text-xs">
+                            <code>from-green-500 to-green-600</code><br>
+                            <code>from-blue-500 to-blue-600</code><br>
+                            <code>from-purple-500 to-purple-600</code>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h5 class="font-semibold text-gray-800 mb-2">Status Saat Ini:</h5>
+                        <p class="text-gray-600" id="current-status">
+                            Menggunakan data: <span id="data-source" class="font-mono text-sm"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- About Section -->
     <section id="tentang" class="py-16 bg-gray-100">
@@ -188,8 +258,25 @@
     </footer>
 
     <script>
-        // Categories data with folder structure
-        const categories = [
+        // Configuration for Google Sheets integration
+        const SPREADSHEET_CONFIG = {
+            // Replace with your Google Sheets CSV export URL
+            // Format: https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/export?format=csv&gid=SHEET_ID
+            csvUrl: 'https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/export?format=csv&gid=0',
+            
+            // Column mapping (0-based index)
+            columns: {
+                title: 0,        // Column A: Judul Kategori
+                description: 1,  // Column B: Deskripsi
+                icon: 2,         // Column C: Icon (emoji)
+                folder: 3,       // Column D: Nama Folder
+                items: 4,        // Column E: Materi (separated by |)
+                color: 5         // Column F: Warna Gradient
+            }
+        };
+
+        // Fallback categories (used if spreadsheet fails to load)
+        const fallbackCategories = [
             {
                 title: "Pendidikan Agama",
                 description: "Pembelajaran Al-Quran, Hadits, Fiqh, dan Akidah Akhlak",
@@ -240,9 +327,156 @@
             }
         ];
 
+        let categories = [];
+
+        // Track data source
+        let isUsingSpreadsheet = false;
+
+        // Load categories from Google Sheets
+        async function loadCategoriesFromSpreadsheet() {
+            try {
+                showLoadingState();
+                
+                const response = await fetch(SPREADSHEET_CONFIG.csvUrl);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch spreadsheet data');
+                }
+                
+                const csvText = await response.text();
+                const parsedCategories = parseCSVToCategories(csvText);
+                
+                if (parsedCategories.length > 0) {
+                    categories = parsedCategories;
+                    isUsingSpreadsheet = true;
+                    console.log('✅ Categories loaded from spreadsheet:', categories.length);
+                    updateDataSourceStatus('Google Sheets (Online)');
+                } else {
+                    throw new Error('No valid categories found in spreadsheet');
+                }
+                
+            } catch (error) {
+                console.warn('⚠️ Failed to load from spreadsheet, using fallback data:', error.message);
+                categories = fallbackCategories;
+                isUsingSpreadsheet = false;
+                updateDataSourceStatus('Data Fallback (Offline)');
+            } finally {
+                populateCategories();
+                hideLoadingState();
+            }
+        }
+
+        // Refresh categories manually
+        async function refreshCategories() {
+            const refreshIcon = document.getElementById('refresh-icon');
+            const refreshText = document.getElementById('refresh-text');
+            
+            // Show loading state
+            refreshIcon.textContent = '⏳';
+            refreshText.textContent = 'Memuat...';
+            
+            await loadCategoriesFromSpreadsheet();
+            
+            // Reset button state
+            refreshIcon.textContent = '🔄';
+            refreshText.textContent = 'Refresh Data';
+            
+            // Show success message
+            showNotification('Data berhasil diperbarui!', 'success');
+        }
+
+        // Update data source status
+        function updateDataSourceStatus(source) {
+            const dataSourceElement = document.getElementById('data-source');
+            if (dataSourceElement) {
+                dataSourceElement.textContent = source;
+            }
+        }
+
+        // Parse CSV data to categories array
+        function parseCSVToCategories(csvText) {
+            const lines = csvText.split('\n');
+            const parsedCategories = [];
+            
+            // Skip header row (index 0)
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                const columns = parseCSVLine(line);
+                if (columns.length < 6) continue; // Ensure all required columns exist
+                
+                const category = {
+                    title: columns[SPREADSHEET_CONFIG.columns.title] || '',
+                    description: columns[SPREADSHEET_CONFIG.columns.description] || '',
+                    icon: columns[SPREADSHEET_CONFIG.columns.icon] || '📚',
+                    folder: columns[SPREADSHEET_CONFIG.columns.folder] || '',
+                    items: columns[SPREADSHEET_CONFIG.columns.items] ? 
+                           columns[SPREADSHEET_CONFIG.columns.items].split('|').map(item => item.trim()) : [],
+                    color: columns[SPREADSHEET_CONFIG.columns.color] || 'from-gray-500 to-gray-600'
+                };
+                
+                // Validate required fields
+                if (category.title && category.folder) {
+                    parsedCategories.push(category);
+                }
+            }
+            
+            return parsedCategories;
+        }
+
+        // Simple CSV parser (handles basic CSV format)
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            result.push(current.trim());
+            return result;
+        }
+
+        // Show loading state
+        function showLoadingState() {
+            const grid = document.getElementById('categories-grid');
+            grid.innerHTML = `
+                <div class="col-span-full text-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                    <p class="text-gray-600">Memuat kategori dari database...</p>
+                </div>
+            `;
+        }
+
+        // Hide loading state
+        function hideLoadingState() {
+            // Loading state will be replaced by populateCategories()
+        }
+
         // Populate categories
         function populateCategories() {
             const grid = document.getElementById('categories-grid');
+            grid.innerHTML = ''; // Clear existing content
+            
+            if (categories.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <div class="text-4xl mb-4">📚</div>
+                        <p class="text-gray-600">Tidak ada kategori yang tersedia saat ini.</p>
+                    </div>
+                `;
+                return;
+            }
             
             categories.forEach(category => {
                 const categoryCard = document.createElement('div');
@@ -311,10 +545,80 @@
             });
         });
 
+        // Show spreadsheet info modal
+        function showSpreadsheetInfo() {
+            document.getElementById('spreadsheet-modal').classList.remove('hidden');
+            updateDataSourceStatus(isUsingSpreadsheet ? 'Google Sheets (Online)' : 'Data Fallback (Offline)');
+        }
+
+        // Hide spreadsheet info modal
+        function hideSpreadsheetInfo() {
+            document.getElementById('spreadsheet-modal').classList.add('hidden');
+        }
+
+        // Download CSV template
+        function downloadTemplate() {
+            const csvContent = `Judul Kategori,Deskripsi,Icon,Nama Folder,Materi (pisahkan dengan |),Warna Gradient
+Pendidikan Agama,Pembelajaran Al-Quran dan Hadits,📖,pendidikan-agama,Al-Quran dan Tajwid|Hadits dan Sirah|Fiqh Ibadah,from-green-500 to-green-600
+Pendidikan Umum,Mata pelajaran umum sesuai kurikulum,🎓,pendidikan-umum,Matematika|Bahasa Indonesia|IPA|IPS,from-blue-500 to-blue-600
+Bahasa Arab,Pembelajaran bahasa Arab,🔤,bahasa-arab,Nahwu Sharaf|Muhadatsah|Qiroah,from-purple-500 to-purple-600`;
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'template-kategori-madrasah.csv');
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('Template CSV berhasil diunduh!', 'success');
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-semibold transform transition-all duration-300 translate-x-full`;
+            
+            if (type === 'success') {
+                notification.classList.add('bg-green-600');
+            } else if (type === 'error') {
+                notification.classList.add('bg-red-600');
+            } else {
+                notification.classList.add('bg-blue-600');
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('spreadsheet-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideSpreadsheetInfo();
+            }
+        });
+
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
-            populateCategories();
+            loadCategoriesFromSpreadsheet();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974ead87704af46d',t:'MTc1NjE2MjUzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974ebdde803ac5f0',t:'MTc1NjE2MzIwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
