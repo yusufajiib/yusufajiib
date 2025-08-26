@@ -1,1 +1,702 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madrasah Hasyim Asy'ari 1 Kudus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .category-card {
+            transition: all 0.3s ease;
+        }
+        .category-card:hover {
+            transform: translateY(-5px);
+        }
+        .content-frame {
+            min-height: 600px;
+        }
+        .search-highlight {
+            background-color: #fef08a;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        .islamic-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23065f46' fill-opacity='0.05'%3E%3Cpath d='M30 30c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm0 0c0 11.046 8.954 20 20 20s20-8.954 20-20-8.954-20-20-20-20 8.954-20 20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-100 min-h-screen islamic-pattern">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-green-600">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="text-4xl">🕌</div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 cursor-pointer" onclick="showHome()">
+                            Madrasah Hasyim Asy'ari 1 Kudus
+                        </h1>
+                        <p class="text-sm text-gray-600 hidden md:block">Portal Informasi & Pembelajaran</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <button onclick="showHome()" class="text-gray-600 hover:text-green-600 font-medium">Beranda</button>
+                    <button onclick="showAllCategories()" class="text-gray-600 hover:text-green-600 font-medium">Semua Kategori</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Home Section -->
+        <div id="home-section" class="text-center mb-12">
+            <div class="bg-white rounded-2xl shadow-lg p-8 mb-8 border-t-4 border-green-600">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم</h2>
+                <h3 class="text-2xl font-semibold text-green-700 mb-2">Selamat Datang</h3>
+                <p class="text-xl text-gray-600 mb-4">Portal Informasi Madrasah Hasyim Asy'ari 1 Kudus</p>
+                <p class="text-gray-500 italic">"Menuju Generasi Qur'ani yang Berakhlak Mulia"</p>
+            </div>
+            
+            <!-- Search Bar -->
+            <div class="max-w-md mx-auto mb-8">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        placeholder="Cari informasi madrasah..." 
+                        class="w-full px-4 py-3 pl-12 pr-4 text-gray-700 bg-white border border-gray-300 rounded-full focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200"
+                        oninput="performSearch()"
+                        onkeydown="handleSearchKeydown(event)"
+                    >
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <button 
+                        id="clear-search" 
+                        class="absolute inset-y-0 right-0 flex items-center pr-4 hidden"
+                        onclick="clearSearch()"
+                    >
+                        <svg class="w-5 h-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="mt-2 text-xs text-gray-500 text-center">
+                    Tekan Enter untuk mencari, Escape untuk membersihkan
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div id="search-results" class="hidden mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 id="search-results-title" class="text-2xl font-semibold text-gray-800">Hasil Pencarian</h3>
+                    <button onclick="clearSearch()" class="text-green-600 hover:text-green-800 font-medium flex items-center space-x-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span>Tutup Pencarian</span>
+                    </button>
+                </div>
+                <div id="search-results-content" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Search results will appear here -->
+                </div>
+            </div>
+            
+            <!-- Categories Grid -->
+            <div id="categories-container" class="mb-8">
+                <div id="categories-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Categories will be loaded here -->
+                </div>
+                
+                <!-- Pagination -->
+                <div id="pagination" class="flex justify-center items-center space-x-2 mb-8">
+                    <button 
+                        id="prev-page" 
+                        onclick="changePage(-1)" 
+                        class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled
+                    >
+                        ← Sebelumnya
+                    </button>
+                    
+                    <div id="page-info" class="px-4 py-2 text-gray-600 font-medium">
+                        Halaman 1 dari 3
+                    </div>
+                    
+                    <button 
+                        id="next-page" 
+                        onclick="changePage(1)" 
+                        class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Selanjutnya →
+                    </button>
+                </div>
+                
+                <!-- View All Categories Button -->
+                <button 
+                    onclick="showAllCategoriesPage()" 
+                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                >
+                    Lihat Semua 15 Kategori
+                </button>
+            </div>
+        </div>
+
+        <!-- Category Content Section -->
+        <div id="category-section" class="hidden">
+            <!-- Breadcrumb -->
+            <nav class="mb-6">
+                <ol class="flex items-center space-x-2 text-sm text-gray-600">
+                    <li><button onclick="showHome()" class="hover:text-green-600">Beranda</button></li>
+                    <li>/</li>
+                    <li id="current-category" class="font-medium text-gray-800"></li>
+                </ol>
+            </nav>
+
+            <!-- Category Header -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-6 border-t-4 border-green-600">
+                <h2 id="category-title" class="text-3xl font-bold text-gray-800 mb-2"></h2>
+                <p id="category-description" class="text-gray-600"></p>
+            </div>
+
+            <!-- Content List -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Daftar Konten</h3>
+                <div id="content-list" class="space-y-3">
+                    <!-- Content items will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- All Categories Section -->
+        <div id="all-categories-section" class="hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Semua Kategori</h2>
+                <p class="text-gray-600 mb-6">Jelajahi semua informasi Madrasah Hasyim Asy'ari 1 Kudus</p>
+                <button onclick="showHome()" class="text-green-600 hover:text-green-800 font-medium">
+                    ← Kembali ke Beranda
+                </button>
+            </div>
+            
+            <div id="all-categories-grid" class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- All categories will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-6 text-center">
+            <div class="mb-4">
+                <h3 class="text-xl font-bold mb-2">🕌 Madrasah Hasyim Asy'ari 1 Kudus</h3>
+                <p class="text-gray-300">Jl. Contoh Alamat, Kudus, Jawa Tengah</p>
+                <p class="text-gray-300">Telp: (0291) 123456 | Email: info@mha1kudus.sch.id</p>
+            </div>
+            <div class="border-t border-gray-700 pt-4">
+                <p>&copy; 2024 Madrasah Hasyim Asy'ari 1 Kudus. All Rights Reserved.</p>
+                <p class="mt-2 text-gray-400 text-sm">بَارَكَ اللَّهُ فِيكُمْ</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Data struktur website madrasah
+        const categories = {
+            profil: {
+                title: 'Profil Madrasah',
+                description: 'Sejarah, visi misi, dan informasi umum Madrasah Hasyim Asy\'ari 1 Kudus',
+                icon: '🏛️',
+                contents: [
+                    { file: 'sejarah-madrasah.html', title: 'Sejarah Madrasah' },
+                    { file: 'visi-misi.html', title: 'Visi dan Misi' },
+                    { file: 'struktur-organisasi.html', title: 'Struktur Organisasi' },
+                    { file: 'fasilitas.html', title: 'Fasilitas Madrasah' },
+                    { file: 'prestasi.html', title: 'Prestasi Madrasah' }
+                ]
+            },
+            kurikulum: {
+                title: 'Kurikulum',
+                description: 'Struktur kurikulum, mata pelajaran, dan program pembelajaran',
+                icon: '📚',
+                contents: [
+                    { file: 'struktur-kurikulum.html', title: 'Struktur Kurikulum 2013' },
+                    { file: 'mata-pelajaran.html', title: 'Daftar Mata Pelajaran' },
+                    { file: 'program-unggulan.html', title: 'Program Unggulan' },
+                    { file: 'ekstrakurikuler.html', title: 'Kegiatan Ekstrakurikuler' },
+                    { file: 'kalender-akademik.html', title: 'Kalender Akademik' }
+                ]
+            },
+            pendidik: {
+                title: 'Tenaga Pendidik',
+                description: 'Profil guru dan tenaga kependidikan madrasah',
+                icon: '👨‍🏫',
+                contents: [
+                    { file: 'daftar-guru.html', title: 'Daftar Guru dan Staff' },
+                    { file: 'kualifikasi-guru.html', title: 'Kualifikasi Pendidik' },
+                    { file: 'pengembangan-profesi.html', title: 'Pengembangan Profesi' },
+                    { file: 'prestasi-guru.html', title: 'Prestasi Guru' }
+                ]
+            },
+            siswa: {
+                title: 'Kesiswaan',
+                description: 'Informasi siswa, organisasi, dan kegiatan kesiswaan',
+                icon: '👥',
+                contents: [
+                    { file: 'data-siswa.html', title: 'Data Siswa' },
+                    { file: 'osis.html', title: 'Organisasi Siswa (OSIS)' },
+                    { file: 'kegiatan-siswa.html', title: 'Kegiatan Kesiswaan' },
+                    { file: 'beasiswa.html', title: 'Program Beasiswa' },
+                    { file: 'alumni.html', title: 'Jejak Alumni' }
+                ]
+            },
+            pembelajaran: {
+                title: 'Pembelajaran',
+                description: 'Metode pembelajaran, evaluasi, dan bahan ajar',
+                icon: '📖',
+                contents: [
+                    { file: 'metode-pembelajaran.html', title: 'Metode Pembelajaran' },
+                    { file: 'sistem-evaluasi.html', title: 'Sistem Evaluasi' },
+                    { file: 'bahan-ajar.html', title: 'Bahan Ajar Digital' },
+                    { file: 'pembelajaran-online.html', title: 'Pembelajaran Online' },
+                    { file: 'remedial-pengayaan.html', title: 'Program Remedial & Pengayaan' }
+                ]
+            },
+            keislaman: {
+                title: 'Pendidikan Islam',
+                description: 'Program keagamaan, tahfidz, dan pembinaan akhlak',
+                icon: '☪️',
+                contents: [
+                    { file: 'program-tahfidz.html', title: 'Program Tahfidz Al-Qur\'an' },
+                    { file: 'sholat-berjamaah.html', title: 'Sholat Berjamaah' },
+                    { file: 'kajian-islam.html', title: 'Kajian Keislaman' },
+                    { file: 'akhlak-tasawuf.html', title: 'Pembinaan Akhlak' },
+                    { file: 'peringatan-hari-besar.html', title: 'Peringatan Hari Besar Islam' }
+                ]
+            },
+            sarana: {
+                title: 'Sarana Prasarana',
+                description: 'Fasilitas fisik dan infrastruktur madrasah',
+                icon: '🏢',
+                contents: [
+                    { file: 'gedung-kelas.html', title: 'Gedung dan Ruang Kelas' },
+                    { file: 'perpustakaan.html', title: 'Perpustakaan' },
+                    { file: 'laboratorium.html', title: 'Laboratorium' },
+                    { file: 'masjid.html', title: 'Masjid Madrasah' },
+                    { file: 'lapangan-olahraga.html', title: 'Lapangan Olahraga' }
+                ]
+            },
+            keuangan: {
+                title: 'Keuangan',
+                description: 'Informasi biaya pendidikan dan bantuan keuangan',
+                icon: '💰',
+                contents: [
+                    { file: 'biaya-pendidikan.html', title: 'Biaya Pendidikan' },
+                    { file: 'bantuan-siswa-miskin.html', title: 'Bantuan Siswa Miskin (BSM)' },
+                    { file: 'dana-bos.html', title: 'Dana BOS' },
+                    { file: 'laporan-keuangan.html', title: 'Laporan Keuangan' }
+                ]
+            },
+            ppdb: {
+                title: 'PPDB',
+                description: 'Penerimaan Peserta Didik Baru dan informasi pendaftaran',
+                icon: '📝',
+                contents: [
+                    { file: 'syarat-pendaftaran.html', title: 'Syarat Pendaftaran' },
+                    { file: 'jadwal-ppdb.html', title: 'Jadwal PPDB' },
+                    { file: 'cara-pendaftaran.html', title: 'Cara Pendaftaran' },
+                    { file: 'pengumuman-hasil.html', title: 'Pengumuman Hasil' },
+                    { file: 'daftar-ulang.html', title: 'Daftar Ulang' }
+                ]
+            },
+            kegiatan: {
+                title: 'Kegiatan Madrasah',
+                description: 'Agenda kegiatan, acara, dan event madrasah',
+                icon: '🎯',
+                contents: [
+                    { file: 'agenda-kegiatan.html', title: 'Agenda Kegiatan' },
+                    { file: 'upacara-bendera.html', title: 'Upacara Bendera' },
+                    { file: 'lomba-kompetisi.html', title: 'Lomba dan Kompetisi' },
+                    { file: 'study-tour.html', title: 'Study Tour' },
+                    { file: 'wisuda-khataman.html', title: 'Wisuda Khataman Al-Qur\'an' }
+                ]
+            },
+            teknologi: {
+                title: 'Teknologi Pendidikan',
+                description: 'Pemanfaatan teknologi dalam pembelajaran',
+                icon: '💻',
+                contents: [
+                    { file: 'e-learning.html', title: 'Platform E-Learning' },
+                    { file: 'sistem-informasi.html', title: 'Sistem Informasi Madrasah' },
+                    { file: 'media-pembelajaran.html', title: 'Media Pembelajaran Digital' },
+                    { file: 'internet-wifi.html', title: 'Fasilitas Internet & WiFi' }
+                ]
+            },
+            kerjasama: {
+                title: 'Kerjasama',
+                description: 'Kemitraan dengan lembaga lain dan program kerjasama',
+                icon: '🤝',
+                contents: [
+                    { file: 'kerjasama-perguruan-tinggi.html', title: 'Kerjasama Perguruan Tinggi' },
+                    { file: 'kemitraan-industri.html', title: 'Kemitraan Industri' },
+                    { file: 'program-magang.html', title: 'Program Magang Siswa' },
+                    { file: 'pertukaran-pelajar.html', title: 'Program Pertukaran Pelajar' }
+                ]
+            },
+            kesehatan: {
+                title: 'Kesehatan & Kebersihan',
+                description: 'Program kesehatan sekolah dan lingkungan bersih',
+                icon: '🏥',
+                contents: [
+                    { file: 'uks.html', title: 'Unit Kesehatan Sekolah (UKS)' },
+                    { file: 'program-kesehatan.html', title: 'Program Kesehatan Siswa' },
+                    { file: 'kantin-sehat.html', title: 'Kantin Sehat' },
+                    { file: 'lingkungan-bersih.html', title: 'Program Lingkungan Bersih' }
+                ]
+            },
+            publikasi: {
+                title: 'Publikasi & Media',
+                description: 'Berita, artikel, dan publikasi madrasah',
+                icon: '📰',
+                contents: [
+                    { file: 'berita-terbaru.html', title: 'Berita Terbaru' },
+                    { file: 'artikel-pendidikan.html', title: 'Artikel Pendidikan' },
+                    { file: 'majalah-madrasah.html', title: 'Majalah Madrasah' },
+                    { file: 'galeri-foto.html', title: 'Galeri Foto Kegiatan' },
+                    { file: 'video-profil.html', title: 'Video Profil Madrasah' }
+                ]
+            },
+            kontak: {
+                title: 'Kontak & Informasi',
+                description: 'Informasi kontak, alamat, dan cara menghubungi madrasah',
+                icon: '📞',
+                contents: [
+                    { file: 'alamat-kontak.html', title: 'Alamat dan Kontak' },
+                    { file: 'peta-lokasi.html', title: 'Peta Lokasi Madrasah' },
+                    { file: 'jam-operasional.html', title: 'Jam Operasional' },
+                    { file: 'formulir-kontak.html', title: 'Formulir Kontak' },
+                    { file: 'media-sosial.html', title: 'Media Sosial Madrasah' }
+                ]
+            }
+        };
+
+        let currentCategory = '';
+        let currentPage = 1;
+        const categoriesPerPage = 6;
+        const categoryKeys = Object.keys(categories);
+        const totalPages = Math.ceil(categoryKeys.length / categoriesPerPage);
+
+        function showHome() {
+            document.getElementById('home-section').classList.remove('hidden');
+            document.getElementById('category-section').classList.add('hidden');
+            document.getElementById('all-categories-section').classList.add('hidden');
+            clearSearch();
+            loadCategoriesPage();
+        }
+
+        function showAllCategories() {
+            showHome();
+        }
+
+        function showAllCategoriesPage() {
+            document.getElementById('home-section').classList.add('hidden');
+            document.getElementById('category-section').classList.add('hidden');
+            document.getElementById('all-categories-section').classList.remove('hidden');
+            clearSearch();
+            loadAllCategories();
+        }
+
+        function loadCategoriesPage() {
+            const startIndex = (currentPage - 1) * categoriesPerPage;
+            const endIndex = startIndex + categoriesPerPage;
+            const pageCategories = categoryKeys.slice(startIndex, endIndex);
+            
+            const grid = document.getElementById('categories-grid');
+            grid.innerHTML = '';
+            
+            pageCategories.forEach(key => {
+                const category = categories[key];
+                const categoryCard = createCategoryCard(key, category);
+                grid.appendChild(categoryCard);
+            });
+            
+            updatePagination();
+        }
+
+        function loadAllCategories() {
+            const grid = document.getElementById('all-categories-grid');
+            grid.innerHTML = '';
+            
+            categoryKeys.forEach(key => {
+                const category = categories[key];
+                const categoryCard = createCategoryCard(key, category);
+                grid.appendChild(categoryCard);
+            });
+        }
+
+        function createCategoryCard(key, category) {
+            const card = document.createElement('a');
+            card.href = `${key}/index.html`;
+            card.className = 'category-card bg-white rounded-xl shadow-md p-6 cursor-pointer block hover:no-underline border-l-4 border-green-500';
+            card.onclick = (e) => {
+                e.preventDefault();
+                loadCategory(key);
+            };
+            
+            card.innerHTML = `
+                <div class="text-4xl mb-4">${category.icon}</div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">${category.title}</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">${category.description}</p>
+                <div class="mt-3 text-xs text-green-600 font-medium">
+                    ${category.contents.length} konten tersedia
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function updatePagination() {
+            document.getElementById('page-info').textContent = `Halaman ${currentPage} dari ${totalPages}`;
+            
+            const prevBtn = document.getElementById('prev-page');
+            const nextBtn = document.getElementById('next-page');
+            
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
+
+        function changePage(direction) {
+            const newPage = currentPage + direction;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                loadCategoriesPage();
+            }
+        }
+
+        function performSearch() {
+            const searchInput = document.getElementById('search-input');
+            if (!searchInput) return;
+            
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const clearBtn = document.getElementById('clear-search');
+            
+            if (searchTerm.length === 0) {
+                clearSearch();
+                return;
+            }
+            
+            if (clearBtn) {
+                clearBtn.classList.remove('hidden');
+            }
+            
+            const searchResults = [];
+            
+            // Search in categories
+            categoryKeys.forEach(key => {
+                const category = categories[key];
+                const titleMatch = category.title.toLowerCase().includes(searchTerm);
+                const descMatch = category.description.toLowerCase().includes(searchTerm);
+                const keyMatch = key.toLowerCase().includes(searchTerm);
+                
+                if (titleMatch || descMatch || keyMatch) {
+                    searchResults.push({
+                        type: 'category',
+                        key: key,
+                        category: category,
+                        matchType: 'Kategori'
+                    });
+                }
+                
+                // Search in content
+                category.contents.forEach(content => {
+                    const contentTitleMatch = content.title.toLowerCase().includes(searchTerm);
+                    const fileMatch = content.file.toLowerCase().includes(searchTerm);
+                    
+                    if (contentTitleMatch || fileMatch) {
+                        searchResults.push({
+                            type: 'content',
+                            key: key,
+                            category: category,
+                            content: content,
+                            matchType: 'Konten'
+                        });
+                    }
+                });
+            });
+            
+            displaySearchResults(searchResults, searchTerm);
+        }
+
+        function handleSearchKeydown(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                performSearch();
+            } else if (event.key === 'Escape') {
+                clearSearch();
+            }
+        }
+
+        function displaySearchResults(results, searchTerm) {
+            const searchResultsSection = document.getElementById('search-results');
+            const searchResultsContent = document.getElementById('search-results-content');
+            const searchTitle = document.getElementById('search-results-title');
+            const categoriesContainer = document.getElementById('categories-container');
+            
+            if (!searchResultsSection || !searchResultsContent || !searchTitle) return;
+            
+            searchTitle.textContent = `Hasil Pencarian untuk "${searchTerm}" (${results.length} hasil)`;
+            searchResultsContent.innerHTML = '';
+            
+            if (results.length === 0) {
+                searchResultsContent.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <div class="text-6xl mb-4">🔍</div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Tidak ada hasil ditemukan</h3>
+                        <p class="text-gray-600 mb-4">Tidak ditemukan informasi yang cocok dengan "<strong>${searchTerm}</strong>"</p>
+                        <div class="text-sm text-gray-500 bg-gray-50 p-4 rounded-lg max-w-md mx-auto">
+                            <p class="font-medium mb-2">💡 Tips pencarian:</p>
+                            <ul class="text-left space-y-1">
+                                <li>• Coba kata kunci yang lebih umum</li>
+                                <li>• Periksa ejaan kata kunci</li>
+                                <li>• Gunakan kata yang berkaitan dengan madrasah</li>
+                                <li>• Coba singkatan seperti PPDB, UKS, OSIS</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            } else {
+                results.forEach((result, index) => {
+                    const resultCard = document.createElement('div');
+                    resultCard.className = 'bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-all duration-200 border-l-4 border-green-500';
+                    
+                    if (result.type === 'category') {
+                        resultCard.onclick = () => {
+                            clearSearch();
+                            loadCategory(result.key);
+                        };
+                        
+                        resultCard.innerHTML = `
+                            <div class="flex items-start space-x-3">
+                                <div class="text-3xl">${result.category.icon}</div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">${result.matchType}</span>
+                                        <span class="text-xs text-gray-400">#${index + 1}</span>
+                                    </div>
+                                    <h4 class="font-semibold text-gray-800 mb-1">${result.category.title}</h4>
+                                    <p class="text-sm text-gray-600 leading-relaxed">${result.category.description}</p>
+                                    <div class="mt-2 text-xs text-gray-500">
+                                        <span class="bg-gray-100 px-2 py-1 rounded">${result.category.contents.length} konten tersedia</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        resultCard.onclick = () => {
+                            clearSearch();
+                            window.location.href = `${result.key}/${result.content.file}`;
+                        };
+                        
+                        resultCard.innerHTML = `
+                            <div class="flex items-start space-x-3">
+                                <div class="text-3xl">${result.category.icon}</div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">${result.matchType}</span>
+                                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">${result.category.title}</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400">#${index + 1}</span>
+                                    </div>
+                                    <h4 class="font-semibold text-gray-800 mb-1">${result.content.title}</h4>
+                                    <p class="text-sm text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">${result.key}/${result.content.file}</p>
+                                    <div class="mt-2 flex items-center text-xs text-green-600">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                        Klik untuk membuka konten
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    searchResultsContent.appendChild(resultCard);
+                });
+            }
+            
+            searchResultsSection.classList.remove('hidden');
+            if (categoriesContainer) {
+                categoriesContainer.classList.add('hidden');
+            }
+        }
+
+        function clearSearch() {
+            const searchInput = document.getElementById('search-input');
+            const clearBtn = document.getElementById('clear-search');
+            const searchResults = document.getElementById('search-results');
+            const categoriesContainer = document.getElementById('categories-container');
+            
+            if (searchInput) searchInput.value = '';
+            if (clearBtn) clearBtn.classList.add('hidden');
+            if (searchResults) searchResults.classList.add('hidden');
+            if (categoriesContainer) categoriesContainer.classList.remove('hidden');
+        }
+
+        function loadCategory(categoryName) {
+            currentCategory = categoryName;
+            const category = categories[categoryName];
+            
+            if (!category) {
+                alert('Kategori tidak ditemukan!');
+                return;
+            }
+
+            document.getElementById('current-category').textContent = category.title;
+            document.getElementById('category-title').textContent = category.icon + ' ' + category.title;
+            document.getElementById('category-description').textContent = category.description;
+            
+            const contentList = document.getElementById('content-list');
+            contentList.innerHTML = '';
+            
+            category.contents.forEach(content => {
+                const contentItem = document.createElement('a');
+                contentItem.href = `${categoryName}/${content.file}`;
+                contentItem.className = 'flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer block hover:no-underline border-l-4 border-green-500';
+                
+                contentItem.innerHTML = `
+                    <div>
+                        <h4 class="font-medium text-gray-800">${content.title}</h4>
+                        <p class="text-sm text-gray-600">${categoryName}/${content.file}</p>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                `;
+                
+                contentList.appendChild(contentItem);
+            });
+            
+            document.getElementById('home-section').classList.add('hidden');
+            document.getElementById('category-section').classList.remove('hidden');
+        }
+
+        function goBackToCategory() {
+            if (currentCategory) {
+                loadCategory(currentCategory);
+            } else {
+                showHome();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            showHome();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9752ebb8a666b5ba',t:'MTc1NjIwNzAyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
 
