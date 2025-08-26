@@ -229,11 +229,14 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">URL Google Sheets:</label>
-                            <input type="text" id="spreadsheetUrlInput" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm" placeholder="https://docs.google.com/spreadsheets/d/1234567890/export?format=csv" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vQXbAkgkGr6lwTgDnlvsndDSgTiywuoTZF0FY1fdU2zbBAG3vdYOGPJwehkvgUtxETNo0UN21oa82tH/pub?output=csv">
+                            <input type="text" id="spreadsheetUrlInput" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm" placeholder="https://docs.google.com/spreadsheets/d/1234567890/pub?output=csv" value="">
                         </div>
                         <div class="flex space-x-3">
                             <button onclick="updateSpreadsheetUrl()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
                                 💾 Simpan URL
+                            </button>
+                            <button onclick="testSpreadsheetUrl()" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
+                                🧪 Test URL
                             </button>
                             <button onclick="refreshData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                                 🔄 Refresh Data
@@ -290,71 +293,118 @@
             </div>
             
             <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
-                <h4 class="text-xl font-semibold text-gray-800 mb-4">📝 Cara Setup Google Sheets (Super Mudah!)</h4>
+                <h4 class="text-xl font-semibold text-gray-800 mb-4">📝 Setup Spreadsheet Baru (Anti Error!)</h4>
                 <div class="space-y-4 text-sm">
-                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                        <h5 class="font-semibold text-blue-800 mb-2">🚀 Langkah Mudah (3 menit saja!):</h5>
-                        <ol class="list-decimal list-inside space-y-2 text-blue-700">
-                            <li><strong>Buka Google Sheets</strong> → Buat spreadsheet baru</li>
-                            <li><strong>Copy data lengkap</strong> dari kotak hijau di bawah</li>
-                            <li><strong>Paste di cell A1</strong> → Data otomatis tersusun dalam kolom</li>
-                            <li><strong>Klik File</strong> → Share → Publish to web</li>
-                            <li><strong>Pilih "Entire Document"</strong> dan format "CSV"</li>
-                            <li><strong>Copy URL</strong> yang muncul dan <strong>ubah "pubhtml" jadi "pub?output=csv"</strong></li>
-                            <li><strong>Paste URL yang sudah diubah</strong> ke field di atas</li>
-                            <li><strong>Klik "Simpan URL"</strong> lalu "Refresh Data"</li>
-                        </ol>
-                        <div class="mt-3 p-3 bg-yellow-100 border border-yellow-300 rounded">
-                            <p class="text-yellow-800 text-sm"><strong>⚠️ Penting:</strong> URL harus diakhiri dengan <code class="bg-yellow-200 px-1 rounded">pub?output=csv</code> bukan <code class="bg-red-200 px-1 rounded">pubhtml</code></p>
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h5 class="font-semibold text-green-800 mb-2">🎯 Struktur Baru - Super Sederhana!</h5>
+                        <p class="text-green-700 mb-3">Hanya butuh <strong>3 kolom</strong> saja! Tidak perlu ribet dengan icon dan warna.</p>
+                        
+                        <div class="bg-white p-3 rounded border mb-3">
+                            <table class="w-full text-xs">
+                                <thead>
+                                    <tr class="border-b bg-gray-50">
+                                        <th class="text-left p-2 font-semibold">A: Kategori</th>
+                                        <th class="text-left p-2 font-semibold">B: Judul</th>
+                                        <th class="text-left p-2 font-semibold">C: Deskripsi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b">
+                                        <td class="p-2">Kurikulum</td>
+                                        <td class="p-2">Kurikulum Merdeka</td>
+                                        <td class="p-2">Implementasi kurikulum terbaru</td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="p-2">Kurikulum</td>
+                                        <td class="p-2">Mata Pelajaran Agama</td>
+                                        <td class="p-2">Al-Quran, Hadits, dan Akidah</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2">Fasilitas</td>
+                                        <td class="p-2">Ruang Kelas</td>
+                                        <td class="p-2">32 ruang kelas ber-AC</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="bg-blue-100 p-3 rounded">
+                            <p class="text-blue-800 text-sm"><strong>✨ Keunggulan:</strong></p>
+                            <ul class="text-blue-700 text-sm mt-1 space-y-1">
+                                <li>• Icon dan warna otomatis berdasarkan kategori</li>
+                                <li>• Tidak ada masalah format CSV</li>
+                                <li>• Lebih mudah dikelola</li>
+                                <li>• Kompatibel dengan semua versi Google Sheets</li>
+                            </ul>
                         </div>
                     </div>
                     
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <h5 class="font-semibold text-blue-800 mb-2">🚀 Langkah Setup (2 menit!):</h5>
+                        <ol class="list-decimal list-inside space-y-2 text-blue-700">
+                            <li><strong>Buka Google Sheets</strong> → Buat spreadsheet baru</li>
+                            <li><strong>Copy data</strong> dari kotak hijau di bawah</li>
+                            <li><strong>Paste di cell A1</strong> → Data otomatis tersusun dalam kolom</li>
+                            <li><strong>File → Share → Publish to web</strong></li>
+                            <li><strong>Pilih "Entire Document" + "CSV"</strong> → Publish</li>
+                            <li><strong>Copy URL</strong> → Paste di field URL di atas</li>
+                            <li><strong>Klik "Simpan URL"</strong> → "Refresh Data"</li>
+                        </ol>
+                    </div>
+                    
                     <div class="bg-green-50 p-4 rounded-lg border border-green-200">
-                        <h5 class="font-semibold text-green-800 mb-2">✅ Data Lengkap Siap Copy-Paste:</h5>
-                        <p class="text-green-700 mb-2"><strong>Cara:</strong> Klik tombol "Copy Data" → Buka Google Sheets → Paste di cell A1</p>
+                        <h5 class="font-semibold text-green-800 mb-2">✅ Data Template Siap Pakai:</h5>
+                        <p class="text-green-700 mb-2"><strong>Klik "Copy" → Paste di Google Sheets A1 → Otomatis jadi kolom!</strong></p>
                         <div class="relative">
-                            <button onclick="copyDataToClipboard()" class="absolute top-2 right-2 bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 z-10">
+                            <button onclick="copySimpleDataToClipboard()" class="absolute top-2 right-2 bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 z-10">
                                 📋 Copy Data
                             </button>
-                            <textarea id="spreadsheetData" readonly class="w-full h-64 p-3 bg-white border rounded font-mono text-xs resize-none overflow-auto">Kategori,Judul Item,Deskripsi,Icon,Warna
-Kurikulum,Kurikulum Merdeka,Implementasi kurikulum terbaru dengan pendekatan student-centered learning,🎯,hijau
-Kurikulum,Mata Pelajaran Agama,Al-Quran Hadits Akidah Akhlak Fiqh dan Sejarah Kebudayaan Islam,☪️,hijau
-Kurikulum,Mata Pelajaran Umum,Matematika IPA IPS Bahasa Indonesia dan Bahasa Inggris dengan standar nasional,🔬,hijau
-Kurikulum,Ekstrakurikuler,Program Tahfidz Pramuka Olahraga Seni dan Teknologi untuk mengembangkan bakat siswa,🏆,hijau
-Kesiswaan,Pendaftaran Siswa Baru,Informasi lengkap proses penerimaan siswa baru tahun ajaran 2024/2025,📝,biru
-Kesiswaan,Tata Tertib Sekolah,Peraturan dan tata tertib yang harus dipatuhi oleh seluruh siswa,📋,biru
-Kesiswaan,Organisasi Siswa,OSIS MPK dan berbagai organisasi siswa lainnya sebagai wadah kepemimpinan,🤝,biru
-Kesiswaan,Prestasi Siswa,Daftar prestasi akademik dan non-akademik siswa di berbagai tingkat kompetisi,🏅,biru
-Fasilitas,Ruang Kelas,32 ruang kelas ber-AC dengan fasilitas multimedia dan akses internet,🏫,ungu
-Fasilitas,Laboratorium,Lab IPA Lab Komputer dan Lab Bahasa dengan peralatan lengkap dan modern,🔬,ungu
-Fasilitas,Perpustakaan,Koleksi 5000+ buku referensi dan ruang baca yang nyaman dengan sistem digital,📖,ungu
-Fasilitas,Masjid,Masjid dengan kapasitas 500 jamaah untuk kegiatan ibadah dan peringatan hari besar,🕌,ungu
-Fasilitas,Lapangan Olahraga,Lapangan basket voli dan sepak bola untuk kegiatan olahraga dan ekstrakurikuler,⚽,ungu
-Fasilitas,Kantin Sehat,Kantin dengan menu makanan sehat dan bergizi untuk mendukung kesehatan siswa,🍽️,ungu
-Tenaga Pendidik,Profil Guru,Tim pengajar berpengalaman dengan kualifikasi S1 dan S2 bersertifikat pendidik,🎓,orange
-Tenaga Pendidik,Pengembangan Profesi,Program pelatihan dan sertifikasi guru berkelanjutan untuk meningkatkan kualitas,📈,orange
-Tenaga Pendidik,Struktur Organisasi,Susunan kepemimpinan dan struktur organisasi sekolah yang jelas dan profesional,🏛️,orange
-Tenaga Pendidik,Prestasi Guru,Penghargaan dan prestasi yang diraih para pendidik di tingkat regional dan nasional,🌟,orange
-Kegiatan Sekolah,Agenda Bulanan,Kalender kegiatan dan acara sekolah setiap bulan termasuk ujian dan ekstrakurikuler,📅,merah
-Kegiatan Sekolah,Peringatan Hari Besar,Perayaan hari besar Islam dan nasional dengan berbagai kegiatan menarik,🎊,merah
-Kegiatan Sekolah,Study Tour,Program kunjungan edukatif ke berbagai tempat bersejarah dan pusat pembelajaran,🚌,merah
-Kegiatan Sekolah,Lomba dan Kompetisi,Berbagai kompetisi akademik dan non-akademik tingkat sekolah hingga nasional,🏆,merah
-Kegiatan Sekolah,Pesantren Kilat,Program pesantren kilat selama bulan Ramadan untuk memperdalam pemahaman agama,🌙,merah
-Kegiatan Sekolah,Bakti Sosial,Kegiatan bakti sosial dan pengabdian masyarakat sebagai implementasi nilai Islam,🤲,merah
-Informasi,Pengumuman Terbaru,Informasi dan pengumuman penting dari sekolah terkait pembelajaran dan administrasi,📢,teal
-Informasi,Berita Sekolah,Berita dan artikel tentang kegiatan sekolah prestasi siswa dan program unggulan,📰,teal
-Informasi,Galeri Foto,Dokumentasi kegiatan dan momen penting sekolah dalam bentuk foto dan video,📸,teal
-Informasi,Kontak Darurat,Nomor telepon penting dan kontak darurat untuk keperluan mendesak,🚨,teal
-Informasi,Jadwal Pelajaran,Jadwal pelajaran harian dan mingguan untuk semua tingkat kelas,⏰,teal
-Informasi,Kalender Akademik,Kalender akademik tahunan dengan jadwal libur ujian dan kegiatan penting,📆,teal</textarea>
+                            <textarea id="simpleSpreadsheetData" readonly class="w-full h-48 p-3 bg-white border rounded font-mono text-xs resize-none overflow-auto">Kategori	Judul	Deskripsi
+Kurikulum	Kurikulum Merdeka	Implementasi kurikulum terbaru dengan pendekatan student-centered learning
+Kurikulum	Mata Pelajaran Agama	Al-Quran Hadits Akidah Akhlak Fiqh dan Sejarah Kebudayaan Islam
+Kurikulum	Mata Pelajaran Umum	Matematika IPA IPS Bahasa Indonesia dan Bahasa Inggris
+Kurikulum	Program Tahfidz	Program menghafal Al-Quran dengan metode yang mudah dan menyenangkan
+Kesiswaan	Pendaftaran Siswa Baru	Informasi lengkap proses penerimaan siswa baru tahun ajaran 2024/2025
+Kesiswaan	Tata Tertib Sekolah	Peraturan dan tata tertib yang harus dipatuhi oleh seluruh siswa
+Kesiswaan	Organisasi Siswa	OSIS MPK dan berbagai organisasi siswa sebagai wadah kepemimpinan
+Kesiswaan	Prestasi Siswa	Daftar prestasi akademik dan non-akademik di berbagai kompetisi
+Fasilitas	Ruang Kelas	32 ruang kelas ber-AC dengan fasilitas multimedia dan akses internet
+Fasilitas	Laboratorium	Lab IPA Lab Komputer dan Lab Bahasa dengan peralatan modern
+Fasilitas	Perpustakaan	Koleksi 5000+ buku referensi dan ruang baca yang nyaman
+Fasilitas	Masjid	Masjid dengan kapasitas 500 jamaah untuk kegiatan ibadah
+Fasilitas	Lapangan Olahraga	Lapangan basket voli dan sepak bola untuk kegiatan olahraga
+Guru	Profil Guru	Tim pengajar berpengalaman dengan kualifikasi S1 dan S2 bersertifikat
+Guru	Pengembangan Profesi	Program pelatihan dan sertifikasi guru berkelanjutan
+Guru	Struktur Organisasi	Susunan kepemimpinan dan struktur organisasi sekolah
+Guru	Prestasi Guru	Penghargaan dan prestasi yang diraih para pendidik
+Kegiatan	Agenda Bulanan	Kalender kegiatan dan acara sekolah setiap bulan
+Kegiatan	Peringatan Hari Besar	Perayaan hari besar Islam dan nasional
+Kegiatan	Study Tour	Program kunjungan edukatif ke tempat bersejarah
+Kegiatan	Lomba dan Kompetisi	Berbagai kompetisi akademik dan non-akademik
+Kegiatan	Pesantren Kilat	Program pesantren kilat selama bulan Ramadan
+Informasi	Pengumuman Terbaru	Informasi dan pengumuman penting dari sekolah
+Informasi	Berita Sekolah	Berita dan artikel tentang kegiatan sekolah
+Informasi	Galeri Foto	Dokumentasi kegiatan dan momen penting sekolah
+Informasi	Kontak Darurat	Nomor telepon penting dan kontak darurat
+Informasi	Jadwal Pelajaran	Jadwal pelajaran harian dan mingguan
+Informasi	Kalender Akademik	Kalender akademik tahunan dengan jadwal libur</textarea>
                         </div>
-                        <div id="copyMessage" class="mt-2 text-green-600 text-sm hidden">✅ Data berhasil di-copy! Sekarang paste di Google Sheets cell A1</div>
+                        <div id="copySimpleMessage" class="mt-2 text-green-600 text-sm hidden">✅ Data berhasil di-copy! Paste di Google Sheets cell A1</div>
                     </div>
                 </div>
+                
                 <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <p class="text-yellow-800 text-sm">
-                        <strong>💡 Tips:</strong> Setelah mengubah data di Google Sheets, klik tombol "Refresh Data" untuk memuat perubahan terbaru.
-                        Tambah baris baru = kategori/item baru otomatis muncul di website!
+                    <h5 class="font-semibold text-yellow-800 mb-2">🎨 Icon & Warna Otomatis:</h5>
+                    <div class="grid grid-cols-2 gap-3 text-xs">
+                        <div><span class="text-green-600">📚 Kurikulum</span> → Hijau</div>
+                        <div><span class="text-blue-600">👥 Kesiswaan</span> → Biru</div>
+                        <div><span class="text-purple-600">🏢 Fasilitas</span> → Ungu</div>
+                        <div><span class="text-orange-600">👨‍🏫 Guru</span> → Orange</div>
+                        <div><span class="text-red-600">🎉 Kegiatan</span> → Merah</div>
+                        <div><span class="text-teal-600">ℹ️ Informasi</span> → Teal</div>
+                    </div>
+                    <p class="text-yellow-700 text-sm mt-2">
+                        <strong>💡 Tips:</strong> Tambah baris baru = item baru otomatis muncul! Sistem akan otomatis mendeteksi kategori dan memberikan icon + warna yang sesuai.
                     </p>
                 </div>
             </div>
@@ -396,8 +446,8 @@ Informasi,Kalender Akademik,Kalender akademik tahunan dengan jadwal libur ujian 
     </footer>
 
     <script>
-        // Database configuration - URL Google Sheets
-        let SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQXbAkgkGr6lwTgDnlvsndDSgTiywuoTZF0FY1fdU2zbBAG3vdYOGPJwehkvgUtxETNo0UN21oa82tH/pub?output=csv';
+        // Database configuration - URL Google Sheets (default demo)
+        let SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/export?format=csv';
 
         // Categories - hanya dari Google Sheets
         let categories = {};
@@ -411,6 +461,24 @@ Informasi,Kalender Akademik,Kalender akademik tahunan dengan jadwal libur ujian 
             try {
                 document.execCommand('copy');
                 const message = document.getElementById('copyMessage');
+                message.classList.remove('hidden');
+                setTimeout(() => {
+                    message.classList.add('hidden');
+                }, 3000);
+            } catch (err) {
+                alert('Gagal copy data. Silakan copy manual dari kotak teks.');
+            }
+        }
+
+        // Function to copy simple data to clipboard
+        function copySimpleDataToClipboard() {
+            const textarea = document.getElementById('simpleSpreadsheetData');
+            textarea.select();
+            textarea.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                const message = document.getElementById('copySimpleMessage');
                 message.classList.remove('hidden');
                 setTimeout(() => {
                     message.classList.add('hidden');
@@ -443,47 +511,83 @@ Informasi,Kalender Akademik,Kalender akademik tahunan dengan jadwal libur ujian 
         async function loadDataFromSpreadsheet() {
             try {
                 showLoadingMessage();
+                console.log('Mencoba memuat data dari:', SPREADSHEET_URL);
+                
+                // Auto-fix URL before loading
+                const originalUrl = SPREADSHEET_URL;
+                SPREADSHEET_URL = fixSpreadsheetUrl(SPREADSHEET_URL);
+                
+                // Update input field and save if URL was fixed
+                if (SPREADSHEET_URL !== originalUrl) {
+                    document.getElementById('spreadsheetUrlInput').value = SPREADSHEET_URL;
+                    localStorage.setItem('madrasah_spreadsheet_url', SPREADSHEET_URL);
+                    console.log('🔧 URL otomatis diperbaiki saat loading data');
+                }
                 
                 // Load data from single spreadsheet
                 const response = await fetch(SPREADSHEET_URL);
+                console.log('Response status:', response.status);
+                
                 if (response.ok) {
                     const csvText = await response.text();
+                    console.log('CSV data received:', csvText.substring(0, 200) + '...');
+                    
+                    if (csvText.trim() === '' || csvText.includes('<!DOCTYPE html>')) {
+                        throw new Error('Spreadsheet kosong atau belum dipublish dengan benar');
+                    }
+                    
                     const data = parseCSV(csvText);
+                    console.log('Parsed data:', data);
+                    
+                    if (data.length === 0) {
+                        throw new Error('Tidak ada data yang valid di spreadsheet');
+                    }
                     
                     // Process and structure the data
                     categories = processSimpleSpreadsheetData(data);
+                    console.log('Processed categories:', categories);
+                    
+                    if (Object.keys(categories).length === 0) {
+                        throw new Error('Tidak ada kategori yang valid ditemukan');
+                    }
+                    
                     hideLoadingMessage();
                     renderCategories();
-                    console.log('Data berhasil dimuat dari spreadsheet');
+                    console.log('✅ Data berhasil dimuat dari spreadsheet');
                 } else {
-                    throw new Error('Gagal memuat data dari spreadsheet');
+                    throw new Error(`HTTP Error: ${response.status} - ${response.statusText}`);
                 }
             } catch (error) {
-                console.warn('Gagal memuat data dari spreadsheet:', error.message);
+                console.error('❌ Error loading spreadsheet:', error.message);
                 hideLoadingMessage();
-                showErrorMessage();
+                showDetailedErrorMessage(error.message);
             }
         }
 
         // Function to process simple spreadsheet data into categories structure
         function processSimpleSpreadsheetData(data) {
             const processedCategories = {};
-            const colorMap = {
-                'hijau': 'bg-green-500',
-                'biru': 'bg-blue-500', 
-                'ungu': 'bg-purple-500',
-                'orange': 'bg-orange-500',
-                'merah': 'bg-red-500',
-                'teal': 'bg-teal-500'
+            
+            // Auto color and icon mapping based on category name
+            const categoryMapping = {
+                'kurikulum': { color: 'bg-green-500', icon: '📚' },
+                'kesiswaan': { color: 'bg-blue-500', icon: '👥' },
+                'siswa': { color: 'bg-blue-500', icon: '👥' },
+                'fasilitas': { color: 'bg-purple-500', icon: '🏢' },
+                'guru': { color: 'bg-orange-500', icon: '👨‍🏫' },
+                'pendidik': { color: 'bg-orange-500', icon: '👨‍🏫' },
+                'tenaga': { color: 'bg-orange-500', icon: '👨‍🏫' },
+                'kegiatan': { color: 'bg-red-500', icon: '🎉' },
+                'informasi': { color: 'bg-teal-500', icon: 'ℹ️' },
+                'info': { color: 'bg-teal-500', icon: 'ℹ️' }
             };
             
             // Process each row
             data.forEach(row => {
-                const categoryName = row['Kategori'] || row['kategori'];
-                const itemTitle = row['Judul Item'] || row['judul_item'] || row['title'];
-                const itemDesc = row['Deskripsi'] || row['deskripsi'] || row['description'];
-                const itemIcon = row['Icon'] || row['icon'] || '📄';
-                const colorName = (row['Warna'] || row['warna'] || 'hijau').toLowerCase();
+                // Support multiple column name formats
+                const categoryName = row['Kategori'] || row['kategori'] || row['Category'] || row['category'];
+                const itemTitle = row['Judul'] || row['judul'] || row['Judul Item'] || row['judul_item'] || row['Title'] || row['title'];
+                const itemDesc = row['Deskripsi'] || row['deskripsi'] || row['Description'] || row['description'];
                 
                 if (categoryName && itemTitle) {
                     // Create category key from name
@@ -491,22 +595,51 @@ Informasi,Kalender Akademik,Kalender akademik tahunan dengan jadwal libur ujian 
                     
                     // Initialize category if not exists
                     if (!processedCategories[categoryKey]) {
-                        // Get category icon based on name
-                        let categoryIcon = '📁';
-                        if (categoryName.toLowerCase().includes('kurikulum')) categoryIcon = '📚';
-                        else if (categoryName.toLowerCase().includes('siswa')) categoryIcon = '👥';
-                        else if (categoryName.toLowerCase().includes('fasilitas')) categoryIcon = '🏢';
-                        else if (categoryName.toLowerCase().includes('guru') || categoryName.toLowerCase().includes('pendidik')) categoryIcon = '👨‍🏫';
-                        else if (categoryName.toLowerCase().includes('kegiatan')) categoryIcon = '🎉';
-                        else if (categoryName.toLowerCase().includes('informasi')) categoryIcon = 'ℹ️';
+                        // Auto-detect category style based on name
+                        let categoryStyle = { color: 'bg-gray-500', icon: '📁' };
+                        
+                        const lowerCategoryName = categoryName.toLowerCase();
+                        for (const [keyword, style] of Object.entries(categoryMapping)) {
+                            if (lowerCategoryName.includes(keyword)) {
+                                categoryStyle = style;
+                                break;
+                            }
+                        }
                         
                         processedCategories[categoryKey] = {
                             title: categoryName,
-                            icon: categoryIcon,
-                            color: colorMap[colorName] || 'bg-gray-500',
+                            icon: categoryStyle.icon,
+                            color: categoryStyle.color,
                             items: []
                         };
                     }
+                    
+                    // Auto-generate item icon based on title
+                    let itemIcon = '📄';
+                    const lowerTitle = itemTitle.toLowerCase();
+                    if (lowerTitle.includes('kurikulum')) itemIcon = '🎯';
+                    else if (lowerTitle.includes('agama') || lowerTitle.includes('islam')) itemIcon = '☪️';
+                    else if (lowerTitle.includes('tahfidz') || lowerTitle.includes('quran')) itemIcon = '📖';
+                    else if (lowerTitle.includes('pendaftaran') || lowerTitle.includes('daftar')) itemIcon = '📝';
+                    else if (lowerTitle.includes('tata tertib') || lowerTitle.includes('peraturan')) itemIcon = '📋';
+                    else if (lowerTitle.includes('organisasi') || lowerTitle.includes('osis')) itemIcon = '🤝';
+                    else if (lowerTitle.includes('prestasi') || lowerTitle.includes('juara')) itemIcon = '🏅';
+                    else if (lowerTitle.includes('kelas') || lowerTitle.includes('ruang')) itemIcon = '🏫';
+                    else if (lowerTitle.includes('lab') || lowerTitle.includes('laboratorium')) itemIcon = '🔬';
+                    else if (lowerTitle.includes('perpustakaan') || lowerTitle.includes('buku')) itemIcon = '📚';
+                    else if (lowerTitle.includes('masjid') || lowerTitle.includes('mushola')) itemIcon = '🕌';
+                    else if (lowerTitle.includes('olahraga') || lowerTitle.includes('lapangan')) itemIcon = '⚽';
+                    else if (lowerTitle.includes('kantin') || lowerTitle.includes('makan')) itemIcon = '🍽️';
+                    else if (lowerTitle.includes('guru') || lowerTitle.includes('pengajar')) itemIcon = '🎓';
+                    else if (lowerTitle.includes('struktur') || lowerTitle.includes('organisasi')) itemIcon = '🏛️';
+                    else if (lowerTitle.includes('agenda') || lowerTitle.includes('jadwal')) itemIcon = '📅';
+                    else if (lowerTitle.includes('lomba') || lowerTitle.includes('kompetisi')) itemIcon = '🏆';
+                    else if (lowerTitle.includes('pesantren') || lowerTitle.includes('ramadan')) itemIcon = '🌙';
+                    else if (lowerTitle.includes('pengumuman')) itemIcon = '📢';
+                    else if (lowerTitle.includes('berita')) itemIcon = '📰';
+                    else if (lowerTitle.includes('foto') || lowerTitle.includes('galeri')) itemIcon = '📸';
+                    else if (lowerTitle.includes('darurat') || lowerTitle.includes('kontak')) itemIcon = '🚨';
+                    else if (lowerTitle.includes('kalender')) itemIcon = '📆';
                     
                     // Add item to category
                     processedCategories[categoryKey].items.push({
@@ -545,6 +678,60 @@ Informasi,Kalender Akademik,Kalender akademik tahunan dengan jadwal libur ujian 
                     <button onclick="showAdminPanel()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
                         ⚙️ Buka Panel Admin
                     </button>
+                </div>
+            `;
+        }
+
+        function showDetailedErrorMessage(errorMsg) {
+            const grid = document.getElementById('categoriesGrid');
+            let troubleshootingTips = '';
+            
+            if (errorMsg.includes('kosong') || errorMsg.includes('belum dipublish')) {
+                troubleshootingTips = `
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-4 text-left">
+                        <h5 class="font-semibold text-yellow-800 mb-2">🔧 Kemungkinan Masalah:</h5>
+                        <ul class="text-yellow-700 text-sm space-y-1">
+                            <li>• Spreadsheet belum dipublish ke web</li>
+                            <li>• Spreadsheet masih kosong (belum ada data)</li>
+                            <li>• URL masih menggunakan format "pubhtml" bukan "pub?output=csv"</li>
+                        </ul>
+                    </div>
+                `;
+            } else if (errorMsg.includes('HTTP Error')) {
+                troubleshootingTips = `
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mt-4 text-left">
+                        <h5 class="font-semibold text-red-800 mb-2">🚫 Error Koneksi:</h5>
+                        <ul class="text-red-700 text-sm space-y-1">
+                            <li>• URL spreadsheet tidak valid atau tidak dapat diakses</li>
+                            <li>• Spreadsheet mungkin private (belum dipublish)</li>
+                            <li>• Periksa kembali URL di panel admin</li>
+                        </ul>
+                    </div>
+                `;
+            } else {
+                troubleshootingTips = `
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4 text-left">
+                        <h5 class="font-semibold text-blue-800 mb-2">ℹ️ Info Error:</h5>
+                        <p class="text-blue-700 text-sm">${errorMsg}</p>
+                    </div>
+                `;
+            }
+            
+            grid.innerHTML = `
+                <div class="col-span-full text-center py-12">
+                    <div class="text-6xl mb-4">⚠️</div>
+                    <h4 class="text-2xl font-bold text-gray-800 mb-4">Gagal Memuat Data</h4>
+                    <p class="text-gray-600 mb-4">Terjadi masalah saat memuat data dari Google Sheets</p>
+                    ${troubleshootingTips}
+                    <div class="mt-6 space-x-3">
+                        <button onclick="refreshData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            🔄 Coba Lagi
+                        </button>
+                        <button onclick="showAdminPanel()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                            ⚙️ Buka Panel Admin
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-4">Buka Console Browser (F12) untuk melihat detail error</p>
                 </div>
             `;
         }
@@ -773,6 +960,155 @@ Informasi,Kalender Akademik,Kalender akademik tahunan dengan jadwal libur ujian 
             }
         }
 
+        // Function to automatically fix common URL format issues
+        function fixSpreadsheetUrl(url) {
+            console.log('🔧 Original URL:', url);
+            
+            // Remove any trailing spaces or newlines
+            url = url.trim();
+            
+            // Handle the specific PACX format that's causing 400 errors
+            if (url.includes('/e/2PACX-')) {
+                console.log('🔧 Detected PACX format URL - rebuilding...');
+                
+                // Extract the PACX ID
+                const pacxMatch = url.match(/\/e\/(2PACX-[a-zA-Z0-9-_]+)/);
+                if (pacxMatch) {
+                    const pacxId = pacxMatch[1];
+                    // Build the correct export URL format
+                    url = `https://docs.google.com/spreadsheets/d/e/${pacxId}/pub?output=csv`;
+                    console.log('🔧 Rebuilt PACX URL:', url);
+                    return url;
+                }
+            }
+            
+            // Fix common URL format issues
+            if (url.includes('/pubhtml')) {
+                // Replace pubhtml with pub?output=csv
+                url = url.replace('/pubhtml', '/pub?output=csv');
+                console.log('🔧 Fixed pubhtml → pub?output=csv');
+            }
+            
+            if (url.includes('?gid=') && !url.includes('output=csv')) {
+                // Add output=csv parameter
+                url = url.replace('?gid=', '?output=csv&gid=');
+                console.log('🔧 Added output=csv parameter');
+            }
+            
+            if (url.includes('/edit#gid=') || url.includes('/edit?usp=')) {
+                // Convert edit URL to publish URL
+                const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+                if (match) {
+                    const spreadsheetId = match[1];
+                    url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/pub?output=csv`;
+                    console.log('🔧 Converted edit URL to publish URL');
+                }
+            }
+            
+            // Handle regular spreadsheet ID format
+            if (!url.includes('pub?output=csv') && url.includes('spreadsheets/d/')) {
+                const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+                if (match) {
+                    const spreadsheetId = match[1];
+                    url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/pub?output=csv`;
+                    console.log('🔧 Rebuilt URL with correct format');
+                }
+            }
+            
+            console.log('✅ Fixed URL:', url);
+            return url;
+        }
+
+        async function testSpreadsheetUrl() {
+            let url = document.getElementById('spreadsheetUrlInput').value.trim();
+            
+            if (!url) {
+                alert('Mohon isi URL spreadsheet terlebih dahulu.');
+                return;
+            }
+            
+            // Auto-fix the URL
+            const originalUrl = url;
+            url = fixSpreadsheetUrl(url);
+            
+            // Update the input field if URL was changed
+            if (url !== originalUrl) {
+                document.getElementById('spreadsheetUrlInput').value = url;
+                console.log('🔧 URL otomatis diperbaiki dari:', originalUrl);
+                console.log('🔧 URL baru:', url);
+            }
+            
+            // Try multiple URL formats for PACX URLs
+            const urlsToTry = [url];
+            
+            // If it's a PACX URL, try alternative formats
+            if (url.includes('2PACX-')) {
+                const pacxMatch = url.match(/(2PACX-[a-zA-Z0-9-_]+)/);
+                if (pacxMatch) {
+                    const pacxId = pacxMatch[1];
+                    // Try different export formats
+                    urlsToTry.push(`https://docs.google.com/spreadsheets/d/e/${pacxId}/export?format=csv`);
+                    urlsToTry.push(`https://docs.google.com/spreadsheets/d/e/${pacxId}/export?format=csv&gid=0`);
+                    urlsToTry.push(`https://docs.google.com/spreadsheets/d/e/${pacxId}/pub?gid=0&single=true&output=csv`);
+                }
+            }
+            
+            console.log('🧪 Will try these URLs:', urlsToTry);
+            
+            for (let i = 0; i < urlsToTry.length; i++) {
+                const testUrl = urlsToTry[i];
+                console.log(`🧪 Testing URL ${i + 1}/${urlsToTry.length}:`, testUrl);
+                
+                try {
+                    const response = await fetch(testUrl);
+                    console.log('📊 Response status:', response.status);
+                    
+                    if (response.ok) {
+                        const text = await response.text();
+                        console.log('📄 Response content (first 500 chars):', text.substring(0, 500));
+                        
+                        if (text.trim() === '') {
+                            console.log('⚠️ Empty response, trying next URL...');
+                            continue;
+                        } else if (text.includes('<!DOCTYPE html>')) {
+                            console.log('⚠️ HTML response, trying next URL...');
+                            continue;
+                        } else {
+                            // Success! Update the URL field with working URL
+                            document.getElementById('spreadsheetUrlInput').value = testUrl;
+                            SPREADSHEET_URL = testUrl;
+                            
+                            let message = `✅ URL berhasil! Data CSV ditemukan.`;
+                            if (testUrl !== originalUrl) {
+                                message += `\n\n🔧 URL telah diperbaiki otomatis!`;
+                                message += `\nURL asli: ${originalUrl.substring(0, 50)}...`;
+                                message += `\nURL baru: ${testUrl.substring(0, 50)}...`;
+                            }
+                            
+                            if (text.includes('Kategori') || text.includes('kategori')) {
+                                message += '\n\n✅ Format data terdeteksi benar!';
+                            } else {
+                                message += '\n\n⚠️ Data ditemukan tapi pastikan format sesuai panduan.';
+                            }
+                            
+                            message += '\n\nKlik "Simpan URL" lalu "Refresh Data" untuk memuat data ke website.';
+                            alert(message);
+                            return;
+                        }
+                    } else {
+                        console.log(`❌ Status ${response.status}, trying next URL...`);
+                        continue;
+                    }
+                } catch (error) {
+                    console.log(`❌ Error with URL ${i + 1}: ${error.message}`);
+                    continue;
+                }
+            }
+            
+            // If we get here, all URLs failed
+            alert(`❌ Semua format URL gagal diakses!\n\nKemungkinan masalah:\n1. Spreadsheet belum di-publish ke web dengan benar\n2. Spreadsheet masih private\n3. ID spreadsheet tidak valid\n\n💡 Solusi:\n1. Buka Google Sheets\n2. File → Share → Publish to web\n3. Pilih "Entire Document" dan "Comma-separated values (.csv)"\n4. Klik "Publish" dan copy URL yang muncul\n5. Paste URL tersebut di sini\n\nURL yang dicoba:\n${urlsToTry.map((u, i) => `${i + 1}. ${u.substring(0, 60)}...`).join('\n')}`);
+        }
+
         function loadSavedUrl() {
             const savedUrl = localStorage.getItem('madrasah_spreadsheet_url');
             
@@ -786,5 +1122,5 @@ Informasi,Kalender Akademik,Kalender akademik tahunan dengan jadwal libur ujian 
         loadSavedUrl();
         loadDataFromSpreadsheet();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9751997c3357fcf6',t:'MTc1NjE5MzE3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9751e0f7d1412035',t:'MTc1NjE5NjEwMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
