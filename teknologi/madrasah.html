@@ -31,6 +31,7 @@
                     <a href="#" onclick="showHome()" class="hover:text-green-200 transition-colors font-medium">Beranda</a>
                     <a href="#" onclick="showAbout()" class="hover:text-green-200 transition-colors font-medium">Tentang</a>
                     <a href="#" onclick="showContact()" class="hover:text-green-200 transition-colors font-medium">Kontak</a>
+                    <a href="#" onclick="showAdminPanel()" class="hover:text-green-200 transition-colors font-medium">⚙️ Admin</a>
                 </nav>
             </div>
         </div>
@@ -214,6 +215,148 @@
         </div>
     </section>
 
+    <!-- Admin Panel -->
+    <section class="py-16 bg-gray-100" id="adminPanel" style="display: none;">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-3xl font-bold text-gray-800">Panel Admin - Database Spreadsheet</h3>
+                <button onclick="hideAdminPanel()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">✕ Tutup</button>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold text-gray-800 mb-4">📊 Konfigurasi Database</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">URL Google Sheets:</label>
+                            <input type="text" id="spreadsheetUrlInput" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm" placeholder="https://docs.google.com/spreadsheets/d/1234567890/export?format=csv">
+                        </div>
+                        <div class="flex space-x-3">
+                            <button onclick="updateSpreadsheetUrl()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                💾 Simpan URL
+                            </button>
+                            <button onclick="refreshData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                🔄 Refresh Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold text-gray-800 mb-4">📋 Format Spreadsheet Sederhana</h4>
+                    <div class="space-y-4 text-sm">
+                        <p class="text-gray-600">Cukup buat 1 sheet dengan kolom berikut:</p>
+                        <div class="bg-gray-50 p-4 rounded border">
+                            <table class="w-full text-xs">
+                                <thead>
+                                    <tr class="border-b">
+                                        <th class="text-left p-1">Kategori</th>
+                                        <th class="text-left p-1">Judul Item</th>
+                                        <th class="text-left p-1">Deskripsi</th>
+                                        <th class="text-left p-1">Icon</th>
+                                        <th class="text-left p-1">Warna</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="p-1">Kurikulum</td>
+                                        <td class="p-1">Kurikulum Merdeka</td>
+                                        <td class="p-1">Implementasi kurikulum terbaru</td>
+                                        <td class="p-1">🎯</td>
+                                        <td class="p-1">hijau</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-1">Kurikulum</td>
+                                        <td class="p-1">Mata Pelajaran Agama</td>
+                                        <td class="p-1">Al-Quran Hadits dan Akidah</td>
+                                        <td class="p-1">☪️</td>
+                                        <td class="p-1">hijau</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-1">Kesiswaan</td>
+                                        <td class="p-1">Pendaftaran Siswa Baru</td>
+                                        <td class="p-1">Info penerimaan siswa baru</td>
+                                        <td class="p-1">📝</td>
+                                        <td class="p-1">biru</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="text-xs text-gray-500">
+                            <strong>Warna yang tersedia:</strong> hijau, biru, ungu, orange, merah, teal
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+                <h4 class="text-xl font-semibold text-gray-800 mb-4">📝 Cara Setup Google Sheets (Super Mudah!)</h4>
+                <div class="space-y-4 text-sm">
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                        <h5 class="font-semibold text-blue-800 mb-2">🚀 Langkah Mudah (3 menit saja!):</h5>
+                        <ol class="list-decimal list-inside space-y-2 text-blue-700">
+                            <li><strong>Buka Google Sheets</strong> → Buat spreadsheet baru</li>
+                            <li><strong>Copy data lengkap</strong> dari kotak hijau di bawah</li>
+                            <li><strong>Paste di cell A1</strong> → Data otomatis tersusun dalam kolom</li>
+                            <li><strong>Klik File</strong> → Share → Publish to web</li>
+                            <li><strong>Pilih "Entire Document"</strong> dan format "CSV"</li>
+                            <li><strong>Copy URL</strong> yang muncul dan paste ke field di atas</li>
+                            <li><strong>Klik "Simpan URL"</strong> lalu "Refresh Data"</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                        <h5 class="font-semibold text-green-800 mb-2">✅ Data Lengkap Siap Copy-Paste:</h5>
+                        <p class="text-green-700 mb-2"><strong>Cara:</strong> Klik tombol "Copy Data" → Buka Google Sheets → Paste di cell A1</p>
+                        <div class="relative">
+                            <button onclick="copyDataToClipboard()" class="absolute top-2 right-2 bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700 z-10">
+                                📋 Copy Data
+                            </button>
+                            <textarea id="spreadsheetData" readonly class="w-full h-64 p-3 bg-white border rounded font-mono text-xs resize-none overflow-auto">Kategori,Judul Item,Deskripsi,Icon,Warna
+Kurikulum,Kurikulum Merdeka,Implementasi kurikulum terbaru dengan pendekatan student-centered learning,🎯,hijau
+Kurikulum,Mata Pelajaran Agama,Al-Quran Hadits Akidah Akhlak Fiqh dan Sejarah Kebudayaan Islam,☪️,hijau
+Kurikulum,Mata Pelajaran Umum,Matematika IPA IPS Bahasa Indonesia dan Bahasa Inggris dengan standar nasional,🔬,hijau
+Kurikulum,Ekstrakurikuler,Program Tahfidz Pramuka Olahraga Seni dan Teknologi untuk mengembangkan bakat siswa,🏆,hijau
+Kesiswaan,Pendaftaran Siswa Baru,Informasi lengkap proses penerimaan siswa baru tahun ajaran 2024/2025,📝,biru
+Kesiswaan,Tata Tertib Sekolah,Peraturan dan tata tertib yang harus dipatuhi oleh seluruh siswa,📋,biru
+Kesiswaan,Organisasi Siswa,OSIS MPK dan berbagai organisasi siswa lainnya sebagai wadah kepemimpinan,🤝,biru
+Kesiswaan,Prestasi Siswa,Daftar prestasi akademik dan non-akademik siswa di berbagai tingkat kompetisi,🏅,biru
+Fasilitas,Ruang Kelas,32 ruang kelas ber-AC dengan fasilitas multimedia dan akses internet,🏫,ungu
+Fasilitas,Laboratorium,Lab IPA Lab Komputer dan Lab Bahasa dengan peralatan lengkap dan modern,🔬,ungu
+Fasilitas,Perpustakaan,Koleksi 5000+ buku referensi dan ruang baca yang nyaman dengan sistem digital,📖,ungu
+Fasilitas,Masjid,Masjid dengan kapasitas 500 jamaah untuk kegiatan ibadah dan peringatan hari besar,🕌,ungu
+Fasilitas,Lapangan Olahraga,Lapangan basket voli dan sepak bola untuk kegiatan olahraga dan ekstrakurikuler,⚽,ungu
+Fasilitas,Kantin Sehat,Kantin dengan menu makanan sehat dan bergizi untuk mendukung kesehatan siswa,🍽️,ungu
+Tenaga Pendidik,Profil Guru,Tim pengajar berpengalaman dengan kualifikasi S1 dan S2 bersertifikat pendidik,🎓,orange
+Tenaga Pendidik,Pengembangan Profesi,Program pelatihan dan sertifikasi guru berkelanjutan untuk meningkatkan kualitas,📈,orange
+Tenaga Pendidik,Struktur Organisasi,Susunan kepemimpinan dan struktur organisasi sekolah yang jelas dan profesional,🏛️,orange
+Tenaga Pendidik,Prestasi Guru,Penghargaan dan prestasi yang diraih para pendidik di tingkat regional dan nasional,🌟,orange
+Kegiatan Sekolah,Agenda Bulanan,Kalender kegiatan dan acara sekolah setiap bulan termasuk ujian dan ekstrakurikuler,📅,merah
+Kegiatan Sekolah,Peringatan Hari Besar,Perayaan hari besar Islam dan nasional dengan berbagai kegiatan menarik,🎊,merah
+Kegiatan Sekolah,Study Tour,Program kunjungan edukatif ke berbagai tempat bersejarah dan pusat pembelajaran,🚌,merah
+Kegiatan Sekolah,Lomba dan Kompetisi,Berbagai kompetisi akademik dan non-akademik tingkat sekolah hingga nasional,🏆,merah
+Kegiatan Sekolah,Pesantren Kilat,Program pesantren kilat selama bulan Ramadan untuk memperdalam pemahaman agama,🌙,merah
+Kegiatan Sekolah,Bakti Sosial,Kegiatan bakti sosial dan pengabdian masyarakat sebagai implementasi nilai Islam,🤲,merah
+Informasi,Pengumuman Terbaru,Informasi dan pengumuman penting dari sekolah terkait pembelajaran dan administrasi,📢,teal
+Informasi,Berita Sekolah,Berita dan artikel tentang kegiatan sekolah prestasi siswa dan program unggulan,📰,teal
+Informasi,Galeri Foto,Dokumentasi kegiatan dan momen penting sekolah dalam bentuk foto dan video,📸,teal
+Informasi,Kontak Darurat,Nomor telepon penting dan kontak darurat untuk keperluan mendesak,🚨,teal
+Informasi,Jadwal Pelajaran,Jadwal pelajaran harian dan mingguan untuk semua tingkat kelas,⏰,teal
+Informasi,Kalender Akademik,Kalender akademik tahunan dengan jadwal libur ujian dan kegiatan penting,📆,teal</textarea>
+                        </div>
+                        <div id="copyMessage" class="mt-2 text-green-600 text-sm hidden">✅ Data berhasil di-copy! Sekarang paste di Google Sheets cell A1</div>
+                    </div>
+                </div>
+                <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p class="text-yellow-800 text-sm">
+                        <strong>💡 Tips:</strong> Setelah mengubah data di Google Sheets, klik tombol "Refresh Data" untuk memuat perubahan terbaru.
+                        Tambah baris baru = kategori/item baru otomatis muncul di website!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-12">
         <div class="container mx-auto px-6">
@@ -249,7 +392,11 @@
     </footer>
 
     <script>
-        const categories = {
+        // Database configuration - URL Google Sheets
+        let SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1234567890/export?format=csv';
+
+        // Default categories (fallback jika spreadsheet tidak tersedia)
+        let categories = {
             kurikulum: {
                 title: "Kurikulum",
                 icon: "📚",
@@ -318,6 +465,139 @@
             }
         };
 
+        // Function to copy data to clipboard
+        function copyDataToClipboard() {
+            const textarea = document.getElementById('spreadsheetData');
+            textarea.select();
+            textarea.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                const message = document.getElementById('copyMessage');
+                message.classList.remove('hidden');
+                setTimeout(() => {
+                    message.classList.add('hidden');
+                }, 3000);
+            } catch (err) {
+                alert('Gagal copy data. Silakan copy manual dari kotak teks.');
+            }
+        }
+
+        // Function to parse CSV data
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n');
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            const data = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim()) {
+                    const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header] = values[index] || '';
+                    });
+                    data.push(row);
+                }
+            }
+            return data;
+        }
+
+        // Function to load data from spreadsheet
+        async function loadDataFromSpreadsheet() {
+            try {
+                showLoadingMessage();
+                
+                // Load data from single spreadsheet
+                const response = await fetch(SPREADSHEET_URL);
+                if (response.ok) {
+                    const csvText = await response.text();
+                    const data = parseCSV(csvText);
+                    
+                    // Process and structure the data
+                    categories = processSimpleSpreadsheetData(data);
+                    hideLoadingMessage();
+                    renderCategories();
+                    console.log('Data berhasil dimuat dari spreadsheet');
+                } else {
+                    throw new Error('Gagal memuat data dari spreadsheet');
+                }
+            } catch (error) {
+                console.warn('Menggunakan data default karena:', error.message);
+                hideLoadingMessage();
+                renderCategories();
+            }
+        }
+
+        // Function to process simple spreadsheet data into categories structure
+        function processSimpleSpreadsheetData(data) {
+            const processedCategories = {};
+            const colorMap = {
+                'hijau': 'bg-green-500',
+                'biru': 'bg-blue-500', 
+                'ungu': 'bg-purple-500',
+                'orange': 'bg-orange-500',
+                'merah': 'bg-red-500',
+                'teal': 'bg-teal-500'
+            };
+            
+            // Process each row
+            data.forEach(row => {
+                const categoryName = row['Kategori'] || row['kategori'];
+                const itemTitle = row['Judul Item'] || row['judul_item'] || row['title'];
+                const itemDesc = row['Deskripsi'] || row['deskripsi'] || row['description'];
+                const itemIcon = row['Icon'] || row['icon'] || '📄';
+                const colorName = (row['Warna'] || row['warna'] || 'hijau').toLowerCase();
+                
+                if (categoryName && itemTitle) {
+                    // Create category key from name
+                    const categoryKey = categoryName.toLowerCase().replace(/\s+/g, '_');
+                    
+                    // Initialize category if not exists
+                    if (!processedCategories[categoryKey]) {
+                        // Get category icon based on name
+                        let categoryIcon = '📁';
+                        if (categoryName.toLowerCase().includes('kurikulum')) categoryIcon = '📚';
+                        else if (categoryName.toLowerCase().includes('siswa')) categoryIcon = '👥';
+                        else if (categoryName.toLowerCase().includes('fasilitas')) categoryIcon = '🏢';
+                        else if (categoryName.toLowerCase().includes('guru') || categoryName.toLowerCase().includes('pendidik')) categoryIcon = '👨‍🏫';
+                        else if (categoryName.toLowerCase().includes('kegiatan')) categoryIcon = '🎉';
+                        else if (categoryName.toLowerCase().includes('informasi')) categoryIcon = 'ℹ️';
+                        
+                        processedCategories[categoryKey] = {
+                            title: categoryName,
+                            icon: categoryIcon,
+                            color: colorMap[colorName] || 'bg-gray-500',
+                            items: []
+                        };
+                    }
+                    
+                    // Add item to category
+                    processedCategories[categoryKey].items.push({
+                        title: itemTitle,
+                        desc: itemDesc || "Tidak ada deskripsi",
+                        icon: itemIcon
+                    });
+                }
+            });
+            
+            return processedCategories;
+        }
+
+        // Loading message functions
+        function showLoadingMessage() {
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = `
+                <div class="col-span-full text-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                    <p class="text-gray-600">Memuat data dari database...</p>
+                </div>
+            `;
+        }
+
+        function hideLoadingMessage() {
+            // Loading message will be replaced by renderCategories()
+        }
+
         function renderCategories() {
             const grid = document.getElementById('categoriesGrid');
             grid.innerHTML = '';
@@ -367,8 +647,12 @@
                 contentArea.appendChild(itemCard);
             });
             
-            // Hide categories and show content
-            document.querySelector('section:nth-of-type(2)').style.display = 'none';
+            // Hide categories section and search section
+            document.getElementById('categoriesSection').style.display = 'none';
+            document.querySelector('.py-8.bg-gray-100').style.display = 'none';
+            document.getElementById('searchResults').classList.add('hidden');
+            
+            // Show content section
             contentSection.style.display = 'block';
             
             // Scroll to content
@@ -376,9 +660,19 @@
         }
 
         function showCategories() {
-            document.querySelector('section:nth-of-type(2)').style.display = 'block';
+            // Show categories section and search section
+            document.getElementById('categoriesSection').style.display = 'block';
+            document.querySelector('.py-8.bg-gray-100').style.display = 'block';
+            
+            // Hide content section
             document.getElementById('contentSection').style.display = 'none';
-            document.querySelector('section:nth-of-type(2)').scrollIntoView({ behavior: 'smooth' });
+            
+            // Clear search results
+            document.getElementById('searchResults').classList.add('hidden');
+            document.getElementById('searchInput').value = '';
+            
+            // Scroll to categories
+            document.getElementById('categoriesSection').scrollIntoView({ behavior: 'smooth' });
         }
 
         // Search functionality
@@ -498,8 +792,48 @@
             }
         });
 
+        // Admin panel functions
+        function showAdminPanel() {
+            const adminPanel = document.getElementById('adminPanel');
+            adminPanel.style.display = 'block';
+            adminPanel.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hideAdminPanel() {
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+
+        function refreshData() {
+            loadDataFromSpreadsheet();
+        }
+
+        function updateSpreadsheetUrl() {
+            const url = document.getElementById('spreadsheetUrlInput').value.trim();
+            
+            if (url) {
+                SPREADSHEET_URL = url;
+                
+                // Save to localStorage
+                localStorage.setItem('madrasah_spreadsheet_url', url);
+                
+                alert('URL spreadsheet berhasil disimpan! Klik "Refresh Data" untuk memuat data terbaru.');
+            } else {
+                alert('Mohon isi URL spreadsheet terlebih dahulu.');
+            }
+        }
+
+        function loadSavedUrl() {
+            const savedUrl = localStorage.getItem('madrasah_spreadsheet_url');
+            
+            if (savedUrl) {
+                SPREADSHEET_URL = savedUrl;
+                document.getElementById('spreadsheetUrlInput').value = savedUrl;
+            }
+        }
+
         // Initialize
-        renderCategories();
+        loadSavedUrl();
+        loadDataFromSpreadsheet();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975133cc64e8a3e6',t:'MTc1NjE4OTAwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97516d8453d781e9',t:'MTc1NjE5MTM3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
