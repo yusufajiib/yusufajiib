@@ -153,9 +153,32 @@
                     </div>
                     
                     <div class="bg-purple-50 p-4 rounded-lg">
-                        <h5 class="font-semibold text-purple-800 mb-2">Contoh Google Apps Script:</h5>
+                        <h5 class="font-semibold text-purple-800 mb-2">Template Data Spreadsheet:</h5>
                         <div class="text-purple-700 text-xs">
-                            <pre class="bg-purple-100 p-2 rounded overflow-x-auto">function doGet() {
+                            <div class="bg-purple-100 p-2 rounded overflow-x-auto mb-2">
+                                <strong>Header Row (Baris 1):</strong><br>
+                                A1: Judul | B1: Deskripsi | C1: Icon | D1: Folder | E1: Materi | F1: Warna
+                            </div>
+                            <div class="bg-purple-100 p-2 rounded overflow-x-auto text-xs">
+                                <table class="w-full text-xs">
+                                    <tr><td><strong>A2:</strong></td><td>Pendidikan Agama Islam</td></tr>
+                                    <tr><td><strong>B2:</strong></td><td>Pembelajaran Al-Quran, Hadits, dan Fiqh</td></tr>
+                                    <tr><td><strong>C2:</strong></td><td>📖</td></tr>
+                                    <tr><td><strong>D2:</strong></td><td>pendidikan-agama</td></tr>
+                                    <tr><td><strong>E2:</strong></td><td>Al-Quran & Tajwid|Hadits Nabi|Fiqh Ibadah|Akidah Akhlak</td></tr>
+                                    <tr><td><strong>F2:</strong></td><td>from-green-500 to-green-600</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                        <button onclick="downloadSpreadsheetTemplate()" class="mt-2 bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded text-xs">
+                            📥 Download Template CSV
+                        </button>
+                    </div>
+                    
+                    <div class="bg-indigo-50 p-4 rounded-lg">
+                        <h5 class="font-semibold text-indigo-800 mb-2">Contoh Google Apps Script:</h5>
+                        <div class="text-indigo-700 text-xs">
+                            <pre class="bg-indigo-100 p-2 rounded overflow-x-auto">function doGet() {
   const sheet = SpreadsheetApp.getActiveSheet();
   const data = sheet.getDataRange().getValues();
   const categories = [];
@@ -311,7 +334,57 @@
             }
         };
 
-        // No fallback categories - will show empty state if no data from spreadsheet
+        // Sample categories for demonstration
+        const sampleCategories = [
+            {
+                title: "Pendidikan Agama Islam",
+                description: "Pembelajaran Al-Quran, Hadits, dan Fiqh untuk memperkuat iman dan takwa",
+                icon: "📖",
+                folder: "pendidikan-agama",
+                items: ["Al-Quran & Tajwid", "Hadits Nabi", "Fiqh Ibadah", "Akidah Akhlak", "Sejarah Islam"],
+                color: "from-green-500 to-green-600"
+            },
+            {
+                title: "Bahasa Arab",
+                description: "Penguasaan bahasa Arab untuk memahami Al-Quran dan literatur Islam",
+                icon: "🔤",
+                folder: "bahasa-arab",
+                items: ["Nahwu Sharaf", "Mufrodat", "Qiroah", "Kitabah", "Muhadatsah"],
+                color: "from-blue-500 to-blue-600"
+            },
+            {
+                title: "Tahfidz Al-Quran",
+                description: "Program menghafal Al-Quran dengan metode yang mudah dan menyenangkan",
+                icon: "🕌",
+                folder: "tahfidz",
+                items: ["Juz 30", "Juz 29", "Juz 1", "Surah Pilihan", "Muraja'ah"],
+                color: "from-purple-500 to-purple-600"
+            },
+            {
+                title: "Matematika",
+                description: "Pembelajaran matematika dengan pendekatan Islami dan aplikatif",
+                icon: "🔢",
+                folder: "matematika",
+                items: ["Aritmatika", "Aljabar", "Geometri", "Statistika", "Matematika Terapan"],
+                color: "from-orange-500 to-orange-600"
+            },
+            {
+                title: "Sains & Teknologi",
+                description: "Eksplorasi ilmu pengetahuan alam dalam perspektif Islam",
+                icon: "🔬",
+                folder: "sains",
+                items: ["Fisika", "Kimia", "Biologi", "Teknologi", "Lingkungan Hidup"],
+                color: "from-teal-500 to-teal-600"
+            },
+            {
+                title: "Bahasa Indonesia",
+                description: "Penguasaan bahasa Indonesia yang baik dan benar",
+                icon: "📝",
+                folder: "bahasa-indonesia",
+                items: ["Membaca", "Menulis", "Berbicara", "Menyimak", "Sastra"],
+                color: "from-red-500 to-red-600"
+            }
+        ];
 
         let categories = [];
 
@@ -341,9 +414,10 @@
                 
             } catch (error) {
                 console.warn('⚠️ Failed to load from spreadsheet:', error.message);
-                categories = [];
+                console.log('📋 Using sample data as fallback');
+                categories = sampleCategories;
                 isUsingSpreadsheet = false;
-                updateDataSourceStatus('Tidak Ada Data');
+                updateDataSourceStatus('Data Sample (Fallback)');
             } finally {
                 populateCategories();
                 hideLoadingState();
@@ -412,14 +486,14 @@
             if (categories.length === 0) {
                 grid.innerHTML = `
                     <div class="col-span-full text-center py-16">
-                        <div class="text-6xl mb-6">📋</div>
-                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Belum Ada Kategori</h4>
-                        <p class="text-gray-600 mb-6">Kategori akan muncul setelah data ditambahkan ke spreadsheet.</p>
-                        <div class="bg-blue-50 p-6 rounded-lg max-w-md mx-auto">
-                            <p class="text-blue-800 text-sm">
-                                <strong>Langkah selanjutnya:</strong><br>
-                                1. Setup Google Apps Script<br>
-                                2. Tambahkan data kategori ke spreadsheet<br>
+                        <div class="text-6xl mb-6">⚠️</div>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Gagal Memuat Data</h4>
+                        <p class="text-gray-600 mb-6">Terjadi kesalahan saat memuat kategori dari spreadsheet.</p>
+                        <div class="bg-yellow-50 p-6 rounded-lg max-w-md mx-auto">
+                            <p class="text-yellow-800 text-sm">
+                                <strong>Coba langkah berikut:</strong><br>
+                                1. Periksa koneksi internet<br>
+                                2. Pastikan Apps Script sudah di-deploy<br>
                                 3. Klik tombol "Refresh Data"
                             </p>
                         </div>
@@ -504,6 +578,31 @@
         // Hide spreadsheet info modal
         function hideSpreadsheetInfo() {
             document.getElementById('spreadsheet-modal').classList.add('hidden');
+        }
+
+        // Download spreadsheet CSV template
+        function downloadSpreadsheetTemplate() {
+            const csvContent = `Judul,Deskripsi,Icon,Folder,Materi,Warna
+Pendidikan Agama Islam,"Pembelajaran Al-Quran, Hadits, dan Fiqh untuk memperkuat iman dan takwa",📖,pendidikan-agama,"Al-Quran & Tajwid|Hadits Nabi|Fiqh Ibadah|Akidah Akhlak|Sejarah Islam",from-green-500 to-green-600
+Bahasa Arab,"Penguasaan bahasa Arab untuk memahami Al-Quran dan literatur Islam",🔤,bahasa-arab,"Nahwu Sharaf|Mufrodat|Qiroah|Kitabah|Muhadatsah",from-blue-500 to-blue-600
+Tahfidz Al-Quran,"Program menghafal Al-Quran dengan metode yang mudah dan menyenangkan",🕌,tahfidz,"Juz 30|Juz 29|Juz 1|Surah Pilihan|Muraja'ah",from-purple-500 to-purple-600
+Matematika,"Pembelajaran matematika dengan pendekatan Islami dan aplikatif",🔢,matematika,"Aritmatika|Aljabar|Geometri|Statistika|Matematika Terapan",from-orange-500 to-orange-600
+Sains & Teknologi,"Eksplorasi ilmu pengetahuan alam dalam perspektif Islam",🔬,sains,"Fisika|Kimia|Biologi|Teknologi|Lingkungan Hidup",from-teal-500 to-teal-600
+Bahasa Indonesia,"Penguasaan bahasa Indonesia yang baik dan benar",📝,bahasa-indonesia,"Membaca|Menulis|Berbicara|Menyimak|Sastra",from-red-500 to-red-600`;
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'madrasah-categories-template.csv');
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('Template CSV berhasil diunduh!', 'success');
         }
 
         // Download Apps Script template
@@ -617,5 +716,5 @@ function doGet() {
             loadCategoriesFromSpreadsheet();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97509f03056ff918',t:'MTc1NjE4MjkxMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9750f32e2765978e',t:'MTc1NjE4NjM2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
