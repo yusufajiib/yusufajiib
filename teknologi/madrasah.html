@@ -86,7 +86,7 @@
                         📊 Info Database
                     </button>
                     <button onclick="downloadTemplate()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
-                        📥 Template CSV
+                        📥 Template Apps Script
                     </button>
                 </div>
             </div>
@@ -112,33 +112,69 @@
                 
                 <div class="space-y-4 text-sm">
                     <div class="bg-blue-50 p-4 rounded-lg">
-                        <h5 class="font-semibold text-blue-800 mb-2">Format Spreadsheet yang Diperlukan:</h5>
-                        <div class="grid grid-cols-2 gap-2 text-blue-700">
-                            <div><strong>Kolom A:</strong> Judul Kategori</div>
-                            <div><strong>Kolom B:</strong> Deskripsi</div>
-                            <div><strong>Kolom C:</strong> Icon (emoji)</div>
-                            <div><strong>Kolom D:</strong> Nama Folder</div>
-                            <div><strong>Kolom E:</strong> Materi (pisahkan dengan |)</div>
-                            <div><strong>Kolom F:</strong> Warna Gradient</div>
+                        <h5 class="font-semibold text-blue-800 mb-2">Format Data JSON yang Diperlukan:</h5>
+                        <div class="text-blue-700 space-y-1">
+                            <div><strong>title:</strong> Judul Kategori (string)</div>
+                            <div><strong>description:</strong> Deskripsi kategori (string)</div>
+                            <div><strong>icon:</strong> Icon emoji (string)</div>
+                            <div><strong>folder:</strong> Nama folder (string)</div>
+                            <div><strong>items:</strong> Array materi pembelajaran</div>
+                            <div><strong>color:</strong> Warna gradient Tailwind (string)</div>
                         </div>
                     </div>
                     
                     <div class="bg-green-50 p-4 rounded-lg">
-                        <h5 class="font-semibold text-green-800 mb-2">Cara Setup Google Sheets:</h5>
+                        <h5 class="font-semibold text-green-800 mb-2">Cara Setup Google Apps Script:</h5>
                         <ol class="list-decimal list-inside text-green-700 space-y-1">
-                            <li>Buat Google Sheets baru dengan format di atas</li>
-                            <li>Klik File → Share → Publish to web</li>
-                            <li>Pilih format CSV dan publish</li>
-                            <li>Copy URL CSV dan ganti di konfigurasi</li>
+                            <li>Buat Google Sheets dengan data kategori</li>
+                            <li>Buka Extensions → Apps Script</li>
+                            <li>Buat script untuk convert data ke JSON</li>
+                            <li>Deploy sebagai Web App</li>
+                            <li>Copy URL dan ganti di konfigurasi</li>
                         </ol>
                     </div>
                     
                     <div class="bg-yellow-50 p-4 rounded-lg">
-                        <h5 class="font-semibold text-yellow-800 mb-2">Contoh Warna Gradient:</h5>
+                        <h5 class="font-semibold text-yellow-800 mb-2">Contoh Format JSON Response:</h5>
                         <div class="text-yellow-700 text-xs">
-                            <code>from-green-500 to-green-600</code><br>
-                            <code>from-blue-500 to-blue-600</code><br>
-                            <code>from-purple-500 to-purple-600</code>
+                            <pre class="bg-yellow-100 p-2 rounded overflow-x-auto">{
+  "categories": [
+    {
+      "title": "Pendidikan Agama",
+      "description": "Pembelajaran Al-Quran dan Hadits",
+      "icon": "📖",
+      "folder": "pendidikan-agama",
+      "items": ["Al-Quran", "Hadits", "Fiqh"],
+      "color": "from-green-500 to-green-600"
+    }
+  ]
+}</pre>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h5 class="font-semibold text-purple-800 mb-2">Contoh Google Apps Script:</h5>
+                        <div class="text-purple-700 text-xs">
+                            <pre class="bg-purple-100 p-2 rounded overflow-x-auto">function doGet() {
+  const sheet = SpreadsheetApp.getActiveSheet();
+  const data = sheet.getDataRange().getValues();
+  const categories = [];
+  
+  for (let i = 1; i < data.length; i++) {
+    categories.push({
+      title: data[i][0],
+      description: data[i][1],
+      icon: data[i][2],
+      folder: data[i][3],
+      items: data[i][4].split('|'),
+      color: data[i][5]
+    });
+  }
+  
+  return ContentService
+    .createTextOutput(JSON.stringify({categories}))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
                         </div>
                     </div>
                     
@@ -260,105 +296,54 @@
     <script>
         // Configuration for Google Sheets integration
         const SPREADSHEET_CONFIG = {
-            // Replace with your Google Sheets CSV export URL
-            // Format: https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/export?format=csv&gid=SHEET_ID
-            csvUrl: 'https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/export?format=csv&gid=0',
+            // Replace with your Google Apps Script Web App URL that returns JSON
+            // Format: https://script.google.com/macros/s/SCRIPT_ID/exec
+            jsonUrl: 'https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec',
             
-            // Column mapping (0-based index)
-            columns: {
-                title: 0,        // Column A: Judul Kategori
-                description: 1,  // Column B: Deskripsi
-                icon: 2,         // Column C: Icon (emoji)
-                folder: 3,       // Column D: Nama Folder
-                items: 4,        // Column E: Materi (separated by |)
-                color: 5         // Column F: Warna Gradient
+            // Expected JSON format from Google Apps Script
+            expectedFormat: {
+                title: 'string',        // Judul Kategori
+                description: 'string',  // Deskripsi
+                icon: 'string',         // Icon (emoji)
+                folder: 'string',       // Nama Folder
+                items: 'array',         // Array of materi
+                color: 'string'         // Warna Gradient
             }
         };
 
-        // Fallback categories (used if spreadsheet fails to load)
-        const fallbackCategories = [
-            {
-                title: "Pendidikan Agama",
-                description: "Pembelajaran Al-Quran, Hadits, Fiqh, dan Akidah Akhlak",
-                icon: "📖",
-                folder: "pendidikan-agama",
-                items: ["Al-Quran dan Tajwid", "Hadits dan Sirah", "Fiqh Ibadah", "Akidah Akhlak"],
-                color: "from-green-500 to-green-600"
-            },
-            {
-                title: "Pendidikan Umum",
-                description: "Mata pelajaran umum sesuai kurikulum nasional",
-                icon: "🎓",
-                folder: "pendidikan-umum",
-                items: ["Matematika", "Bahasa Indonesia", "IPA", "IPS"],
-                color: "from-blue-500 to-blue-600"
-            },
-            {
-                title: "Bahasa Arab",
-                description: "Pembelajaran bahasa Arab dari dasar hingga mahir",
-                icon: "🔤",
-                folder: "bahasa-arab",
-                items: ["Nahwu Sharaf", "Muhadatsah", "Qiroah", "Kitabah"],
-                color: "from-purple-500 to-purple-600"
-            },
-            {
-                title: "Kegiatan Ekstrakurikuler",
-                description: "Berbagai kegiatan pengembangan bakat dan minat",
-                icon: "🎨",
-                folder: "ekstrakurikuler",
-                items: ["Pramuka", "Seni Kaligrafi", "Olahraga", "Sains Club"],
-                color: "from-orange-500 to-orange-600"
-            },
-            {
-                title: "Tahfidz Al-Quran",
-                description: "Program menghafal Al-Quran dengan metode terpadu",
-                icon: "📿",
-                folder: "tahfidz",
-                items: ["Tahfidz Juz 30", "Tahfidz Juz 1-5", "Muraja'ah", "Tilawah"],
-                color: "from-emerald-500 to-emerald-600"
-            },
-            {
-                title: "Informasi Sekolah",
-                description: "Informasi terkini tentang kegiatan dan pengumuman",
-                icon: "📢",
-                folder: "informasi",
-                items: ["Pengumuman", "Agenda Kegiatan", "Prestasi Siswa", "Berita Terkini"],
-                color: "from-red-500 to-red-600"
-            }
-        ];
+        // No fallback categories - will show empty state if no data from spreadsheet
 
         let categories = [];
 
         // Track data source
         let isUsingSpreadsheet = false;
 
-        // Load categories from Google Sheets
+        // Load categories from Google Sheets via Apps Script
         async function loadCategoriesFromSpreadsheet() {
             try {
                 showLoadingState();
                 
-                const response = await fetch(SPREADSHEET_CONFIG.csvUrl);
+                const response = await fetch(SPREADSHEET_CONFIG.jsonUrl);
                 if (!response.ok) {
                     throw new Error('Failed to fetch spreadsheet data');
                 }
                 
-                const csvText = await response.text();
-                const parsedCategories = parseCSVToCategories(csvText);
+                const jsonData = await response.json();
                 
-                if (parsedCategories.length > 0) {
-                    categories = parsedCategories;
+                if (jsonData && jsonData.categories && Array.isArray(jsonData.categories)) {
+                    categories = jsonData.categories;
                     isUsingSpreadsheet = true;
                     console.log('✅ Categories loaded from spreadsheet:', categories.length);
                     updateDataSourceStatus('Google Sheets (Online)');
                 } else {
-                    throw new Error('No valid categories found in spreadsheet');
+                    throw new Error('Invalid data format from spreadsheet');
                 }
                 
             } catch (error) {
-                console.warn('⚠️ Failed to load from spreadsheet, using fallback data:', error.message);
-                categories = fallbackCategories;
+                console.warn('⚠️ Failed to load from spreadsheet:', error.message);
+                categories = [];
                 isUsingSpreadsheet = false;
-                updateDataSourceStatus('Data Fallback (Offline)');
+                updateDataSourceStatus('Tidak Ada Data');
             } finally {
                 populateCategories();
                 hideLoadingState();
@@ -392,59 +377,15 @@
             }
         }
 
-        // Parse CSV data to categories array
-        function parseCSVToCategories(csvText) {
-            const lines = csvText.split('\n');
-            const parsedCategories = [];
-            
-            // Skip header row (index 0)
-            for (let i = 1; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue;
-                
-                const columns = parseCSVLine(line);
-                if (columns.length < 6) continue; // Ensure all required columns exist
-                
-                const category = {
-                    title: columns[SPREADSHEET_CONFIG.columns.title] || '',
-                    description: columns[SPREADSHEET_CONFIG.columns.description] || '',
-                    icon: columns[SPREADSHEET_CONFIG.columns.icon] || '📚',
-                    folder: columns[SPREADSHEET_CONFIG.columns.folder] || '',
-                    items: columns[SPREADSHEET_CONFIG.columns.items] ? 
-                           columns[SPREADSHEET_CONFIG.columns.items].split('|').map(item => item.trim()) : [],
-                    color: columns[SPREADSHEET_CONFIG.columns.color] || 'from-gray-500 to-gray-600'
-                };
-                
-                // Validate required fields
-                if (category.title && category.folder) {
-                    parsedCategories.push(category);
-                }
-            }
-            
-            return parsedCategories;
-        }
-
-        // Simple CSV parser (handles basic CSV format)
-        function parseCSVLine(line) {
-            const result = [];
-            let current = '';
-            let inQuotes = false;
-            
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                
-                if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    result.push(current.trim());
-                    current = '';
-                } else {
-                    current += char;
-                }
-            }
-            
-            result.push(current.trim());
-            return result;
+        // Validate category data structure
+        function validateCategoryData(category) {
+            return category && 
+                   typeof category.title === 'string' && category.title.trim() !== '' &&
+                   typeof category.folder === 'string' && category.folder.trim() !== '' &&
+                   typeof category.description === 'string' &&
+                   typeof category.icon === 'string' &&
+                   Array.isArray(category.items) &&
+                   typeof category.color === 'string';
         }
 
         // Show loading state
@@ -470,9 +411,18 @@
             
             if (categories.length === 0) {
                 grid.innerHTML = `
-                    <div class="col-span-full text-center py-12">
-                        <div class="text-4xl mb-4">📚</div>
-                        <p class="text-gray-600">Tidak ada kategori yang tersedia saat ini.</p>
+                    <div class="col-span-full text-center py-16">
+                        <div class="text-6xl mb-6">📋</div>
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">Belum Ada Kategori</h4>
+                        <p class="text-gray-600 mb-6">Kategori akan muncul setelah data ditambahkan ke spreadsheet.</p>
+                        <div class="bg-blue-50 p-6 rounded-lg max-w-md mx-auto">
+                            <p class="text-blue-800 text-sm">
+                                <strong>Langkah selanjutnya:</strong><br>
+                                1. Setup Google Apps Script<br>
+                                2. Tambahkan data kategori ke spreadsheet<br>
+                                3. Klik tombol "Refresh Data"
+                            </p>
+                        </div>
                     </div>
                 `;
                 return;
@@ -556,26 +506,73 @@
             document.getElementById('spreadsheet-modal').classList.add('hidden');
         }
 
-        // Download CSV template
+        // Download Apps Script template
         function downloadTemplate() {
-            const csvContent = `Judul Kategori,Deskripsi,Icon,Nama Folder,Materi (pisahkan dengan |),Warna Gradient
-Pendidikan Agama,Pembelajaran Al-Quran dan Hadits,📖,pendidikan-agama,Al-Quran dan Tajwid|Hadits dan Sirah|Fiqh Ibadah,from-green-500 to-green-600
-Pendidikan Umum,Mata pelajaran umum sesuai kurikulum,🎓,pendidikan-umum,Matematika|Bahasa Indonesia|IPA|IPS,from-blue-500 to-blue-600
-Bahasa Arab,Pembelajaran bahasa Arab,🔤,bahasa-arab,Nahwu Sharaf|Muhadatsah|Qiroah,from-purple-500 to-purple-600`;
+            const scriptContent = `// Google Apps Script untuk Madrasah Al-Hikmah
+// Paste kode ini di Google Apps Script dan deploy sebagai Web App
+
+function doGet() {
+  try {
+    const sheet = SpreadsheetApp.getActiveSheet();
+    const data = sheet.getDataRange().getValues();
+    const categories = [];
+    
+    // Skip header row (index 0)
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      
+      // Skip empty rows
+      if (!row[0] || !row[3]) continue;
+      
+      categories.push({
+        title: row[0] || '',
+        description: row[1] || '',
+        icon: row[2] || '📚',
+        folder: row[3] || '',
+        items: row[4] ? row[4].split('|').map(item => item.trim()) : [],
+        color: row[5] || 'from-gray-500 to-gray-600'
+      });
+    }
+    
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        categories: categories,
+        lastUpdated: new Date().toISOString(),
+        total: categories.length
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        error: error.toString(),
+        categories: []
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// Format Spreadsheet:
+// Kolom A: Judul Kategori
+// Kolom B: Deskripsi  
+// Kolom C: Icon (emoji)
+// Kolom D: Nama Folder
+// Kolom E: Materi (pisahkan dengan |)
+// Kolom F: Warna Gradient (contoh: from-green-500 to-green-600)`;
             
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob([scriptContent], { type: 'text/plain;charset=utf-8;' });
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             
             link.setAttribute('href', url);
-            link.setAttribute('download', 'template-kategori-madrasah.csv');
+            link.setAttribute('download', 'madrasah-apps-script.js');
             link.style.visibility = 'hidden';
             
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             
-            showNotification('Template CSV berhasil diunduh!', 'success');
+            showNotification('Template Apps Script berhasil diunduh!', 'success');
         }
 
         // Show notification
@@ -620,5 +617,5 @@ Bahasa Arab,Pembelajaran bahasa Arab,🔤,bahasa-arab,Nahwu Sharaf|Muhadatsah|Qi
             loadCategoriesFromSpreadsheet();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974ebdde803ac5f0',t:'MTc1NjE2MzIwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'974f9ea0c2c1c691',t:'MTc1NjE3MjQxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
