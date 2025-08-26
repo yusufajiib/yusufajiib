@@ -1,4 +1,46 @@
-<!DOCTYPE html> <html lang="id"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Madrasah Al-Hikmah - Website Resmi</title> <script src="https://cdn.tailwindcss.com"></script> <style> @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap'); body { font-family: 'Inter', sans-serif; } .gradient-bg { background: linear-gradient(135deg, #166534 0%, #16a34a 50%, #22c55e 100%); } .card-hover { transisi: semua 0,3 detik mudah; } .card-hover:hover { transformasi: translateY(-5px); bayangan kotak: 0 20px 25px -5px rgba(0, 0, 0, 0.1); } </style> </head> <body class="bg-gray-50"> <!-- Header --> <header class="gradient-bg text-white shadow-lg"> <div class="container mx-auto px-6 py-4"> <div class="flex items-center justify-between"> <div class="flex items-center space-x-3"> <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center"> <span class="text-2xl">🕌</span> </div> <div> <h1 class="text-2xl font-bold">Madrasah Hasyim Asy'ari 1 Kudus</h1> <p class="text-green-100 text-sm">Mencerdaskan Generasi Islami</p> </div> </div> <nav class="hidden md:flex space-x-6"> <a href="#" onclick="showHome()" class="hover:text-green-200 transition-colors font-medium">Beranda</a> <a href="#" onclick="showAbout()" class="hover:text-green-200 transition-colors font-medium">Tentang</a> <a href="#" onclick="showContact()" class="hover:text-green-200 transition-colors font-medium">Kontak</a> <a href="#" onclick="showAdminPanel()" class="hover:text-green-200 transition-colors font-medium">⚙️ Admin</a> </nav> </div> </div> </header> <!-- Bagian Hero --> <section class="gradient-bg text-white py-16"> <div class="container mx-auto px-6 text-center"> <h2 class="text-4xl md:text-5xl font-bold mb-6">Selamat Datang di Madrasah Hasyim Asy'ari 1 Kudus</h2>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Madrasah Al-Hikmah - Website Resmi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #166534 0%, #16a34a 50%, #22c55e 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
+                        <span class="text-2xl">🕌</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">Madrasah Hasyim Asy'ari 1 Kudus</h1>
+                        <p class="text-green-100 text-sm">Mencerdaskan Generasi Islami</p>
+                    </div>
+                </div>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="#" onclick="showHome()" class="hover:text-green-200 transition-colors font-medium">Beranda</a>
+                    <a href="#" onclick="showAbout()" class="hover:text-green-200 transition-colors font-medium">Tentang</a>
+                    <a href="#" onclick="showContact()" class="hover:text-green-200 transition-colors font-medium">Kontak</a>
+                    <a href="#" onclick="showAdminPanel()" class="hover:text-green-200 transition-colors font-medium">⚙️ Admin</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-16">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6">Selamat Datang di Madrasah Hasyim Asy'ari 1 Kudus</h2>
             <p class="text-xl text-green-100 mb-8 max-w-3xl mx-auto">Lembaga pendidikan Islam yang mengintegrasikan ilmu agama dan umum untuk membentuk generasi yang berakhlak mulia dan berprestasi</p>
             <button class="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors">Pelajari Lebih Lanjut</button>
         </div>
@@ -38,7 +80,32 @@
     </section>
 
     <!-- Content Area -->
-    <section class="py-16 bg-white" id="contentSection" style="display:none;"> <div class="container mx-auto px-6"> <div class="flex items-center mb-8"> <button id="backButton" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors mr-4">← Kembali</button> <h3 id="contentTitle" class="text-3xl font-bold text-gray-800"></h3> </div> <div id="contentArea" class="grid gap-6"> <!-- Konten dinamis akan dimuat di sini --> </div> </div> </section> <!-- Tentang Bagian --> <section class="py-16 bg-white" id="aboutSection" style="display: none;"> <div class="container mx-auto px-6"> <div class="flex items-center mb-8"> <button onclick="showHome()" class="bg-green-600 text-white px-4 py-2 round-lg hover:bg-green-700 transisi-warna mr-4">← Kembali</button> <h3 class="text-3xl font-bold text-gray-800">Tentang Madrasah</h3> </div> <div class="grid md:grid-cols-2 gap-12"> <div> <h4 class="text-2xl font-semibold text-gray-800 mb-4">Sejarah Singkat</h4> <p class="text-gray-600 mb-6">Madrasah Hasyim Asy'ari 1 Kudus pada tahun 1985 dengan visi menjadi lembaga pendidikan Islam terdepan di Kudus. Nama madrasah diambil dari tokoh ulama besar KH. Hasyim Asy'ari, pendiri Nahdlatul Ulama.</p> <h4 class="text-2xl font-semibold text-gray-800 mb-4">Visi</h4> <p class="text-gray-600 mb-6">Menjadi madrasah unggul yang menghasilkan generasi muslim yang berakhlak mulia, berprestasi, dan siap menghadapi tantangan zaman.</p>
+    <section class="py-16 bg-white" id="contentSection" style="display: none;">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center mb-8">
+                <button id="backButton" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors mr-4">← Kembali</button>
+                <h3 id="contentTitle" class="text-3xl font-bold text-gray-800"></h3>
+            </div>
+            <div id="contentArea" class="grid gap-6">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="py-16 bg-white" id="aboutSection" style="display: none;">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center mb-8">
+                <button onclick="showHome()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors mr-4">← Kembali</button>
+                <h3 class="text-3xl font-bold text-gray-800">Tentang Madrasah</h3>
+            </div>
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <h4 class="text-2xl font-semibold text-gray-800 mb-4">Sejarah Singkat</h4>
+                    <p class="text-gray-600 mb-6">Madrasah Hasyim Asy'ari 1 Kudus didirikan pada tahun 1985 dengan visi menjadi lembaga pendidikan Islam terdepan di Kudus. Nama madrasah diambil dari tokoh ulama besar KH. Hasyim Asy'ari, pendiri Nahdlatul Ulama.</p>
+                    
+                    <h4 class="text-2xl font-semibold text-gray-800 mb-4">Visi</h4>
+                    <p class="text-gray-600 mb-6">Menjadi madrasah unggul yang menghasilkan generasi muslim yang berakhlak mulia, berprestasi, dan siap menghadapi tantangan zaman.</p>
                     
                     <h4 class="text-2xl font-semibold text-gray-800 mb-4">Misi</h4>
                     <ul class="text-gray-600 space-y-2">
@@ -80,7 +147,105 @@
     </section>
 
     <!-- Contact Section -->
-    <section class="py-16 bg-white" id="contactSection" style="display:none;"> <div class="container mx-auto px-6"> <div class="flex items-center mb-8"> <button onclick="showHome()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors mr-4">← Kembali</button> <h3 class="text-3xl font-bold text-gray-800">Kontak Kami</h3> </div> <div class="grid md:grid-cols-2 gap-12"> <div> <h4 class="text-2xl font-semibold text-gray-800 mb-6">Informasi Kontak</h4> <div class="space-y-4"> <div class="flex items-start space-x-3"> <span class="text-2xl">📍</span> <div> <h5 class="font-semibold text-gray-800">Alamat</h5> <p class="text-gray-600">Jl. KH. Hasyim Asy'ari No. 15, Kudus, Jawa Tengah 59311</p> </div> </div> <div class="flex items-start space-x-3"> <span class="text-2xl">📞</span> <div> <h5 class="font-semibold text-gray-800">Telepon</h5> <p class="text-gray-600">(0291) 438-567</p> </div> </div> <div class="flex items-start space-x-3"> <span class="text-2xl">✉️</span> <div> <h5 class="font-semibold teks-abu-abu-800">Surel</h5> <p class="teks-abu-abu-600">info@mhasyim1kudus.sch.id</p> </div> </div> <div class="flex items-start space-x-3"> <span class="teks-2xl">🌐</span> <div> <h5 class="font-semibold teks-abu-abu-800">Situs Web</h5> <p class="teks-abu-abu-600">www.mhasyim1kudus.sch.id</p> </div> </div> </div> </div> <div> <h4 class="text-2xl font-semibold text-gray-800 mb-6">Kirim Pesan</h4> <form class="space-y-4"> <div> <label class="block text-gray-700 font-medium mb-2">Nama Lengkap</label> <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"> </div> <div> <label class="block text-gray-700 font-medium mb-2">Email</label> <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 fokus:cincin-hijau-500"> </div> <div> <label class="block text-gray-700 font-medium mb-2">Subjek</label> <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg fokus:outline-none fokus:ring-2 fokus:ring-hijau-500"> </div> <div> <label class="block text-gray-700 font-medium mb-2">Pesan</label> <textarea rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg fokus:outline-none fokus:ring-2 fokus:ring-hijau-500"></textarea> </div> <button type="button" onclick="alert('Demo: Pesan akan dikirim ke admin madrasah')" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"> Kirim Pesan </button> </form> </div> </div> </div> </section> <!-- Panel Admin --> <section class="py-16 bg-gray-100" id="adminPanel" style="display: none;"> <div class="container mx-auto px-6"> <div class="flex items-center justify-between mb-8"> <h3 class="text-3xl font-bold text-gray-800">Panel Admin - Spreadsheet Basis Data</h3> <button onclick="hideAdminPanel()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">✕ Tutup</button> </div> <div class="grid md:grid-cols-2 gap-8"> <div class="bg-white p-6 rounded-lg shadow-md"> <h4 class="text-xl font-semibold text-gray-800 mb-4">📊 Konfigurasi Database</h4> <div class="space-y-4"> <div> <label class="block text-gray-700 font-medium mb-2">URL Google Sheets:</label> <input type="text" id="spreadsheetUrlInput" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm" placeholder="https://docs.google.com/spreadsheets/d/1234567890/export?format=csv" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5vDy3F48859hKrX3ISA6geOB5AnNF_-9IEKwB5ihFY3cPHZ3vP5GoECFmR0oAiIh7Nx-dkSiB7leW/pub?output=csv"> </div> <div class="flex space-x-3"> <button onclick="updateSpreadsheetUrl()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"> 💾 Simpan URL </button> <button onclick="refreshData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"> 🔄 Refresh Data </button> </div> </div> </div> <div class="bg-white p-6 rounded-lg shadow-md"> <h4 class="text-xl font-semibold text-gray-800 mb-4">📋 Format Spreadsheet Sederhana</h4> <div class="space-y-4 text-sm"> <p class="text-gray-600">Cukup buat 1 sheet dengan kolom berikut:</p>
+    <section class="py-16 bg-white" id="contactSection" style="display: none;">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center mb-8">
+                <button onclick="showHome()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors mr-4">← Kembali</button>
+                <h3 class="text-3xl font-bold text-gray-800">Kontak Kami</h3>
+            </div>
+            <div class="grid md:grid-cols-2 gap-12">
+                <div>
+                    <h4 class="text-2xl font-semibold text-gray-800 mb-6">Informasi Kontak</h4>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-3">
+                            <span class="text-2xl">📍</span>
+                            <div>
+                                <h5 class="font-semibold text-gray-800">Alamat</h5>
+                                <p class="text-gray-600">Jl. KH. Hasyim Asy'ari No. 15, Kudus, Jawa Tengah 59311</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="text-2xl">📞</span>
+                            <div>
+                                <h5 class="font-semibold text-gray-800">Telepon</h5>
+                                <p class="text-gray-600">(0291) 438-567</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="text-2xl">✉️</span>
+                            <div>
+                                <h5 class="font-semibold text-gray-800">Email</h5>
+                                <p class="text-gray-600">info@mhasyim1kudus.sch.id</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="text-2xl">🌐</span>
+                            <div>
+                                <h5 class="font-semibold text-gray-800">Website</h5>
+                                <p class="text-gray-600">www.mhasyim1kudus.sch.id</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-2xl font-semibold text-gray-800 mb-6">Kirim Pesan</h4>
+                    <form class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Nama Lengkap</label>
+                            <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Email</label>
+                            <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Subjek</label>
+                            <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Pesan</label>
+                            <textarea rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                        </div>
+                        <button type="button" onclick="alert('Demo: Pesan akan dikirim ke admin madrasah')" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                            Kirim Pesan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Panel -->
+    <section class="py-16 bg-gray-100" id="adminPanel" style="display: none;">
+        <div class="container mx-auto px-6">
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-3xl font-bold text-gray-800">Panel Admin - Database Spreadsheet</h3>
+                <button onclick="hideAdminPanel()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">✕ Tutup</button>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold text-gray-800 mb-4">📊 Konfigurasi Database</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">URL Google Sheets:</label>
+                            <input type="text" id="spreadsheetUrlInput" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm" placeholder="https://docs.google.com/spreadsheets/d/1234567890/export?format=csv" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vQXbAkgkGr6lwTgDnlvsndDSgTiywuoTZF0FY1fdU2zbBAG3vdYOGPJwehkvgUtxETNo0UN21oa82tH/pub?output=csv">
+                        </div>
+                        <div class="flex space-x-3">
+                            <button onclick="updateSpreadsheetUrl()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                                💾 Simpan URL
+                            </button>
+                            <button onclick="refreshData()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                🔄 Refresh Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h4 class="text-xl font-semibold text-gray-800 mb-4">📋 Format Spreadsheet Sederhana</h4>
+                    <div class="space-y-4 text-sm">
+                        <p class="text-gray-600">Cukup buat 1 sheet dengan kolom berikut:</p>
                         <div class="bg-gray-50 p-4 rounded border">
                             <table class="w-full text-xs">
                                 <thead>
@@ -118,7 +283,7 @@
                             </table>
                         </div>
                         <p class="text-xs text-gray-500">
-                            <strong>Warna yang tersedia:</strong> hijau, biru, ungu, orange, merah,teal
+                            <strong>Warna yang tersedia:</strong> hijau, biru, ungu, orange, merah, teal
                         </p>
                     </div>
                 </div>
@@ -135,9 +300,13 @@
                             <li><strong>Paste di cell A1</strong> → Data otomatis tersusun dalam kolom</li>
                             <li><strong>Klik File</strong> → Share → Publish to web</li>
                             <li><strong>Pilih "Entire Document"</strong> dan format "CSV"</li>
-                            <li><strong>Copy URL</strong> yang muncul dan paste ke field di atas</li>
+                            <li><strong>Copy URL</strong> yang muncul dan <strong>ubah "pubhtml" jadi "pub?output=csv"</strong></li>
+                            <li><strong>Paste URL yang sudah diubah</strong> ke field di atas</li>
                             <li><strong>Klik "Simpan URL"</strong> lalu "Refresh Data"</li>
                         </ol>
+                        <div class="mt-3 p-3 bg-yellow-100 border border-yellow-300 rounded">
+                            <p class="text-yellow-800 text-sm"><strong>⚠️ Penting:</strong> URL harus diakhiri dengan <code class="bg-yellow-200 px-1 rounded">pub?output=csv</code> bukan <code class="bg-red-200 px-1 rounded">pubhtml</code></p>
+                        </div>
                     </div>
                     
                     <div class="bg-green-50 p-4 rounded-lg border border-green-200">
@@ -221,4 +390,401 @@ Informasi,Kalender Akademik,Kalender akademik tahunan dengan jadwal libur ujian 
                 </div>
             </div>
             <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
-                <p>© 2024 Madrasah Hasyim Asy'ari 1 Kudus. Semua hak dilindungi.</p> </div> </div> </footer> <script> // Konfigurasi basis data - URL Google Sheets let SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5vDy3F48859hKrX3ISA6geOB5AnNF_-9IEKwB5ihFY3cPHZ3vP5GoECFmR0oAiIh7Nx-dkSiB7leW/pub?output=csv'; // Kategori - hanya dari Google Sheets let categories = {}; // Fungsi untuk menyalin data ke papan klip function copyDataToClipboard() { const textarea = document.getElementById('spreadsheetData'); textarea.select(); textarea.setSelectionRange(0, 99999); // Untuk perangkat seluler, coba { document.execCommand('copy'); const message = document.getElementById('copyMessage'); message.classList.remove('hidden'); setTimeout(() => { message.classList.add('hidden'); }, 3000); } catch (err) { alert('Tidak bisa menyalin data. Silakan menyalin manual dari kotak teks.'); } } // Fungsi untuk mengurai data CSV function parseCSV(csvText) { const lines = csvText.split('\n'); const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, '')); const data = []; for (let i = 1; i < lines.length; i++) { if (lines[i].trim()) { const values ​​= lines[i].split(',').map(v => v.trim().replace(/"/g, '')); const row = {}; headers.forEach((header, index) => { row[header] = values[index] || ''; }); data.push(row); } } return data; } // Fungsi untuk memuat data dari spreadsheet async function loadDataFromSpreadsheet() { try { showLoadingMessage(); // Muat data dari spreadsheet tunggal const response = await fetch(SPREADSHEET_URL); if (response.ok) { const csvText = await response.text(); const data = parseCSV(csvText); // Proses dan struktur data categories = processSimpleSpreadsheetData(data); hideLoadingMessage(); renderCategories(); console.log('Data berhasil dimuat dari spreadsheet'); } else { throw new Error('Tidak memuat data dari spreadsheet'); } } catch (error) { console.warn('Tidak memuat data dari spreadsheet:', error.pesan); hideLoadingMessage(); showErrorMessage(); } } // Fungsi untuk memproses data spreadsheet sederhana menjadi struktur kategori fungsi processSimpleSpreadsheetData(data) { const processedCategories = {}; const colorMap = { 'hijau': 'bg-green-500', 'biru': 'bg-blue-500', 'ungu': 'bg-purple-500', 'orange': 'bg-orange-500', 'merah': 'bg-red-500', 'teal': 'bg-teal-500' }; // Memproses setiap baris data.forEach(row => { const categoryName = row['Kategori'] || row['kategori']; const itemTitle = row['Judul Item'] || row['judul_item'] || row['title']; const itemDesc = row['Deskripsi'] || row['deskripsi'] || row['description']; const itemIcon = row['Icon'] || row['icon'] || '📄'; const colorName = (row['Warna'] || row['warna'] || 'hijau').toLowerCase(); if (categoryName && itemTitle) { // Membuat kunci kategori dari nama const categoryKey = categoryName.toLowerCase().replace(/\s+/g, '_'); // Inisialisasi kategori jika tidak ada if (!processedCategories[categoryKey]) { // Dapatkan ikon kategori berdasarkan nama let categoryIcon = '📁'; if (categoryName.toLowerCase().includes('kurikulum')) categoryIcon = '📚'; else if (categoryName.toLowerCase().includes('siswa')) categoryIcon = '👥'; else if (categoryName.toLowerCase().includes('fasilitas')) categoryIcon = '🏢'; else if (categoryName.toLowerCase().includes('guru') || categoryName.toLowerCase().includes('pendidik')) categoryIcon = '👨‍🏫'; else if (categoryName.toLowerCase().includes('kegiatan')) categoryIcon = '🎉'; else if (categoryName.toLowerCase().includes('informasi')) categoryIcon = 'ℹ️'; processedCategories[categoryKey] = { title: categoryName, icon: categoryIcon, color: colorMap[colorName] || 'bg-gray-500', items: [] }; } // Tambahkan item ke kategori processedCategories[categoryKey].items.push({ title: itemTitle, desc: itemDesc || "Tidak ada deskripsi", icon: itemIcon }); } }); return processedCategories; } // Memuat pesan fungsi function showLoadingMessage() { const grid = document.getElementById('categoriesGrid'); grid.innerHTML = ` <div class="col-span-full text-center py-12"> <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div> <p class="text-gray-600">Memuat data dari database...</p> </div> `; } function hideLoadingMessage() { // Memuat pesan akan digantikan oleh renderCategories() } function showErrorMessage() { const grid = document.getElementById('categoriesGrid'); grid.innerHTML = ` <div class="col-span-full text-center py-12"> <div class="text-6xl mb-4">📋</div> <h4 class="text-2xl font-bold text-gray-800 mb-4">Belum Ada Data</h4> <p class="text-gray-600 mb-6">Situs web ini menggunakan data dari Google Sheets.<br>Silakan isi data di spreadsheet terlebih dahulu.</p> <button onclick="showAdminPanel()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"> ⚙️ Buka Panel Admin </button> </div> `; } function renderCategories() { const grid = document.getElementById('categoriesGrid'); grid.innerHTML = ''; Object.keys(categories).forEach(key => { const category = categories[key]; const card = document.createElement('div'); card.className = `${category.color} text-white p-8 rounded-xl card-hover cursor-pointer`; card.innerHTML = ` <div class="text-4xl mb-4">${category.icon}</div> <h4 class="text-2xl font-bold mb-3">${category.title}</h4> <p class="text-white/90 mb-4">Klik untuk melihat detail informasi ${category.title.toLowerCase()}</p> <div class="flex items-center text-white/80"> <span class="mr-2">Lihat Detail</span> <span>→</span> </div> `; card.addEventListener('klik', () => tampilkanKategori(kunci)); grid.tambahkanAnak(kartu); }); } fungsi tampilkanKategori(kunciKategori) { const kategori = kategori[kunciKategori]; const seksiKonten = dokumen.getElementById('BagianKonten'); const judulKonten = dokumen.getElementById('JudulKonten'); const areaKonten = dokumen.getElementById('AreaKonten'); judulKontenTeks = kategori.judul; areaKonten.innerHTML = ''; category.items.forEach(item => { const itemCard = document.createElement('div'); itemCard.className = 'bg-white p-6 rounded-lg shadow-md border border-gray-200 card-hover'; itemCard.innerHTML = ` <div class="flex items-start space-x-4"> <div class="text-3xl">${item.icon}</div> <div class="flex-1"> <h5 class="text-xl font-semibold text-gray-800 mb-2">${item.title}</h5> <p class="text-gray-600">${item.desc}</p> <button class="mt-4 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm"> Pelajari Lebih Lanjut </button> </div> </div> `; contentArea.appendChild(itemCard); }); // Sembunyikan bagian kategori dan bagian pencarian document.getElementById('categoriesSection').style.display = 'none'; document.querySelector('.py-8.bg-gray-100').style.display = 'none'; document.getElementById('searchResults').classList.add('hidden'); // Tampilkan bagian konten contentSection.style.display = 'block'; // Gulir ke konten contentSection.scrollIntoView({ behavior: 'smooth' }); } function showCategories() { // Tampilkan bagian kategori dan bagian pencarian document.getElementById('categoriesSection').style.display = 'block'; document.querySelector('.py-8.bg-gray-100').style.display = 'block'; // Sembunyikan bagian konten document.getElementById('contentSection').style.display = 'none'; // Hapus hasil pencarian document.getElementById('searchResults').classList.add('hidden'); document.getElementById('searchInput').nilai = ''; // Gulir ke kategori document.getElementById('categoriesSection').scrollIntoView({ perilaku: 'halus' }); } // Fungsionalitas pencarian fungsi performSearch() { const query = document.getElementById('searchInput').value.toLowerCase().trim(); const searchResults = document.getElementById('searchResults'); const searchResultsList = document.getElementById('searchResultsList'); jika (query === '') { searchResults.classList.add('tersembunyi'); kembali; } biarkan hasil = []; // Cari melalui kategori dan item Object.keys(categories).forEach(key => { const category = categories[key]; // Periksa judul kategori if (category.title.toLowerCase().includes(query)) { results.push({ type: 'category', title: category.title, desc: `Kategori ${category.title}`, action: () => showCategory(key) }); } // Periksa item kategori category.items.forEach(item => { if (item.title.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query)) { results.push({ type: 'item', title: item.title, desc: item.desc, category: category.title, action: () => showCategory(key) }); } }); }); // Tampilkan hasil jika (results.length > 0) { searchResultsList.innerHTML = results.map(result => ` <div class="p-3 border-b border-gray-200 last:border-b-0 cursor-pointer hover:bg-gray-50" onclick="result.action()"> <div class="flex items-start space-x-3"> <span class="text-lg">${result.type === 'category' ? '📁' : '📄'}</span> <div> <h6 class="font-medium text-gray-800">${result.title}</h6> <p class="text-sm text-gray-600">${result.desc}</p> ${result.category ? `<span class="text-xs text-green-600">dalam ${result.category}</span>` :''} </div> </div> </div> `).join(''); searchResults.classList.remove('hidden'); } else { searchResultsList.innerHTML = '<p class="text-gray-500 text-center py-4">Tidak ada hasil yang ditemukan</p>'; searchResults.classList.remove('hidden'); } } // Fungsi navigasi fungsi showHome() { // Sembunyikan semua bagian document.getElementById('contentSection').style.display = 'none'; document.getElementById('aboutSection').style.display = 'none'; document.getElementById('contactSection').style.display = 'none'; document.getElementById('searchResults').classList.add('hidden'); // Tampilkan bagian beranda document.getElementById('categoriesSection').style.display = 'block'; document.querySelector('.py-8.bg-gray-100').style.display = 'block'; // Bersihkan pencarian document.getElementById('searchInput').value = ''; // Gulir ke atas window.scrollTo({ top: 0, behavior: 'smooth' }); } function showAbout() { // Sembunyikan semua bagian document.getElementById('categoriesSection').style.display = 'none'; document.getElementById('contentSection').style.display = 'none'; document.getElementById('contactSection').style.display = 'none'; document.querySelector('.py-8.bg-gray-100').style.display = 'none'; // Tampilkan tentang bagian document.getElementById('aboutSection').style.display = 'block'; // Gulir ke bagian document.getElementById('aboutSection').scrollIntoView({ behavior: 'smooth' }); } function showContact() { // Sembunyikan semua bagian document.getElementById('categoriesSection').style.display = 'none'; document.getElementById('contentSection').style.display = 'none'; document.getElementById('aboutSection').style.display = 'none'; document.querySelector('.py-8.bg-gray-100').style.display = 'none'; // Tampilkan bagian kontak document.getElementById('contactSection').style.display = 'block'; // Gulir ke bagian dokumen.getElementById('contactSection').scrollIntoView({ perilaku:'halus' }); } // Pendengar acara document.getElementById('backButton').addEventListener('click', showCategories); document.getElementById('searchInput').addEventListener('keypress', function(e) { if (e.key === 'Enter') { performSearch(); } }); // Fungsi panel admin function showAdminPanel() { const adminPanel = document.getElementById('adminPanel'); adminPanel.style.display = 'block'; adminPanel.scrollIntoView({ behavior: 'halus' }); } function hideAdminPanel() { document.getElementById('adminPanel').style.display = 'none'; } function refreshData() { loadDataFromSpreadsheet(); } function updateSpreadsheetUrl() { const url = document.getElementById('spreadsheetUrlInput').value.trim(); if (url) { SPREADSHEET_URL = url; // Save to localStorage localStorage.setItem('madrasah_spreadsheet_url', url); alert('URL spreadsheet berhasil disimpan! Klik "Refresh Data" untuk memuat data terbaru.'); } else { alert('Isi URL spreadsheet terlebih dahulu.'); } } function loadSavedUrl() { const savedUrl = localStorage.getItem('madrasah_spreadsheet_url'); if (savedUrl) { SPREADSHEET_URL = savedUrl; document.getElementById('spreadsheetUrlInput').value = savedUrl; } } // Initialize loadSavedUrl(); loadDataFromSpreadsheet(); </script> <script>(fungsi(){fungsi c(){var b=a.contentDocument||a.contentWindow.document;jika(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97518526f098fd73',t:'MTc1NjE5MjMzOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}jika(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body> </html>
+                <p>&copy; 2024 Madrasah Hasyim Asy'ari 1 Kudus. Semua hak dilindungi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Database configuration - URL Google Sheets
+        let SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQXbAkgkGr6lwTgDnlvsndDSgTiywuoTZF0FY1fdU2zbBAG3vdYOGPJwehkvgUtxETNo0UN21oa82tH/pub?output=csv';
+
+        // Categories - hanya dari Google Sheets
+        let categories = {};
+
+        // Function to copy data to clipboard
+        function copyDataToClipboard() {
+            const textarea = document.getElementById('spreadsheetData');
+            textarea.select();
+            textarea.setSelectionRange(0, 99999); // For mobile devices
+            
+            try {
+                document.execCommand('copy');
+                const message = document.getElementById('copyMessage');
+                message.classList.remove('hidden');
+                setTimeout(() => {
+                    message.classList.add('hidden');
+                }, 3000);
+            } catch (err) {
+                alert('Gagal copy data. Silakan copy manual dari kotak teks.');
+            }
+        }
+
+        // Function to parse CSV data
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n');
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            const data = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim()) {
+                    const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                    const row = {};
+                    headers.forEach((header, index) => {
+                        row[header] = values[index] || '';
+                    });
+                    data.push(row);
+                }
+            }
+            return data;
+        }
+
+        // Function to load data from spreadsheet
+        async function loadDataFromSpreadsheet() {
+            try {
+                showLoadingMessage();
+                
+                // Load data from single spreadsheet
+                const response = await fetch(SPREADSHEET_URL);
+                if (response.ok) {
+                    const csvText = await response.text();
+                    const data = parseCSV(csvText);
+                    
+                    // Process and structure the data
+                    categories = processSimpleSpreadsheetData(data);
+                    hideLoadingMessage();
+                    renderCategories();
+                    console.log('Data berhasil dimuat dari spreadsheet');
+                } else {
+                    throw new Error('Gagal memuat data dari spreadsheet');
+                }
+            } catch (error) {
+                console.warn('Gagal memuat data dari spreadsheet:', error.message);
+                hideLoadingMessage();
+                showErrorMessage();
+            }
+        }
+
+        // Function to process simple spreadsheet data into categories structure
+        function processSimpleSpreadsheetData(data) {
+            const processedCategories = {};
+            const colorMap = {
+                'hijau': 'bg-green-500',
+                'biru': 'bg-blue-500', 
+                'ungu': 'bg-purple-500',
+                'orange': 'bg-orange-500',
+                'merah': 'bg-red-500',
+                'teal': 'bg-teal-500'
+            };
+            
+            // Process each row
+            data.forEach(row => {
+                const categoryName = row['Kategori'] || row['kategori'];
+                const itemTitle = row['Judul Item'] || row['judul_item'] || row['title'];
+                const itemDesc = row['Deskripsi'] || row['deskripsi'] || row['description'];
+                const itemIcon = row['Icon'] || row['icon'] || '📄';
+                const colorName = (row['Warna'] || row['warna'] || 'hijau').toLowerCase();
+                
+                if (categoryName && itemTitle) {
+                    // Create category key from name
+                    const categoryKey = categoryName.toLowerCase().replace(/\s+/g, '_');
+                    
+                    // Initialize category if not exists
+                    if (!processedCategories[categoryKey]) {
+                        // Get category icon based on name
+                        let categoryIcon = '📁';
+                        if (categoryName.toLowerCase().includes('kurikulum')) categoryIcon = '📚';
+                        else if (categoryName.toLowerCase().includes('siswa')) categoryIcon = '👥';
+                        else if (categoryName.toLowerCase().includes('fasilitas')) categoryIcon = '🏢';
+                        else if (categoryName.toLowerCase().includes('guru') || categoryName.toLowerCase().includes('pendidik')) categoryIcon = '👨‍🏫';
+                        else if (categoryName.toLowerCase().includes('kegiatan')) categoryIcon = '🎉';
+                        else if (categoryName.toLowerCase().includes('informasi')) categoryIcon = 'ℹ️';
+                        
+                        processedCategories[categoryKey] = {
+                            title: categoryName,
+                            icon: categoryIcon,
+                            color: colorMap[colorName] || 'bg-gray-500',
+                            items: []
+                        };
+                    }
+                    
+                    // Add item to category
+                    processedCategories[categoryKey].items.push({
+                        title: itemTitle,
+                        desc: itemDesc || "Tidak ada deskripsi",
+                        icon: itemIcon
+                    });
+                }
+            });
+            
+            return processedCategories;
+        }
+
+        // Loading message functions
+        function showLoadingMessage() {
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = `
+                <div class="col-span-full text-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+                    <p class="text-gray-600">Memuat data dari database...</p>
+                </div>
+            `;
+        }
+
+        function hideLoadingMessage() {
+            // Loading message will be replaced by renderCategories()
+        }
+
+        function showErrorMessage() {
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = `
+                <div class="col-span-full text-center py-12">
+                    <div class="text-6xl mb-4">📋</div>
+                    <h4 class="text-2xl font-bold text-gray-800 mb-4">Belum Ada Data</h4>
+                    <p class="text-gray-600 mb-6">Website ini menggunakan data dari Google Sheets.<br>Silakan isi data di spreadsheet terlebih dahulu.</p>
+                    <button onclick="showAdminPanel()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                        ⚙️ Buka Panel Admin
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderCategories() {
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = '';
+            
+            Object.keys(categories).forEach(key => {
+                const category = categories[key];
+                const card = document.createElement('div');
+                card.className = `${category.color} text-white p-8 rounded-xl card-hover cursor-pointer`;
+                card.innerHTML = `
+                    <div class="text-4xl mb-4">${category.icon}</div>
+                    <h4 class="text-2xl font-bold mb-3">${category.title}</h4>
+                    <p class="text-white/90 mb-4">Klik untuk melihat detail informasi ${category.title.toLowerCase()}</p>
+                    <div class="flex items-center text-white/80">
+                        <span class="mr-2">Lihat Detail</span>
+                        <span>→</span>
+                    </div>
+                `;
+                card.addEventListener('click', () => showCategory(key));
+                grid.appendChild(card);
+            });
+        }
+
+        function showCategory(categoryKey) {
+            const category = categories[categoryKey];
+            const contentSection = document.getElementById('contentSection');
+            const contentTitle = document.getElementById('contentTitle');
+            const contentArea = document.getElementById('contentArea');
+            
+            contentTitle.textContent = category.title;
+            contentArea.innerHTML = '';
+            
+            category.items.forEach(item => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'bg-white p-6 rounded-lg shadow-md border border-gray-200 card-hover';
+                itemCard.innerHTML = `
+                    <div class="flex items-start space-x-4">
+                        <div class="text-3xl">${item.icon}</div>
+                        <div class="flex-1">
+                            <h5 class="text-xl font-semibold text-gray-800 mb-2">${item.title}</h5>
+                            <p class="text-gray-600">${item.desc}</p>
+                            <button class="mt-4 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
+                                Pelajari Lebih Lanjut
+                            </button>
+                        </div>
+                    </div>
+                `;
+                contentArea.appendChild(itemCard);
+            });
+            
+            // Hide categories section and search section
+            document.getElementById('categoriesSection').style.display = 'none';
+            document.querySelector('.py-8.bg-gray-100').style.display = 'none';
+            document.getElementById('searchResults').classList.add('hidden');
+            
+            // Show content section
+            contentSection.style.display = 'block';
+            
+            // Scroll to content
+            contentSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showCategories() {
+            // Show categories section and search section
+            document.getElementById('categoriesSection').style.display = 'block';
+            document.querySelector('.py-8.bg-gray-100').style.display = 'block';
+            
+            // Hide content section
+            document.getElementById('contentSection').style.display = 'none';
+            
+            // Clear search results
+            document.getElementById('searchResults').classList.add('hidden');
+            document.getElementById('searchInput').value = '';
+            
+            // Scroll to categories
+            document.getElementById('categoriesSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Search functionality
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const searchResults = document.getElementById('searchResults');
+            const searchResultsList = document.getElementById('searchResultsList');
+            
+            if (query === '') {
+                searchResults.classList.add('hidden');
+                return;
+            }
+            
+            let results = [];
+            
+            // Search through categories and items
+            Object.keys(categories).forEach(key => {
+                const category = categories[key];
+                
+                // Check category title
+                if (category.title.toLowerCase().includes(query)) {
+                    results.push({
+                        type: 'category',
+                        title: category.title,
+                        desc: `Kategori ${category.title}`,
+                        action: () => showCategory(key)
+                    });
+                }
+                
+                // Check category items
+                category.items.forEach(item => {
+                    if (item.title.toLowerCase().includes(query) || item.desc.toLowerCase().includes(query)) {
+                        results.push({
+                            type: 'item',
+                            title: item.title,
+                            desc: item.desc,
+                            category: category.title,
+                            action: () => showCategory(key)
+                        });
+                    }
+                });
+            });
+            
+            // Display results
+            if (results.length > 0) {
+                searchResultsList.innerHTML = results.map(result => `
+                    <div class="p-3 border-b border-gray-200 last:border-b-0 cursor-pointer hover:bg-gray-50" onclick="result.action()">
+                        <div class="flex items-start space-x-3">
+                            <span class="text-lg">${result.type === 'category' ? '📁' : '📄'}</span>
+                            <div>
+                                <h6 class="font-medium text-gray-800">${result.title}</h6>
+                                <p class="text-sm text-gray-600">${result.desc}</p>
+                                ${result.category ? `<span class="text-xs text-green-600">dalam ${result.category}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                searchResults.classList.remove('hidden');
+            } else {
+                searchResultsList.innerHTML = '<p class="text-gray-500 text-center py-4">Tidak ada hasil yang ditemukan</p>';
+                searchResults.classList.remove('hidden');
+            }
+        }
+        
+        // Navigation functions
+        function showHome() {
+            // Hide all sections
+            document.getElementById('contentSection').style.display = 'none';
+            document.getElementById('aboutSection').style.display = 'none';
+            document.getElementById('contactSection').style.display = 'none';
+            document.getElementById('searchResults').classList.add('hidden');
+            
+            // Show home sections
+            document.getElementById('categoriesSection').style.display = 'block';
+            document.querySelector('.py-8.bg-gray-100').style.display = 'block';
+            
+            // Clear search
+            document.getElementById('searchInput').value = '';
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function showAbout() {
+            // Hide all sections
+            document.getElementById('categoriesSection').style.display = 'none';
+            document.getElementById('contentSection').style.display = 'none';
+            document.getElementById('contactSection').style.display = 'none';
+            document.querySelector('.py-8.bg-gray-100').style.display = 'none';
+            
+            // Show about section
+            document.getElementById('aboutSection').style.display = 'block';
+            
+            // Scroll to section
+            document.getElementById('aboutSection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showContact() {
+            // Hide all sections
+            document.getElementById('categoriesSection').style.display = 'none';
+            document.getElementById('contentSection').style.display = 'none';
+            document.getElementById('aboutSection').style.display = 'none';
+            document.querySelector('.py-8.bg-gray-100').style.display = 'none';
+            
+            // Show contact section
+            document.getElementById('contactSection').style.display = 'block';
+            
+            // Scroll to section
+            document.getElementById('contactSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Event listeners
+        document.getElementById('backButton').addEventListener('click', showCategories);
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Admin panel functions
+        function showAdminPanel() {
+            const adminPanel = document.getElementById('adminPanel');
+            adminPanel.style.display = 'block';
+            adminPanel.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function hideAdminPanel() {
+            document.getElementById('adminPanel').style.display = 'none';
+        }
+
+        function refreshData() {
+            loadDataFromSpreadsheet();
+        }
+
+        function updateSpreadsheetUrl() {
+            const url = document.getElementById('spreadsheetUrlInput').value.trim();
+            
+            if (url) {
+                SPREADSHEET_URL = url;
+                
+                // Save to localStorage
+                localStorage.setItem('madrasah_spreadsheet_url', url);
+                
+                alert('URL spreadsheet berhasil disimpan! Klik "Refresh Data" untuk memuat data terbaru.');
+            } else {
+                alert('Mohon isi URL spreadsheet terlebih dahulu.');
+            }
+        }
+
+        function loadSavedUrl() {
+            const savedUrl = localStorage.getItem('madrasah_spreadsheet_url');
+            
+            if (savedUrl) {
+                SPREADSHEET_URL = savedUrl;
+                document.getElementById('spreadsheetUrlInput').value = savedUrl;
+            }
+        }
+
+        // Initialize
+        loadSavedUrl();
+        loadDataFromSpreadsheet();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9751997c3357fcf6',t:'MTc1NjE5MzE3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
