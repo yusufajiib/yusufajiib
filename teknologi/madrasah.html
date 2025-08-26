@@ -229,7 +229,7 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">URL Google Sheets:</label>
-                            <input type="text" id="spreadsheetUrlInput" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm" placeholder="https://docs.google.com/spreadsheets/d/1234567890/export?format=csv">
+                            <input type="text" id="spreadsheetUrlInput" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm" placeholder="https://docs.google.com/spreadsheets/d/1234567890/export?format=csv" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5vDy3F48859hKrX3ISA6geOB5AnNF_-9IEKwB5ihFY3cPHZ3vP5GoECFmR0oAiIh7Nx-dkSiB7leW/pub?output=csv">
                         </div>
                         <div class="flex space-x-3">
                             <button onclick="updateSpreadsheetUrl()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors">
@@ -393,7 +393,7 @@ Informasi,Kalender Akademik,Kalender akademik tahunan dengan jadwal libur ujian 
 
     <script>
         // Database configuration - URL Google Sheets
-        let SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/1234567890/export?format=csv';
+        let SPREADSHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5vDy3F48859hKrX3ISA6geOB5AnNF_-9IEKwB5ihFY3cPHZ3vP5GoECFmR0oAiIh7Nx-dkSiB7leW/pub?output=csv';
 
         // Default categories (fallback jika spreadsheet tidak tersedia)
         let categories = {
@@ -835,5 +835,5 @@ Informasi,Kalender Akademik,Kalender akademik tahunan dengan jadwal libur ujian 
         loadSavedUrl();
         loadDataFromSpreadsheet();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97516d8453d781e9',t:'MTc1NjE5MTM3MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97517c8cb6a4c189',t:'MTc1NjE5MTk4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
