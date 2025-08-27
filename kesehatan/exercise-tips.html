@@ -1,1 +1,692 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Karya AI Siswa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .modal-backdrop { backdrop-filter: blur(5px); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-16">
+        <div class="container mx-auto px-6 text-center">
+            <h1 class="text-5xl font-bold mb-4">🎨 Portfolio Karya AI Siswa</h1>
+            <p class="text-xl opacity-90 mb-8">Kumpulan karya kreatif siswa menggunakan teknologi AI</p>
+            <div class="flex flex-wrap gap-4 justify-center">
+                <button onclick="openModal()" class="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:bg-gray-100 transition-colors">
+                    ➕ Tambah Karya Baru
+                </button>
+                <button onclick="loadFromGoogleSheets()" class="bg-purple-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-800 transition-colors">
+                    🔄 Refresh Data
+                </button>
+                <button onclick="showSetupInstructions()" class="bg-yellow-500 text-white px-8 py-3 rounded-full font-semibold hover:bg-yellow-600 transition-colors">
+                    ⚙️ Setup Apps Script
+                </button>
+            </div>
+        </div>
+    </header>
+
+
+
+    <!-- Stats Section -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="p-6">
+                    <div class="text-4xl font-bold text-purple-600" id="totalWorks">0</div>
+                    <div class="text-gray-600 mt-2">Total Karya</div>
+                </div>
+                <div class="p-6">
+                    <div class="text-4xl font-bold text-blue-600" id="totalStudents">0</div>
+                    <div class="text-gray-600 mt-2">Siswa Berpartisipasi</div>
+                </div>
+                <div class="p-6">
+                    <div class="text-4xl font-bold text-green-600" id="totalCategories">0</div>
+                    <div class="text-gray-600 mt-2">Kategori Karya</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter Section -->
+    <section class="py-8 bg-gray-100">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-wrap justify-center gap-4">
+                <button onclick="filterWorks('all')" class="filter-btn active bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700 transition-colors">
+                    Semua Karya
+                </button>
+                <button onclick="filterWorks('gambar')" class="filter-btn bg-white text-gray-700 px-6 py-2 rounded-full hover:bg-gray-200 transition-colors">
+                    🎨 Gambar AI
+                </button>
+                <button onclick="filterWorks('teks')" class="filter-btn bg-white text-gray-700 px-6 py-2 rounded-full hover:bg-gray-200 transition-colors">
+                    📝 Teks AI
+                </button>
+                <button onclick="filterWorks('video')" class="filter-btn bg-white text-gray-700 px-6 py-2 rounded-full hover:bg-gray-200 transition-colors">
+                    🎬 Video AI
+                </button>
+                <button onclick="filterWorks('musik')" class="filter-btn bg-white text-gray-700 px-6 py-2 rounded-full hover:bg-gray-200 transition-colors">
+                    🎵 Musik AI
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="py-16">
+        <div class="container mx-auto px-6">
+            <div id="gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Karya akan ditampilkan di sini -->
+            </div>
+            <div id="emptyState" class="text-center py-16 hidden">
+                <div class="text-6xl mb-4">🎨</div>
+                <h3 class="text-2xl font-semibold text-gray-700 mb-2">Belum Ada Karya</h3>
+                <p class="text-gray-500 mb-6">Jadilah yang pertama menambahkan karya AI!</p>
+                <button onclick="openModal()" class="bg-purple-600 text-white px-6 py-3 rounded-full hover:bg-purple-700 transition-colors">
+                    Tambah Karya Pertama
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Form -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Tambah Karya Baru</h2>
+                    <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+                </div>
+                
+                <form id="workForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nama Siswa *</label>
+                        <input type="text" id="studentName" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Masukkan nama siswa">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Kelas *</label>
+                        <select id="studentClass" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <option value="">Pilih Kelas</option>
+                            <option value="X">Kelas X</option>
+                            <option value="XI">Kelas XI</option>
+                            <option value="XII">Kelas XII</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Judul Karya *</label>
+                        <input type="text" id="workTitle" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Masukkan judul karya">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Kategori Karya *</label>
+                        <select id="workCategory" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <option value="">Pilih Kategori</option>
+                            <option value="gambar">🎨 Gambar AI</option>
+                            <option value="teks">📝 Teks AI</option>
+                            <option value="video">🎬 Video AI</option>
+                            <option value="musik">🎵 Musik AI</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi Karya *</label>
+                        <textarea id="workDescription" required rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Ceritakan tentang karya Anda..."></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tool AI yang Digunakan *</label>
+                        <input type="text" id="aiTool" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Contoh: ChatGPT, DALL-E, Midjourney">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Link Karya (Opsional)</label>
+                        <input type="url" id="workLink" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="https://...">
+                    </div>
+                    
+                    <div class="pt-4">
+                        <button type="submit" class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                            💾 Simpan Karya
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setup Instructions Modal -->
+    <div id="setupModal" class="fixed inset-0 bg-black bg-opacity-50 modal-backdrop hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">🚀 Setup Google Apps Script</h2>
+                    <button onclick="closeSetupModal()" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+                </div>
+                
+                <div class="space-y-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-blue-800 mb-2">📋 Langkah 1: Buat Google Apps Script</h3>
+                        <ol class="list-decimal list-inside space-y-2 text-sm text-blue-700">
+                            <li>Buka <a href="https://script.google.com" target="_blank" class="underline">script.google.com</a></li>
+                            <li>Klik "New Project"</li>
+                            <li>Ganti nama project menjadi "AI Portfolio API"</li>
+                        </ol>
+                    </div>
+
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-green-800 mb-2">💻 Langkah 2: Copy Kode Apps Script</h3>
+                        <div class="bg-gray-800 text-green-400 p-4 rounded text-sm font-mono overflow-x-auto">
+<pre>function doPost(e) {
+  try {
+    // Buka spreadsheet berdasarkan ID
+    const sheet = SpreadsheetApp.openById('17MDc804lNUm_XwUM6hPj6Ui8T-JVtpxJCLq4XovVs0A')
+                                .getSheetByName('Sheet2');
+    
+    // Parse data dari request
+    const data = JSON.parse(e.postData.contents);
+    
+    // Tambah data ke sheet
+    sheet.appendRow([
+      data.studentName,
+      data.studentClass, 
+      data.title,
+      data.category,
+      data.description,
+      data.aiTool,
+      data.link,
+      data.dateAdded
+    ]);
+    
+    // Return success response
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      message: 'Data berhasil disimpan!'
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    // Return error response
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      error: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet() {
+  return ContentService.createTextOutput("AI Portfolio API is working!");
+}</pre>
+                        </div>
+                        <button onclick="copyCode()" class="mt-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors text-sm">
+                            📋 Copy Kode
+                        </button>
+                    </div>
+
+                    <div class="bg-yellow-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-yellow-800 mb-2">🚀 Langkah 3: Deploy Web App</h3>
+                        <ol class="list-decimal list-inside space-y-2 text-sm text-yellow-700">
+                            <li>Klik tombol "Deploy" di pojok kanan atas</li>
+                            <li>Pilih "New deployment"</li>
+                            <li>Klik ikon gear ⚙️ dan pilih "Web app"</li>
+                            <li>Atur pengaturan:
+                                <ul class="list-disc list-inside ml-4 mt-1">
+                                    <li>Execute as: <strong>Me</strong></li>
+                                    <li>Who has access: <strong>Anyone</strong></li>
+                                </ul>
+                            </li>
+                            <li>Klik "Deploy"</li>
+                            <li>Copy URL yang diberikan</li>
+                        </ol>
+                    </div>
+
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-purple-800 mb-2">🔗 Langkah 4: Update Website</h3>
+                        <p class="text-sm text-purple-700 mb-3">Paste URL Apps Script Anda di bawah ini:</p>
+                        <div class="flex gap-2">
+                            <input type="url" id="appsScriptUrl" placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec" class="flex-1 px-3 py-2 border border-purple-300 rounded-lg text-sm">
+                            <button onclick="updateAppsScriptUrl()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm">
+                                💾 Update
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h3 class="font-bold text-gray-800 mb-2">✅ Langkah 5: Test</h3>
+                        <p class="text-sm text-gray-700">Setelah setup selesai, coba tambah karya baru untuk memastikan data tersimpan ke Google Sheets!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+            <h3 class="text-2xl font-bold mb-4">Portfolio Karya AI Siswa</h3>
+            <p class="text-gray-400 mb-4">Menginspirasi kreativitas melalui teknologi AI</p>
+            <div class="text-sm text-gray-500 max-w-2xl mx-auto">
+                <p class="mb-2"><strong>🔗 Google Sheets Integration:</strong></p>
+                <p class="mb-1">• Sheet ID: 17MDc804lNUm_XwUM6hPj6Ui8T-JVtpxJCLq4XovVs0A</p>
+                <p class="mb-1">• Sheet Name: Sheet2</p>
+                <p class="mb-3" id="connectionStatus">• Status: <span class="text-yellow-400">Setup Required - Klik tombol "Setup Apps Script" di atas</span></p>
+                
+                <div class="bg-gray-700 p-4 rounded-lg text-left">
+                    <p class="text-yellow-400 font-semibold mb-2">📋 Format Header Google Sheets:</p>
+                    <p class="font-mono text-xs">Nama Siswa | Kelas | Judul Karya | Kategori | Deskripsi | Tool AI | Link | Tanggal</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Google Sheets Configuration
+        const GOOGLE_SHEETS_CONFIG = {
+            SHEET_ID: '17MDc804lNUm_XwUM6hPj6Ui8T-JVtpxJCLq4XovVs0A',
+            SHEET_NAME: 'Sheet2',
+            API_KEY: 'AIzaSyCAJWvsjw92iebZM54KZivepTpl_Q2gk70',
+            // Google Apps Script Web App URL - akan diupdate setelah setup
+            APPS_SCRIPT_URL: localStorage.getItem('appsScriptUrl') || ''
+        };
+
+        // Database variables
+        let worksDatabase = [];
+        let currentFilter = 'all';
+        let isLoading = false;
+
+        // Google Apps Script Functions
+        async function saveToGoogleSheets(workData) {
+            if (!GOOGLE_SHEETS_CONFIG.APPS_SCRIPT_URL) {
+                throw new Error('Google Apps Script URL belum dikonfigurasi');
+            }
+
+            try {
+                const response = await fetch(GOOGLE_SHEETS_CONFIG.APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(workData)
+                });
+
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.error || 'Gagal menyimpan data');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('Error saving to Google Sheets:', error);
+                throw error;
+            }
+        }
+
+        async function loadFromGoogleSheets() {
+            if (isLoading) return;
+            isLoading = true;
+            showLoadingState();
+
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.SHEET_ID}/values/${GOOGLE_SHEETS_CONFIG.SHEET_NAME}?key=${GOOGLE_SHEETS_CONFIG.API_KEY}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.values && data.values.length > 1) {
+                    // Skip header row (index 0)
+                    worksDatabase = data.values.slice(1).map((row, index) => ({
+                        id: index + 1,
+                        studentName: row[0] || '',
+                        studentClass: row[1] || '',
+                        title: row[2] || '',
+                        category: row[3] || '',
+                        description: row[4] || '',
+                        aiTool: row[5] || '',
+                        link: row[6] || '',
+                        dateAdded: row[7] || new Date().toLocaleDateString('id-ID')
+                    })).filter(work => work.studentName); // Filter out empty rows
+                } else {
+                    worksDatabase = [];
+                }
+                
+                displayWorks();
+                updateStats();
+                showNotification('Data berhasil dimuat dari Google Sheets! 📊');
+                
+            } catch (error) {
+                console.error('Error loading from Google Sheets:', error);
+                showNotification('Gagal memuat data dari Google Sheets. Menggunakan data lokal. ⚠️', 'error');
+                // Fallback to local storage
+                worksDatabase = JSON.parse(localStorage.getItem('aiWorksDB') || '[]');
+                displayWorks();
+                updateStats();
+            } finally {
+                isLoading = false;
+                hideLoadingState();
+            }
+        }
+
+        function showLoadingState() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = `
+                <div class="col-span-full text-center py-16">
+                    <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                    <p class="text-gray-600">Memuat data dari Google Sheets...</p>
+                </div>
+            `;
+        }
+
+        function hideLoadingState() {
+            // Loading state will be replaced by displayWorks()
+        }
+
+        // Setup Functions
+        function showSetupInstructions() {
+            document.getElementById('setupModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSetupModal() {
+            document.getElementById('setupModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function copyCode() {
+            const code = `function doPost(e) {
+  try {
+    // Buka spreadsheet berdasarkan ID
+    const sheet = SpreadsheetApp.openById('17MDc804lNUm_XwUM6hPj6Ui8T-JVtpxJCLq4XovVs0A')
+                                .getSheetByName('Sheet2');
+    
+    // Parse data dari request
+    const data = JSON.parse(e.postData.contents);
+    
+    // Tambah data ke sheet
+    sheet.appendRow([
+      data.studentName,
+      data.studentClass, 
+      data.title,
+      data.category,
+      data.description,
+      data.aiTool,
+      data.link,
+      data.dateAdded
+    ]);
+    
+    // Return success response
+    return ContentService.createTextOutput(JSON.stringify({
+      success: true,
+      message: 'Data berhasil disimpan!'
+    })).setMimeType(ContentService.MimeType.JSON);
+    
+  } catch (error) {
+    // Return error response
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      error: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet() {
+  return ContentService.createTextOutput("AI Portfolio API is working!");
+}`;
+
+            navigator.clipboard.writeText(code).then(() => {
+                showNotification('Kode berhasil dicopy! 📋');
+            }).catch(() => {
+                showNotification('Gagal copy kode. Silakan copy manual. ❌', 'error');
+            });
+        }
+
+        function updateAppsScriptUrl() {
+            const url = document.getElementById('appsScriptUrl').value.trim();
+            if (!url) {
+                showNotification('Silakan masukkan URL Apps Script! ⚠️', 'warning');
+                return;
+            }
+
+            if (!url.includes('script.google.com/macros/s/')) {
+                showNotification('URL tidak valid! Pastikan menggunakan URL deployment Apps Script. ❌', 'error');
+                return;
+            }
+
+            GOOGLE_SHEETS_CONFIG.APPS_SCRIPT_URL = url;
+            localStorage.setItem('appsScriptUrl', url);
+            
+            // Update status
+            document.getElementById('connectionStatus').innerHTML = '• Status: <span class="text-green-400">Connected ✅</span>';
+            
+            showNotification('Apps Script URL berhasil diupdate! Sekarang Anda bisa menyimpan data ke Google Sheets. 🎉');
+            closeSetupModal();
+        }
+
+        // Inisialisasi website
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if Apps Script URL is configured
+            if (GOOGLE_SHEETS_CONFIG.APPS_SCRIPT_URL) {
+                document.getElementById('connectionStatus').innerHTML = '• Status: <span class="text-green-400">Connected ✅</span>';
+            }
+            
+            loadFromGoogleSheets();
+        });
+
+        // Fungsi untuk membuka modal
+        function openModal() {
+            document.getElementById('modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Fungsi untuk menutup modal
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+            document.getElementById('workForm').reset();
+        }
+
+        // Handle form submission
+        document.getElementById('workForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const originalText = submitButton.innerHTML;
+            submitButton.innerHTML = '⏳ Menyimpan...';
+            submitButton.disabled = true;
+            
+            const newWork = {
+                studentName: document.getElementById('studentName').value,
+                studentClass: document.getElementById('studentClass').value,
+                title: document.getElementById('workTitle').value,
+                category: document.getElementById('workCategory').value,
+                description: document.getElementById('workDescription').value,
+                aiTool: document.getElementById('aiTool').value,
+                link: document.getElementById('workLink').value,
+                dateAdded: new Date().toLocaleDateString('id-ID')
+            };
+
+            try {
+                if (GOOGLE_SHEETS_CONFIG.APPS_SCRIPT_URL) {
+                    // Save to Google Sheets via Apps Script
+                    await saveToGoogleSheets(newWork);
+                    showNotification('Karya berhasil disimpan ke Google Sheets! 🎉');
+                } else {
+                    // Fallback to local storage
+                    const localData = JSON.parse(localStorage.getItem('aiWorksDB') || '[]');
+                    localData.push({...newWork, id: Date.now()});
+                    localStorage.setItem('aiWorksDB', JSON.stringify(localData));
+                    showNotification('Karya disimpan lokal. Setup Apps Script untuk sinkronisasi penuh! 💾', 'warning');
+                }
+                
+                // Reload data and update display
+                await loadFromGoogleSheets();
+                closeModal();
+                
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                showNotification(`Gagal menyimpan: ${error.message} ❌`, 'error');
+            } finally {
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            }
+        });
+
+        // Fungsi untuk menampilkan karya
+        function displayWorks() {
+            const gallery = document.getElementById('gallery');
+            const emptyState = document.getElementById('emptyState');
+            
+            let filteredWorks = worksDatabase;
+            if (currentFilter !== 'all') {
+                filteredWorks = worksDatabase.filter(work => work.category === currentFilter);
+            }
+
+            if (filteredWorks.length === 0) {
+                gallery.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            
+            gallery.innerHTML = filteredWorks.map(work => `
+                <div class="bg-white rounded-2xl shadow-lg card-hover overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-sm font-medium">
+                                ${getCategoryIcon(work.category)} ${getCategoryName(work.category)}
+                            </span>
+                            <span class="text-sm text-gray-500">${work.dateAdded}</span>
+                        </div>
+                        
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${work.title}</h3>
+                        <p class="text-gray-600 mb-4 line-clamp-3">${work.description}</p>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-center text-sm text-gray-600">
+                                <span class="font-medium">👤 Siswa:</span>
+                                <span class="ml-2">${work.studentName} (${work.studentClass})</span>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-600">
+                                <span class="font-medium">🤖 Tool AI:</span>
+                                <span class="ml-2">${work.aiTool}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            ${work.link ? `
+                                <a href="${work.link}" target="_blank" class="flex-1 bg-purple-600 text-white text-center py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium">
+                                    🔗 Lihat Karya
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Fungsi untuk filter karya
+        function filterWorks(category) {
+            currentFilter = category;
+            
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-purple-600', 'text-white');
+                btn.classList.add('bg-white', 'text-gray-700');
+            });
+            
+            event.target.classList.add('active', 'bg-purple-600', 'text-white');
+            event.target.classList.remove('bg-white', 'text-gray-700');
+            
+            displayWorks();
+        }
+
+        // Fungsi untuk update statistik
+        function updateStats() {
+            const totalWorks = worksDatabase.length;
+            const uniqueStudents = new Set(worksDatabase.map(work => work.studentName)).size;
+            const uniqueCategories = new Set(worksDatabase.map(work => work.category)).size;
+            
+            document.getElementById('totalWorks').textContent = totalWorks;
+            document.getElementById('totalStudents').textContent = uniqueStudents;
+            document.getElementById('totalCategories').textContent = uniqueCategories;
+        }
+
+        // Helper functions
+        function getCategoryIcon(category) {
+            const icons = {
+                'gambar': '🎨',
+                'teks': '📝',
+                'video': '🎬',
+                'musik': '🎵'
+            };
+            return icons[category] || '🎨';
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                'gambar': 'Gambar AI',
+                'teks': 'Teks AI',
+                'video': 'Video AI',
+                'musik': 'Musik AI'
+            };
+            return names[category] || 'Karya AI';
+        }
+
+        // Fungsi notifikasi
+        function showNotification(message, type = 'success') {
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-yellow-500',
+                info: 'bg-blue-500'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform max-w-sm`;
+            notification.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">×</button>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            setTimeout(() => {
+                if (document.body.contains(notification)) {
+                    notification.classList.add('translate-x-full');
+                    setTimeout(() => {
+                        if (document.body.contains(notification)) {
+                            document.body.removeChild(notification);
+                        }
+                    }, 300);
+                }
+            }, type === 'warning' ? 5000 : 3000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('setupModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeSetupModal();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975a9d6d349346a3',t:'MTc1NjI4NzcwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
 
