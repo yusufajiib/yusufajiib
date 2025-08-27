@@ -40,7 +40,16 @@
                     📱 Aplikasi
                 </button>
                 <button onclick="filterProjects('buku')" class="filter-btn px-6 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-all">
-                    📖 Buku
+                    📚 Buku
+                </button>
+                <button onclick="filterProjects('video')" class="filter-btn px-6 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-all">
+                    🎥 Video
+                </button>
+                <button onclick="filterProjects('gambar')" class="filter-btn px-6 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-all">
+                    🖼️ Gambar
+                </button>
+                <button onclick="filterProjects('website')" class="filter-btn px-6 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-all">
+                    🌐 Website
                 </button>
             </div>
         </div>
@@ -108,8 +117,41 @@
                 'Schedule Organizer', 'Fitness Coach', 'Recipe Book', 'Weather App', 'Music Player',
                 'Photo Editor', 'Language Learner', 'Quiz Master', 'Timer Pro', 'Calculator Plus'
             ];
+
+            const bookNames = [
+                'Digital Story', 'Learning Guide', 'Creative Writing', 'Study Notes', 'Research Paper',
+                'Poetry Collection', 'Science Journal', 'History Book', 'Math Handbook', 'Art Portfolio',
+                'Language Dictionary', 'Recipe Collection', 'Travel Guide', 'Tech Manual', 'Life Stories'
+            ];
+
+            const videoNames = [
+                'Tutorial Video', 'Documentary Film', 'Animation Short', 'Music Video', 'Presentation',
+                'Interview Series', 'Educational Content', 'Creative Showcase', 'News Report', 'Vlog Series',
+                'How-to Guide', 'Science Experiment', 'Art Process', 'Sports Highlight', 'Drama Short'
+            ];
+
+            const imageNames = [
+                'Digital Art', 'Photo Collection', 'Infographic Design', 'Poster Creation', 'Logo Design',
+                'Character Design', 'Landscape Photo', 'Portrait Series', 'Abstract Art', 'Comic Strip',
+                'Banner Design', 'Icon Set', 'Illustration Work', 'Graphic Design', 'Visual Story'
+            ];
+
+            const websiteNames = [
+                'Personal Portfolio', 'School Project', 'Business Site', 'Blog Platform', 'News Portal',
+                'Learning Hub', 'Community Site', 'Gallery Showcase', 'Event Page', 'Resource Center',
+                'Online Store', 'Social Platform', 'Information Site', 'Creative Space', 'Digital Magazine'
+            ];
             
-            const names = category === 'game' ? gameNames : appNames;
+            const categoryNames = {
+                game: gameNames,
+                aplikasi: appNames,
+                buku: bookNames,
+                video: videoNames,
+                gambar: imageNames,
+                website: websiteNames
+            };
+
+            const names = categoryNames[category] || appNames;
             const hash = studentName.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
             return names[hash % names.length];
         }
@@ -186,16 +228,71 @@
         }
 
         // Function to generate default thumbnail if none provided
+        // Category helper functions
+        function getCategoryStyle(kategori) {
+            const styles = {
+                game: 'bg-purple-100 text-purple-800',
+                aplikasi: 'bg-blue-100 text-blue-800',
+                buku: 'bg-green-100 text-green-800',
+                video: 'bg-red-100 text-red-800',
+                gambar: 'bg-yellow-100 text-yellow-800',
+                website: 'bg-indigo-100 text-indigo-800'
+            };
+            return styles[kategori] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getCategoryIcon(kategori) {
+            const icons = {
+                game: '🎮 Game',
+                aplikasi: '📱 Aplikasi',
+                buku: '📚 Buku',
+                video: '🎥 Video',
+                gambar: '🖼️ Gambar',
+                website: '🌐 Website'
+            };
+            return icons[kategori] || '📄 Lainnya';
+        }
+
+        function getCategoryEmoji(kategori) {
+            const emojis = {
+                game: '🎮',
+                aplikasi: '📱',
+                buku: '📚',
+                video: '🎥',
+                gambar: '🖼️',
+                website: '🌐'
+            };
+            return emojis[kategori] || '📄';
+        }
+
+        function getCategoryTextColor(kategori) {
+            const colors = {
+                game: 'text-purple-600',
+                aplikasi: 'text-blue-600',
+                buku: 'text-green-600',
+                video: 'text-red-600',
+                gambar: 'text-yellow-600',
+                website: 'text-indigo-600'
+            };
+            return colors[kategori] || 'text-gray-600';
+        }
+
         function generateDefaultThumbnail(nama, kategori) {
             const colors = {
                 game: '#4f46e5',
-                aplikasi: '#06b6d4'
-                buku: '#06b6d4'
+                aplikasi: '#06b6d4',
+                buku: '#10b981',
+                video: '#ef4444',
+                gambar: '#f59e0b',
+                website: '#6366f1'
             };
             const icons = {
                 game: '🎮',
-                aplikasi: '📱'
-                buku: '📖'
+                aplikasi: '📱',
+                buku: '📚',
+                video: '🎥',
+                gambar: '🖼️',
+                website: '🌐'
             };
             
             const color = colors[kategori] || '#6b7280';
@@ -384,6 +481,50 @@
                     thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop",
                     rating: 4.8,
                     versi: "2.2"
+                },
+                {
+                    timestamp: "2024-01-10",
+                    nama: "Reza Pratama",
+                    kelas: "XII IPA 1",
+                    namakarya: "Digital Story",
+                    kategori: "buku",
+                    link: "https://canva-book1.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
+                    rating: 4.6,
+                    versi: "1.0"
+                },
+                {
+                    timestamp: "2024-01-09",
+                    nama: "Sinta Dewi",
+                    kelas: "XI IPS 2",
+                    namakarya: "Tutorial Video",
+                    kategori: "video",
+                    link: "https://youtube.com/watch?v=example1",
+                    thumbnail: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=400&h=300&fit=crop",
+                    rating: 4.7,
+                    versi: "1.0"
+                },
+                {
+                    timestamp: "2024-01-08",
+                    nama: "Eko Saputra",
+                    kelas: "XII IPS 1",
+                    namakarya: "Digital Art",
+                    kategori: "gambar",
+                    link: "https://canva-art1.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=300&fit=crop",
+                    rating: 4.9,
+                    versi: "1.0"
+                },
+                {
+                    timestamp: "2024-01-07",
+                    nama: "Indira Sari",
+                    kelas: "XI IPA 1",
+                    namakarya: "Personal Portfolio",
+                    kategori: "website",
+                    link: "https://indira-portfolio.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=400&h=300&fit=crop",
+                    rating: 4.5,
+                    versi: "2.0"
                 }
             ];
             
@@ -435,8 +576,8 @@
                              class="w-full h-48 object-cover"
                              onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'300\\' height=\\'200\\' viewBox=\\'0 0 300 200\\'%3E%3Crect width=\\'300\\' height=\\'200\\' fill=\\'%23e5e7eb\\'/%3E%3Ctext x=\\'150\\' y=\\'100\\' text-anchor=\\'middle\\' dy=\\'0.35em\\' fill=\\'%236b7280\\' font-size=\\'16\\'%3ENo Image%3C/text%3E%3C/svg%3E';">
                         <div class="absolute top-4 right-4">
-                            <span class="px-3 py-1 rounded-full text-xs font-medium ${project.kategori === 'game' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}">
-                                ${project.kategori === 'game' ? '🎮 Game' : '📱 Aplikasi'}
+                            <span class="px-3 py-1 rounded-full text-xs font-medium ${getCategoryStyle(project.kategori)}">
+                                ${getCategoryIcon(project.kategori)}
                             </span>
                         </div>
                     </div>
@@ -451,8 +592,8 @@
                             <p class="inline-flex items-center">
                                 🎓 ${project.kelas}
                             </p>
-                            <p class="text-sm font-medium ${project.kategori === 'game' ? 'text-purple-600' : 'text-blue-600'}">
-                                ${project.kategori === 'game' ? '🎮' : '📱'} ${project.namakarya}
+                            <p class="text-sm font-medium ${getCategoryTextColor(project.kategori)}">
+                                ${getCategoryEmoji(project.kategori)} ${project.namakarya}
                             </p>
                         </div>
                         
@@ -603,5 +744,5 @@
         // Initial render
         initializeApp();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97494a3797cbf8fe',t:'MTc1NjEwNjAzOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9759a798f22cce4b',t:'MTc1NjI3NzYzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
