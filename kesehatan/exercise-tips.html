@@ -182,46 +182,98 @@
                     </div>
 
                     <div class="bg-green-50 p-4 rounded-lg">
-                        <h3 class="font-bold text-green-800 mb-2">💻 Langkah 2: Copy Kode Apps Script</h3>
+                        <h3 class="font-bold text-green-800 mb-2">💻 Langkah 2: Copy Kode Apps Script (UPDATED - CORS Fixed)</h3>
                         <div class="bg-gray-800 text-green-400 p-4 rounded text-sm font-mono overflow-x-auto">
 <pre>function doPost(e) {
   try {
+    // Log untuk debugging
+    console.log('Received POST request:', e);
+    
     // Buka spreadsheet berdasarkan ID
     const sheet = SpreadsheetApp.openById('17MDc804lNUm_XwUM6hPj6Ui8T-JVtpxJCLq4XovVs0A')
                                 .getSheetByName('Sheet2');
     
     // Parse data dari request
-    const data = JSON.parse(e.postData.contents);
+    let data;
+    if (e.postData && e.postData.contents) {
+      data = JSON.parse(e.postData.contents);
+    } else {
+      throw new Error('No data received');
+    }
+    
+    // Validasi data wajib
+    if (!data.studentName || !data.title) {
+      throw new Error('Data tidak lengkap: Nama siswa dan judul karya wajib diisi');
+    }
     
     // Tambah data ke sheet
     sheet.appendRow([
-      data.studentName,
-      data.studentClass, 
-      data.title,
-      data.category,
-      data.description,
-      data.aiTool,
-      data.link,
-      data.dateAdded
+      data.studentName || '',
+      data.studentClass || '', 
+      data.title || '',
+      data.category || '',
+      data.description || '',
+      data.aiTool || '',
+      data.link || '',
+      data.dateAdded || new Date().toLocaleDateString('id-ID')
     ]);
     
-    // Return success response
-    return ContentService.createTextOutput(JSON.stringify({
-      success: true,
-      message: 'Data berhasil disimpan!'
-    })).setMimeType(ContentService.MimeType.JSON);
+    // Return success response dengan CORS headers
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        success: true,
+        message: 'Data berhasil disimpan ke Google Sheets!',
+        timestamp: new Date().toISOString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
     
   } catch (error) {
-    // Return error response
-    return ContentService.createTextOutput(JSON.stringify({
-      success: false,
-      error: error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+    console.error('Error in doPost:', error);
+    
+    // Return error response dengan CORS headers
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        success: false,
+        error: error.toString(),
+        timestamp: new Date().toISOString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }
 
-function doGet() {
-  return ContentService.createTextOutput("AI Portfolio API is working!");
+function doGet(e) {
+  try {
+    // Handle GET request untuk testing - RETURN JSON ONLY
+    const params = e.parameter || {};
+    
+    // Pastikan response selalu JSON valid
+    const response = {
+      success: true,
+      status: 'AI Portfolio API is working!',
+      timestamp: new Date().toISOString(),
+      method: 'GET',
+      parameters: params,
+      message: 'Connection test successful'
+    };
+    
+    return ContentService
+      .createTextOutput(JSON.stringify(response))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    console.error('Error in doGet:', error);
+    
+    const errorResponse = {
+      success: false,
+      error: error.toString(),
+      timestamp: new Date().toISOString(),
+      method: 'GET'
+    };
+    
+    return ContentService
+      .createTextOutput(JSON.stringify(errorResponse))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 }</pre>
                         </div>
                         <button onclick="copyCode()" class="mt-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors text-sm">
@@ -249,12 +301,21 @@ function doGet() {
                     <div class="bg-purple-50 p-4 rounded-lg">
                         <h3 class="font-bold text-purple-800 mb-2">🔗 Langkah 4: Update Website</h3>
                         <p class="text-sm text-purple-700 mb-3">Paste URL Apps Script Anda di bawah ini:</p>
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 mb-3">
                             <input type="url" id="appsScriptUrl" placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec" class="flex-1 px-3 py-2 border border-purple-300 rounded-lg text-sm">
                             <button onclick="updateAppsScriptUrl()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm">
                                 💾 Update
                             </button>
                         </div>
+                        <div class="flex gap-2">
+                            <button onclick="testConnection()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm flex-1">
+                                🔍 Test Koneksi
+                            </button>
+                            <button onclick="openAppsScriptUrl()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm flex-1">
+                                🌐 Buka URL
+                            </button>
+                        </div>
+                        <div id="testResult" class="mt-3 p-3 rounded-lg hidden"></div>
                     </div>
 
                     <div class="bg-gray-50 p-4 rounded-lg">
@@ -307,15 +368,26 @@ function doGet() {
             }
 
             try {
+                console.log('Sending data to Apps Script:', workData);
+                
                 const response = await fetch(GOOGLE_SHEETS_CONFIG.APPS_SCRIPT_URL, {
                     method: 'POST',
+                    mode: 'cors',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(workData)
                 });
 
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const result = await response.json();
+                console.log('Response data:', result);
                 
                 if (!result.success) {
                     throw new Error(result.error || 'Gagal menyimpan data');
@@ -324,7 +396,15 @@ function doGet() {
                 return result;
             } catch (error) {
                 console.error('Error saving to Google Sheets:', error);
-                throw error;
+                
+                // Provide more specific error messages
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    throw new Error('Koneksi gagal. Pastikan URL Apps Script sudah benar dan deployment sudah aktif.');
+                } else if (error.message.includes('CORS')) {
+                    throw new Error('CORS error. Pastikan Apps Script di-deploy dengan akses "Anyone".');
+                } else {
+                    throw error;
+                }
             }
         }
 
@@ -401,46 +481,98 @@ function doGet() {
         function copyCode() {
             const code = `function doPost(e) {
   try {
+    // Log untuk debugging
+    console.log('Received POST request:', e);
+    
     // Buka spreadsheet berdasarkan ID
     const sheet = SpreadsheetApp.openById('17MDc804lNUm_XwUM6hPj6Ui8T-JVtpxJCLq4XovVs0A')
                                 .getSheetByName('Sheet2');
     
     // Parse data dari request
-    const data = JSON.parse(e.postData.contents);
+    let data;
+    if (e.postData && e.postData.contents) {
+      data = JSON.parse(e.postData.contents);
+    } else {
+      throw new Error('No data received');
+    }
+    
+    // Validasi data wajib
+    if (!data.studentName || !data.title) {
+      throw new Error('Data tidak lengkap: Nama siswa dan judul karya wajib diisi');
+    }
     
     // Tambah data ke sheet
     sheet.appendRow([
-      data.studentName,
-      data.studentClass, 
-      data.title,
-      data.category,
-      data.description,
-      data.aiTool,
-      data.link,
-      data.dateAdded
+      data.studentName || '',
+      data.studentClass || '', 
+      data.title || '',
+      data.category || '',
+      data.description || '',
+      data.aiTool || '',
+      data.link || '',
+      data.dateAdded || new Date().toLocaleDateString('id-ID')
     ]);
     
-    // Return success response
-    return ContentService.createTextOutput(JSON.stringify({
-      success: true,
-      message: 'Data berhasil disimpan!'
-    })).setMimeType(ContentService.MimeType.JSON);
+    // Return success response dengan CORS headers
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        success: true,
+        message: 'Data berhasil disimpan ke Google Sheets!',
+        timestamp: new Date().toISOString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
     
   } catch (error) {
-    // Return error response
-    return ContentService.createTextOutput(JSON.stringify({
-      success: false,
-      error: error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+    console.error('Error in doPost:', error);
+    
+    // Return error response dengan CORS headers
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        success: false,
+        error: error.toString(),
+        timestamp: new Date().toISOString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }
 
-function doGet() {
-  return ContentService.createTextOutput("AI Portfolio API is working!");
+function doGet(e) {
+  try {
+    // Handle GET request untuk testing - RETURN JSON ONLY
+    const params = e.parameter || {};
+    
+    // Pastikan response selalu JSON valid
+    const response = {
+      success: true,
+      status: 'AI Portfolio API is working!',
+      timestamp: new Date().toISOString(),
+      method: 'GET',
+      parameters: params,
+      message: 'Connection test successful'
+    };
+    
+    return ContentService
+      .createTextOutput(JSON.stringify(response))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    console.error('Error in doGet:', error);
+    
+    const errorResponse = {
+      success: false,
+      error: error.toString(),
+      timestamp: new Date().toISOString(),
+      method: 'GET'
+    };
+    
+    return ContentService
+      .createTextOutput(JSON.stringify(errorResponse))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 }`;
 
             navigator.clipboard.writeText(code).then(() => {
-                showNotification('Kode berhasil dicopy! 📋');
+                showNotification('Kode Apps Script terbaru berhasil dicopy! 📋');
             }).catch(() => {
                 showNotification('Gagal copy kode. Silakan copy manual. ❌', 'error');
             });
@@ -466,6 +598,57 @@ function doGet() {
             
             showNotification('Apps Script URL berhasil diupdate! Sekarang Anda bisa menyimpan data ke Google Sheets. 🎉');
             closeSetupModal();
+        }
+
+        async function testConnection() {
+            const url = document.getElementById('appsScriptUrl').value.trim();
+            const testResult = document.getElementById('testResult');
+            
+            if (!url) {
+                showTestResult('❌ Silakan masukkan URL terlebih dahulu!', 'error');
+                return;
+            }
+
+            showTestResult('🔄 Testing koneksi...', 'info');
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    showTestResult(`✅ Koneksi berhasil! Status: ${result.status || 'OK'}`, 'success');
+                } else {
+                    showTestResult(`❌ HTTP Error: ${response.status} - ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                console.error('Test connection error:', error);
+                showTestResult(`❌ Koneksi gagal: ${error.message}`, 'error');
+            }
+        }
+
+        function openAppsScriptUrl() {
+            const url = document.getElementById('appsScriptUrl').value.trim();
+            if (!url) {
+                showNotification('Silakan masukkan URL terlebih dahulu! ⚠️', 'warning');
+                return;
+            }
+            window.open(url, '_blank');
+        }
+
+        function showTestResult(message, type) {
+            const testResult = document.getElementById('testResult');
+            const colors = {
+                success: 'bg-green-100 text-green-800 border-green-300',
+                error: 'bg-red-100 text-red-800 border-red-300',
+                info: 'bg-blue-100 text-blue-800 border-blue-300'
+            };
+            
+            testResult.className = `mt-3 p-3 rounded-lg border ${colors[type]}`;
+            testResult.textContent = message;
+            testResult.classList.remove('hidden');
         }
 
         // Inisialisasi website
@@ -687,6 +870,5 @@ function doGet() {
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975a9d6d349346a3',t:'MTc1NjI4NzcwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'975ab4d66653fd20',t:'MTc1NjI4ODY2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
