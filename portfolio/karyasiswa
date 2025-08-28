@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri Karya AI Siswa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .filter-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .rating-stars { color: #fbbf24; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-indigo-500">
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="text-center">
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">🎨 Galeri Karya AI Siswa</h1>
+                <p class="text-lg text-gray-600">Showcase Game & Aplikasi Buatan Siswa dengan Canva AI</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Filters -->
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">Filter Kategori:</h3>
+            <div class="flex flex-wrap gap-3">
+                <button onclick="filterProjects('all')" class="filter-btn active px-6 py-2 rounded-full text-white font-medium transition-all">
+                    Semua Karya
+                </button>
+                <button onclick="filterProjects('game')" class="filter-btn px-6 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-all">
+                    🎮 Game
+                </button>
+                <button onclick="filterProjects('aplikasi')" class="filter-btn px-6 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-all">
+                    📱 Aplikasi
+                </button>
+                <button onclick="filterProjects('buku')" class="filter-btn px-6 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-all">
+                    📚 Buku
+                </button>
+                <button onclick="filterProjects('video')" class="filter-btn px-6 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-all">
+                    🎥 Video
+                </button>
+                <button onclick="filterProjects('gambar')" class="filter-btn px-6 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-all">
+                    🖼️ Gambar
+                </button>
+                <button onclick="filterProjects('website')" class="filter-btn px-6 py-2 rounded-full bg-gray-200 text-gray-700 font-medium hover:bg-gray-300 transition-all">
+                    🌐 Website
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Bar & Refresh -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="relative flex-1">
+                    <input type="text" id="searchInput" placeholder="Cari berdasarkan nama siswa atau kelas..." 
+                           class="w-full px-4 py-3 pl-12 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:outline-none transition-colors">
+                    <div class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        🔍
+                    </div>
+                </div>
+                <button onclick="refreshData()" 
+                        class="px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors font-medium">
+                    🔄 Refresh Data
+                </button>
+            </div>
+            <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                <p class="text-sm text-blue-700">
+                    <strong>📊 Status Database:</strong> 
+                    <span id="dbStatus" class="font-medium">Menunggu koneksi...</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Projects Grid -->
+        <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Projects will be populated here -->
+        </div>
+
+        <!-- No Results Message -->
+        <div id="noResults" class="hidden text-center py-16">
+            <div class="text-6xl mb-4">😔</div>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">Tidak ada karya yang ditemukan</h3>
+            <p class="text-gray-500">Coba ubah filter atau kata kunci pencarian</p>
+        </div>
+    </div>
+
+    <script>
+        // Database Configuration
+        const DATABASE_CONFIG = {
+            // Replace with your Google Sheets ID (from the URL)
+            SHEET_ID: '17MDc804lNUm_XwUM6hPj6Ui8T-JVtpxJCLq4XovVs0A',
+            // Replace with your sheet name (tab name)
+            SHEET_NAME: 'Sheet1',
+            // Google Sheets API Key (get from Google Cloud Console)
+            API_KEY: 'AIzaSyCAJWvsjw92iebZM54KZivepTpl_Q2gk70'
+        };
+
+        let projectsData = [];
+        let isLoading = true;
+
+        // Function to generate creative project names (fallback only)
+        function generateProjectName(studentName, category) {
+            const gameNames = [
+                'Space Adventure', 'Racing Pro', 'Puzzle Master', 'Action Hero', 'Strategy King',
+                'Adventure Quest', 'Battle Arena', 'Magic World', 'Speed Runner', 'Brain Teaser',
+                'Retro Arcade', 'Fantasy RPG', 'Shooting Star', 'Platform Jump', 'Card Master'
+            ];
+            
+            const appNames = [
+                'Study Planner', 'Task Manager', 'Health Tracker', 'Budget Calculator', 'Note Keeper',
+                'Schedule Organizer', 'Fitness Coach', 'Recipe Book', 'Weather App', 'Music Player',
+                'Photo Editor', 'Language Learner', 'Quiz Master', 'Timer Pro', 'Calculator Plus'
+            ];
+
+            const bookNames = [
+                'Digital Story', 'Learning Guide', 'Creative Writing', 'Study Notes', 'Research Paper',
+                'Poetry Collection', 'Science Journal', 'History Book', 'Math Handbook', 'Art Portfolio',
+                'Language Dictionary', 'Recipe Collection', 'Travel Guide', 'Tech Manual', 'Life Stories'
+            ];
+
+            const videoNames = [
+                'Tutorial Video', 'Documentary Film', 'Animation Short', 'Music Video', 'Presentation',
+                'Interview Series', 'Educational Content', 'Creative Showcase', 'News Report', 'Vlog Series',
+                'How-to Guide', 'Science Experiment', 'Art Process', 'Sports Highlight', 'Drama Short'
+            ];
+
+            const imageNames = [
+                'Digital Art', 'Photo Collection', 'Infographic Design', 'Poster Creation', 'Logo Design',
+                'Character Design', 'Landscape Photo', 'Portrait Series', 'Abstract Art', 'Comic Strip',
+                'Banner Design', 'Icon Set', 'Illustration Work', 'Graphic Design', 'Visual Story'
+            ];
+
+            const websiteNames = [
+                'Personal Portfolio', 'School Project', 'Business Site', 'Blog Platform', 'News Portal',
+                'Learning Hub', 'Community Site', 'Gallery Showcase', 'Event Page', 'Resource Center',
+                'Online Store', 'Social Platform', 'Information Site', 'Creative Space', 'Digital Magazine'
+            ];
+            
+            const categoryNames = {
+                game: gameNames,
+                aplikasi: appNames,
+                buku: bookNames,
+                video: videoNames,
+                gambar: imageNames,
+                website: websiteNames
+            };
+
+            const names = categoryNames[category] || appNames;
+            const hash = studentName.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+            return names[hash % names.length];
+        }
+
+        // Function to fetch data from Google Sheets
+        async function fetchFromSpreadsheet() {
+            try {
+                updateDatabaseStatus('🔄 Menghubungkan ke spreadsheet...', 'text-blue-600');
+                showLoadingState();
+                
+                // Check if configuration is set
+                if (DATABASE_CONFIG.SHEET_ID === 'YOUR_GOOGLE_SHEETS_ID_HERE' || 
+                    DATABASE_CONFIG.API_KEY === 'YOUR_API_KEY_HERE') {
+                    throw new Error('Database belum dikonfigurasi');
+                }
+                
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${DATABASE_CONFIG.SHEET_ID}/values/${DATABASE_CONFIG.SHEET_NAME}?key=${DATABASE_CONFIG.API_KEY}`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.values || data.values.length < 2) {
+                    throw new Error('No data found in spreadsheet');
+                }
+                
+                // Convert spreadsheet data to project objects
+                const headers = data.values[0];
+                const rows = data.values.slice(1);
+                
+                projectsData = rows.map(row => {
+                    const project = {};
+                    headers.forEach((header, index) => {
+                        const key = header.toLowerCase().replace(/\s+/g, '');
+                        project[key] = row[index] || '';
+                    });
+                    
+                    // Ensure required fields and convert data types
+                    return {
+                        timestamp: project.timestamp || new Date().toISOString().split('T')[0],
+                        nama: project.nama || 'Unknown',
+                        kelas: project.kelas || 'Unknown',
+                        namakarya: project.namakarya || generateProjectName(project.nama || 'Unknown', project.kategori || 'aplikasi'),
+                        kategori: (project.kategori || 'aplikasi').toLowerCase(),
+                        link: project.link || '#',
+                        thumbnail: project.gambar || project.thumbnail || generateDefaultThumbnail(project.nama, project.kategori),
+                        rating: parseFloat(project.rating) || 0,
+                        versi: project.versi || '1.0'
+                    };
+                });
+                
+                updateDatabaseStatus(`✅ Terhubung! ${projectsData.length} karya dimuat`, 'text-green-600');
+                hideLoadingState();
+                renderProjects();
+                
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                updateDatabaseStatus('❌ Gagal terhubung ke database', 'text-red-600');
+                handleDatabaseError(error);
+            }
+        }
+
+        // Update database status indicator
+        function updateDatabaseStatus(message, colorClass) {
+            const statusElement = document.getElementById('dbStatus');
+            if (statusElement) {
+                statusElement.textContent = message;
+                statusElement.className = `font-medium ${colorClass}`;
+            }
+        }
+
+        // Function to generate default thumbnail if none provided
+        // Category helper functions
+        function getCategoryStyle(kategori) {
+            const styles = {
+                game: 'bg-purple-100 text-purple-800',
+                aplikasi: 'bg-blue-100 text-blue-800',
+                buku: 'bg-green-100 text-green-800',
+                video: 'bg-red-100 text-red-800',
+                gambar: 'bg-yellow-100 text-yellow-800',
+                website: 'bg-indigo-100 text-indigo-800'
+            };
+            return styles[kategori] || 'bg-gray-100 text-gray-800';
+        }
+
+        function getCategoryIcon(kategori) {
+            const icons = {
+                game: '🎮 Game',
+                aplikasi: '📱 Aplikasi',
+                buku: '📚 Buku',
+                video: '🎥 Video',
+                gambar: '🖼️ Gambar',
+                website: '🌐 Website'
+            };
+            return icons[kategori] || '📄 Lainnya';
+        }
+
+        function getCategoryEmoji(kategori) {
+            const emojis = {
+                game: '🎮',
+                aplikasi: '📱',
+                buku: '📚',
+                video: '🎥',
+                gambar: '🖼️',
+                website: '🌐'
+            };
+            return emojis[kategori] || '📄';
+        }
+
+        function getCategoryTextColor(kategori) {
+            const colors = {
+                game: 'text-purple-600',
+                aplikasi: 'text-blue-600',
+                buku: 'text-green-600',
+                video: 'text-red-600',
+                gambar: 'text-yellow-600',
+                website: 'text-indigo-600'
+            };
+            return colors[kategori] || 'text-gray-600';
+        }
+
+        function generateDefaultThumbnail(nama, kategori) {
+            const colors = {
+                game: '#4f46e5',
+                aplikasi: '#06b6d4',
+                buku: '#10b981',
+                video: '#ef4444',
+                gambar: '#f59e0b',
+                website: '#6366f1'
+            };
+            const icons = {
+                game: '🎮',
+                aplikasi: '📱',
+                buku: '📚',
+                video: '🎥',
+                gambar: '🖼️',
+                website: '🌐'
+            };
+            
+            const color = colors[kategori] || '#6b7280';
+            const icon = icons[kategori] || '📄';
+            const title = `${icon} ${nama}`;
+            
+            return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='${encodeURIComponent(color)}'/%3E%3Ctext x='150' y='100' text-anchor='middle' dy='0.35em' fill='white' font-size='18' font-family='Arial'%3E${encodeURIComponent(title)}%3C/text%3E%3C/svg%3E`;
+        }
+
+        // Show loading state
+        function showLoadingState() {
+            const grid = document.getElementById('projectsGrid');
+            grid.innerHTML = `
+                <div class="col-span-full flex flex-col items-center justify-center py-16">
+                    <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mb-4"></div>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Memuat data dari database...</h3>
+                    <p class="text-gray-500">Mengambil karya siswa terbaru</p>
+                </div>
+            `;
+        }
+
+        // Hide loading state
+        function hideLoadingState() {
+            isLoading = false;
+        }
+
+        // Handle database connection errors
+        function handleDatabaseError(error) {
+            const grid = document.getElementById('projectsGrid');
+            const noResults = document.getElementById('noResults');
+            
+            // Check if it's a configuration error
+            if (error.message.includes('Database belum dikonfigurasi')) {
+                showConfigurationGuide();
+                return;
+            }
+            
+            grid.innerHTML = `
+                <div class="col-span-full bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
+                    <div class="text-6xl mb-4">⚠️</div>
+                    <h3 class="text-xl font-semibold text-red-800 mb-2">Gagal Terhubung ke Database</h3>
+                    <p class="text-red-600 mb-4">Tidak dapat mengambil data dari spreadsheet</p>
+                    <div class="bg-red-100 rounded-lg p-4 mb-4 text-left">
+                        <p class="text-sm text-red-700 font-medium mb-2">Kemungkinan penyebab:</p>
+                        <ul class="text-sm text-red-600 list-disc list-inside space-y-1">
+                            <li>API Key tidak valid atau expired</li>
+                            <li>Sheet ID tidak ditemukan</li>
+                            <li>Spreadsheet tidak dapat diakses publik</li>
+                            <li>Google Sheets API belum diaktifkan</li>
+                            <li>Koneksi internet bermasalah</li>
+                        </ul>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <button onclick="showConfigurationGuide()" 
+                                class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            📖 Panduan Setup
+                        </button>
+                        <button onclick="retryConnection()" 
+                                class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                            🔄 Coba Lagi
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Show demo data as fallback after 5 seconds
+            setTimeout(() => {
+                loadDemoData();
+            }, 5000);
+        }
+
+        // Retry database connection
+        function retryConnection() {
+            fetchFromSpreadsheet();
+        }
+
+        // Load demo data as fallback
+        function loadDemoData() {
+            projectsData = [
+                {
+                    timestamp: "2024-01-20",
+                    nama: "Andi Pratama",
+                    kelas: "XII IPA 1",
+                    namakarya: "Space Adventure",
+                    kategori: "game",
+                    link: "https://canva-code-game1.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=400&h=300&fit=crop",
+                    rating: 4.8,
+                    versi: "1.2"
+                },
+                {
+                    timestamp: "2024-01-19",
+                    nama: "Sari Dewi",
+                    kelas: "XI IPS 2",
+                    namakarya: "Study Planner",
+                    kategori: "aplikasi",
+                    link: "https://canva-code-app1.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop",
+                    rating: 4.5,
+                    versi: "2.0"
+                },
+                {
+                    timestamp: "2024-01-18",
+                    nama: "Budi Santoso",
+                    kelas: "XII IPA 2",
+                    namakarya: "Racing Pro",
+                    kategori: "game",
+                    link: "https://canva-code-game2.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=400&h=300&fit=crop",
+                    rating: 4.7,
+                    versi: "1.5"
+                },
+                {
+                    timestamp: "2024-01-17",
+                    nama: "Maya Putri",
+                    kelas: "XI IPA 3",
+                    namakarya: "Task Manager",
+                    kategori: "aplikasi",
+                    link: "https://canva-code-app2.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400&h=300&fit=crop",
+                    rating: 4.6,
+                    versi: "1.8"
+                },
+                {
+                    timestamp: "2024-01-16",
+                    nama: "Rizki Hakim",
+                    kelas: "XII IPS 1",
+                    namakarya: "Battle Arena",
+                    kategori: "game",
+                    link: "https://canva-code-game3.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop",
+                    rating: 4.9,
+                    versi: "2.1"
+                },
+                {
+                    timestamp: "2024-01-15",
+                    nama: "Lina Sari",
+                    kelas: "XI IPS 1",
+                    namakarya: "Health Tracker",
+                    kategori: "aplikasi",
+                    link: "https://canva-code-app3.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop",
+                    rating: 4.4,
+                    versi: "1.3"
+                },
+                {
+                    timestamp: "2024-01-14",
+                    nama: "Doni Wijaya",
+                    kelas: "XII IPA 3",
+                    namakarya: "Puzzle Master",
+                    kategori: "game",
+                    link: "https://canva-code-game4.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop",
+                    rating: 4.3,
+                    versi: "1.0"
+                },
+                {
+                    timestamp: "2024-01-13",
+                    nama: "Fitri Handayani",
+                    kelas: "XI IPA 2",
+                    namakarya: "Budget Calculator",
+                    kategori: "aplikasi",
+                    link: "https://canva-code-app4.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400&h=300&fit=crop",
+                    rating: 4.7,
+                    versi: "1.6"
+                },
+                {
+                    timestamp: "2024-01-12",
+                    nama: "Agus Setiawan",
+                    kelas: "XII IPS 2",
+                    namakarya: "Action Hero",
+                    kategori: "game",
+                    link: "https://canva-code-game5.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=300&fit=crop",
+                    rating: 4.5,
+                    versi: "1.4"
+                },
+                {
+                    timestamp: "2024-01-11",
+                    nama: "Nina Rahayu",
+                    kelas: "XI IPS 3",
+                    namakarya: "Note Keeper",
+                    kategori: "aplikasi",
+                    link: "https://canva-code-app5.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop",
+                    rating: 4.8,
+                    versi: "2.2"
+                },
+                {
+                    timestamp: "2024-01-10",
+                    nama: "Reza Pratama",
+                    kelas: "XII IPA 1",
+                    namakarya: "Digital Story",
+                    kategori: "buku",
+                    link: "https://canva-book1.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=300&fit=crop",
+                    rating: 4.6,
+                    versi: "1.0"
+                },
+                {
+                    timestamp: "2024-01-09",
+                    nama: "Sinta Dewi",
+                    kelas: "XI IPS 2",
+                    namakarya: "Tutorial Video",
+                    kategori: "video",
+                    link: "https://youtube.com/watch?v=example1",
+                    thumbnail: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=400&h=300&fit=crop",
+                    rating: 4.7,
+                    versi: "1.0"
+                },
+                {
+                    timestamp: "2024-01-08",
+                    nama: "Eko Saputra",
+                    kelas: "XII IPS 1",
+                    namakarya: "Digital Art",
+                    kategori: "gambar",
+                    link: "https://canva-art1.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=300&fit=crop",
+                    rating: 4.9,
+                    versi: "1.0"
+                },
+                {
+                    timestamp: "2024-01-07",
+                    nama: "Indira Sari",
+                    kelas: "XI IPA 1",
+                    namakarya: "Personal Portfolio",
+                    kategori: "website",
+                    link: "https://indira-portfolio.netlify.app",
+                    thumbnail: "https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=400&h=300&fit=crop",
+                    rating: 4.5,
+                    versi: "2.0"
+                }
+            ];
+            
+            const grid = document.getElementById('projectsGrid');
+            grid.innerHTML = `
+                <div class="col-span-full bg-yellow-50 border border-yellow-200 rounded-2xl p-6 text-center mb-8">
+                    <div class="text-4xl mb-2">📋</div>
+                    <h3 class="text-lg font-semibold text-yellow-800 mb-1">Menampilkan Data Demo</h3>
+                    <p class="text-yellow-600 text-sm">Konfigurasi database untuk melihat data asli dari spreadsheet</p>
+                </div>
+            `;
+            
+            renderProjects();
+        }
+
+        // Function to refresh data from spreadsheet
+        function refreshData() {
+            fetchFromSpreadsheet();
+        }
+
+        let currentFilter = 'all';
+        let currentSearch = '';
+
+        function renderProjects() {
+            const grid = document.getElementById('projectsGrid');
+            const noResults = document.getElementById('noResults');
+            
+            let filteredProjects = projectsData.filter(project => {
+                const matchesFilter = currentFilter === 'all' || project.kategori === currentFilter;
+                const matchesSearch = currentSearch === '' || 
+                    project.nama.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                    project.kelas.toLowerCase().includes(currentSearch.toLowerCase()) ||
+                    project.namakarya.toLowerCase().includes(currentSearch.toLowerCase());
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filteredProjects.length === 0) {
+                grid.innerHTML = '';
+                noResults.classList.remove('hidden');
+                return;
+            }
+
+            noResults.classList.add('hidden');
+            
+            grid.innerHTML = filteredProjects.map(project => `
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden card-hover">
+                    <div class="relative">
+                        <img src="${project.thumbnail}" alt="Thumbnail ${project.nama}" 
+                             class="w-full h-48 object-cover"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'300\\' height=\\'200\\' viewBox=\\'0 0 300 200\\'%3E%3Crect width=\\'300\\' height=\\'200\\' fill=\\'%23e5e7eb\\'/%3E%3Ctext x=\\'150\\' y=\\'100\\' text-anchor=\\'middle\\' dy=\\'0.35em\\' fill=\\'%236b7280\\' font-size=\\'16\\'%3ENo Image%3C/text%3E%3C/svg%3E';">
+                        <div class="absolute top-4 right-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-medium ${getCategoryStyle(project.kategori)}">
+                                ${getCategoryIcon(project.kategori)}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-xl font-bold text-gray-800">${project.nama}</h3>
+                            <span class="text-sm text-gray-500">v${project.versi}</span>
+                        </div>
+                        
+                        <div class="text-gray-600 mb-4 space-y-2">
+                            <p class="inline-flex items-center">
+                                🎓 ${project.kelas}
+                            </p>
+                            <p class="text-sm font-medium ${getCategoryTextColor(project.kategori)}">
+                                ${getCategoryEmoji(project.kategori)} ${project.namakarya}
+                            </p>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <div class="rating-stars mr-2">
+                                    ${generateStars(project.rating)}
+                                </div>
+                                <span class="text-sm font-medium text-gray-700">${project.rating}</span>
+                            </div>
+                            <span class="text-xs text-gray-500">${formatDate(project.timestamp)}</span>
+                        </div>
+                        
+                        <button onclick="openProject('${project.link}')" 
+                                class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-4 rounded-xl font-medium hover:from-indigo-600 hover:to-purple-700 transition-all transform hover:scale-105">
+                            🚀 Lihat Karya
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function generateStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 !== 0;
+            let stars = '';
+            
+            for (let i = 0; i < fullStars; i++) {
+                stars += '⭐';
+            }
+            if (hasHalfStar) {
+                stars += '⭐';
+            }
+            
+            return stars;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', { 
+                day: 'numeric', 
+                month: 'short', 
+                year: 'numeric' 
+            });
+        }
+
+        function filterProjects(category) {
+            currentFilter = category;
+            
+            // Update button styles
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+                btn.classList.remove('text-white');
+            });
+            
+            event.target.classList.add('active');
+            event.target.classList.remove('bg-gray-200', 'text-gray-700');
+            event.target.classList.add('text-white');
+            
+            renderProjects();
+        }
+
+        function openProject(link) {
+            // Validate the link
+            if (!link || link === '#' || link === '') {
+                alert('⚠️ Link karya belum tersedia atau tidak valid');
+                return;
+            }
+            
+            // Ensure the link has proper protocol
+            let validLink = link;
+            if (!link.startsWith('http://') && !link.startsWith('https://')) {
+                validLink = 'https://' + link;
+            }
+            
+            // Open the project in a new tab
+            try {
+                window.open(validLink, '_blank', 'noopener,noreferrer');
+            } catch (error) {
+                console.error('Error opening link:', error);
+                alert('❌ Gagal membuka link. Pastikan URL valid dan dapat diakses.');
+            }
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            currentSearch = e.target.value;
+            renderProjects();
+        });
+
+        // Initialize the application
+        function initializeApp() {
+            // Try to fetch from spreadsheet first
+            fetchFromSpreadsheet();
+        }
+
+        // Show configuration guide
+        function showConfigurationGuide() {
+            const grid = document.getElementById('projectsGrid');
+            grid.innerHTML = `
+                <div class="col-span-full bg-blue-50 border border-blue-200 rounded-2xl p-8">
+                    <div class="text-6xl mb-4 text-center">⚙️</div>
+                    <h3 class="text-2xl font-bold text-blue-800 mb-4 text-center">Panduan Konfigurasi Database</h3>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-white rounded-lg p-6">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">📋 1. Siapkan Google Spreadsheet</h4>
+                            <ul class="text-sm text-gray-600 space-y-2 list-disc list-inside">
+                                <li>Buat spreadsheet dengan kolom: <code class="bg-gray-100 px-2 py-1 rounded">timestamp, nama, kelas, namakarya, kategori, link, gambar, rating, versi</code></li>
+                                <li>Pastikan spreadsheet dapat diakses publik (Share → Anyone with the link can view)</li>
+                                <li>Salin ID spreadsheet dari URL (bagian setelah /d/ dan sebelum /edit)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">🔑 2. Dapatkan API Key Google Sheets</h4>
+                            <ul class="text-sm text-gray-600 space-y-2 list-disc list-inside">
+                                <li>Kunjungi <a href="https://console.cloud.google.com" target="_blank" class="text-blue-600 underline">Google Cloud Console</a></li>
+                                <li>Buat project baru atau pilih project yang ada</li>
+                                <li>Aktifkan Google Sheets API</li>
+                                <li>Buat credentials (API Key)</li>
+                                <li>Salin API Key yang dihasilkan</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6">
+                            <h4 class="text-lg font-semibold text-gray-800 mb-3">🔧 3. Update Konfigurasi</h4>
+                            <p class="text-sm text-gray-600 mb-3">Ganti nilai berikut di bagian DATABASE_CONFIG:</p>
+                            <div class="bg-gray-100 p-4 rounded-lg text-sm font-mono">
+                                <div>SHEET_ID: 'ID_SPREADSHEET_ANDA'</div>
+                                <div>SHEET_NAME: 'Nama_Sheet' (default: Sheet1)</div>
+                                <div>API_KEY: 'API_KEY_ANDA'</div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button onclick="retryConnection()" 
+                                    class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                                🔄 Coba Koneksi Lagi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initial render
+        initializeApp();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9759a798f22cce4b',t:'MTc1NjI3NzYzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
