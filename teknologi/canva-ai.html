@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koleksi Hasil Canva AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .loading { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-8">
+        <div class="container mx-auto px-4">
+            <h1 class="text-4xl font-bold text-center mb-2">🎨 Koleksi Hasil Canva AI</h1>
+            <p class="text-center text-blue-100">Simpan dan kelola hasil kreasi AI Canva Anda</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-center space-x-8 py-4">
+                <button id="addTab" class="px-6 py-2 text-blue-600 border-b-2 border-blue-600 font-medium">
+                    ➕ Tambah Hasil
+                </button>
+                <button id="galleryTab" class="px-6 py-2 text-gray-600 hover:text-blue-600 font-medium">
+                    🖼️ Galeri
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Add Form Section -->
+    <section id="addSection" class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Tambah Hasil Canva AI Baru</h2>
+                
+                <form id="addForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Judul/Nama Proyek</label>
+                        <input type="text" id="title" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="Masukkan judul hasil AI...">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
+                        <select id="category" required 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="">Pilih kategori...</option>
+                            <option value="Logo">Logo</option>
+                            <option value="Poster">Poster</option>
+                            <option value="Social Media">Social Media</option>
+                            <option value="Presentasi">Presentasi</option>
+                            <option value="Banner">Banner</option>
+                            <option value="Buku">Buku</option>
+                            <option value="Video">Video</option>
+                            <option value="Gambar">Gambar</option>
+                            <option value="Website">Website</option>
+                            <option value="Aplikasi">Aplikasi</option>
+                            <option value="Game">Game</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Link Canva</label>
+                        <input type="url" id="canvaLink" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="https://www.canva.com/design/...">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Deskripsi</label>
+                        <textarea id="description" rows="4" 
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  placeholder="Deskripsikan hasil AI ini..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tag (pisahkan dengan koma)</label>
+                        <input type="text" id="tags" 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="ai, design, modern, colorful">
+                    </div>
+
+                    <button type="submit" id="submitBtn" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition duration-200">
+                        💾 Simpan Hasil AI
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallerySection" class="container mx-auto px-4 py-8 hidden">
+        <div class="mb-8">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <h2 class="text-2xl font-bold text-gray-800">Galeri Hasil Canva AI</h2>
+                
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <select id="filterCategory" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Semua Kategori</option>
+                        <option value="Logo">Logo</option>
+                        <option value="Poster">Poster</option>
+                        <option value="Social Media">Social Media</option>
+                        <option value="Presentasi">Presentasi</option>
+                        <option value="Banner">Banner</option>
+                        <option value="Buku">Buku</option>
+                        <option value="Video">Video</option>
+                        <option value="Gambar">Gambar</option>
+                        <option value="Website">Website</option>
+                        <option value="Aplikasi">Aplikasi</option>
+                        <option value="Game">Game</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                    
+                    <button id="refreshBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition duration-200">
+                        🔄 Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="loadingSpinner" class="text-center py-12 hidden">
+            <div class="loading inline-block w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
+            <p class="mt-4 text-gray-600">Memuat data...</p>
+        </div>
+
+        <div id="galleryGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Gallery items will be loaded here -->
+        </div>
+
+        <!-- Pagination -->
+        <div id="paginationContainer" class="flex justify-center items-center mt-8 space-x-4 hidden">
+            <button id="prevBtn" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                ← Sebelumnya
+            </button>
+            <div id="pageInfo" class="px-4 py-2 text-gray-700 font-medium">
+                Halaman 1 dari 1
+            </div>
+            <button id="nextBtn" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                Selanjutnya →
+            </button>
+        </div>
+
+        <div id="emptyState" class="text-center py-12 hidden">
+            <div class="text-6xl mb-4">🎨</div>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">Belum ada hasil AI</h3>
+            <p class="text-gray-500">Mulai tambahkan hasil Canva AI pertama Anda!</p>
+        </div>
+    </section>
+
+    <!-- Success/Error Messages -->
+    <div id="messageContainer" class="fixed top-4 right-4 z-50"></div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            SHEET_ID: '17MDc804lNUm_XwUM6hPj6Ui8T-JVtpxJCLq4XovVs0A',
+            SHEET_NAME: 'Sheet3',
+            API_KEY: 'AIzaSyCAJWvsjw92iebZM54KZivepTpl_Q2gk70',
+            APP_SCRIPT: 'https://script.google.com/macros/s/AKfycbwRC30AsouKXS19rd912hv8a26HHYKRIWwIy18cljpz2WLZvbpw7f3wZWeRxpkCxIMZ/exec'
+        };
+
+        // DOM Elements
+        const addTab = document.getElementById('addTab');
+        const galleryTab = document.getElementById('galleryTab');
+        const addSection = document.getElementById('addSection');
+        const gallerySection = document.getElementById('gallerySection');
+        const addForm = document.getElementById('addForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const filterCategory = document.getElementById('filterCategory');
+        const galleryGrid = document.getElementById('galleryGrid');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const emptyState = document.getElementById('emptyState');
+        const paginationContainer = document.getElementById('paginationContainer');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageInfo = document.getElementById('pageInfo');
+
+        let allData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        const itemsPerPage = 6;
+
+        // Tab Navigation
+        addTab.addEventListener('click', () => {
+            addTab.className = 'px-6 py-2 text-blue-600 border-b-2 border-blue-600 font-medium';
+            galleryTab.className = 'px-6 py-2 text-gray-600 hover:text-blue-600 font-medium';
+            addSection.classList.remove('hidden');
+            gallerySection.classList.add('hidden');
+        });
+
+        galleryTab.addEventListener('click', () => {
+            galleryTab.className = 'px-6 py-2 text-blue-600 border-b-2 border-blue-600 font-medium';
+            addTab.className = 'px-6 py-2 text-gray-600 hover:text-blue-600 font-medium';
+            addSection.classList.add('hidden');
+            gallerySection.classList.remove('hidden');
+            loadGalleryData();
+        });
+
+        // Form Submission
+        addForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                title: document.getElementById('title').value.trim(),
+                category: document.getElementById('category').value,
+                canvaLink: document.getElementById('canvaLink').value.trim(),
+                description: document.getElementById('description').value.trim(),
+                tags: document.getElementById('tags').value.trim(),
+                timestamp: new Date().toISOString()
+            };
+
+            // Validate required fields
+            if (!formData.title || !formData.category || !formData.canvaLink) {
+                showMessage('❌ Mohon lengkapi semua field yang wajib diisi', 'error');
+                return;
+            }
+
+            submitBtn.innerHTML = '<div class="loading inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full mr-2"></div>Menyimpan...';
+            submitBtn.disabled = true;
+
+            try {
+                console.log('Sending data:', formData);
+                
+                // Create URL with parameters for GET request (more compatible with Google Apps Script)
+                const params = new URLSearchParams({
+                    action: 'save',
+                    title: formData.title,
+                    category: formData.category,
+                    canvaLink: formData.canvaLink,
+                    description: formData.description,
+                    tags: formData.tags,
+                    timestamp: formData.timestamp
+                });
+                
+                const url = `${CONFIG.APP_SCRIPT}?${params.toString()}`;
+                console.log('Request URL:', url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
+
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+                
+                const responseText = await response.text();
+                console.log('Response text:', responseText);
+                
+                // Check if response indicates success
+                if (response.ok && (responseText.includes('success') || responseText.includes('berhasil') || response.status === 200)) {
+                    showMessage('✅ Hasil AI berhasil disimpan!', 'success');
+                    addForm.reset();
+                    
+                    // Refresh gallery data if we're on gallery tab
+                    if (!gallerySection.classList.contains('hidden')) {
+                        setTimeout(() => loadGalleryData(), 1000);
+                    }
+                } else {
+                    throw new Error(`Server response: ${responseText || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Detailed error:', error);
+                showMessage(`❌ Gagal menyimpan data: ${error.message}`, 'error');
+            }
+
+            submitBtn.innerHTML = '💾 Simpan Hasil AI';
+            submitBtn.disabled = false;
+        });
+
+        // Load Gallery Data
+        async function loadGalleryData() {
+            loadingSpinner.classList.remove('hidden');
+            galleryGrid.classList.add('hidden');
+            emptyState.classList.add('hidden');
+
+            try {
+                console.log('Loading gallery data...');
+                
+                // Use Google Sheets API directly to avoid CORS issues
+                const sheetsUrl = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${CONFIG.SHEET_NAME}?key=${CONFIG.API_KEY}`;
+                console.log('Fetching from:', sheetsUrl);
+                
+                const response = await fetch(sheetsUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                console.log('Sheets API response:', result);
+                
+                const rows = result.values || [];
+                
+                // Convert rows to objects (skip header row if exists)
+                const data = rows.slice(1).map(row => ({
+                    timestamp: row[0] || '',
+                    title: row[1] || '',
+                    category: row[2] || '',
+                    canvaLink: row[3] || '',
+                    description: row[4] || '',
+                    tags: row[5] || ''
+                })).filter(item => item.title); // Only include rows with titles
+                
+                // Reverse to show newest first
+                allData = data.reverse();
+                console.log('Processed data:', allData);
+                
+                displayGallery(allData);
+                
+                if (allData.length === 0) {
+                    console.log('No data found in spreadsheet');
+                }
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showMessage(`❌ Gagal memuat data galeri: ${error.message}`, 'error');
+                allData = [];
+                displayGallery([]);
+            }
+
+            loadingSpinner.classList.add('hidden');
+        }
+
+        // Display Gallery with Pagination
+        function displayGallery(data) {
+            filteredData = data;
+            
+            if (data.length === 0) {
+                galleryGrid.classList.add('hidden');
+                paginationContainer.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            galleryGrid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            // Calculate pagination
+            const totalPages = Math.ceil(data.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const currentItems = data.slice(startIndex, endIndex);
+
+            // Display current page items
+            galleryGrid.innerHTML = currentItems.map(item => `
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover fade-in">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800 line-clamp-2">${item.title || 'Tanpa Judul'}</h3>
+                            <span class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full whitespace-nowrap ml-2">
+                                ${item.category || 'Lainnya'}
+                            </span>
+                        </div>
+                        
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">${item.description || 'Tidak ada deskripsi'}</p>
+                        
+                        ${item.tags ? `
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                ${item.tags.split(',').map(tag => `
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">${tag.trim()}</span>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500">
+                                ${item.timestamp ? new Date(item.timestamp).toLocaleDateString('id-ID') : 'Tanggal tidak diketahui'}
+                            </span>
+                            <a href="${item.canvaLink}" target="_blank" 
+                               class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition duration-200">
+                                🔗 Buka Canva
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Update pagination
+            updatePagination(totalPages);
+        }
+
+        // Update Pagination Controls
+        function updatePagination(totalPages) {
+            if (totalPages <= 1) {
+                paginationContainer.classList.add('hidden');
+                return;
+            }
+
+            paginationContainer.classList.remove('hidden');
+            pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
+            
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
+
+        // Filter Gallery
+        filterCategory.addEventListener('change', (e) => {
+            const selectedCategory = e.target.value;
+            const filtered = selectedCategory 
+                ? allData.filter(item => item.category === selectedCategory)
+                : allData;
+            currentPage = 1; // Reset to first page when filtering
+            displayGallery(filtered);
+        });
+
+        // Pagination Event Listeners
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                displayGallery(filteredData);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayGallery(filteredData);
+            }
+        });
+
+        // Refresh Button
+        refreshBtn.addEventListener('click', () => {
+            currentPage = 1;
+            loadGalleryData();
+        });
+
+        // Show Message
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `px-6 py-4 rounded-lg shadow-lg text-white font-medium fade-in ${
+                type === 'success' ? 'bg-green-600' : 'bg-red-600'
+            }`;
+            messageDiv.textContent = message;
+            
+            document.getElementById('messageContainer').appendChild(messageDiv);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load gallery data when page loads
+            loadGalleryData();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9761d440b18b46bb',t:'MTc1NjM2MzM1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
