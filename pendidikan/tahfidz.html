@@ -1,1 +1,1754 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Hafalan Siswa - Tahfidz Progress</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .progress-bar { transition: width 0.8s ease-in-out; }
+        .loading-spinner { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .fade-in { animation: fadeIn 0.6s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Notification popup styles */
+        .notification-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s ease-in-out;
+        }
+        .notification-popup.show {
+            transform: translateX(0);
+        }
+        .notification-popup.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .notification-popup.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+            <div class="text-center">
+                <h1 class="text-2xl sm:text-4xl font-bold mb-2">📖 Laporan Hafalan Siswa</h1>
+                <p class="text-lg sm:text-xl opacity-90">Pantau Perkembangan Tahfidz Al-Quran</p>
+                <div class="mt-4 flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                    <div class="bg-white bg-opacity-20 rounded-full px-4 py-2">
+                        <span class="text-sm font-medium">Total Siswa: <span id="totalStudents">10</span></span>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-full px-4 py-2">
+                        <span class="text-sm font-medium">Terakhir Update: <span id="lastUpdate">Hari ini</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Controls -->
+    <div class="container mx-auto px-4 sm:px-6 py-6">
+        <div class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6">
+            <!-- Mobile Layout: Stack everything vertically -->
+            <div class="flex flex-col space-y-4">
+                <!-- Top Row: View Toggle and Refresh Button -->
+                <div class="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+                    <div class="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto justify-center sm:justify-start">
+                        <div class="bg-gray-100 rounded-lg p-1 flex">
+                            <button id="individualViewBtn" class="px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors bg-blue-600 text-white">
+                                👤 Individu
+                            </button>
+                            <button id="overallViewBtn" class="px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors text-gray-600 hover:text-gray-800">
+                                📊 Keseluruhan
+                            </button>
+                        </div>
+                        <button id="refreshBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center space-x-2">
+                            <span id="refreshIcon">🔄</span>
+                            <span class="hidden sm:inline">Refresh Data</span>
+                            <span class="sm:hidden">Refresh</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Connection Status - Hidden on mobile, shown on larger screens -->
+                    <div class="hidden md:block text-sm text-gray-600">
+                        <span id="connectionStatus" class="flex items-center">
+                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                            Terhubung ke Google Sheets
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Bottom Row: Filters and Search -->
+                <div class="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:space-x-3">
+                    <select id="instructorFilter" class="w-full sm:w-auto sm:min-w-[160px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="all">Semua Pengampu</option>
+                    </select>
+                    <select id="sortBy" class="w-full sm:w-auto sm:min-w-[140px] border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="name">Urutkan: Nama</option>
+                        <option value="progress">Urutkan: Progress</option>
+                        <option value="surah">Urutkan: Surat</option>
+                    </select>
+                    <input type="text" id="searchInput" placeholder="Cari nama siswa..." class="w-full sm:flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                
+                <!-- Mobile Connection Status -->
+                <div class="md:hidden text-xs text-gray-600 text-center">
+                    <span id="connectionStatusMobile" class="flex items-center justify-center">
+                        <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                        Terhubung ke Google Sheets
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Popup -->
+    <div id="notificationPopup" class="notification-popup">
+        <!-- Notification content will be populated here -->
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingState" class="container mx-auto px-6 py-12 text-center hidden">
+        <div class="loading-spinner w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full mx-auto mb-4"></div>
+        <p class="text-gray-600">Memuat data dari Google Sheets...</p>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="container mx-auto px-4 sm:px-6 pb-12">
+        <!-- Individual View -->
+        <div id="individualView" class="view-content">
+            <!-- Instructor Groups -->
+            <div id="instructorGroups" class="space-y-8">
+                <!-- Instructor groups will be populated here -->
+            </div>
+            
+            <!-- All Students Grid (when no grouping) -->
+            <div id="studentsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
+                <!-- Student cards will be populated here -->
+            </div>
+            
+            <!-- Individual View Pagination -->
+            <div id="individualPagination" class="mt-8 flex items-center justify-between bg-white rounded-xl shadow-md p-6 hidden">
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600" id="individualPageInfo">Menampilkan 1-6 dari 10 siswa</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="individualPrevBtn" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        ← Sebelumnya
+                    </button>
+                    <div id="individualPageNumbers" class="flex items-center space-x-1">
+                        <!-- Page numbers will be populated here -->
+                    </div>
+                    <button id="individualNextBtn" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Selanjutnya →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Overall View -->
+        <div id="overallView" class="view-content hidden">
+            <!-- Comprehensive Student Table -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800 flex items-center">
+                        📋 Tabel Keseluruhan Siswa
+                    </h3>
+                    <div class="flex items-center space-x-4">
+                        <select id="tableSort" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <option value="name">Urutkan: Nama</option>
+                            <option value="progress">Urutkan: Progress</option>
+                            <option value="ayat">Urutkan: Total Ayat</option>
+                            <option value="instructor">Urutkan: Pengampu</option>
+                        </select>
+                        <input type="text" id="tableSearch" placeholder="Cari siswa..." class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent w-48">
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-gray-50 border-b">
+                                <th class="text-left p-3 font-semibold text-gray-700">No</th>
+                                <th class="text-left p-3 font-semibold text-gray-700">Nama Siswa</th>
+                                <th class="text-left p-3 font-semibold text-gray-700">Pengampu</th>
+                                <th class="text-left p-3 font-semibold text-gray-700">Surat Terakhir</th>
+                                <th class="text-center p-3 font-semibold text-gray-700">Ayat Terakhir</th>
+                                <th class="text-center p-3 font-semibold text-gray-700">Juz</th>
+                                <th class="text-center p-3 font-semibold text-gray-700">Total Hafalan</th>
+                                <th class="text-center p-3 font-semibold text-gray-700">Surat Selesai</th>
+                                <th class="text-center p-3 font-semibold text-gray-700">Progress</th>
+                                <th class="text-center p-3 font-semibold text-gray-700">Status</th>
+                                <th class="text-left p-3 font-semibold text-gray-700">Update Terakhir</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTableBody">
+                            <!-- Table rows will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4 flex items-center justify-between text-sm text-gray-600">
+                    <div id="tableInfo">Menampilkan 1-20 dari 10 siswa</div>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2">
+                            <span>Baris per halaman:</span>
+                            <select id="rowsPerPage" class="border border-gray-300 rounded px-2 py-1">
+                                <option value="20" selected>20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="all">Semua</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button id="tablePrevBtn" class="px-3 py-1 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                                ← Sebelumnya
+                            </button>
+                            <div id="tablePageNumbers" class="flex items-center space-x-1">
+                                <!-- Page numbers will be populated here -->
+                            </div>
+                            <button id="tableNextBtn" class="px-3 py-1 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                                Selanjutnya →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Class Ranking -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
+                    🏆 Peringkat Kelas
+                </h3>
+                <div id="classRanking" class="space-y-3">
+                    <!-- Rankings will be populated here -->
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h3 class="text-lg font-semibold mb-4 text-gray-800">⏰ Aktivitas Terbaru</h3>
+                <div id="recentActivity" class="space-y-3 max-h-96 overflow-y-auto">
+                    <!-- Recent activities will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Panel (Individual View Only) -->
+    <div id="statisticsPanel" class="container mx-auto px-4 sm:px-6 pb-12">
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800">📊 Statistik Kelas</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center p-4 bg-green-50 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600" id="avgAyat">650</div>
+                    <div class="text-sm text-gray-600">Rata-rata Ayat</div>
+                </div>
+                <div class="text-center p-4 bg-blue-50 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600" id="topPerformer">Jihan M</div>
+                    <div class="text-sm text-gray-600">Siswa Terdepan</div>
+                </div>
+                <div class="text-center p-4 bg-purple-50 rounded-lg">
+                    <div class="text-2xl font-bold text-purple-600" id="avgJuz">20.1</div>
+                    <div class="text-sm text-gray-600">Rata-rata Juz</div>
+                </div>
+                <div class="text-center p-4 bg-orange-50 rounded-lg">
+                    <div class="text-2xl font-bold text-orange-600" id="needsMotivation">3</div>
+                    <div class="text-sm text-gray-600">Perlu Motivasi</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            SHEET_ID: '17MDc804lNUm_XwUM6hPj6Ui8T-JVtpxJCLq4XovVs0A',
+            SHEET_NAME: 'Sheet6',
+            API_KEY: 'AIzaSyCAJWvsjw92iebZM54KZivepTpl_Q2gk70'
+        };
+
+        // Complete Quran structure - All 114 Surahs with accurate ayat counts
+        const QURAN_STRUCTURE = {
+            totalSurahs: 114,
+            totalAyat: 6236, // Accurate total ayat count
+            totalJuz: 30,
+            surahs: [
+                // Juz 1
+                { no: 1, name: 'Al-Fatihah', ayat: 7, juz: 1 },
+                { no: 2, name: 'Al-Baqarah', ayat: 286, juz: 1 }, // continues to Juz 3
+                
+                // Juz 2-3 (Al-Baqarah continues)
+                { no: 3, name: 'Ali Imran', ayat: 200, juz: 3 }, // continues to Juz 4
+                
+                // Juz 4-5
+                { no: 4, name: 'An-Nisa', ayat: 176, juz: 4 }, // continues to Juz 6
+                
+                // Juz 6-7
+                { no: 5, name: 'Al-Maidah', ayat: 120, juz: 6 }, // continues to Juz 7
+                { no: 6, name: 'Al-An\'am', ayat: 165, juz: 7 }, // continues to Juz 8
+                
+                // Juz 8-9
+                { no: 7, name: 'Al-A\'raf', ayat: 206, juz: 8 }, // continues to Juz 9
+                
+                // Juz 9-10
+                { no: 8, name: 'Al-Anfal', ayat: 75, juz: 9 },
+                { no: 9, name: 'At-Tawbah', ayat: 129, juz: 10 }, // continues to Juz 11
+                
+                // Juz 11
+                { no: 10, name: 'Yunus', ayat: 109, juz: 11 },
+                { no: 11, name: 'Hud', ayat: 123, juz: 11 }, // continues to Juz 12
+                
+                // Juz 12-13
+                { no: 12, name: 'Yusuf', ayat: 111, juz: 12 },
+                { no: 13, name: 'Ar-Ra\'d', ayat: 43, juz: 13 },
+                { no: 14, name: 'Ibrahim', ayat: 52, juz: 13 },
+                { no: 15, name: 'Al-Hijr', ayat: 99, juz: 14 },
+                
+                // Juz 14-15
+                { no: 16, name: 'An-Nahl', ayat: 128, juz: 14 }, // continues to Juz 16
+                { no: 17, name: 'Al-Isra', ayat: 111, juz: 15 },
+                { no: 18, name: 'Al-Kahf', ayat: 110, juz: 15 }, // continues to Juz 16
+                
+                // Juz 16-17
+                { no: 19, name: 'Maryam', ayat: 98, juz: 16 },
+                { no: 20, name: 'Taha', ayat: 135, juz: 16 }, // continues to Juz 17
+                { no: 21, name: 'Al-Anbiya', ayat: 112, juz: 17 },
+                
+                // Juz 17-18
+                { no: 22, name: 'Al-Hajj', ayat: 78, juz: 17 }, // continues to Juz 18
+                { no: 23, name: 'Al-Mu\'minun', ayat: 118, juz: 18 },
+                { no: 24, name: 'An-Nur', ayat: 64, juz: 18 },
+                
+                // Juz 18-19
+                { no: 25, name: 'Al-Furqan', ayat: 77, juz: 18 }, // continues to Juz 19
+                { no: 26, name: 'Ash-Shu\'ara', ayat: 227, juz: 19 },
+                { no: 27, name: 'An-Naml', ayat: 93, juz: 19 }, // continues to Juz 20
+                
+                // Juz 20-21
+                { no: 28, name: 'Al-Qasas', ayat: 88, juz: 20 },
+                { no: 29, name: 'Al-Ankabut', ayat: 69, juz: 20 }, // continues to Juz 21
+                { no: 30, name: 'Ar-Rum', ayat: 60, juz: 21 },
+                { no: 31, name: 'Luqman', ayat: 34, juz: 21 },
+                { no: 32, name: 'As-Sajdah', ayat: 30, juz: 21 },
+                { no: 33, name: 'Al-Ahzab', ayat: 73, juz: 21 }, // continues to Juz 22
+                
+                // Juz 22-23
+                { no: 34, name: 'Saba', ayat: 54, juz: 22 },
+                { no: 35, name: 'Fatir', ayat: 45, juz: 22 },
+                { no: 36, name: 'Ya-Sin', ayat: 83, juz: 22 }, // continues to Juz 23
+                { no: 37, name: 'As-Saffat', ayat: 182, juz: 23 },
+                { no: 38, name: 'Sad', ayat: 88, juz: 23 },
+                
+                // Juz 23-24
+                { no: 39, name: 'Az-Zumar', ayat: 75, juz: 23 }, // continues to Juz 24
+                { no: 40, name: 'Ghafir', ayat: 85, juz: 24 },
+                { no: 41, name: 'Fussilat', ayat: 54, juz: 24 }, // continues to Juz 25
+                
+                // Juz 25-26
+                { no: 42, name: 'Ash-Shura', ayat: 53, juz: 25 },
+                { no: 43, name: 'Az-Zukhruf', ayat: 89, juz: 25 },
+                { no: 44, name: 'Ad-Dukhan', ayat: 59, juz: 25 },
+                { no: 45, name: 'Al-Jathiyah', ayat: 37, juz: 25 },
+                { no: 46, name: 'Al-Ahqaf', ayat: 35, juz: 26 },
+                
+                // Juz 26-27
+                { no: 47, name: 'Muhammad', ayat: 38, juz: 26 },
+                { no: 48, name: 'Al-Fath', ayat: 29, juz: 26 },
+                { no: 49, name: 'Al-Hujurat', ayat: 18, juz: 26 },
+                { no: 50, name: 'Qaf', ayat: 45, juz: 26 },
+                { no: 51, name: 'Adh-Dhariyat', ayat: 60, juz: 26 }, // continues to Juz 27
+                { no: 52, name: 'At-Tur', ayat: 49, juz: 27 },
+                { no: 53, name: 'An-Najm', ayat: 62, juz: 27 },
+                { no: 54, name: 'Al-Qamar', ayat: 55, juz: 27 },
+                { no: 55, name: 'Ar-Rahman', ayat: 78, juz: 27 },
+                { no: 56, name: 'Al-Waqi\'ah', ayat: 96, juz: 27 },
+                
+                // Juz 27-28
+                { no: 57, name: 'Al-Hadid', ayat: 29, juz: 27 }, // continues to Juz 28
+                { no: 58, name: 'Al-Mujadilah', ayat: 22, juz: 28 },
+                { no: 59, name: 'Al-Hashr', ayat: 24, juz: 28 },
+                { no: 60, name: 'Al-Mumtahanah', ayat: 13, juz: 28 },
+                { no: 61, name: 'As-Saff', ayat: 14, juz: 28 },
+                { no: 62, name: 'Al-Jumu\'ah', ayat: 11, juz: 28 },
+                { no: 63, name: 'Al-Munafiqun', ayat: 11, juz: 28 },
+                { no: 64, name: 'At-Taghabun', ayat: 18, juz: 28 },
+                { no: 65, name: 'At-Talaq', ayat: 12, juz: 28 },
+                { no: 66, name: 'At-Tahrim', ayat: 12, juz: 28 },
+                
+                // Juz 28-29
+                { no: 67, name: 'Al-Mulk', ayat: 30, juz: 29 },
+                { no: 68, name: 'Al-Qalam', ayat: 52, juz: 29 },
+                { no: 69, name: 'Al-Haqqah', ayat: 52, juz: 29 },
+                { no: 70, name: 'Al-Ma\'arij', ayat: 44, juz: 29 },
+                { no: 71, name: 'Nuh', ayat: 28, juz: 29 },
+                { no: 72, name: 'Al-Jinn', ayat: 28, juz: 29 },
+                { no: 73, name: 'Al-Muzzammil', ayat: 20, juz: 29 },
+                { no: 74, name: 'Al-Muddaththir', ayat: 56, juz: 29 },
+                { no: 75, name: 'Al-Qiyamah', ayat: 40, juz: 29 },
+                { no: 76, name: 'Al-Insan', ayat: 31, juz: 29 },
+                { no: 77, name: 'Al-Mursalat', ayat: 50, juz: 29 },
+                
+                // Juz 30 - commonly memorized in reverse order
+                { no: 78, name: 'An-Naba\'', ayat: 40, juz: 30 },
+                { no: 79, name: 'An-Nazi\'at', ayat: 46, juz: 30 },
+                { no: 80, name: 'Abasa', ayat: 42, juz: 30 },
+                { no: 81, name: 'At-Takwir', ayat: 29, juz: 30 },
+                { no: 82, name: 'Al-Infithar', ayat: 19, juz: 30 },
+                { no: 83, name: 'Al-Mutaffifin', ayat: 36, juz: 30 },
+                { no: 84, name: 'Al-Inshiqaq', ayat: 25, juz: 30 },
+                { no: 85, name: 'Al-Buruj', ayat: 22, juz: 30 },
+                { no: 86, name: 'At-Tariq', ayat: 17, juz: 30 },
+                { no: 87, name: 'Al-A\'la', ayat: 19, juz: 30 },
+                { no: 88, name: 'Al-Ghashiyah', ayat: 26, juz: 30 },
+                { no: 89, name: 'Al-Fajr', ayat: 30, juz: 30 },
+                { no: 90, name: 'Al-Balad', ayat: 20, juz: 30 },
+                { no: 91, name: 'Ash-Shams', ayat: 15, juz: 30 },
+                { no: 92, name: 'Al-Lail', ayat: 21, juz: 30 },
+                { no: 93, name: 'Ad-Duha', ayat: 11, juz: 30 },
+                { no: 94, name: 'Ash-Sharh', ayat: 8, juz: 30 },
+                { no: 95, name: 'At-Tin', ayat: 8, juz: 30 },
+                { no: 96, name: 'Al-Alaq', ayat: 19, juz: 30 },
+                { no: 97, name: 'Al-Qadr', ayat: 5, juz: 30 },
+                { no: 98, name: 'Al-Bayyinah', ayat: 8, juz: 30 },
+                { no: 99, name: 'Az-Zalzalah', ayat: 8, juz: 30 },
+                { no: 100, name: 'Al-Adiyat', ayat: 11, juz: 30 },
+                { no: 101, name: 'Al-Qari\'ah', ayat: 11, juz: 30 },
+                { no: 102, name: 'At-Takathur', ayat: 8, juz: 30 },
+                { no: 103, name: 'Al-Asr', ayat: 3, juz: 30 },
+                { no: 104, name: 'Al-Humazah', ayat: 9, juz: 30 },
+                { no: 105, name: 'Al-Fil', ayat: 5, juz: 30 },
+                { no: 106, name: 'Quraish', ayat: 4, juz: 30 },
+                { no: 107, name: 'Al-Ma\'un', ayat: 7, juz: 30 },
+                { no: 108, name: 'Al-Kawthar', ayat: 3, juz: 30 },
+                { no: 109, name: 'Al-Kafirun', ayat: 6, juz: 30 },
+                { no: 110, name: 'An-Nasr', ayat: 3, juz: 30 },
+                { no: 111, name: 'Al-Masad', ayat: 5, juz: 30 },
+                { no: 112, name: 'Al-Ikhlas', ayat: 4, juz: 30 },
+                { no: 113, name: 'Al-Falaq', ayat: 5, juz: 30 },
+                { no: 114, name: 'An-Nas', ayat: 6, juz: 30 }
+            ]
+        };
+
+        // Sample data with diverse progress across different Juz
+        let studentsData = [
+            // Juz 30 students (beginners)
+            { 
+                name: 'A. Azam', 
+                currentSurah: 'An-Naba\'', 
+                currentAyat: 20, 
+                totalHafalan: 20, // Will be recalculated
+                currentJuz: 'Juz 30',
+                completedSurahs: '', // No completed surahs yet, still working on An-Naba
+                surahsCompleted: 0,
+                juzCompleted: 30,
+                lastUpdate: '1/9/2025 20.58.35',
+                status: '1',
+                instructor: 'Ustadz Ahmad'
+            },
+            { 
+                name: 'Abyan', 
+                currentSurah: 'An-Naba\'', 
+                currentAyat: 12, 
+                totalHafalan: 12, // Will be recalculated
+                currentJuz: 'Juz 30',
+                completedSurahs: '', // No completed surahs yet
+                surahsCompleted: 0,
+                juzCompleted: 30,
+                lastUpdate: '1/9/2025 20.58.35',
+                status: '1',
+                instructor: 'Ustadz Ahmad'
+            },
+            { 
+                name: 'Zakariya', 
+                currentSurah: 'An-Naba\'', 
+                currentAyat: 11, 
+                totalHafalan: 11, // Will be recalculated
+                currentJuz: 'Juz 30',
+                completedSurahs: '', // No completed surahs yet
+                surahsCompleted: 0,
+                juzCompleted: 30,
+                lastUpdate: '1/9/2025 20.58.35',
+                status: '1',
+                instructor: 'Ustadz Ahmad'
+            },
+            
+            // Juz 30 intermediate students
+            { 
+                name: 'A. Yusuf', 
+                currentSurah: 'An-Nazi\'at', 
+                currentAyat: 7, 
+                totalHafalan: 47, // Will be recalculated: An-Naba (40) + An-Nazi'at (7) = 47
+                currentJuz: 'Juz 30',
+                completedSurahs: 'An-Naba\'', // Completed An-Naba, working on An-Nazi'at
+                surahsCompleted: 1,
+                juzCompleted: 30,
+                lastUpdate: '1/9/2025 20.58.35',
+                status: '2',
+                instructor: 'Ustadzah Fatimah'
+            },
+            { 
+                name: 'Jelita N', 
+                currentSurah: 'An-Naba\'', 
+                currentAyat: 34, 
+                totalHafalan: 34, // Will be recalculated
+                currentJuz: 'Juz 30',
+                completedSurahs: '', // No completed surahs yet
+                surahsCompleted: 0,
+                juzCompleted: 30,
+                lastUpdate: '1/9/2025 20.58.35',
+                status: '2',
+                instructor: 'Ustadzah Fatimah'
+            },
+            
+            // Juz 29 students (advanced Juz 30)
+            { 
+                name: 'Jihan M', 
+                currentSurah: 'Al-Mursalat', 
+                currentAyat: 25, 
+                totalHafalan: 600, // Will be recalculated: All Juz 30 + some Juz 29
+                currentJuz: 'Juz 29',
+                completedSurahs: 'An-Naba\', An-Nazi\'at, Abasa, At-Takwir, Al-Infithar, Al-Mutaffifin, Al-Inshiqaq, Al-Buruj, At-Tariq, Al-A\'la, Al-Ghashiyah, Al-Fajr, Al-Balad, Ash-Shams, Al-Lail, Ad-Duha, Ash-Sharh, At-Tin, Al-Alaq, Al-Qadr, Al-Bayyinah, Az-Zalzalah, Al-Adiyat, Al-Qari\'ah, At-Takathur, Al-Asr, Al-Humazah, Al-Fil, Quraish, Al-Ma\'un, Al-Kawthar, Al-Kafirun, An-Nasr, Al-Masad, Al-Ikhlas, Al-Falaq, An-Nas', // All Juz 30 completed
+                surahsCompleted: 37,
+                juzCompleted: 29,
+                lastUpdate: '1/9/2025 19.30.15',
+                status: '2',
+                instructor: 'Ustadzah Fatimah'
+            },
+            
+            // Juz 1-2 students (very advanced)
+            { 
+                name: 'Ahmad Hafidz', 
+                currentSurah: 'Al-Baqarah', 
+                currentAyat: 150, 
+                totalHafalan: 3500, // Will be recalculated: Multiple Juz completed
+                currentJuz: 'Juz 2',
+                completedSurahs: 'Al-Fatihah, An-Nas, Al-Falaq, Al-Ikhlas, Al-Masad, An-Nasr, Al-Kafirun, Al-Kawthar, Al-Ma\'un, Quraish, Al-Fil, Al-Humazah, Al-Asr, At-Takathur, Al-Qari\'ah, Al-Adiyat, Az-Zalzalah, Al-Bayyinah, Al-Qadr, Al-Alaq, At-Tin, Ash-Sharh, Ad-Duha, Al-Lail, Ash-Shams, Al-Balad, Al-Fajr, Al-Ghashiyah, Al-A\'la, At-Tariq, Al-Buruj, Al-Inshiqaq, Al-Mutaffifin, Al-Infithar, At-Takwir, Abasa, An-Nazi\'at, An-Naba\', Al-Mursalat, Al-Insan, Al-Qiyamah, Al-Muddaththir, Al-Muzzammil, Al-Jinn, Nuh, Al-Ma\'arij, Al-Haqqah, Al-Qalam, Al-Mulk', // Many surahs completed
+                surahsCompleted: 50,
+                juzCompleted: 2,
+                lastUpdate: '1/9/2025 18.45.20',
+                status: '3',
+                instructor: 'Ustadz Mustofa'
+            },
+            
+            // Juz 3 student
+            { 
+                name: 'Fatimah Az-Zahra', 
+                currentSurah: 'Ali Imran', 
+                currentAyat: 100, 
+                totalHafalan: 4200, // Will be recalculated
+                currentJuz: 'Juz 3',
+                completedSurahs: 'Al-Fatihah, Al-Baqarah, An-Nas, Al-Falaq, Al-Ikhlas, Al-Masad, An-Nasr, Al-Kafirun, Al-Kawthar, Al-Ma\'un, Quraish, Al-Fil, Al-Humazah, Al-Asr, At-Takathur, Al-Qari\'ah, Al-Adiyat, Az-Zalzalah, Al-Bayyinah, Al-Qadr, Al-Alaq, At-Tin, Ash-Sharh, Ad-Duha, Al-Lail, Ash-Shams, Al-Balad, Al-Fajr, Al-Ghashiyah, Al-A\'la, At-Tariq, Al-Buruj, Al-Inshiqaq, Al-Mutaffifin, Al-Infithar, At-Takwir, Abasa, An-Nazi\'at, An-Naba\'', // Multiple juz completed
+                surahsCompleted: 39,
+                juzCompleted: 3,
+                lastUpdate: '1/9/2025 17.20.10',
+                status: '4',
+                instructor: 'Ustadz Mustofa'
+            },
+            
+            // More Juz 30 students
+            { 
+                name: 'Micky', 
+                currentSurah: 'An-Nazi\'at', 
+                currentAyat: 4, 
+                totalHafalan: 44, // Will be recalculated: An-Naba (40) + An-Nazi'at (4) = 44
+                currentJuz: 'Juz 30',
+                completedSurahs: 'An-Naba\'', // Completed An-Naba, working on An-Nazi'at
+                surahsCompleted: 1,
+                juzCompleted: 30,
+                lastUpdate: '1/9/2025 20.58.35',
+                status: '3',
+                instructor: 'Ustadz Yusuf'
+            },
+            { 
+                name: 'M. Alden', 
+                currentSurah: 'Al-Infithar', 
+                currentAyat: 7, 
+                totalHafalan: 164, // Will be recalculated: An-Naba(40) + An-Nazi'at(46) + Abasa(42) + At-Takwir(29) + Al-Infithar(7) = 164
+                currentJuz: 'Juz 30',
+                completedSurahs: 'An-Naba\', An-Nazi\'at, Abasa, At-Takwir', // Multiple completed surahs
+                surahsCompleted: 4,
+                juzCompleted: 30,
+                lastUpdate: '1/9/2025 20.58.35',
+                status: '3',
+                instructor: 'Ustadz Yusuf'
+            },
+            { 
+                name: 'Alfino', 
+                currentSurah: 'An-Nazi\'at', 
+                currentAyat: 8, 
+                totalHafalan: 48, // Will be recalculated: An-Naba (40) + An-Nazi'at (8) = 48
+                currentJuz: 'Juz 30',
+                completedSurahs: 'An-Naba\'', // Completed An-Naba, working on An-Nazi'at
+                surahsCompleted: 1,
+                juzCompleted: 30,
+                lastUpdate: '1/9/2025 20.58.35',
+                status: '3',
+                instructor: 'Ustadz Yusuf'
+            },
+            
+            // Juz 28 student
+            { 
+                name: 'Khadijah', 
+                currentSurah: 'Al-Mujadilah', 
+                currentAyat: 15, 
+                totalHafalan: 750, // Will be recalculated
+                currentJuz: 'Juz 28',
+                completedSurahs: 'An-Naba\', An-Nazi\'at, Abasa, At-Takwir, Al-Infithar, Al-Mutaffifin, Al-Inshiqaq, Al-Buruj, At-Tariq, Al-A\'la, Al-Ghashiyah, Al-Fajr, Al-Balad, Ash-Shams, Al-Lail, Ad-Duha, Ash-Sharh, At-Tin, Al-Alaq, Al-Qadr, Al-Bayyinah, Az-Zalzalah, Al-Adiyat, Al-Qari\'ah, At-Takathur, Al-Asr, Al-Humazah, Al-Fil, Quraish, Al-Ma\'un, Al-Kawthar, Al-Kafirun, An-Nasr, Al-Masad, Al-Ikhlas, Al-Falaq, An-Nas, Al-Mursalat, Al-Insan, Al-Qiyamah, Al-Muddaththir, Al-Muzzammil, Al-Jinn, Nuh, Al-Ma\'arij, Al-Haqqah, Al-Qalam, Al-Mulk, At-Tahrim, At-Talaq, At-Taghabun, Al-Munafiqun, Al-Jumu\'ah, As-Saff, Al-Mumtahanah, Al-Hashr', // Juz 30, 29, and some 28 completed
+                surahsCompleted: 58,
+                juzCompleted: 28,
+                lastUpdate: '1/9/2025 16.15.45',
+                status: '2',
+                instructor: 'Ustadzah Aisyah'
+            }
+        ];
+
+        // Current view mode
+        let currentView = 'individual'; // 'individual' or 'overall'
+        
+        // Pagination state
+        let individualCurrentPage = 1;
+        let individualItemsPerPage = 10; // Changed to 10 for instructor-specific view
+        let tableCurrentPage = 1;
+        let tableItemsPerPage = 20;
+        let currentFilteredData = [];
+
+        // Helper function to format date
+        function formatDate(dateString) {
+            if (!dateString) return 'Tidak ada data';
+            try {
+                // Handle different date formats
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                    return dateString; // Return original if can't parse
+                }
+                return date.toLocaleDateString('id-ID', {
+                    day: '2-digit',
+                    month: '2-digit', 
+                    year: 'numeric'
+                });
+            } catch (e) {
+                return dateString;
+            }
+        }
+
+        // DOM Elements
+        const studentsGrid = document.getElementById('studentsGrid');
+        const instructorGroups = document.getElementById('instructorGroups');
+        const instructorFilter = document.getElementById('instructorFilter');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const refreshIcon = document.getElementById('refreshIcon');
+        const loadingState = document.getElementById('loadingState');
+        const searchInput = document.getElementById('searchInput');
+        const sortBy = document.getElementById('sortBy');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const individualViewBtn = document.getElementById('individualViewBtn');
+        const overallViewBtn = document.getElementById('overallViewBtn');
+        const individualView = document.getElementById('individualView');
+        const overallView = document.getElementById('overallView');
+        const statisticsPanel = document.getElementById('statisticsPanel');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Recalculate total hafalan for sample data
+            studentsData = studentsData.map(student => ({
+                ...student,
+                totalHafalan: calculateTotalAyat(student.completedSurahs, student.currentSurah, student.currentAyat)
+            }));
+            
+            populateInstructorFilter();
+            renderStudentsByInstructor(studentsData);
+            updateStatistics();
+            setupEventListeners();
+            
+            // Auto-load from Google Sheets when page opens
+            loadFromGoogleSheets();
+        });
+
+        function setupEventListeners() {
+            refreshBtn.addEventListener('click', loadFromGoogleSheets);
+            searchInput.addEventListener('input', handleSearch);
+            sortBy.addEventListener('change', handleSort);
+            instructorFilter.addEventListener('change', handleInstructorFilter);
+            individualViewBtn.addEventListener('click', () => switchView('individual'));
+            overallViewBtn.addEventListener('click', () => switchView('overall'));
+            
+            // Individual pagination
+            document.getElementById('individualPrevBtn').addEventListener('click', () => {
+                if (individualCurrentPage > 1) {
+                    individualCurrentPage--;
+                    renderStudentsWithPagination();
+                }
+            });
+            
+            document.getElementById('individualNextBtn').addEventListener('click', () => {
+                const totalPages = Math.ceil(currentFilteredData.length / individualItemsPerPage);
+                if (individualCurrentPage < totalPages) {
+                    individualCurrentPage++;
+                    renderStudentsWithPagination();
+                }
+            });
+            
+            // Table pagination
+            document.getElementById('tablePrevBtn').addEventListener('click', () => {
+                if (tableCurrentPage > 1) {
+                    tableCurrentPage--;
+                    renderStudentTable();
+                }
+            });
+            
+            document.getElementById('tableNextBtn').addEventListener('click', () => {
+                const totalPages = Math.ceil(currentFilteredData.length / tableItemsPerPage);
+                if (tableCurrentPage < totalPages) {
+                    tableCurrentPage++;
+                    renderStudentTable();
+                }
+            });
+        }
+
+        function switchView(view) {
+            currentView = view;
+            
+            if (view === 'individual') {
+                individualView.classList.remove('hidden');
+                overallView.classList.add('hidden');
+                statisticsPanel.classList.remove('hidden');
+                
+                individualViewBtn.classList.add('bg-blue-600', 'text-white');
+                individualViewBtn.classList.remove('text-gray-600');
+                overallViewBtn.classList.remove('bg-blue-600', 'text-white');
+                overallViewBtn.classList.add('text-gray-600');
+                
+                renderStudents(studentsData);
+                updateStatistics();
+            } else {
+                individualView.classList.add('hidden');
+                overallView.classList.remove('hidden');
+                statisticsPanel.classList.add('hidden');
+                
+                overallViewBtn.classList.add('bg-blue-600', 'text-white');
+                overallViewBtn.classList.remove('text-gray-600');
+                individualViewBtn.classList.remove('bg-blue-600', 'text-white');
+                individualViewBtn.classList.add('text-gray-600');
+                
+                renderOverallView();
+            }
+        }
+
+        async function loadFromGoogleSheets() {
+            showLoading(true);
+            refreshIcon.textContent = '⏳';
+            
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${CONFIG.SHEET_NAME}?key=${CONFIG.API_KEY}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error('Gagal mengambil data dari Google Sheets');
+                }
+                
+                const data = await response.json();
+                
+                if (data.values && data.values.length > 1) {
+                    // Process the data (assuming first row is headers)
+                    const processedData = processSheetData(data.values);
+                    studentsData = processedData;
+                    populateInstructorFilter();
+                    
+                    // Re-render based on current view
+                    if (currentView === 'individual') {
+                        renderStudentsByInstructor(studentsData);
+                        updateStatistics();
+                    } else {
+                        renderOverallView();
+                    }
+                    
+                    updateConnectionStatus(true, 'Data berhasil dimuat dari Google Sheets');
+                    showNotification('Data berhasil dimuat dari Google Sheets!', 'success');
+                } else {
+                    updateConnectionStatus(false, 'Data tidak ditemukan di Google Sheets');
+                    showNotification('Data tidak ditemukan di Google Sheets', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error loading from Google Sheets:', error);
+                updateConnectionStatus(false, 'Menggunakan data demo - ' + error.message);
+                showNotification('Gagal memuat data, menggunakan data demo', 'error');
+            } finally {
+                showLoading(false);
+                refreshIcon.textContent = '🔄';
+            }
+        }
+
+        // Function to calculate total ayat based on completed surahs and current position
+        function calculateTotalAyat(completedSurahs, currentSurah, currentAyat) {
+            let totalAyat = 0;
+            
+            // Add ayat from completed surahs
+            if (completedSurahs && completedSurahs.trim() !== '') {
+                const completedList = completedSurahs.split(',').map(s => s.trim()).filter(s => s);
+                
+                completedList.forEach(surahName => {
+                    // Clean surah name for matching
+                    const cleanSurahName = surahName.toLowerCase()
+                        .replace('surat ', '')
+                        .replace('al-', '')
+                        .replace('an-', '')
+                        .replace('at-', '')
+                        .replace('as-', '')
+                        .replace('ar-', '')
+                        .replace('ash-', '')
+                        .replace('ad-', '')
+                        .replace('az-', '')
+                        .trim();
+                    
+                    const surah = QURAN_STRUCTURE.surahs.find(s => {
+                        const cleanStructureName = s.name.toLowerCase()
+                            .replace('al-', '')
+                            .replace('an-', '')
+                            .replace('at-', '')
+                            .replace('as-', '')
+                            .replace('ar-', '')
+                            .replace('ash-', '')
+                            .replace('ad-', '')
+                            .replace('az-', '')
+                            .trim();
+                        
+                        return cleanStructureName.includes(cleanSurahName) || 
+                               cleanSurahName.includes(cleanStructureName) ||
+                               s.name.toLowerCase().includes(surahName.toLowerCase()) ||
+                               surahName.toLowerCase().includes(s.name.toLowerCase());
+                    });
+                    
+                    if (surah) {
+                        totalAyat += surah.ayat;
+                        console.log(`Found completed surah: ${surah.name} (${surah.ayat} ayat)`);
+                    } else {
+                        console.log(`Could not find surah: ${surahName}`);
+                    }
+                });
+            }
+            
+            // Add current ayat from current surah (if not already completed)
+            if (currentSurah && currentAyat > 0) {
+                const currentSurahName = currentSurah.toLowerCase().replace('surat ', '');
+                const isCurrentSurahCompleted = completedSurahs && 
+                    completedSurahs.toLowerCase().includes(currentSurahName.toLowerCase());
+                
+                if (!isCurrentSurahCompleted) {
+                    totalAyat += parseInt(currentAyat) || 0;
+                    console.log(`Added current progress: ${currentSurah} ayat ${currentAyat}`);
+                }
+            }
+            
+            console.log(`Total calculated ayat: ${totalAyat}`);
+            return totalAyat;
+        }
+
+        function processSheetData(values) {
+            // Process actual Google Sheets data
+            const processedData = [];
+            
+            // Skip header row (index 0) and process data rows
+            for (let i = 1; i < values.length; i++) {
+                const row = values[i];
+                if (row.length >= 8 && row[0]) { // Ensure we have enough columns and a name
+                    const student = {
+                        name: row[0] || '',
+                        currentSurah: row[1] || '',
+                        currentAyat: parseInt(row[2]) || 0,
+                        totalHafalan: parseInt(row[3]) || 0, // This will be recalculated
+                        currentJuz: row[4] || '',
+                        completedSurahs: row[5] || '',
+                        lastUpdate: row[6] || '',
+                        status: row[7] || '',
+                        instructor: row[8] || 'Tidak ada pengampu'
+                    };
+                    
+                    // Recalculate total hafalan based on completed surahs and current position
+                    student.totalHafalan = calculateTotalAyat(
+                        student.completedSurahs, 
+                        student.currentSurah, 
+                        student.currentAyat
+                    );
+                    
+                    // Calculate completed surahs count
+                    const surahsList = student.completedSurahs.split(',').map(s => s.trim()).filter(s => s);
+                    student.surahsCompleted = surahsList.length;
+                    
+                    // Extract juz number from currentJuz field (e.g., "Juz 30" -> 30)
+                    student.juzCompleted = 30; // Default to Juz 30 based on your data
+                    if (student.currentJuz) {
+                        const juzMatch = student.currentJuz.match(/\d+/);
+                        if (juzMatch) {
+                            student.juzCompleted = parseInt(juzMatch[0]);
+                        }
+                    }
+                    
+                    processedData.push(student);
+                }
+            }
+            
+            return processedData.length > 0 ? processedData : studentsData; // Fallback to sample data
+        }
+
+        function showLoading(show) {
+            if (show) {
+                loadingState.classList.remove('hidden');
+                studentsGrid.style.opacity = '0.5';
+            } else {
+                loadingState.classList.add('hidden');
+                studentsGrid.style.opacity = '1';
+            }
+        }
+
+        function updateConnectionStatus(connected, message) {
+            const statusElement = connectionStatus;
+            const statusElementMobile = document.getElementById('connectionStatusMobile');
+            
+            const statusHTML = connected ? 
+                `<span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>Terhubung ke Google Sheets` :
+                `<span class="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>Menggunakan data demo`;
+            
+            if (statusElement) {
+                statusElement.innerHTML = statusHTML;
+            }
+            if (statusElementMobile) {
+                statusElementMobile.innerHTML = statusHTML;
+            }
+        }
+
+        function showNotification(message, type = 'success', duration = 3000) {
+            const popup = document.getElementById('notificationPopup');
+            
+            // Create notification content
+            popup.innerHTML = `
+                <div class="notification-popup ${type} text-white px-6 py-4 rounded-lg shadow-lg max-w-sm">
+                    <div class="flex items-center space-x-3">
+                        <div class="text-2xl">
+                            ${type === 'success' ? '✅' : '❌'}
+                        </div>
+                        <div>
+                            <div class="font-semibold text-sm">${message}</div>
+                        </div>
+                        <button onclick="hideNotification()" class="ml-auto text-white hover:text-gray-200 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Show notification
+            setTimeout(() => {
+                popup.classList.add('show');
+            }, 100);
+            
+            // Auto hide after duration
+            setTimeout(() => {
+                hideNotification();
+            }, duration);
+        }
+
+        function hideNotification() {
+            const popup = document.getElementById('notificationPopup');
+            popup.classList.remove('show');
+        }
+
+        function renderStudents(students) {
+            currentFilteredData = students;
+            individualCurrentPage = 1; // Reset to first page
+            renderStudentsWithPagination();
+        }
+        
+        function renderStudentsWithPagination() {
+            studentsGrid.innerHTML = '';
+            
+            const startIndex = (individualCurrentPage - 1) * individualItemsPerPage;
+            const endIndex = startIndex + individualItemsPerPage;
+            const paginatedStudents = currentFilteredData.slice(startIndex, endIndex);
+            
+            paginatedStudents.forEach((student, index) => {
+                const card = createStudentCard(student, startIndex + index);
+                studentsGrid.appendChild(card);
+            });
+            
+            updateIndividualPagination();
+        }
+        
+        function updateIndividualPagination() {
+            const totalItems = currentFilteredData.length;
+            const totalPages = Math.ceil(totalItems / individualItemsPerPage);
+            const startItem = (individualCurrentPage - 1) * individualItemsPerPage + 1;
+            const endItem = Math.min(individualCurrentPage * individualItemsPerPage, totalItems);
+            
+            // Update pagination info
+            document.getElementById('individualPageInfo').textContent = 
+                `Menampilkan ${startItem}-${endItem} dari ${totalItems} siswa (maksimal 10 per halaman)`;
+            
+            // Update buttons
+            const prevBtn = document.getElementById('individualPrevBtn');
+            const nextBtn = document.getElementById('individualNextBtn');
+            
+            prevBtn.disabled = individualCurrentPage === 1;
+            nextBtn.disabled = individualCurrentPage === totalPages || totalPages === 0;
+            
+            // Update page numbers
+            const pageNumbersContainer = document.getElementById('individualPageNumbers');
+            pageNumbersContainer.innerHTML = '';
+            
+            if (totalPages > 1) {
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = `px-3 py-1 text-sm font-medium rounded ${
+                        i === individualCurrentPage 
+                            ? 'bg-blue-600 text-white' 
+                            : 'text-gray-500 hover:bg-gray-100'
+                    }`;
+                    pageBtn.textContent = i;
+                    pageBtn.addEventListener('click', () => {
+                        individualCurrentPage = i;
+                        renderStudentsWithPagination();
+                    });
+                    pageNumbersContainer.appendChild(pageBtn);
+                }
+            }
+            
+            // Show/hide pagination
+            const paginationElement = document.getElementById('individualPagination');
+            if (totalPages > 1) {
+                paginationElement.classList.remove('hidden');
+            } else {
+                paginationElement.classList.add('hidden');
+            }
+        }
+
+        function createStudentCard(student, index) {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-xl shadow-md p-6 card-hover fade-in';
+            card.style.animationDelay = `${index * 0.1}s`;
+            
+            const ayatProgress = (student.totalHafalan / QURAN_STRUCTURE.totalAyat * 100);
+            const juzProgress = (student.juzCompleted / QURAN_STRUCTURE.totalJuz * 100);
+            const surahProgress = (student.surahsCompleted / QURAN_STRUCTURE.totalSurahs * 100);
+            
+            const progressColor = getProgressColor(ayatProgress);
+            const motivationMessage = getMotivationMessage(ayatProgress);
+            
+            card.innerHTML = `
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">${student.name}</h3>
+                    <div class="text-2xl">${getStudentEmoji(ayatProgress)}</div>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-600">${student.currentSurah}</span>
+                        <span class="text-sm font-bold ${progressColor}">${ayatProgress.toFixed(1)}%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="progress-bar h-3 rounded-full ${progressColor.replace('text-', 'bg-')}" 
+                             style="width: ${ayatProgress}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">
+                        Ayat ke-${student.currentAyat}
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                    <div class="text-center p-2 bg-green-50 rounded-lg">
+                        <div class="text-sm font-bold text-green-600">${student.totalHafalan}</div>
+                        <div class="text-xs text-gray-500">Ayat</div>
+                    </div>
+                    <div class="text-center p-2 bg-blue-50 rounded-lg flex items-center justify-center min-h-[60px]">
+                        <div class="text-sm font-bold text-blue-600">Juz ${student.juzCompleted}</div>
+                    </div>
+                    <div class="text-center p-2 bg-purple-50 rounded-lg">
+                        <div class="text-sm font-bold text-purple-600">${student.surahsCompleted}</div>
+                        <div class="text-xs text-gray-500">Surat</div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-3 mb-4">
+                    <div class="text-sm text-gray-600 mb-1">Surat yang Sudah Dihafal:</div>
+                    <div class="text-xs text-gray-500 mb-2">
+                        ${student.completedSurahs || 'Belum ada surat yang selesai'}
+                    </div>
+                    <div class="text-xs text-gray-500">
+                        • Total: ${student.surahsCompleted} surat<br>
+                        • ${student.currentJuz}<br>
+                        • Update: ${formatDate(student.lastUpdate)}
+                    </div>
+                </div>
+                
+                <div class="border-t pt-3">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-sm font-medium text-gray-700">👨‍🏫 Pengampu:</div>
+                        <div class="text-sm text-blue-600 font-medium">${student.instructor}</div>
+                    </div>
+                    <div class="text-sm font-medium text-gray-700 mb-1">💬 Motivasi:</div>
+                    <div class="text-xs text-gray-600 italic">"${motivationMessage}"</div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function getProgressColor(progress) {
+            if (progress >= 80) return 'text-green-600';
+            if (progress >= 60) return 'text-blue-600';
+            if (progress >= 40) return 'text-yellow-600';
+            return 'text-red-500';
+        }
+
+        function getStudentEmoji(progress) {
+            if (progress >= 90) return '🏆';
+            if (progress >= 70) return '⭐';
+            if (progress >= 50) return '📚';
+            if (progress >= 30) return '💪';
+            return '🌱';
+        }
+
+        function getMotivationMessage(progress) {
+            const messages = {
+                high: [
+                    "Masya Allah! Terus pertahankan semangat hafalanmu!",
+                    "Luar biasa! Kamu adalah teladan untuk teman-teman!",
+                    "Alhamdulillah, progress yang sangat membanggakan!"
+                ],
+                medium: [
+                    "Bagus sekali! Terus semangat, kamu pasti bisa!",
+                    "Progress yang baik, jangan menyerah ya!",
+                    "Keren! Sedikit lagi mencapai target berikutnya!"
+                ],
+                low: [
+                    "Semangat! Setiap ayat yang dihafal adalah berkah!",
+                    "Jangan menyerah, Allah akan memudahkan langkahmu!",
+                    "Pelan tapi pasti, yang penting konsisten!"
+                ]
+            };
+            
+            let category = 'low';
+            if (progress >= 70) category = 'high';
+            else if (progress >= 40) category = 'medium';
+            
+            const categoryMessages = messages[category];
+            return categoryMessages[Math.floor(Math.random() * categoryMessages.length)];
+        }
+
+        function handleSearch() {
+            const query = searchInput.value.toLowerCase();
+            const filtered = studentsData.filter(student => 
+                student.name.toLowerCase().includes(query)
+            );
+            
+            if (instructorFilter.value === 'all' && query === '') {
+                // Show all students grouped by instructor (no pagination)
+                renderStudentsByInstructor(filtered);
+                studentsGrid.classList.add('hidden');
+                instructorGroups.classList.remove('hidden');
+                document.getElementById('individualPagination').classList.add('hidden');
+            } else {
+                // Show filtered results with pagination
+                const finalFiltered = instructorFilter.value === 'all' ? 
+                    filtered : 
+                    filtered.filter(student => student.instructor === instructorFilter.value);
+                renderStudents(finalFiltered);
+                studentsGrid.classList.remove('hidden');
+                instructorGroups.classList.add('hidden');
+            }
+        }
+
+        function handleSort() {
+            const sortType = sortBy.value;
+            let sorted = [...studentsData];
+            
+            switch(sortType) {
+                case 'name':
+                    sorted.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'progress':
+                    sorted.sort((a, b) => b.totalHafalan - a.totalHafalan);
+                    break;
+                case 'surah':
+                    sorted.sort((a, b) => a.currentSurah.localeCompare(b.currentSurah));
+                    break;
+            }
+            
+            if (instructorFilter.value === 'all') {
+                // Show all students grouped by instructor (no pagination)
+                renderStudentsByInstructor(sorted);
+                studentsGrid.classList.add('hidden');
+                instructorGroups.classList.remove('hidden');
+                document.getElementById('individualPagination').classList.add('hidden');
+            } else {
+                // Show specific instructor's students with pagination
+                const filtered = sorted.filter(student => student.instructor === instructorFilter.value);
+                renderStudents(filtered);
+                studentsGrid.classList.remove('hidden');
+                instructorGroups.classList.add('hidden');
+            }
+        }
+
+        function populateInstructorFilter() {
+            const instructors = [...new Set(studentsData.map(student => student.instructor))].sort();
+            instructorFilter.innerHTML = '<option value="all">Semua Pengampu</option>';
+            
+            instructors.forEach(instructor => {
+                const option = document.createElement('option');
+                option.value = instructor;
+                option.textContent = instructor;
+                instructorFilter.appendChild(option);
+            });
+        }
+
+        function handleInstructorFilter() {
+            const selectedInstructor = instructorFilter.value;
+            
+            if (selectedInstructor === 'all') {
+                // Show all students grouped by instructor (no pagination)
+                renderStudentsByInstructor(studentsData);
+                studentsGrid.classList.add('hidden');
+                instructorGroups.classList.remove('hidden');
+                document.getElementById('individualPagination').classList.add('hidden');
+            } else {
+                // Show specific instructor's students with pagination (max 10 per page)
+                const filtered = studentsData.filter(student => student.instructor === selectedInstructor);
+                renderStudents(filtered);
+                studentsGrid.classList.remove('hidden');
+                instructorGroups.classList.add('hidden');
+            }
+        }
+
+        function renderStudentsByInstructor(students) {
+            instructorGroups.innerHTML = '';
+            
+            // Group students by instructor
+            const groupedByInstructor = students.reduce((groups, student) => {
+                const instructor = student.instructor;
+                if (!groups[instructor]) {
+                    groups[instructor] = [];
+                }
+                groups[instructor].push(student);
+                return groups;
+            }, {});
+
+            // Custom sorting: Bapak Mustofa first, Bapak Ahmad Amir Yusuf last, others alphabetically in between
+            const instructorNames = Object.keys(groupedByInstructor);
+            const sortedInstructors = instructorNames.sort((a, b) => {
+                // Check for Bapak Mustofa (case insensitive, partial match)
+                const aIsMustofa = a.toLowerCase().includes('mustofa');
+                const bIsMustofa = b.toLowerCase().includes('mustofa');
+                
+                // Check for Bapak Ahmad Amir Yusuf (case insensitive, partial match)
+                const aIsAhmadAmir = a.toLowerCase().includes('ahmad') && (a.toLowerCase().includes('amir') || a.toLowerCase().includes('yusuf'));
+                const bIsAhmadAmir = b.toLowerCase().includes('ahmad') && (b.toLowerCase().includes('amir') || b.toLowerCase().includes('yusuf'));
+                
+                // Bapak Mustofa always first
+                if (aIsMustofa && !bIsMustofa) return -1;
+                if (!aIsMustofa && bIsMustofa) return 1;
+                
+                // Bapak Ahmad Amir Yusuf always last
+                if (aIsAhmadAmir && !bIsAhmadAmir) return 1;
+                if (!aIsAhmadAmir && bIsAhmadAmir) return -1;
+                
+                // If both are special cases or neither, sort alphabetically
+                return a.localeCompare(b);
+            });
+
+            // Render each instructor group in the custom order
+            sortedInstructors.forEach(instructor => {
+                const instructorStudents = groupedByInstructor[instructor];
+                const instructorSection = createInstructorSection(instructor, instructorStudents);
+                instructorGroups.appendChild(instructorSection);
+            });
+        }
+
+        function createInstructorSection(instructor, students) {
+            const section = document.createElement('div');
+            section.className = 'bg-white rounded-xl shadow-md overflow-hidden';
+            
+            // Calculate instructor statistics
+            const totalStudents = students.length;
+            const avgHafalan = students.reduce((sum, s) => sum + s.totalHafalan, 0) / totalStudents;
+            const topStudent = students.reduce((top, s) => s.totalHafalan > top.totalHafalan ? s : top);
+            
+            // Create a safe ID for the instructor by removing special characters
+            const safeInstructorId = 'instructor-' + Math.random().toString(36).substr(2, 9);
+            
+            section.innerHTML = `
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="text-xl font-bold mb-2">👨‍🏫 ${instructor}</h3>
+                            <p class="text-blue-100">Mengelola ${totalStudents} siswa</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold">${Math.round(avgHafalan)}</div>
+                            <div class="text-sm text-blue-100">Rata-rata Ayat</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 grid grid-cols-2 gap-4">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                            <div class="text-sm text-blue-100">Siswa Terdepan</div>
+                            <div class="font-semibold">${topStudent.name}</div>
+                            <div class="text-xs text-blue-200">${topStudent.totalHafalan} ayat</div>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                            <div class="text-sm text-blue-100">Total Hafalan</div>
+                            <div class="font-semibold">${students.reduce((sum, s) => sum + s.totalHafalan, 0)} ayat</div>
+                            <div class="text-xs text-blue-200">Seluruh siswa</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="${safeInstructorId}">
+                        <!-- Student cards will be populated here -->
+                    </div>
+                </div>
+            `;
+            
+            // Add student cards to this instructor's section
+            const studentsContainer = section.querySelector(`#${safeInstructorId}`);
+            students.forEach((student, index) => {
+                const card = createStudentCard(student, index);
+                studentsContainer.appendChild(card);
+            });
+            
+            return section;
+        }
+
+        function renderOverallView() {
+            renderClassRanking();
+            renderStudentTable();
+            renderRecentActivity();
+            updateOverallStatistics();
+            setupTableEventListeners();
+        }
+
+        function renderClassRanking() {
+            const ranking = [...studentsData]
+                .sort((a, b) => b.totalHafalan - a.totalHafalan)
+                .slice(0, 10);
+            
+            const rankingContainer = document.getElementById('classRanking');
+            rankingContainer.innerHTML = '';
+            
+            ranking.forEach((student, index) => {
+                const ayatProgress = (student.totalHafalan / QURAN_STRUCTURE.totalAyat * 100);
+                const medal = index < 3 ? ['🥇', '🥈', '🥉'][index] : `#${index + 1}`;
+                
+                const rankItem = document.createElement('div');
+                rankItem.className = 'flex items-center justify-between p-4 bg-gray-50 rounded-lg';
+                rankItem.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <div class="text-2xl">${medal}</div>
+                        <div>
+                            <div class="font-semibold text-gray-800">${student.name}</div>
+                            <div class="text-sm text-gray-600">${student.totalHafalan} ayat • Juz ${student.juzCompleted}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold text-blue-600">${ayatProgress.toFixed(1)}%</div>
+                        <div class="text-xs text-gray-500">Surat ${student.currentSurah}</div>
+                    </div>
+                `;
+                rankingContainer.appendChild(rankItem);
+            });
+        }
+
+        function renderRecentActivity() {
+            // Show ALL students, sorted by most recent update
+            const activities = studentsData
+                .sort((a, b) => {
+                    // Parse dates for proper sorting
+                    const dateA = new Date(a.lastUpdate);
+                    const dateB = new Date(b.lastUpdate);
+                    
+                    // If dates are invalid, put them at the end
+                    if (isNaN(dateA.getTime()) && isNaN(dateB.getTime())) return 0;
+                    if (isNaN(dateA.getTime())) return 1;
+                    if (isNaN(dateB.getTime())) return -1;
+                    
+                    return dateB - dateA; // Most recent first
+                });
+            
+            const activityContainer = document.getElementById('recentActivity');
+            activityContainer.innerHTML = '';
+            
+            // Add header showing total count
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'flex items-center justify-between mb-3 pb-2 border-b border-gray-200';
+            headerDiv.innerHTML = `
+                <span class="text-sm font-medium text-gray-600">Menampilkan ${activities.length} siswa</span>
+                <span class="text-xs text-gray-500">Diurutkan berdasarkan update terbaru</span>
+            `;
+            activityContainer.appendChild(headerDiv);
+            
+            activities.forEach((student, index) => {
+                // Format the actual date from lastUpdate
+                let dateText = 'Tidak ada data';
+                let timeAgo = '';
+                
+                if (student.lastUpdate) {
+                    try {
+                        const updateDate = new Date(student.lastUpdate);
+                        if (!isNaN(updateDate.getTime())) {
+                            dateText = updateDate.toLocaleDateString('id-ID', {
+                                weekday: 'short',
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                            
+                            // Calculate time ago
+                            const now = new Date();
+                            const diffMs = now - updateDate;
+                            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                            
+                            if (diffDays === 0) {
+                                if (diffHours === 0) {
+                                    timeAgo = 'Baru saja';
+                                } else {
+                                    timeAgo = `${diffHours} jam lalu`;
+                                }
+                            } else if (diffDays === 1) {
+                                timeAgo = 'Kemarin';
+                            } else if (diffDays < 7) {
+                                timeAgo = `${diffDays} hari lalu`;
+                            } else {
+                                timeAgo = `${Math.floor(diffDays / 7)} minggu lalu`;
+                            }
+                        } else {
+                            dateText = student.lastUpdate; // Use original if can't parse
+                        }
+                    } catch (e) {
+                        dateText = student.lastUpdate;
+                    }
+                }
+                
+                // Add ranking indicator for top 3
+                let rankingBadge = '';
+                if (index < 3) {
+                    const badges = ['🥇', '🥈', '🥉'];
+                    rankingBadge = `<span class="text-lg mr-1">${badges[index]}</span>`;
+                }
+                
+                const activityItem = document.createElement('div');
+                activityItem.className = `flex items-center space-x-3 p-3 rounded-lg transition-colors hover:bg-gray-100 ${index < 3 ? 'bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200' : 'bg-gray-50'}`;
+                activityItem.innerHTML = `
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="text-sm">📖</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center">
+                            ${rankingBadge}
+                            <span class="text-sm font-medium text-gray-800">${student.name}</span>
+                            <span class="ml-2 text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">${student.instructor}</span>
+                        </div>
+                        <div class="text-xs text-gray-600 mt-1">
+                            Update hafalan ${student.currentSurah} ayat ke-${student.currentAyat} • Total ${student.totalHafalan} ayat • ${formatStatusText(student.status)}
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-gray-500">${dateText}</div>
+                        ${timeAgo ? `<div class="text-xs text-blue-600 font-medium">${timeAgo}</div>` : ''}
+                    </div>
+                `;
+                activityContainer.appendChild(activityItem);
+            });
+        }
+
+        function renderStudentTable(filteredData = null) {
+            if (filteredData) {
+                currentFilteredData = filteredData;
+                tableCurrentPage = 1; // Reset to first page when filtering
+            } else if (currentFilteredData.length === 0) {
+                currentFilteredData = studentsData;
+            }
+            
+            const tableBody = document.getElementById('studentTableBody');
+            const rowsPerPageSelect = document.getElementById('rowsPerPage');
+            tableItemsPerPage = rowsPerPageSelect.value === 'all' ? currentFilteredData.length : parseInt(rowsPerPageSelect.value);
+            
+            tableBody.innerHTML = '';
+            
+            const startIndex = (tableCurrentPage - 1) * tableItemsPerPage;
+            const endIndex = startIndex + tableItemsPerPage;
+            const paginatedData = tableItemsPerPage === currentFilteredData.length ? 
+                currentFilteredData : 
+                currentFilteredData.slice(startIndex, endIndex);
+            
+            paginatedData.forEach((student, index) => {
+                const ayatProgress = (student.totalHafalan / QURAN_STRUCTURE.totalAyat * 100);
+                const progressColor = getProgressColor(ayatProgress);
+                const statusEmoji = getStudentEmoji(ayatProgress);
+                const statusText = getStatusText(ayatProgress);
+                
+                const row = document.createElement('tr');
+                row.className = 'border-b hover:bg-gray-50 transition-colors';
+                
+                row.innerHTML = `
+                    <td class="p-3 text-gray-600">${startIndex + index + 1}</td>
+                    <td class="p-3">
+                        <div class="font-medium text-gray-800">${student.name}</div>
+                    </td>
+                    <td class="p-3">
+                        <div class="text-sm text-blue-600 font-medium">${student.instructor}</div>
+                    </td>
+                    <td class="p-3">
+                        <div class="text-sm text-gray-700">${student.currentSurah}</div>
+                    </td>
+                    <td class="p-3 text-center">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                            ${student.currentAyat}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center">
+                        <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">
+                            ${student.juzCompleted}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center">
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-bold">
+                            ${student.totalHafalan}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center">
+                        <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium">
+                            ${student.surahsCompleted}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                            <div class="w-16 bg-gray-200 rounded-full h-2">
+                                <div class="${progressColor.replace('text-', 'bg-')} h-2 rounded-full transition-all duration-300" 
+                                     style="width: ${ayatProgress}%"></div>
+                            </div>
+                            <span class="text-xs font-medium ${progressColor}">${ayatProgress.toFixed(1)}%</span>
+                        </div>
+                    </td>
+                    <td class="p-3 text-center">
+                        <div class="text-xs text-gray-700 font-medium">
+                            ${formatStatusText(student.status)}
+                        </div>
+                    </td>
+                    <td class="p-3">
+                        <div class="text-xs text-gray-500">${formatDate(student.lastUpdate)}</div>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            updateTablePagination();
+        }
+        
+        function updateTablePagination() {
+            const totalItems = currentFilteredData.length;
+            const totalPages = Math.ceil(totalItems / tableItemsPerPage);
+            const startItem = totalItems === 0 ? 0 : (tableCurrentPage - 1) * tableItemsPerPage + 1;
+            const endItem = Math.min(tableCurrentPage * tableItemsPerPage, totalItems);
+            
+            // Update table info
+            document.getElementById('tableInfo').textContent = 
+                `Menampilkan ${startItem}-${endItem} dari ${totalItems} siswa`;
+            
+            // Update buttons
+            const prevBtn = document.getElementById('tablePrevBtn');
+            const nextBtn = document.getElementById('tableNextBtn');
+            
+            prevBtn.disabled = tableCurrentPage === 1 || totalPages === 0;
+            nextBtn.disabled = tableCurrentPage === totalPages || totalPages === 0;
+            
+            // Update page numbers
+            const pageNumbersContainer = document.getElementById('tablePageNumbers');
+            pageNumbersContainer.innerHTML = '';
+            
+            if (totalPages > 1 && document.getElementById('rowsPerPage').value !== 'all') {
+                // Show max 5 page numbers
+                const maxVisiblePages = 5;
+                let startPage = Math.max(1, tableCurrentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                
+                // Adjust start if we're near the end
+                if (endPage - startPage < maxVisiblePages - 1) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+                
+                // Add first page and ellipsis if needed
+                if (startPage > 1) {
+                    const firstPageBtn = createPageButton(1);
+                    pageNumbersContainer.appendChild(firstPageBtn);
+                    
+                    if (startPage > 2) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.className = 'px-2 text-gray-400';
+                        ellipsis.textContent = '...';
+                        pageNumbersContainer.appendChild(ellipsis);
+                    }
+                }
+                
+                // Add visible page numbers
+                for (let i = startPage; i <= endPage; i++) {
+                    const pageBtn = createPageButton(i);
+                    pageNumbersContainer.appendChild(pageBtn);
+                }
+                
+                // Add ellipsis and last page if needed
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        const ellipsis = document.createElement('span');
+                        ellipsis.className = 'px-2 text-gray-400';
+                        ellipsis.textContent = '...';
+                        pageNumbersContainer.appendChild(ellipsis);
+                    }
+                    
+                    const lastPageBtn = createPageButton(totalPages);
+                    pageNumbersContainer.appendChild(lastPageBtn);
+                }
+            }
+        }
+        
+        function createPageButton(pageNumber) {
+            const pageBtn = document.createElement('button');
+            pageBtn.className = `px-3 py-1 text-sm font-medium rounded ${
+                pageNumber === tableCurrentPage 
+                    ? 'bg-blue-600 text-white' 
+                    : 'text-gray-500 hover:bg-gray-100'
+            }`;
+            pageBtn.textContent = pageNumber;
+            pageBtn.addEventListener('click', () => {
+                tableCurrentPage = pageNumber;
+                renderStudentTable();
+            });
+            return pageBtn;
+        }
+
+        function getStatusText(progress) {
+            if (progress >= 90) return 'Excellent';
+            if (progress >= 70) return 'Baik Sekali';
+            if (progress >= 50) return 'Baik';
+            if (progress >= 30) return 'Cukup';
+            return 'Perlu Motivasi';
+        }
+
+        function formatStatusText(statusValue) {
+            if (!statusValue || statusValue === '') {
+                return 'Tidak ada update';
+            }
+            
+            const statusNum = parseInt(statusValue);
+            if (isNaN(statusNum) || statusNum <= 0) {
+                return 'Tidak ada update';
+            }
+            
+            if (statusNum === 1) {
+                return 'Tambah 1 ayat';
+            } else {
+                return `Tambah ${statusNum} ayat`;
+            }
+        }
+
+        function setupTableEventListeners() {
+            const tableSort = document.getElementById('tableSort');
+            const tableSearch = document.getElementById('tableSearch');
+            const rowsPerPage = document.getElementById('rowsPerPage');
+            
+            if (tableSort) {
+                tableSort.addEventListener('change', handleTableSort);
+            }
+            
+            if (tableSearch) {
+                tableSearch.addEventListener('input', handleTableSearch);
+            }
+            
+            if (rowsPerPage) {
+                rowsPerPage.addEventListener('change', () => {
+                    tableCurrentPage = 1; // Reset to first page when changing rows per page
+                    renderStudentTable();
+                });
+            }
+        }
+
+        function handleTableSort() {
+            const sortType = document.getElementById('tableSort').value;
+            let sorted = [...studentsData];
+            
+            switch(sortType) {
+                case 'name':
+                    sorted.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'progress':
+                    sorted.sort((a, b) => b.totalHafalan - a.totalHafalan);
+                    break;
+                case 'ayat':
+                    sorted.sort((a, b) => b.totalHafalan - a.totalHafalan);
+                    break;
+                case 'instructor':
+                    sorted.sort((a, b) => a.instructor.localeCompare(b.instructor));
+                    break;
+            }
+            
+            renderStudentTable(sorted);
+        }
+
+        function handleTableSearch() {
+            const query = document.getElementById('tableSearch').value.toLowerCase();
+            const filtered = studentsData.filter(student => 
+                student.name.toLowerCase().includes(query) ||
+                student.instructor.toLowerCase().includes(query) ||
+                student.currentSurah.toLowerCase().includes(query)
+            );
+            
+            renderStudentTable(filtered);
+        }
+
+        function updateOverallStatistics() {
+            const totalAyat = studentsData.reduce((sum, student) => sum + student.totalHafalan, 0);
+            const avgJuz = studentsData.reduce((sum, student) => sum + student.juzCompleted, 0) / studentsData.length;
+            const avgSurah = studentsData.reduce((sum, student) => sum + student.surahsCompleted, 0) / studentsData.length;
+            
+            document.getElementById('totalAyatProgress').textContent = totalAyat.toLocaleString('id-ID');
+            document.getElementById('totalJuzProgress').textContent = avgJuz.toFixed(1);
+            document.getElementById('totalSurahProgress').textContent = avgSurah.toFixed(1);
+        }
+
+        function updateStatistics() {
+            const totalStudents = studentsData.length;
+            const avgAyat = studentsData.reduce((sum, student) => sum + student.totalHafalan, 0) / totalStudents;
+            const avgJuz = studentsData.reduce((sum, student) => sum + student.juzCompleted, 0) / totalStudents;
+            const topPerformer = studentsData.reduce((top, student) => 
+                student.totalHafalan > top.totalHafalan ? student : top
+            );
+            const needsMotivation = studentsData.filter(student => 
+                (student.totalHafalan / QURAN_STRUCTURE.totalAyat * 100) < 30
+            ).length;
+            
+            document.getElementById('totalStudents').textContent = totalStudents;
+            document.getElementById('avgAyat').textContent = Math.round(avgAyat);
+            document.getElementById('avgJuz').textContent = avgJuz.toFixed(1);
+            document.getElementById('topPerformer').textContent = topPerformer.name;
+            document.getElementById('needsMotivation').textContent = needsMotivation;
+            
+            // Update last update time
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('id-ID');
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97909cef70921c0e',t:'MTc1Njg1MzkxNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
 
