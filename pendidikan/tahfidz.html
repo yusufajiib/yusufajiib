@@ -1036,69 +1036,68 @@
 
         function createStudentCard(student, index) {
             const card = document.createElement('div');
-            card.className = 'bg-white rounded-xl shadow-md p-6 card-hover fade-in';
+            card.className = 'bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 rounded-xl shadow-lg p-6 card-hover fade-in';
             card.style.animationDelay = `${index * 0.1}s`;
             
             const ayatProgress = (student.totalHafalan / QURAN_STRUCTURE.totalAyat * 100);
             const juzProgress = (student.juzCompleted / QURAN_STRUCTURE.totalJuz * 100);
             const surahProgress = (student.surahsCompleted / QURAN_STRUCTURE.totalSurahs * 100);
             
-            const progressColor = getProgressColor(ayatProgress);
             const motivationMessage = getMotivationMessage(ayatProgress);
             
             card.innerHTML = `
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800">${student.name}</h3>
+                    <h3 class="text-lg font-semibold text-indigo-800">${student.name}</h3>
                     <div class="text-2xl">${getStudentEmoji(ayatProgress)}</div>
                 </div>
                 
                 <div class="mb-4">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm font-medium text-gray-600">${student.currentSurah}</span>
-                        <span class="text-sm font-bold ${progressColor}">${ayatProgress.toFixed(1)}%</span>
+                        <span class="text-sm font-medium text-indigo-700">${student.currentSurah}</span>
+                        <span class="text-sm font-bold text-indigo-600">${ayatProgress.toFixed(1)}%</span>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-3">
-                        <div class="progress-bar h-3 rounded-full ${progressColor.replace('text-', 'bg-')}" 
+                    <div class="w-full bg-indigo-200 rounded-full h-3">
+                        <div class="progress-bar h-3 rounded-full bg-gradient-to-r from-indigo-500 to-blue-600" 
                              style="width: ${ayatProgress}%"></div>
                     </div>
-                    <div class="text-xs text-gray-500 mt-1">
+                    <div class="text-xs text-indigo-600 mt-1 font-medium">
                         Ayat ke-${student.currentAyat}
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-3 gap-2 mb-4">
-                    <div class="text-center p-2 bg-green-50 rounded-lg">
-                        <div class="text-sm font-bold text-green-600">${student.totalHafalan}</div>
-                        <div class="text-xs text-gray-500">Ayat</div>
+                    <div class="text-center p-2 bg-gradient-to-br from-emerald-100 to-green-200 border border-emerald-300 rounded-lg">
+                        <div class="text-sm font-bold text-emerald-700">${student.totalHafalan}</div>
+                        <div class="text-xs text-emerald-600">Ayat</div>
                     </div>
-                    <div class="text-center p-2 bg-blue-50 rounded-lg flex items-center justify-center min-h-[60px]">
-                        <div class="text-sm font-bold text-blue-600">Juz ${student.juzCompleted}</div>
+                    <div class="text-center p-2 bg-gradient-to-br from-blue-100 to-cyan-200 border border-blue-300 rounded-lg flex items-center justify-center min-h-[60px]">
+                        <div class="text-sm font-bold text-blue-700">Juz ${student.juzCompleted}</div>
                     </div>
-                    <div class="text-center p-2 bg-purple-50 rounded-lg">
-                        <div class="text-sm font-bold text-purple-600">${student.surahsCompleted}</div>
-                        <div class="text-xs text-gray-500">Surat</div>
+                    <div class="text-center p-2 bg-gradient-to-br from-purple-100 to-violet-200 border border-purple-300 rounded-lg">
+                        <div class="text-sm font-bold text-purple-700">${student.surahsCompleted}</div>
+                        <div class="text-xs text-purple-600">Surat</div>
                     </div>
                 </div>
                 
-                <div class="bg-gray-50 rounded-lg p-3 mb-4">
-                    <div class="text-sm text-gray-600 mb-1">Surat yang Sudah Dihafal:</div>
-                    <div class="text-xs text-gray-500 mb-2">
+                <div class="bg-gradient-to-r from-indigo-100 to-blue-100 border border-indigo-200 rounded-lg p-3 mb-4">
+                    <div class="text-sm text-indigo-700 font-medium mb-1">Surat yang Sudah Dihafal:</div>
+                    <div class="text-xs text-indigo-600 mb-2">
                         ${student.completedSurahs || 'Belum ada surat yang selesai'}
                     </div>
-                    <div class="text-xs text-gray-500">
+                    <div class="text-xs text-indigo-600">
                         • Total: ${student.surahsCompleted} surat<br>
                         • ${student.currentJuz}<br>
                         • Update: ${formatDate(student.lastUpdate)}
                     </div>
                 </div>
                 
-                <div class="border-t pt-3">
+                <div class="border-t border-indigo-200 pt-3">
                     <div class="flex items-center justify-between mb-2">
-                        <div class="text-sm font-medium text-gray-700">👨‍🏫 Pengampu:</div>
-                        <div class="text-sm text-blue-600 font-medium">${student.instructor}</div>
+                        <div class="text-sm font-medium text-indigo-700">👨‍🏫 Pengampu:</div>
+                        <div class="text-sm text-blue-700 font-semibold">${student.instructor}</div>
                     </div>
-                    <div class="text-sm font-medium text-gray-700 mb-1">💬 Motivasi:</div>
-                    <div class="text-xs text-gray-600 italic">"${motivationMessage}"</div>
+                    <div class="text-sm font-medium text-indigo-700 mb-1">💬 Motivasi:</div>
+                    <div class="text-xs text-indigo-600 italic font-medium">"${motivationMessage}"</div>
                 </div>
             `;
             
@@ -1749,6 +1748,5 @@
             document.getElementById('lastUpdate').textContent = new Date().toLocaleString('id-ID');
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97909cef70921c0e',t:'MTc1Njg1MzkxNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9798c58404d89c93',t:'MTc1NjkzOTQ2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
-
