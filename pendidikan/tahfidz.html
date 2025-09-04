@@ -485,10 +485,10 @@
             
             // Juz 30 intermediate students
             { 
-                name: 'A. Yusuf', 
+                name: 'Navisa', 
                 currentSurah: 'An-Nazi\'at', 
                 currentAyat: 7, 
-                totalHafalan: 47, // Will be recalculated: An-Naba (40) + An-Nazi'at (7) = 47
+                totalHafalan: 47, // Fixed: An-Naba (40) + An-Nazi'at (7) = 47
                 currentJuz: 'Juz 30',
                 completedSurahs: 'An-Naba\'', // Completed An-Naba, working on An-Nazi'at
                 surahsCompleted: 1,
@@ -794,7 +794,7 @@
         function calculateTotalAyat(completedSurahs, currentSurah, currentAyat) {
             let totalAyat = 0;
             
-            // Add ayat from completed surahs
+            // Add ayat from completed surahs ONLY
             if (completedSurahs && completedSurahs.trim() !== '') {
                 const completedList = completedSurahs.split(',').map(s => s.trim()).filter(s => s);
                 
@@ -832,26 +832,15 @@
                     
                     if (surah) {
                         totalAyat += surah.ayat;
-                        console.log(`Found completed surah: ${surah.name} (${surah.ayat} ayat)`);
-                    } else {
-                        console.log(`Could not find surah: ${surahName}`);
                     }
                 });
             }
             
-            // Add current ayat from current surah (if not already completed)
+            // Add current ayat from current surah (progress in surah being memorized)
             if (currentSurah && currentAyat > 0) {
-                const currentSurahName = currentSurah.toLowerCase().replace('surat ', '');
-                const isCurrentSurahCompleted = completedSurahs && 
-                    completedSurahs.toLowerCase().includes(currentSurahName.toLowerCase());
-                
-                if (!isCurrentSurahCompleted) {
-                    totalAyat += parseInt(currentAyat) || 0;
-                    console.log(`Added current progress: ${currentSurah} ayat ${currentAyat}`);
-                }
+                totalAyat += parseInt(currentAyat) || 0;
             }
             
-            console.log(`Total calculated ayat: ${totalAyat}`);
             return totalAyat;
         }
 
@@ -1053,7 +1042,7 @@
                 
                 <div class="mb-4">
                     <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm font-medium text-indigo-700">${student.currentSurah}</span>
+                        <span class="text-sm font-medium text-indigo-700">Surat Terakhir: ${student.currentSurah}</span>
                         <span class="text-sm font-bold text-indigo-600">${ayatProgress.toFixed(1)}%</span>
                     </div>
                     <div class="w-full bg-indigo-200 rounded-full h-3">
@@ -1748,5 +1737,5 @@
             document.getElementById('lastUpdate').textContent = new Date().toLocaleString('id-ID');
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9798c58404d89c93',t:'MTc1NjkzOTQ2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'979bedb381e8ce61',t:'MTc1Njk3MjU2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
