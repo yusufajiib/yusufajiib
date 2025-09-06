@@ -195,23 +195,51 @@
         <!-- Overall View -->
         <div id="overallView" class="view-content hidden">
             <!-- Comprehensive Student Table -->
-            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="text-xl font-semibold text-gray-800 flex items-center">
-                        📋 Tabel Keseluruhan Siswa
-                    </h3>
-                    <div class="flex items-center space-x-4">
-                        <button id="downloadBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2" onclick="downloadTableData()">
-                            <span>📥</span>
-                            <span>Download Excel</span>
-                        </button>
-                        <select id="tableSort" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="handleTableSort()">
-                            <option value="name">Urutkan: Nama</option>
-                            <option value="progress">Urutkan: Progress</option>
-                            <option value="ayat">Urutkan: Total Ayat</option>
-                            <option value="instructor">Urutkan: Pengampu</option>
-                        </select>
-                        <input type="text" id="tableSearch" placeholder="Cari siswa..." class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent w-48" oninput="handleTableSearch()">
+            <div class="bg-white rounded-xl shadow-md p-4 sm:p-6 mb-6">
+                <!-- Mobile Layout -->
+                <div class="block sm:hidden">
+                    <div class="text-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800 flex items-center justify-center">
+                            📋 Tabel Keseluruhan Siswa
+                        </h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex space-x-2">
+                            <button id="downloadBtnMobile" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center space-x-2" onclick="downloadTableData()">
+                                <span>📥</span>
+                                <span class="hidden xs:inline">Download</span>
+                                <span class="xs:hidden">CSV</span>
+                            </button>
+                            <select id="tableSortMobile" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="document.getElementById('tableSort').value = this.value; handleTableSort();">
+                                <option value="name">Nama</option>
+                                <option value="progress">Progress</option>
+                                <option value="ayat">Total Ayat</option>
+                                <option value="instructor">Pengampu</option>
+                            </select>
+                        </div>
+                        <input type="text" id="tableSearchMobile" placeholder="Cari siswa..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" oninput="document.getElementById('tableSearch').value = this.value; handleTableSearch();">
+                    </div>
+                </div>
+                
+                <!-- Desktop Layout -->
+                <div class="hidden sm:block">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-semibold text-gray-800 flex items-center">
+                            📋 Tabel Keseluruhan Siswa
+                        </h3>
+                        <div class="flex items-center space-x-4">
+                            <button id="downloadBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2" onclick="downloadTableData()">
+                                <span>📥</span>
+                                <span>Download Excel</span>
+                            </button>
+                            <select id="tableSort" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="handleTableSort()">
+                                <option value="name">Urutkan: Nama</option>
+                                <option value="progress">Urutkan: Progress</option>
+                                <option value="ayat">Urutkan: Total Ayat</option>
+                                <option value="instructor">Urutkan: Pengampu</option>
+                            </select>
+                            <input type="text" id="tableSearch" placeholder="Cari siswa..." class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent w-48" oninput="handleTableSearch()">
+                        </div>
                     </div>
                 </div>
                 
@@ -1931,5 +1959,5 @@
             }, 2000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ae0f0ae17489bc',t:'MTc1NzE2MjY3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ae174a15595f54',t:'MTc1NzE2MzAxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
