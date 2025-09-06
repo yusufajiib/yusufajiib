@@ -977,21 +977,61 @@
             // Force render with demo data first
             if (instructorGroups) {
                 console.log('📝 Instructor groups element found, rendering...');
+                
+                // IMMEDIATE render without any delays
                 renderStudentsByInstructor(studentsData);
                 
-                // Force visibility
+                // Force visibility with multiple methods
                 instructorGroups.classList.remove('hidden');
                 instructorGroups.style.display = 'block';
+                instructorGroups.style.visibility = 'visible';
+                instructorGroups.style.opacity = '1';
+                
                 console.log('✅ Instructor groups made visible');
                 
-                // Check if content was added
+                // Force a reflow to ensure rendering
+                instructorGroups.offsetHeight;
+                
+                // Double-check rendering after a brief moment
                 setTimeout(() => {
-                    console.log('🔍 Instructor groups content check:', {
+                    if (instructorGroups.children.length === 0) {
+                        console.warn('⚠️ No children found, forcing emergency render...');
+                        // Emergency fallback render
+                        instructorGroups.innerHTML = `
+                            <div class="bg-white rounded-xl shadow-md p-6">
+                                <h3 class="text-lg font-semibold mb-4">📚 Data Siswa Tahfidz</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    ${studentsData.slice(0, 6).map(student => `
+                                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                            <h4 class="font-semibold text-blue-800">${student.name}</h4>
+                                            <p class="text-sm text-blue-600">${student.currentSurah} - Ayat ${student.currentAyat}</p>
+                                            <p class="text-xs text-blue-500">Pengampu: ${student.instructor}</p>
+                                            <div class="mt-2 bg-blue-200 rounded-full h-2">
+                                                <div class="bg-blue-600 h-2 rounded-full" style="width: ${(student.totalHafalan / 6236 * 100).toFixed(1)}%"></div>
+                                            </div>
+                                            <p class="text-xs text-blue-600 mt-1">${student.totalHafalan} ayat (${(student.totalHafalan / 6236 * 100).toFixed(1)}%)</p>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                ${studentsData.length > 6 ? `
+                                    <div class="mt-4 text-center">
+                                        <button onclick="renderStudentsByInstructor(studentsData)" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                                            Tampilkan Semua ${studentsData.length} Siswa
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    }
+                    
+                    console.log('🔍 Final instructor groups check:', {
                         innerHTML: instructorGroups.innerHTML.length,
                         children: instructorGroups.children.length,
-                        visible: !instructorGroups.classList.contains('hidden')
+                        visible: !instructorGroups.classList.contains('hidden'),
+                        display: instructorGroups.style.display,
+                        opacity: instructorGroups.style.opacity
                     });
-                }, 100);
+                }, 50);
             } else {
                 console.error('❌ instructorGroups element not found!');
             }
@@ -1012,7 +1052,7 @@
             // Load from Google Sheets in background (don't wait for it)
             setTimeout(() => {
                 loadFromGoogleSheets();
-            }, 500);
+            }, 1000);
         });
 
         function switchView(view) {
@@ -2478,5 +2518,5 @@
             }, 2000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97aef8ac27d5f93e',t:'MTc1NzE3MjI0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97af02deb48944c3',t:'MTc1NzE3MjY2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
