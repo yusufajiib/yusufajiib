@@ -440,17 +440,414 @@
             ]
         };
 
-        // Sample data with diverse progress across different Juz
+        // Enhanced surah name matching function with comprehensive variations
+        function findSurahByName(inputName) {
+            const cleanInput = inputName.toLowerCase().trim();
+            
+            // Comprehensive name variations mapping
+            const nameVariations = {
+                // Common variations and alternative names
+                'ali imran': 'Ali Imran',
+                'ali-imran': 'Ali Imran',
+                'al-imran': 'Ali Imran',
+                'aal-e-imran': 'Ali Imran',
+                'al-fatihah': 'Al-Fatihah',
+                'alfatihah': 'Al-Fatihah',
+                'fatihah': 'Al-Fatihah',
+                'al-baqarah': 'Al-Baqarah',
+                'albaqarah': 'Al-Baqarah',
+                'baqarah': 'Al-Baqarah',
+                'an-nisa': 'An-Nisa',
+                'annisa': 'An-Nisa',
+                'al-nisa': 'An-Nisa',
+                'nisa': 'An-Nisa',
+                'al-maidah': 'Al-Maidah',
+                'almaidah': 'Al-Maidah',
+                'maidah': 'Al-Maidah',
+                'al-anam': 'Al-An\'am',
+                'al-an\'am': 'Al-An\'am',
+                'anam': 'Al-An\'am',
+                'al-a\'raf': 'Al-A\'raf',
+                'al-araf': 'Al-A\'raf',
+                'araf': 'Al-A\'raf',
+                'at-taubah': 'At-Tawbah',
+                'at-tawbah': 'At-Tawbah',
+                'attaubah': 'At-Tawbah',
+                'attawbah': 'At-Tawbah',
+                'taubah': 'At-Tawbah',
+                'tawbah': 'At-Tawbah',
+                'bara\'ah': 'At-Tawbah',
+                'ar-rad': 'Ar-Ra\'d',
+                'ar-ra\'d': 'Ar-Ra\'d',
+                'arrad': 'Ar-Ra\'d',
+                'rad': 'Ar-Ra\'d',
+                'thunder': 'Ar-Ra\'d',
+                'al-isra': 'Al-Isra',
+                'al-isro': 'Al-Isra',
+                'isra': 'Al-Isra',
+                'bani israil': 'Al-Isra',
+                'bani israel': 'Al-Isra',
+                'yasin': 'Ya-Sin',
+                'ya-sin': 'Ya-Sin',
+                'yaseen': 'Ya-Sin',
+                'yas': 'Ya-Sin',
+                'as-saffat': 'As-Saffat',
+                'assaffat': 'As-Saffat',
+                'saffat': 'As-Saffat',
+                'az-zumar': 'Az-Zumar',
+                'azzumar': 'Az-Zumar',
+                'zumar': 'Az-Zumar',
+                'al-mukmin': 'Ghafir',
+                'al-mu\'min': 'Ghafir',
+                'ghafir': 'Ghafir',
+                'mukmin': 'Ghafir',
+                'fussilat': 'Fussilat',
+                'fushshilat': 'Fussilat',
+                'ha mim sajdah': 'Fussilat',
+                'hamim sajdah': 'Fussilat',
+                'ash-shura': 'Ash-Shura',
+                'ashshura': 'Ash-Shura',
+                'shura': 'Ash-Shura',
+                'az-zukhruf': 'Az-Zukhruf',
+                'azzukhruf': 'Az-Zukhruf',
+                'zukhruf': 'Az-Zukhruf',
+                'ad-dukhan': 'Ad-Dukhan',
+                'addukhan': 'Ad-Dukhan',
+                'dukhan': 'Ad-Dukhan',
+                'al-jatsiyah': 'Al-Jathiyah',
+                'al-jathiyah': 'Al-Jathiyah',
+                'aljatsiyah': 'Al-Jathiyah',
+                'jatsiyah': 'Al-Jathiyah',
+                'jathiyah': 'Al-Jathiyah',
+                'muhammad': 'Muhammad',
+                'al-qital': 'Muhammad',
+                'qital': 'Muhammad',
+                'al-hujurat': 'Al-Hujurat',
+                'alhujurat': 'Al-Hujurat',
+                'hujurat': 'Al-Hujurat',
+                'adh-dhariyat': 'Adh-Dhariyat',
+                'azzariyat': 'Adh-Dhariyat',
+                'dhariyat': 'Adh-Dhariyat',
+                'zariyat': 'Adh-Dhariyat',
+                'at-tur': 'At-Tur',
+                'attur': 'At-Tur',
+                'tur': 'At-Tur',
+                'an-najm': 'An-Najm',
+                'annajm': 'An-Najm',
+                'najm': 'An-Najm',
+                'al-qamar': 'Al-Qamar',
+                'alqamar': 'Al-Qamar',
+                'qamar': 'Al-Qamar',
+                'ar-rahman': 'Ar-Rahman',
+                'arrahman': 'Ar-Rahman',
+                'rahman': 'Ar-Rahman',
+                'al-waqi\'ah': 'Al-Waqi\'ah',
+                'al-waqiah': 'Al-Waqi\'ah',
+                'alwaqiah': 'Al-Waqi\'ah',
+                'waqiah': 'Al-Waqi\'ah',
+                'waqi\'ah': 'Al-Waqi\'ah',
+                'al-hadid': 'Al-Hadid',
+                'alhadid': 'Al-Hadid',
+                'hadid': 'Al-Hadid',
+                'al-mujadilah': 'Al-Mujadilah',
+                'al-mujadalah': 'Al-Mujadilah',
+                'almujadilah': 'Al-Mujadilah',
+                'mujadilah': 'Al-Mujadilah',
+                'mujadalah': 'Al-Mujadilah',
+                'al-hashr': 'Al-Hashr',
+                'alhashr': 'Al-Hashr',
+                'hashr': 'Al-Hashr',
+                'al-mumtahanah': 'Al-Mumtahanah',
+                'al-mumtahan': 'Al-Mumtahanah',
+                'almumtahanah': 'Al-Mumtahanah',
+                'mumtahanah': 'Al-Mumtahanah',
+                'mumtahan': 'Al-Mumtahanah',
+                'as-saff': 'As-Saff',
+                'assaff': 'As-Saff',
+                'saff': 'As-Saff',
+                'al-jumu\'ah': 'Al-Jumu\'ah',
+                'al-jumuah': 'Al-Jumu\'ah',
+                'aljumuah': 'Al-Jumu\'ah',
+                'jumuah': 'Al-Jumu\'ah',
+                'jumu\'ah': 'Al-Jumu\'ah',
+                'al-munafiqun': 'Al-Munafiqun',
+                'almunafiqun': 'Al-Munafiqun',
+                'munafiqun': 'Al-Munafiqun',
+                'at-taghabun': 'At-Taghabun',
+                'attaghabun': 'At-Taghabun',
+                'taghabun': 'At-Taghabun',
+                'at-talaq': 'At-Talaq',
+                'attalaq': 'At-Talaq',
+                'talaq': 'At-Talaq',
+                'at-tahrim': 'At-Tahrim',
+                'attahrim': 'At-Tahrim',
+                'tahrim': 'At-Tahrim',
+                'al-mulk': 'Al-Mulk',
+                'almulk': 'Al-Mulk',
+                'mulk': 'Al-Mulk',
+                'al-qalam': 'Al-Qalam',
+                'alqalam': 'Al-Qalam',
+                'qalam': 'Al-Qalam',
+                'nun': 'Al-Qalam',
+                'al-haqqah': 'Al-Haqqah',
+                'alhaqqah': 'Al-Haqqah',
+                'haqqah': 'Al-Haqqah',
+                'al-ma\'arij': 'Al-Ma\'arij',
+                'al-maarij': 'Al-Ma\'arij',
+                'almaarij': 'Al-Ma\'arij',
+                'maarij': 'Al-Ma\'arij',
+                'ma\'arij': 'Al-Ma\'arij',
+                'nuh': 'Nuh',
+                'noah': 'Nuh',
+                'al-jinn': 'Al-Jinn',
+                'aljinn': 'Al-Jinn',
+                'jinn': 'Al-Jinn',
+                'al-muzzammil': 'Al-Muzzammil',
+                'almuzzammil': 'Al-Muzzammil',
+                'muzzammil': 'Al-Muzzammil',
+                'al-muddaththir': 'Al-Muddaththir',
+                'al-mudatsir': 'Al-Muddaththir',
+                'almuddatsir': 'Al-Muddaththir',
+                'muddatsir': 'Al-Muddaththir',
+                'muddaththir': 'Al-Muddaththir',
+                'al-qiyamah': 'Al-Qiyamah',
+                'alqiyamah': 'Al-Qiyamah',
+                'qiyamah': 'Al-Qiyamah',
+                'al-insan': 'Al-Insan',
+                'alinsan': 'Al-Insan',
+                'insan': 'Al-Insan',
+                'ad-dahr': 'Al-Insan',
+                'dahr': 'Al-Insan',
+                'al-mursalat': 'Al-Mursalat',
+                'almursalat': 'Al-Mursalat',
+                'mursalat': 'Al-Mursalat',
+                'an-naba': 'An-Naba\'',
+                'an-naba\'': 'An-Naba\'',
+                'annaba': 'An-Naba\'',
+                'naba': 'An-Naba\'',
+                'naba\'': 'An-Naba\'',
+                'an-nazi\'at': 'An-Nazi\'at',
+                'an-naziat': 'An-Nazi\'at',
+                'annaziat': 'An-Nazi\'at',
+                'naziat': 'An-Nazi\'at',
+                'nazi\'at': 'An-Nazi\'at',
+                'abasa': 'Abasa',
+                'at-takwir': 'At-Takwir',
+                'attakwir': 'At-Takwir',
+                'takwir': 'At-Takwir',
+                'al-infitar': 'Al-Infithar',
+                'al-infithar': 'Al-Infithar',
+                'alinfitar': 'Al-Infithar',
+                'infitar': 'Al-Infithar',
+                'infithar': 'Al-Infithar',
+                'al-mutaffifin': 'Al-Mutaffifin',
+                'almutaffifin': 'Al-Mutaffifin',
+                'mutaffifin': 'Al-Mutaffifin',
+                'al-inshiqaq': 'Al-Inshiqaq',
+                'alinshiqaq': 'Al-Inshiqaq',
+                'inshiqaq': 'Al-Inshiqaq',
+                'al-buruj': 'Al-Buruj',
+                'alburuj': 'Al-Buruj',
+                'buruj': 'Al-Buruj',
+                'at-tariq': 'At-Tariq',
+                'attariq': 'At-Tariq',
+                'tariq': 'At-Tariq',
+                'al-a\'la': 'Al-A\'la',
+                'al-ala': 'Al-A\'la',
+                'alala': 'Al-A\'la',
+                'ala': 'Al-A\'la',
+                'a\'la': 'Al-A\'la',
+                'al-ghashiyah': 'Al-Ghashiyah',
+                'al-ghasiyah': 'Al-Ghashiyah',
+                'alghashiyah': 'Al-Ghashiyah',
+                'ghashiyah': 'Al-Ghashiyah',
+                'ghasiyah': 'Al-Ghashiyah',
+                'al-fajr': 'Al-Fajr',
+                'alfajr': 'Al-Fajr',
+                'fajr': 'Al-Fajr',
+                'al-balad': 'Al-Balad',
+                'albalad': 'Al-Balad',
+                'balad': 'Al-Balad',
+                'ash-shams': 'Ash-Shams',
+                'ashshams': 'Ash-Shams',
+                'shams': 'Ash-Shams',
+                'al-lail': 'Al-Lail',
+                'allail': 'Al-Lail',
+                'lail': 'Al-Lail',
+                'ad-duha': 'Ad-Duha',
+                'adduha': 'Ad-Duha',
+                'duha': 'Ad-Duha',
+                'ash-sharh': 'Ash-Sharh',
+                'ashsharh': 'Ash-Sharh',
+                'sharh': 'Ash-Sharh',
+                'al-inshirah': 'Ash-Sharh',
+                'inshirah': 'Ash-Sharh',
+                'at-tin': 'At-Tin',
+                'attin': 'At-Tin',
+                'tin': 'At-Tin',
+                'al-alaq': 'Al-Alaq',
+                'alalaq': 'Al-Alaq',
+                'alaq': 'Al-Alaq',
+                'iqra': 'Al-Alaq',
+                'al-qadr': 'Al-Qadr',
+                'alqadr': 'Al-Qadr',
+                'qadr': 'Al-Qadr',
+                'lailatul qadr': 'Al-Qadr',
+                'lailat al-qadr': 'Al-Qadr',
+                'al-bayyinah': 'Al-Bayyinah',
+                'albayyinah': 'Al-Bayyinah',
+                'bayyinah': 'Al-Bayyinah',
+                'az-zalzalah': 'Az-Zalzalah',
+                'azzalzalah': 'Az-Zalzalah',
+                'zalzalah': 'Az-Zalzalah',
+                'al-adiyat': 'Al-Adiyat',
+                'aladiyat': 'Al-Adiyat',
+                'adiyat': 'Al-Adiyat',
+                'al-qari\'ah': 'Al-Qari\'ah',
+                'al-qariah': 'Al-Qari\'ah',
+                'alqariah': 'Al-Qari\'ah',
+                'qariah': 'Al-Qari\'ah',
+                'qari\'ah': 'Al-Qari\'ah',
+                'at-takathur': 'At-Takathur',
+                'attakathur': 'At-Takathur',
+                'takathur': 'At-Takathur',
+                'al-asr': 'Al-Asr',
+                'alasr': 'Al-Asr',
+                'asr': 'Al-Asr',
+                'al-humazah': 'Al-Humazah',
+                'alhumazah': 'Al-Humazah',
+                'humazah': 'Al-Humazah',
+                'al-fil': 'Al-Fil',
+                'alfil': 'Al-Fil',
+                'fil': 'Al-Fil',
+                'quraish': 'Quraish',
+                'qurais': 'Quraish',
+                'quraysh': 'Quraish',
+                'al-ma\'un': 'Al-Ma\'un',
+                'al-maun': 'Al-Ma\'un',
+                'almaun': 'Al-Ma\'un',
+                'maun': 'Al-Ma\'un',
+                'ma\'un': 'Al-Ma\'un',
+                'al-kawthar': 'Al-Kawthar',
+                'al-kautsar': 'Al-Kawthar',
+                'alkautsar': 'Al-Kawthar',
+                'kautsar': 'Al-Kawthar',
+                'kawthar': 'Al-Kawthar',
+                'al-kafirun': 'Al-Kafirun',
+                'alkafirun': 'Al-Kafirun',
+                'kafirun': 'Al-Kafirun',
+                'an-nasr': 'An-Nasr',
+                'annasr': 'An-Nasr',
+                'nasr': 'An-Nasr',
+                'al-masad': 'Al-Masad',
+                'almasad': 'Al-Masad',
+                'masad': 'Al-Masad',
+                'al-lahab': 'Al-Masad',
+                'lahab': 'Al-Masad',
+                'al-ikhlas': 'Al-Ikhlas',
+                'alikhlas': 'Al-Ikhlas',
+                'ikhlas': 'Al-Ikhlas',
+                'al-falaq': 'Al-Falaq',
+                'alfalaq': 'Al-Falaq',
+                'falaq': 'Al-Falaq',
+                'an-nas': 'An-Nas',
+                'annas': 'An-Nas',
+                'nas': 'An-Nas'
+            };
+            
+            // Check direct variations first
+            if (nameVariations[cleanInput]) {
+                return QURAN_STRUCTURE.surahs.find(s => s.name === nameVariations[cleanInput]);
+            }
+            
+            // Try exact match
+            let surah = QURAN_STRUCTURE.surahs.find(s => 
+                s.name.toLowerCase() === cleanInput ||
+                s.name.toLowerCase() === inputName.toLowerCase()
+            );
+            
+            if (surah) return surah;
+            
+            // Enhanced cleaning for flexible matching
+            const cleanSurahName = cleanInput
+                .replace(/^(surat|surah)\s+/i, '')
+                .replace(/^(al|an|at|as|ar|ash|ad|az)-?/i, '')
+                .replace(/['\-\s]/g, '')
+                .trim();
+            
+            // Find by cleaned name matching
+            surah = QURAN_STRUCTURE.surahs.find(s => {
+                const cleanStructureName = s.name.toLowerCase()
+                    .replace(/^(al|an|at|as|ar|ash|ad|az)-?/i, '')
+                    .replace(/['\-\s]/g, '')
+                    .trim();
+                
+                return cleanStructureName === cleanSurahName ||
+                       cleanStructureName.includes(cleanSurahName) ||
+                       cleanSurahName.includes(cleanStructureName);
+            });
+            
+            if (surah) return surah;
+            
+            // Last resort: partial matching
+            return QURAN_STRUCTURE.surahs.find(s => {
+                const sName = s.name.toLowerCase();
+                return sName.includes(cleanInput) || cleanInput.includes(sName);
+            });
+        }
+
+        // Function to calculate total ayat based on completed surahs and current position
+        function calculateTotalAyat(completedSurahs, currentSurah, currentAyat, studentName = '') {
+            let totalAyat = 0;
+            let matchedSurahs = [];
+            let unmatchedSurahs = [];
+            
+            // Add ayat from completed surahs ONLY
+            if (completedSurahs && completedSurahs.trim() !== '') {
+                const completedList = completedSurahs.split(',').map(s => s.trim()).filter(s => s);
+                
+                completedList.forEach(surahName => {
+                    const surah = findSurahByName(surahName);
+                    
+                    if (surah) {
+                        totalAyat += surah.ayat;
+                        matchedSurahs.push(surahName);
+                    } else {
+                        unmatchedSurahs.push(surahName);
+                    }
+                });
+            }
+            
+            // Debug logging for unmatched surahs - especially for Azam
+            if (unmatchedSurahs.length > 0 || studentName.toLowerCase().includes('azam')) {
+                console.log(`🔍 Debug untuk ${studentName}:`);
+                console.log('✅ Surat berhasil dicocokkan:', matchedSurahs.length);
+                console.log('❌ Surat tidak cocok:', unmatchedSurahs.length);
+                if (unmatchedSurahs.length > 0) {
+                    console.log('❌ Surat tidak ditemukan:', unmatchedSurahs);
+                }
+                console.log('📊 Total ayat dari surat selesai:', totalAyat);
+            }
+            
+            // Add current ayat from current surah (progress in surah being memorized)
+            if (currentSurah && currentAyat > 0) {
+                totalAyat += parseInt(currentAyat) || 0;
+            }
+            
+            return totalAyat;
+        }
+
+        // Sample data with test case for Azam (113 completed surahs)
         let studentsData = [
-            // Juz 30 students (beginners)
+            // Test case: Azam with 113 completed surahs, working on An-Naba (the 114th surah)
             { 
                 name: 'A. Azam', 
                 currentSurah: 'An-Naba\'', 
                 currentAyat: 20, 
                 totalHafalan: 20, // Will be recalculated
                 currentJuz: 'Juz 30',
-                completedSurahs: '', // No completed surahs yet, still working on An-Naba
-                surahsCompleted: 0,
+                completedSurahs: 'Al-Fatihah, Al-Baqarah, Ali Imran, An-Nisa, Al-Maidah, Al-An\'am, Al-A\'raf, Al-Anfal, At-Tawbah, Yunus, Hud, Yusuf, Ar-Ra\'d, Ibrahim, Al-Hijr, An-Nahl, Al-Isra, Al-Kahf, Maryam, Taha, Al-Anbiya, Al-Hajj, Al-Mu\'minun, An-Nur, Al-Furqan, Ash-Shu\'ara, An-Naml, Al-Qasas, Al-Ankabut, Ar-Rum, Luqman, As-Sajdah, Al-Ahzab, Saba, Fatir, Ya-Sin, As-Saffat, Sad, Az-Zumar, Ghafir, Fussilat, Ash-Shura, Az-Zukhruf, Ad-Dukhan, Al-Jathiyah, Al-Ahqaf, Muhammad, Al-Fath, Al-Hujurat, Qaf, Adh-Dhariyat, At-Tur, An-Najm, Al-Qamar, Ar-Rahman, Al-Waqi\'ah, Al-Hadid, Al-Mujadilah, Al-Hashr, Al-Mumtahanah, As-Saff, Al-Jumu\'ah, Al-Munafiqun, At-Taghabun, At-Talaq, At-Tahrim, Al-Mulk, Al-Qalam, Al-Haqqah, Al-Ma\'arij, Nuh, Al-Jinn, Al-Muzzammil, Al-Muddaththir, Al-Qiyamah, Al-Insan, Al-Mursalat, An-Nazi\'at, Abasa, At-Takwir, Al-Infithar, Al-Mutaffifin, Al-Inshiqaq, Al-Buruj, At-Tariq, Al-A\'la, Al-Ghashiyah, Al-Fajr, Al-Balad, Ash-Shams, Al-Lail, Ad-Duha, Ash-Sharh, At-Tin, Al-Alaq, Al-Qadr, Al-Bayyinah, Az-Zalzalah, Al-Adiyat, Al-Qari\'ah, At-Takathur, Al-Asr, Al-Humazah, Al-Fil, Quraish, Al-Ma\'un, Al-Kawthar, Al-Kafirun, An-Nasr, Al-Masad, Al-Ikhlas, Al-Falaq, An-Nas', // 113 surahs completed, working on An-Naba (the 114th)
+                surahsCompleted: 113,
                 juzCompleted: 30,
                 lastUpdate: '1/9/2025 20.58.35',
                 status: '1',
@@ -663,7 +1060,7 @@
             // Recalculate total hafalan for sample data
             studentsData = studentsData.map(student => ({
                 ...student,
-                totalHafalan: calculateTotalAyat(student.completedSurahs, student.currentSurah, student.currentAyat)
+                totalHafalan: calculateTotalAyat(student.completedSurahs, student.currentSurah, student.currentAyat, student.name)
             }));
             
             populateInstructorFilter();
@@ -790,60 +1187,6 @@
             }
         }
 
-        // Function to calculate total ayat based on completed surahs and current position
-        function calculateTotalAyat(completedSurahs, currentSurah, currentAyat) {
-            let totalAyat = 0;
-            
-            // Add ayat from completed surahs ONLY
-            if (completedSurahs && completedSurahs.trim() !== '') {
-                const completedList = completedSurahs.split(',').map(s => s.trim()).filter(s => s);
-                
-                completedList.forEach(surahName => {
-                    // Clean surah name for matching
-                    const cleanSurahName = surahName.toLowerCase()
-                        .replace('surat ', '')
-                        .replace('al-', '')
-                        .replace('an-', '')
-                        .replace('at-', '')
-                        .replace('as-', '')
-                        .replace('ar-', '')
-                        .replace('ash-', '')
-                        .replace('ad-', '')
-                        .replace('az-', '')
-                        .trim();
-                    
-                    const surah = QURAN_STRUCTURE.surahs.find(s => {
-                        const cleanStructureName = s.name.toLowerCase()
-                            .replace('al-', '')
-                            .replace('an-', '')
-                            .replace('at-', '')
-                            .replace('as-', '')
-                            .replace('ar-', '')
-                            .replace('ash-', '')
-                            .replace('ad-', '')
-                            .replace('az-', '')
-                            .trim();
-                        
-                        return cleanStructureName.includes(cleanSurahName) || 
-                               cleanSurahName.includes(cleanStructureName) ||
-                               s.name.toLowerCase().includes(surahName.toLowerCase()) ||
-                               surahName.toLowerCase().includes(s.name.toLowerCase());
-                    });
-                    
-                    if (surah) {
-                        totalAyat += surah.ayat;
-                    }
-                });
-            }
-            
-            // Add current ayat from current surah (progress in surah being memorized)
-            if (currentSurah && currentAyat > 0) {
-                totalAyat += parseInt(currentAyat) || 0;
-            }
-            
-            return totalAyat;
-        }
-
         function processSheetData(values) {
             // Process actual Google Sheets data
             const processedData = [];
@@ -868,7 +1211,8 @@
                     student.totalHafalan = calculateTotalAyat(
                         student.completedSurahs, 
                         student.currentSurah, 
-                        student.currentAyat
+                        student.currentAyat,
+                        student.name
                     );
                     
                     // Calculate completed surahs count
@@ -1578,164 +1922,117 @@
                     startPage = Math.max(1, endPage - maxVisiblePages + 1);
                 }
                 
-                // Add first page and ellipsis if needed
-                if (startPage > 1) {
-                    const firstPageBtn = createPageButton(1);
-                    pageNumbersContainer.appendChild(firstPageBtn);
-                    
-                    if (startPage > 2) {
-                        const ellipsis = document.createElement('span');
-                        ellipsis.className = 'px-2 text-gray-400';
-                        ellipsis.textContent = '...';
-                        pageNumbersContainer.appendChild(ellipsis);
-                    }
-                }
-                
-                // Add visible page numbers
                 for (let i = startPage; i <= endPage; i++) {
-                    const pageBtn = createPageButton(i);
+                    const pageBtn = document.createElement('button');
+                    pageBtn.className = `px-2 py-1 text-xs font-medium rounded ${
+                        i === tableCurrentPage 
+                            ? 'bg-blue-600 text-white' 
+                            : 'text-gray-500 hover:bg-gray-100'
+                    }`;
+                    pageBtn.textContent = i;
+                    pageBtn.addEventListener('click', () => {
+                        tableCurrentPage = i;
+                        renderStudentTable();
+                    });
                     pageNumbersContainer.appendChild(pageBtn);
-                }
-                
-                // Add ellipsis and last page if needed
-                if (endPage < totalPages) {
-                    if (endPage < totalPages - 1) {
-                        const ellipsis = document.createElement('span');
-                        ellipsis.className = 'px-2 text-gray-400';
-                        ellipsis.textContent = '...';
-                        pageNumbersContainer.appendChild(ellipsis);
-                    }
-                    
-                    const lastPageBtn = createPageButton(totalPages);
-                    pageNumbersContainer.appendChild(lastPageBtn);
                 }
             }
         }
         
-        function createPageButton(pageNumber) {
-            const pageBtn = document.createElement('button');
-            pageBtn.className = `px-3 py-1 text-sm font-medium rounded ${
-                pageNumber === tableCurrentPage 
-                    ? 'bg-blue-600 text-white' 
-                    : 'text-gray-500 hover:bg-gray-100'
-            }`;
-            pageBtn.textContent = pageNumber;
-            pageBtn.addEventListener('click', () => {
-                tableCurrentPage = pageNumber;
-                renderStudentTable();
-            });
-            return pageBtn;
-        }
-
-        function getStatusText(progress) {
-            if (progress >= 90) return 'Excellent';
-            if (progress >= 70) return 'Baik Sekali';
-            if (progress >= 50) return 'Baik';
-            if (progress >= 30) return 'Cukup';
-            return 'Perlu Motivasi';
-        }
-
-        function formatStatusText(statusValue) {
-            if (!statusValue || statusValue === '') {
-                return 'Tidak ada update';
-            }
-            
-            const statusNum = parseInt(statusValue);
-            if (isNaN(statusNum) || statusNum <= 0) {
-                return 'Tidak ada update';
-            }
-            
-            if (statusNum === 1) {
-                return 'Tambah 1 ayat';
-            } else {
-                return `Tambah ${statusNum} ayat`;
-            }
-        }
-
         function setupTableEventListeners() {
+            // Table sorting
             const tableSort = document.getElementById('tableSort');
-            const tableSearch = document.getElementById('tableSearch');
-            const rowsPerPage = document.getElementById('rowsPerPage');
-            
             if (tableSort) {
-                tableSort.addEventListener('change', handleTableSort);
+                tableSort.addEventListener('change', () => {
+                    const sortType = tableSort.value;
+                    let sorted = [...studentsData];
+                    
+                    switch(sortType) {
+                        case 'name':
+                            sorted.sort((a, b) => a.name.localeCompare(b.name));
+                            break;
+                        case 'progress':
+                            sorted.sort((a, b) => b.totalHafalan - a.totalHafalan);
+                            break;
+                        case 'ayat':
+                            sorted.sort((a, b) => b.totalHafalan - a.totalHafalan);
+                            break;
+                        case 'instructor':
+                            sorted.sort((a, b) => a.instructor.localeCompare(b.instructor));
+                            break;
+                    }
+                    
+                    renderStudentTable(sorted);
+                });
             }
             
+            // Table search
+            const tableSearch = document.getElementById('tableSearch');
             if (tableSearch) {
-                tableSearch.addEventListener('input', handleTableSearch);
+                tableSearch.addEventListener('input', () => {
+                    const query = tableSearch.value.toLowerCase();
+                    const filtered = studentsData.filter(student => 
+                        student.name.toLowerCase().includes(query) ||
+                        student.instructor.toLowerCase().includes(query) ||
+                        student.currentSurah.toLowerCase().includes(query)
+                    );
+                    renderStudentTable(filtered);
+                });
             }
             
+            // Rows per page
+            const rowsPerPage = document.getElementById('rowsPerPage');
             if (rowsPerPage) {
                 rowsPerPage.addEventListener('change', () => {
-                    tableCurrentPage = 1; // Reset to first page when changing rows per page
+                    tableCurrentPage = 1; // Reset to first page
                     renderStudentTable();
                 });
             }
         }
-
-        function handleTableSort() {
-            const sortType = document.getElementById('tableSort').value;
-            let sorted = [...studentsData];
-            
-            switch(sortType) {
-                case 'name':
-                    sorted.sort((a, b) => a.name.localeCompare(b.name));
-                    break;
-                case 'progress':
-                    sorted.sort((a, b) => b.totalHafalan - a.totalHafalan);
-                    break;
-                case 'ayat':
-                    sorted.sort((a, b) => b.totalHafalan - a.totalHafalan);
-                    break;
-                case 'instructor':
-                    sorted.sort((a, b) => a.instructor.localeCompare(b.instructor));
-                    break;
-            }
-            
-            renderStudentTable(sorted);
+        
+        function getStatusText(progress) {
+            if (progress >= 90) return 'Sangat Baik';
+            if (progress >= 70) return 'Baik';
+            if (progress >= 50) return 'Cukup';
+            if (progress >= 30) return 'Perlu Motivasi';
+            return 'Butuh Perhatian';
         }
-
-        function handleTableSearch() {
-            const query = document.getElementById('tableSearch').value.toLowerCase();
-            const filtered = studentsData.filter(student => 
-                student.name.toLowerCase().includes(query) ||
-                student.instructor.toLowerCase().includes(query) ||
-                student.currentSurah.toLowerCase().includes(query)
-            );
-            
-            renderStudentTable(filtered);
+        
+        function formatStatusText(status) {
+            const statusMap = {
+                '1': 'Aktif',
+                '2': 'Sangat Aktif', 
+                '3': 'Luar Biasa',
+                '4': 'Istimewa'
+            };
+            return statusMap[status] || 'Tidak Diketahui';
         }
-
-        function updateOverallStatistics() {
-            const totalAyat = studentsData.reduce((sum, student) => sum + student.totalHafalan, 0);
-            const avgJuz = studentsData.reduce((sum, student) => sum + student.juzCompleted, 0) / studentsData.length;
-            const avgSurah = studentsData.reduce((sum, student) => sum + student.surahsCompleted, 0) / studentsData.length;
-            
-            document.getElementById('totalAyatProgress').textContent = totalAyat.toLocaleString('id-ID');
-            document.getElementById('totalJuzProgress').textContent = avgJuz.toFixed(1);
-            document.getElementById('totalSurahProgress').textContent = avgSurah.toFixed(1);
-        }
-
+        
         function updateStatistics() {
-            const totalStudents = studentsData.length;
-            const avgAyat = studentsData.reduce((sum, student) => sum + student.totalHafalan, 0) / totalStudents;
-            const avgJuz = studentsData.reduce((sum, student) => sum + student.juzCompleted, 0) / totalStudents;
-            const topPerformer = studentsData.reduce((top, student) => 
-                student.totalHafalan > top.totalHafalan ? student : top
-            );
-            const needsMotivation = studentsData.filter(student => 
-                (student.totalHafalan / QURAN_STRUCTURE.totalAyat * 100) < 30
-            ).length;
+            if (studentsData.length === 0) return;
             
-            document.getElementById('totalStudents').textContent = totalStudents;
-            document.getElementById('avgAyat').textContent = Math.round(avgAyat);
-            document.getElementById('avgJuz').textContent = avgJuz.toFixed(1);
+            const totalAyat = studentsData.reduce((sum, s) => sum + s.totalHafalan, 0);
+            const avgAyat = Math.round(totalAyat / studentsData.length);
+            const topPerformer = studentsData.reduce((top, s) => s.totalHafalan > top.totalHafalan ? s : top);
+            const avgJuz = (studentsData.reduce((sum, s) => sum + s.juzCompleted, 0) / studentsData.length).toFixed(1);
+            const needsMotivation = studentsData.filter(s => (s.totalHafalan / QURAN_STRUCTURE.totalAyat * 100) < 30).length;
+            
+            document.getElementById('avgAyat').textContent = avgAyat;
             document.getElementById('topPerformer').textContent = topPerformer.name;
+            document.getElementById('avgJuz').textContent = avgJuz;
             document.getElementById('needsMotivation').textContent = needsMotivation;
-            
-            // Update last update time
-            document.getElementById('lastUpdate').textContent = new Date().toLocaleString('id-ID');
+            document.getElementById('totalStudents').textContent = studentsData.length;
+        }
+        
+        function updateOverallStatistics() {
+            updateStatistics(); // Reuse the same function
+        }
+
+        // Global function for hiding notification
+        window.hideNotification = function() {
+            const popup = document.getElementById('notificationPopup');
+            popup.classList.remove('show');
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'979bedb381e8ce61',t:'MTc1Njk3MjU2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ab8c2e511bce19',t:'MTc1NzEzNjM0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
