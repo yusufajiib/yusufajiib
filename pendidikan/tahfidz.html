@@ -1018,24 +1018,34 @@
         }
 
         async function loadFromGoogleSheets() {
+            console.log('🔄 Starting Google Sheets data load...');
             showLoading(true);
             refreshIcon.textContent = '⏳';
             
             try {
                 const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${CONFIG.SHEET_NAME}?key=${CONFIG.API_KEY}`;
+                console.log('📡 Fetching from URL:', url);
+                
                 const response = await fetch(url);
+                console.log('📥 Response status:', response.status, response.statusText);
                 
                 if (!response.ok) {
-                    throw new Error('Gagal mengambil data dari Google Sheets');
+                    const errorText = await response.text();
+                    console.error('❌ Response error:', errorText);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
                 const data = await response.json();
+                console.log('✅ Data received:', data);
                 
                 if (data.values && data.values.length > 1) {
+                    console.log('📊 Processing', data.values.length - 1, 'rows of data...');
                     const processedData = processSheetData(data.values);
                     studentsData = processedData;
                     currentFilteredData = studentsData;
                     populateInstructorFilter();
+                    
+                    console.log('✅ Processed', processedData.length, 'students successfully');
                     
                     if (currentView === 'individual') {
                         renderStudentsByInstructor(studentsData);
@@ -1045,20 +1055,118 @@
                     }
                     
                     updateConnectionStatus(true, 'Data berhasil dimuat dari Google Sheets');
-                    showNotification('Data berhasil dimuat dari Google Sheets!', 'success');
+                    showNotification(`✅ Data berhasil dimuat! (${processedData.length} siswa)`, 'success');
                 } else {
+                    console.warn('⚠️ No data found in sheets response');
                     updateConnectionStatus(false, 'Data tidak ditemukan di Google Sheets');
-                    showNotification('Data tidak ditemukan di Google Sheets', 'error');
+                    showNotification('⚠️ Data tidak ditemukan di Google Sheets', 'error');
                 }
                 
             } catch (error) {
-                console.error('Error loading from Google Sheets:', error);
+                console.error('❌ Error loading from Google Sheets:', error);
+                console.log('🔄 Using demo data instead...');
+                
+                // Ensure we still have working data
+                if (studentsData.length === 0) {
+                    console.log('📝 Initializing with demo data...');
+                    initializeDemoData();
+                }
+                
                 updateConnectionStatus(false, 'Menggunakan data demo - ' + error.message);
-                showNotification('Gagal memuat data, menggunakan data demo', 'error');
+                showNotification('⚠️ Gagal memuat data online, menggunakan data demo', 'error');
+                
+                // Still render the current view with demo data
+                if (currentView === 'individual') {
+                    renderStudentsByInstructor(studentsData);
+                    updateStatistics();
+                } else {
+                    renderOverallView();
+                }
             } finally {
                 showLoading(false);
                 refreshIcon.textContent = '🔄';
+                console.log('✅ Load process completed');
             }
+        }
+
+        function initializeDemoData() {
+            // Reinitialize demo data if needed
+            studentsData = [
+                { 
+                    name: 'A. Azam', 
+                    currentSurah: 'An-Naba\'', 
+                    currentAyat: 20, 
+                    totalHafalan: 20,
+                    currentJuz: 'Juz 30',
+                    completedSurahs: '',
+                    surahsCompleted: 0,
+                    juzCompleted: 0,
+                    lastUpdate: '1/9/2025 20.58.35',
+                    status: '1',
+                    instructor: 'Ustadz Ahmad'
+                },
+                { 
+                    name: 'Abyan', 
+                    currentSurah: 'An-Naba\'', 
+                    currentAyat: 12, 
+                    totalHafalan: 12,
+                    currentJuz: 'Juz 30',
+                    completedSurahs: '',
+                    surahsCompleted: 0,
+                    juzCompleted: 0,
+                    lastUpdate: '1/9/2025 20.58.35',
+                    status: '1',
+                    instructor: 'Ustadz Ahmad'
+                },
+                { 
+                    name: 'Zakariya', 
+                    currentSurah: 'An-Naba\'', 
+                    currentAyat: 11, 
+                    totalHafalan: 11,
+                    currentJuz: 'Juz 30',
+                    completedSurahs: '',
+                    surahsCompleted: 0,
+                    juzCompleted: 0,
+                    lastUpdate: '1/9/2025 20.58.35',
+                    status: '1',
+                    instructor: 'Ustadz Ahmad'
+                },
+                { 
+                    name: 'Navisa', 
+                    currentSurah: 'An-Nazi\'at', 
+                    currentAyat: 7, 
+                    totalHafalan: 47,
+                    currentJuz: 'Juz 30',
+                    completedSurahs: 'An-Naba\'',
+                    surahsCompleted: 1,
+                    juzCompleted: 1,
+                    lastUpdate: '1/9/2025 20.58.35',
+                    status: '2',
+                    instructor: 'Ustadzah Fatimah'
+                },
+                { 
+                    name: 'Jelita N', 
+                    currentSurah: 'An-Naba\'', 
+                    currentAyat: 34, 
+                    totalHafalan: 34,
+                    currentJuz: 'Juz 30',
+                    completedSurahs: '',
+                    surahsCompleted: 0,
+                    juzCompleted: 0,
+                    lastUpdate: '1/9/2025 20.58.35',
+                    status: '2',
+                    instructor: 'Ustadzah Fatimah'
+                }
+            ];
+            
+            // Recalculate totals
+            studentsData = studentsData.map(student => ({
+                ...student,
+                totalHafalan: calculateTotalAyat(student.completedSurahs, student.currentSurah, student.currentAyat, student.name)
+            }));
+            
+            currentFilteredData = studentsData;
+            console.log('📝 Demo data initialized with', studentsData.length, 'students');
         }
 
         function processSheetData(values) {
@@ -2306,5 +2414,5 @@
             }, 2000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97aed01fb1d544c3',t:'MTc1NzE3MDU4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97aee76f1182fde7',t:'MTc1NzE3MTU0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
