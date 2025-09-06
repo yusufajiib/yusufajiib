@@ -156,6 +156,10 @@
                         📋 Tabel Keseluruhan Siswa
                     </h3>
                     <div class="flex items-center space-x-4">
+                        <button id="downloadBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2" onclick="downloadTableData()">
+                            <span>📥</span>
+                            <span>Download Excel</span>
+                        </button>
                         <select id="tableSort" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="handleTableSort()">
                             <option value="name">Urutkan: Nama</option>
                             <option value="progress">Urutkan: Progress</option>
@@ -1689,6 +1693,80 @@
             
             renderStudentTable(filtered);
         }
+
+        function downloadTableData() {
+            const downloadBtn = document.getElementById('downloadBtn');
+            const originalText = downloadBtn.innerHTML;
+            
+            // Show processing state
+            downloadBtn.innerHTML = '<span>⏳</span><span>Memproses...</span>';
+            downloadBtn.disabled = true;
+            
+            try {
+                const dataToDownload = studentsData;
+                console.log(`Memproses ${dataToDownload.length} data siswa untuk download...`);
+                
+                // Simple CSV format - no complex escaping
+                let csvContent = 'No,Nama Siswa,Pengampu,Surat Terakhir,Ayat Terakhir,Persentase Hafalan,Total Hafalan,Surat Selesai,Status,Update Terakhir\n';
+                
+                dataToDownload.forEach((student, index) => {
+                    const ayatProgress = student.totalHafalan ? 
+                        (student.totalHafalan / QURAN_STRUCTURE.totalAyat * 100) : 0;
+                    const statusText = getStatusText(ayatProgress);
+                    
+                    // Simple comma-separated values (remove commas from data)
+                    const cleanText = (str) => String(str || '').replace(/,/g, ' ');
+                    
+                    const row = [
+                        index + 1,
+                        cleanText(student.name),
+                        cleanText(student.instructor),
+                        cleanText(student.currentSurah),
+                        student.currentAyat || 0,
+                        ayatProgress.toFixed(1) + '%',
+                        student.totalHafalan || 0,
+                        student.surahsCompleted || 0,
+                        cleanText(statusText),
+                        cleanText(formatDate(student.lastUpdate))
+                    ];
+                    
+                    csvContent += row.join(',') + '\n';
+                });
+                
+                // Create filename
+                const now = new Date();
+                const dateStr = now.getFullYear() + '-' + 
+                              String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                              String(now.getDate()).padStart(2, '0');
+                const filename = `laporan-hafalan-siswa-${dateStr}.csv`;
+                
+                // Simple download method
+                const element = document.createElement('a');
+                element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent));
+                element.setAttribute('download', filename);
+                element.style.display = 'none';
+                
+                document.body.appendChild(element);
+                element.click();
+                document.body.removeChild(element);
+                
+                // Success feedback
+                downloadBtn.innerHTML = '<span>✅</span><span>Berhasil!</span>';
+                showNotification(`File ${filename} berhasil didownload! (${dataToDownload.length} siswa)`, 'success');
+                console.log(`Download berhasil: ${filename} dengan ${dataToDownload.length} data`);
+                
+            } catch (error) {
+                console.error('Download error:', error);
+                downloadBtn.innerHTML = '<span>❌</span><span>Gagal</span>';
+                showNotification('Gagal mendownload file. Coba lagi.', 'error');
+            }
+            
+            // Reset button after 2 seconds
+            setTimeout(() => {
+                downloadBtn.innerHTML = originalText;
+                downloadBtn.disabled = false;
+            }, 2000);
+        }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ac22ee41135f54',t:'MTc1NzE0MjUyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ac6c68172d5f54',t:'MTc1NzE0NTUzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
