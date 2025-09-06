@@ -1900,7 +1900,7 @@
                             </div>
                             <div class="flex items-center justify-between">
                                 <button class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
-                                        id="${paginationId}-prev-mobile" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', ${JSON.stringify(students).replace(/"/g, '&quot;')}, -1)">
+                                        id="${paginationId}-prev-mobile" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', [], -1)">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                                     </svg>
@@ -1910,7 +1910,7 @@
                                     <!-- Page numbers will be populated here -->
                                 </div>
                                 <button class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
-                                        id="${paginationId}-next-mobile" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', ${JSON.stringify(students).replace(/"/g, '&quot;')}, 1)">
+                                        id="${paginationId}-next-mobile" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', [], 1)">
                                     <span class="hidden xs:inline">Selanjutnya</span>
                                     <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -1926,14 +1926,14 @@
                             </div>
                             <div class="flex items-center space-x-2">
                                 <button class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
-                                        id="${paginationId}-prev" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', ${JSON.stringify(students).replace(/"/g, '&quot;')}, -1)">
+                                        id="${paginationId}-prev" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', [], -1)">
                                     ← Sebelumnya
                                 </button>
                                 <div class="flex items-center space-x-1" id="${paginationId}-numbers">
                                     <!-- Page numbers will be populated here -->
                                 </div>
                                 <button class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
-                                        id="${paginationId}-next" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', ${JSON.stringify(students).replace(/"/g, '&quot;')}, 1)">
+                                        id="${paginationId}-next" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', [], 1)">
                                     Selanjutnya →
                                 </button>
                             </div>
@@ -2129,6 +2129,16 @@
             if (newPage >= 1 && newPage <= state.totalPages) {
                 renderInstructorStudents(containerId, paginationId, state.students, newPage);
             }
+        }
+
+        // Safe event handling helper
+        function safeGetClassName(element) {
+            if (!element) return '';
+            if (typeof element.className === 'string') return element.className;
+            if (element.className && typeof element.className.toString === 'function') {
+                return element.className.toString();
+            }
+            return '';
         }
 
 
@@ -2518,5 +2528,5 @@
             }, 2000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97af02deb48944c3',t:'MTc1NzE3MjY2NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97af0fd2d1d65f54',t:'MTc1NzE3MzE5NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
