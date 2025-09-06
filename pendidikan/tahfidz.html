@@ -918,8 +918,9 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, initializing...');
+            console.log('🚀 DOM loaded, initializing...');
             
+            // Get DOM elements
             studentsGrid = document.getElementById('studentsGrid');
             instructorGroups = document.getElementById('instructorGroups');
             instructorFilter = document.getElementById('instructorFilter');
@@ -934,61 +935,84 @@
             individualView = document.getElementById('individualView');
             overallView = document.getElementById('overallView');
             
-            console.log('Elements found:', {
+            console.log('✅ Elements found:', {
                 studentsGrid: !!studentsGrid,
                 instructorGroups: !!instructorGroups,
-                individualView: !!individualView
+                individualView: !!individualView,
+                instructorFilter: !!instructorFilter
             });
             
+            // Process student data
             studentsData = studentsData.map(student => ({
                 ...student,
                 totalHafalan: calculateTotalAyat(student.completedSurahs, student.currentSurah, student.currentAyat, student.name),
                 juzCompleted: calculateCompletedJuz(student.completedSurahs, student.currentSurah, student.currentAyat)
             }));
             
-            console.log('Processed students data:', studentsData.length, 'students');
+            console.log('📊 Processed students data:', studentsData.length, 'students');
+            console.log('📋 Sample student data:', studentsData[0]);
             
-            // Initialize current filtered data FIRST
+            // Initialize current filtered data
             currentFilteredData = studentsData;
             
+            // Setup UI
             populateInstructorFilter();
             updateStatistics();
             
-            // FORCE individual view to be active and visible
+            // Set individual view as active
             currentView = 'individual';
             if (individualView) {
                 individualView.classList.remove('hidden');
-                console.log('Individual view made visible');
+                individualView.style.display = 'block';
+                console.log('✅ Individual view made visible');
             }
             if (overallView) {
                 overallView.classList.add('hidden');
-                console.log('Overall view hidden');
+                console.log('✅ Overall view hidden');
             }
             
-            // IMMEDIATELY render students by instructor
-            console.log('About to render students by instructor...');
-            renderStudentsByInstructor(studentsData);
+            // CRITICAL: Render students immediately with demo data
+            console.log('🎯 Rendering students by instructor with demo data...');
             
-            // FORCE instructor groups to be visible and grid hidden
+            // Force render with demo data first
             if (instructorGroups) {
+                console.log('📝 Instructor groups element found, rendering...');
+                renderStudentsByInstructor(studentsData);
+                
+                // Force visibility
                 instructorGroups.classList.remove('hidden');
-                console.log('Instructor groups made visible');
+                instructorGroups.style.display = 'block';
+                console.log('✅ Instructor groups made visible');
+                
+                // Check if content was added
+                setTimeout(() => {
+                    console.log('🔍 Instructor groups content check:', {
+                        innerHTML: instructorGroups.innerHTML.length,
+                        children: instructorGroups.children.length,
+                        visible: !instructorGroups.classList.contains('hidden')
+                    });
+                }, 100);
+            } else {
+                console.error('❌ instructorGroups element not found!');
             }
+            
             if (studentsGrid) {
                 studentsGrid.classList.add('hidden');
-                console.log('Students grid hidden');
+                console.log('✅ Students grid hidden');
             }
             
             const individualPagination = document.getElementById('individualPagination');
             if (individualPagination) {
                 individualPagination.classList.add('hidden');
-                console.log('Individual pagination hidden');
+                console.log('✅ Individual pagination hidden');
             }
             
-            console.log('Initial setup complete, loading from Google Sheets...');
+            console.log('✅ Initial setup complete, loading from Google Sheets in background...');
             
-            // Load from Google Sheets in background
-            loadFromGoogleSheets();
+            // Load from Google Sheets in background (don't wait for it)
+            setTimeout(() => {
+                loadFromGoogleSheets();
+            }, 500);
         });
 
         function switchView(view) {
@@ -1670,15 +1694,21 @@
         }
 
         function renderStudentsByInstructor(students) {
-            console.log('renderStudentsByInstructor called with', students.length, 'students');
+            console.log('🎯 renderStudentsByInstructor called with', students.length, 'students');
             
             if (!instructorGroups) {
-                console.error('instructorGroups element not found');
-                return;
+                console.error('❌ instructorGroups element not found');
+                // EMERGENCY: Try to find it again
+                instructorGroups = document.getElementById('instructorGroups');
+                if (!instructorGroups) {
+                    console.error('❌ Still cannot find instructorGroups element!');
+                    return;
+                }
             }
             
-            // Clear existing content
-            instructorGroups.innerHTML = '';
+            // EMERGENCY: Add immediate visible content
+            instructorGroups.innerHTML = '<div class="bg-blue-100 p-4 rounded-lg text-center">🔄 Memuat data siswa...</div>';
+            console.log('🔄 Added loading message');
             
             // Group students by instructor
             const groupedByInstructor = students.reduce((groups, student) => {
@@ -1690,16 +1720,25 @@
                 return groups;
             }, {});
 
-            console.log('Grouped by instructor:', groupedByInstructor);
+            console.log('📊 Grouped by instructor:', Object.keys(groupedByInstructor));
 
             const instructorNames = Object.keys(groupedByInstructor);
-            console.log('Instructor names found:', instructorNames);
+            console.log('👨‍🏫 Instructor names found:', instructorNames);
             
             if (instructorNames.length === 0) {
-                console.error('No instructors found!');
-                instructorGroups.innerHTML = '<div class="text-center py-8 text-gray-500">Tidak ada data pengampu ditemukan</div>';
+                console.error('❌ No instructors found!');
+                instructorGroups.innerHTML = `
+                    <div class="bg-red-100 border border-red-300 rounded-lg p-6 text-center">
+                        <div class="text-red-600 text-lg mb-2">⚠️ Tidak ada data pengampu</div>
+                        <div class="text-red-500 text-sm">Debug: ${students.length} siswa ditemukan</div>
+                        <div class="text-red-500 text-xs mt-2">Sample: ${JSON.stringify(students[0] || {})}</div>
+                    </div>
+                `;
                 return;
             }
+            
+            // Clear loading message
+            instructorGroups.innerHTML = '';
             
             const sortedInstructors = instructorNames.sort((a, b) => {
                 const aIsMustofa = a.toLowerCase().includes('mustofa');
@@ -1717,28 +1756,53 @@
                 return a.localeCompare(b);
             });
 
-            console.log('Sorted instructors:', sortedInstructors);
+            console.log('📋 Sorted instructors:', sortedInstructors);
 
             // Create sections for each instructor
             sortedInstructors.forEach((instructor, index) => {
                 const instructorStudents = groupedByInstructor[instructor];
-                console.log(`Creating section ${index + 1} for ${instructor} with ${instructorStudents.length} students`);
+                console.log(`🏗️ Creating section ${index + 1} for ${instructor} with ${instructorStudents.length} students`);
                 
                 try {
                     const instructorSection = createInstructorSection(instructor, instructorStudents);
                     instructorGroups.appendChild(instructorSection);
-                    console.log(`Successfully added section for ${instructor}`);
+                    console.log(`✅ Successfully added section for ${instructor}`);
                 } catch (error) {
-                    console.error(`Error creating section for ${instructor}:`, error);
+                    console.error(`❌ Error creating section for ${instructor}:`, error);
+                    
+                    // EMERGENCY: Add basic section if creation fails
+                    const emergencySection = document.createElement('div');
+                    emergencySection.className = 'bg-yellow-100 border border-yellow-300 rounded-lg p-4 mb-4';
+                    emergencySection.innerHTML = `
+                        <h3 class="font-bold text-yellow-800">⚠️ ${instructor}</h3>
+                        <p class="text-yellow-700">${instructorStudents.length} siswa (Error dalam rendering)</p>
+                        <div class="text-xs text-yellow-600 mt-2">
+                            Siswa: ${instructorStudents.map(s => s.name).join(', ')}
+                        </div>
+                    `;
+                    instructorGroups.appendChild(emergencySection);
                 }
             });
             
-            console.log('Finished rendering instructor groups. Total sections:', sortedInstructors.length);
-            console.log('instructorGroups innerHTML length:', instructorGroups.innerHTML.length);
+            console.log('✅ Finished rendering instructor groups. Total sections:', sortedInstructors.length);
+            console.log('📏 instructorGroups innerHTML length:', instructorGroups.innerHTML.length);
             
-            // Force visibility
+            // FORCE visibility with multiple methods
             instructorGroups.style.display = 'block';
+            instructorGroups.style.visibility = 'visible';
             instructorGroups.classList.remove('hidden');
+            instructorGroups.setAttribute('data-rendered', 'true');
+            
+            // Final check
+            setTimeout(() => {
+                console.log('🔍 Final visibility check:', {
+                    display: instructorGroups.style.display,
+                    visibility: instructorGroups.style.visibility,
+                    hidden: instructorGroups.classList.contains('hidden'),
+                    children: instructorGroups.children.length,
+                    rendered: instructorGroups.getAttribute('data-rendered')
+                });
+            }, 200);
         }
 
         function createInstructorSection(instructor, students) {
@@ -2414,5 +2478,5 @@
             }, 2000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97aee76f1182fde7',t:'MTc1NzE3MTU0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97aef8ac27d5f93e',t:'MTc1NzE3MjI0Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
