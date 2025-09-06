@@ -1592,16 +1592,7 @@
             const safeInstructorId = 'instructor-' + Math.random().toString(36).substr(2, 9);
             const paginationId = 'pagination-' + Math.random().toString(36).substr(2, 9);
             
-            // Initialize pagination state for this instructor
-            if (!window.instructorPagination) {
-                window.instructorPagination = {};
-            }
-            window.instructorPagination[safeInstructorId] = {
-                currentPage: 1,
-                itemsPerPage: 10,
-                totalItems: totalStudents,
-                students: students
-            };
+
             
             section.innerHTML = `
                 <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
@@ -1633,55 +1624,18 @@
                         <!-- Student cards will be populated here -->
                     </div>
                     
-                    <!-- Instructor Pagination -->
-                    <div id="${paginationId}" class="mt-6 ${totalStudents <= 10 ? 'hidden' : ''}">
-                        <!-- Mobile Layout -->
-                        <div class="block sm:hidden">
-                            <div class="text-center mb-3">
-                                <span class="text-sm text-gray-600" id="${paginationId}-info-mobile">Menampilkan 1-${Math.min(10, totalStudents)} dari ${totalStudents} siswa</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <button id="${paginationId}-prev-mobile" class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', -1)" disabled>
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                                    </svg>
-                                    <span class="hidden xs:inline">Sebelumnya</span>
-                                </button>
-                                <div id="${paginationId}-numbers-mobile" class="flex items-center space-x-1 page-numbers-mobile">
-                                    <!-- Page numbers will be populated here -->
-                                </div>
-                                <button id="${paginationId}-next-mobile" class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', 1)" ${totalStudents <= 10 ? 'disabled' : ''}>
-                                    <span class="hidden xs:inline">Selanjutnya</span>
-                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Desktop Layout -->
-                        <div class="hidden sm:flex items-center justify-between">
-                            <div class="flex items-center space-x-4">
-                                <span class="text-sm text-gray-600" id="${paginationId}-info">Menampilkan 1-${Math.min(10, totalStudents)} dari ${totalStudents} siswa</span>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <button id="${paginationId}-prev" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', -1)" disabled>
-                                    ← Sebelumnya
-                                </button>
-                                <div id="${paginationId}-numbers" class="flex items-center space-x-1">
-                                    <!-- Page numbers will be populated here -->
-                                </div>
-                                <button id="${paginationId}-next" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', 1)" ${totalStudents <= 10 ? 'disabled' : ''}>
-                                    Selanjutnya →
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
             `;
             
-            // Render initial page
-            renderInstructorPage(safeInstructorId, paginationId);
+            // Render all students for this instructor
+            const studentsContainer = document.getElementById(safeInstructorId);
+            if (studentsContainer) {
+                students.forEach((student, index) => {
+                    const card = createStudentCard(student, index);
+                    studentsContainer.appendChild(card);
+                });
+            }
             
             return section;
         }
@@ -1710,151 +1664,7 @@
             }
         }
 
-        function renderInstructorPage(instructorId, paginationId) {
-            const paginationState = window.instructorPagination[instructorId];
-            if (!paginationState) return;
-            
-            const { currentPage, itemsPerPage, students } = paginationState;
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const paginatedStudents = students.slice(startIndex, endIndex);
-            
-            // Clear and populate students container
-            const studentsContainer = document.getElementById(instructorId);
-            if (studentsContainer) {
-                studentsContainer.innerHTML = '';
-                paginatedStudents.forEach((student, index) => {
-                    const card = createStudentCard(student, startIndex + index);
-                    studentsContainer.appendChild(card);
-                });
-            }
-            
-            // Update pagination info and controls
-            updateInstructorPagination(instructorId, paginationId);
-        }
 
-        function updateInstructorPagination(instructorId, paginationId) {
-            const paginationState = window.instructorPagination[instructorId];
-            if (!paginationState) return;
-            
-            const { currentPage, itemsPerPage, totalItems } = paginationState;
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
-            const startItem = (currentPage - 1) * itemsPerPage + 1;
-            const endItem = Math.min(currentPage * itemsPerPage, totalItems);
-            
-            const pageInfoText = `Menampilkan ${startItem}-${endItem} dari ${totalItems} siswa`;
-            
-            // Update desktop info
-            const pageInfoDesktop = document.getElementById(`${paginationId}-info`);
-            if (pageInfoDesktop) {
-                pageInfoDesktop.textContent = pageInfoText;
-            }
-            
-            // Update mobile info
-            const pageInfoMobile = document.getElementById(`${paginationId}-info-mobile`);
-            if (pageInfoMobile) {
-                pageInfoMobile.textContent = pageInfoText;
-            }
-            
-            // Update desktop buttons
-            const prevBtn = document.getElementById(`${paginationId}-prev`);
-            const nextBtn = document.getElementById(`${paginationId}-next`);
-            if (prevBtn) prevBtn.disabled = currentPage === 1;
-            if (nextBtn) nextBtn.disabled = currentPage === totalPages || totalPages === 0;
-            
-            // Update mobile buttons
-            const prevBtnMobile = document.getElementById(`${paginationId}-prev-mobile`);
-            const nextBtnMobile = document.getElementById(`${paginationId}-next-mobile`);
-            if (prevBtnMobile) prevBtnMobile.disabled = currentPage === 1;
-            if (nextBtnMobile) nextBtnMobile.disabled = currentPage === totalPages || totalPages === 0;
-            
-            // Update desktop page numbers
-            const pageNumbersContainer = document.getElementById(`${paginationId}-numbers`);
-            if (pageNumbersContainer) {
-                updateInstructorPageNumbers(pageNumbersContainer, totalPages, currentPage, instructorId, paginationId);
-            }
-            
-            // Update mobile page numbers
-            const pageNumbersContainerMobile = document.getElementById(`${paginationId}-numbers-mobile`);
-            if (pageNumbersContainerMobile) {
-                updateInstructorPageNumbers(pageNumbersContainerMobile, totalPages, currentPage, instructorId, paginationId, true);
-            }
-        }
-
-        function updateInstructorPageNumbers(container, totalPages, currentPage, instructorId, paginationId, isMobile = false) {
-            container.innerHTML = '';
-            
-            if (totalPages <= 1) return;
-            
-            const maxVisiblePages = isMobile ? 3 : 5;
-            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-            
-            if (endPage - startPage + 1 < maxVisiblePages) {
-                startPage = Math.max(1, endPage - maxVisiblePages + 1);
-            }
-            
-            // Add first page and ellipsis if needed
-            if (startPage > 1) {
-                addInstructorPageButton(container, 1, currentPage, instructorId, paginationId, isMobile);
-                if (startPage > 2) {
-                    const ellipsis = document.createElement('span');
-                    ellipsis.className = 'px-2 py-1 text-gray-400 text-sm';
-                    ellipsis.textContent = '...';
-                    container.appendChild(ellipsis);
-                }
-            }
-            
-            // Add visible page numbers
-            for (let i = startPage; i <= endPage; i++) {
-                addInstructorPageButton(container, i, currentPage, instructorId, paginationId, isMobile);
-            }
-            
-            // Add ellipsis and last page if needed
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) {
-                    const ellipsis = document.createElement('span');
-                    ellipsis.className = 'px-2 py-1 text-gray-400 text-sm';
-                    ellipsis.textContent = '...';
-                    container.appendChild(ellipsis);
-                }
-                addInstructorPageButton(container, totalPages, currentPage, instructorId, paginationId, isMobile);
-            }
-        }
-
-        function addInstructorPageButton(container, pageNum, currentPage, instructorId, paginationId, isMobile = false) {
-            const pageBtn = document.createElement('button');
-            const isActive = pageNum === currentPage;
-            const sizeClass = isMobile ? 'px-2 py-1 text-xs' : 'px-3 py-1 text-sm';
-            
-            pageBtn.className = `${sizeClass} font-medium rounded ${
-                isActive 
-                    ? 'bg-blue-600 text-white' 
-                    : 'text-gray-500 hover:bg-gray-100'
-            }`;
-            pageBtn.textContent = pageNum;
-            pageBtn.onclick = () => {
-                window.instructorPagination[instructorId].currentPage = pageNum;
-                renderInstructorPage(instructorId, paginationId);
-            };
-            container.appendChild(pageBtn);
-        }
-
-        function changeInstructorPage(instructorId, paginationId, direction) {
-            const paginationState = window.instructorPagination[instructorId];
-            if (!paginationState) return;
-            
-            const { currentPage, itemsPerPage, totalItems } = paginationState;
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
-            
-            if (direction === -1 && currentPage > 1) {
-                paginationState.currentPage--;
-                renderInstructorPage(instructorId, paginationId);
-            } else if (direction === 1 && currentPage < totalPages) {
-                paginationState.currentPage++;
-                renderInstructorPage(instructorId, paginationId);
-            }
-        }
 
         function renderOverallView() {
             renderClassRanking();
@@ -2241,5 +2051,5 @@
             }, 2000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ae9c36725a5f54',t:'MTc1NzE2ODQ1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97aeb4d9f1d56045',t:'MTc1NzE2OTQ2OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
