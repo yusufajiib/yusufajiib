@@ -34,6 +34,23 @@
         .notification-popup.error {
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         }
+        
+        /* Mobile pagination styles */
+        @media (max-width: 640px) {
+            .pagination-mobile {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            .page-numbers-mobile {
+                max-width: 200px;
+                overflow-x: auto;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            .page-numbers-mobile::-webkit-scrollbar {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -129,20 +146,48 @@
                 <!-- Student cards will be populated here -->
             </div>
             
-            <div id="individualPagination" class="mt-8 flex items-center justify-between bg-white rounded-xl shadow-md p-6 hidden">
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm text-gray-600" id="individualPageInfo">Menampilkan 1-6 dari 10 siswa</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                    <button id="individualPrevBtn" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="changePage('individual', -1)">
-                        ← Sebelumnya
-                    </button>
-                    <div id="individualPageNumbers" class="flex items-center space-x-1">
-                        <!-- Page numbers will be populated here -->
+            <!-- Individual Pagination - Mobile Responsive -->
+            <div id="individualPagination" class="mt-8 bg-white rounded-xl shadow-md p-4 sm:p-6 hidden">
+                <!-- Mobile Layout -->
+                <div class="block sm:hidden pagination-mobile">
+                    <div class="text-center mb-3">
+                        <span class="text-sm text-gray-600" id="individualPageInfoMobile">Menampilkan 1-6 dari 10 siswa</span>
                     </div>
-                    <button id="individualNextBtn" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="changePage('individual', 1)">
-                        Selanjutnya →
-                    </button>
+                    <div class="flex items-center justify-between">
+                        <button id="individualPrevBtnMobile" class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="changePage('individual', -1)">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            <span class="hidden xs:inline">Sebelumnya</span>
+                        </button>
+                        <div id="individualPageNumbersMobile" class="flex items-center space-x-1 page-numbers-mobile">
+                            <!-- Page numbers will be populated here -->
+                        </div>
+                        <button id="individualNextBtnMobile" class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="changePage('individual', 1)">
+                            <span class="hidden xs:inline">Selanjutnya</span>
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Desktop Layout -->
+                <div class="hidden sm:flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-600" id="individualPageInfo">Menampilkan 1-6 dari 10 siswa</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="individualPrevBtn" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="changePage('individual', -1)">
+                            ← Sebelumnya
+                        </button>
+                        <div id="individualPageNumbers" class="flex items-center space-x-1">
+                            <!-- Page numbers will be populated here -->
+                        </div>
+                        <button id="individualNextBtn" class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="changePage('individual', 1)">
+                            Selanjutnya →
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -193,12 +238,46 @@
                     </table>
                 </div>
                 
-                <div class="mt-4 flex items-center justify-between text-sm text-gray-600">
+                <!-- Mobile Table Pagination -->
+                <div class="mt-4 block sm:hidden">
+                    <div class="text-center mb-3">
+                        <div id="tableInfoMobile" class="text-sm text-gray-600 mb-2">Menampilkan 1-20 dari 10 siswa</div>
+                        <div class="flex items-center justify-center space-x-2 text-xs">
+                            <span>Baris:</span>
+                            <select id="rowsPerPageMobile" class="border border-gray-300 rounded px-2 py-1 text-xs" onchange="document.getElementById('rowsPerPage').value = this.value; tableCurrentPage = 1; renderStudentTable();">
+                                <option value="20" selected>20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="all">Semua</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <button id="tablePrevBtnMobile" class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="changePage('table', -1)">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            <span class="hidden xs:inline">Sebelumnya</span>
+                        </button>
+                        <div id="tablePageNumbersMobile" class="flex items-center space-x-1 page-numbers-mobile">
+                            <!-- Page numbers will be populated here -->
+                        </div>
+                        <button id="tableNextBtnMobile" class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" onclick="changePage('table', 1)">
+                            <span class="hidden xs:inline">Selanjutnya</span>
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Desktop Table Pagination -->
+                <div class="mt-4 hidden sm:flex items-center justify-between text-sm text-gray-600">
                     <div id="tableInfo">Menampilkan 1-20 dari 10 siswa</div>
                     <div class="flex items-center space-x-4">
                         <div class="flex items-center space-x-2">
                             <span>Baris per halaman:</span>
-                            <select id="rowsPerPage" class="border border-gray-300 rounded px-2 py-1" onchange="tableCurrentPage = 1; renderStudentTable();">
+                            <select id="rowsPerPage" class="border border-gray-300 rounded px-2 py-1" onchange="document.getElementById('rowsPerPageMobile').value = this.value; tableCurrentPage = 1; renderStudentTable();">
                                 <option value="20" selected>20</option>
                                 <option value="50">50</option>
                                 <option value="100">100</option>
@@ -1051,33 +1130,42 @@
             const startItem = (individualCurrentPage - 1) * individualItemsPerPage + 1;
             const endItem = Math.min(individualCurrentPage * individualItemsPerPage, totalItems);
             
-            document.getElementById('individualPageInfo').textContent = 
-                `Menampilkan ${startItem}-${endItem} dari ${totalItems} siswa (maksimal 10 per halaman)`;
+            const pageInfoText = `Menampilkan ${startItem}-${endItem} dari ${totalItems} siswa`;
             
+            // Update desktop pagination
+            const pageInfoDesktop = document.getElementById('individualPageInfo');
+            if (pageInfoDesktop) {
+                pageInfoDesktop.textContent = pageInfoText;
+            }
+            
+            // Update mobile pagination
+            const pageInfoMobile = document.getElementById('individualPageInfoMobile');
+            if (pageInfoMobile) {
+                pageInfoMobile.textContent = pageInfoText;
+            }
+            
+            // Update desktop buttons
             const prevBtn = document.getElementById('individualPrevBtn');
             const nextBtn = document.getElementById('individualNextBtn');
+            if (prevBtn) prevBtn.disabled = individualCurrentPage === 1;
+            if (nextBtn) nextBtn.disabled = individualCurrentPage === totalPages || totalPages === 0;
             
-            prevBtn.disabled = individualCurrentPage === 1;
-            nextBtn.disabled = individualCurrentPage === totalPages || totalPages === 0;
+            // Update mobile buttons
+            const prevBtnMobile = document.getElementById('individualPrevBtnMobile');
+            const nextBtnMobile = document.getElementById('individualNextBtnMobile');
+            if (prevBtnMobile) prevBtnMobile.disabled = individualCurrentPage === 1;
+            if (nextBtnMobile) nextBtnMobile.disabled = individualCurrentPage === totalPages || totalPages === 0;
             
+            // Update desktop page numbers
             const pageNumbersContainer = document.getElementById('individualPageNumbers');
-            pageNumbersContainer.innerHTML = '';
+            if (pageNumbersContainer) {
+                updatePageNumbers(pageNumbersContainer, totalPages, individualCurrentPage, 'individual');
+            }
             
-            if (totalPages > 1) {
-                for (let i = 1; i <= totalPages; i++) {
-                    const pageBtn = document.createElement('button');
-                    pageBtn.className = `px-3 py-1 text-sm font-medium rounded ${
-                        i === individualCurrentPage 
-                            ? 'bg-blue-600 text-white' 
-                            : 'text-gray-500 hover:bg-gray-100'
-                    }`;
-                    pageBtn.textContent = i;
-                    pageBtn.onclick = () => {
-                        individualCurrentPage = i;
-                        renderStudentsWithPagination();
-                    };
-                    pageNumbersContainer.appendChild(pageBtn);
-                }
+            // Update mobile page numbers
+            const pageNumbersContainerMobile = document.getElementById('individualPageNumbersMobile');
+            if (pageNumbersContainerMobile) {
+                updatePageNumbers(pageNumbersContainerMobile, totalPages, individualCurrentPage, 'individual', true);
             }
             
             const paginationElement = document.getElementById('individualPagination');
@@ -1086,6 +1174,70 @@
             } else {
                 paginationElement.classList.add('hidden');
             }
+        }
+        
+        function updatePageNumbers(container, totalPages, currentPage, type, isMobile = false) {
+            container.innerHTML = '';
+            
+            if (totalPages <= 1) return;
+            
+            const maxVisiblePages = isMobile ? 3 : 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            // Add first page and ellipsis if needed
+            if (startPage > 1) {
+                addPageButton(container, 1, currentPage, type, isMobile);
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'px-2 py-1 text-gray-400 text-sm';
+                    ellipsis.textContent = '...';
+                    container.appendChild(ellipsis);
+                }
+            }
+            
+            // Add visible page numbers
+            for (let i = startPage; i <= endPage; i++) {
+                addPageButton(container, i, currentPage, type, isMobile);
+            }
+            
+            // Add ellipsis and last page if needed
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'px-2 py-1 text-gray-400 text-sm';
+                    ellipsis.textContent = '...';
+                    container.appendChild(ellipsis);
+                }
+                addPageButton(container, totalPages, currentPage, type, isMobile);
+            }
+        }
+        
+        function addPageButton(container, pageNum, currentPage, type, isMobile = false) {
+            const pageBtn = document.createElement('button');
+            const isActive = pageNum === currentPage;
+            const sizeClass = isMobile ? 'px-2 py-1 text-xs' : 'px-3 py-1 text-sm';
+            
+            pageBtn.className = `${sizeClass} font-medium rounded ${
+                isActive 
+                    ? 'bg-blue-600 text-white' 
+                    : 'text-gray-500 hover:bg-gray-100'
+            }`;
+            pageBtn.textContent = pageNum;
+            pageBtn.onclick = () => {
+                if (type === 'individual') {
+                    individualCurrentPage = pageNum;
+                    renderStudentsWithPagination();
+                } else if (type === 'table') {
+                    tableCurrentPage = pageNum;
+                    renderStudentTable();
+                }
+            };
+            container.appendChild(pageBtn);
         }
 
         function createStudentCard(student, index) {
@@ -1621,12 +1773,23 @@
             const startItem = tableItemsPerPage === totalItems ? 1 : (tableCurrentPage - 1) * tableItemsPerPage + 1;
             const endItem = tableItemsPerPage === totalItems ? totalItems : Math.min(tableCurrentPage * tableItemsPerPage, totalItems);
             
-            document.getElementById('tableInfo').textContent = 
-                `Menampilkan ${startItem}-${endItem} dari ${totalItems} siswa`;
+            const pageInfoText = `Menampilkan ${startItem}-${endItem} dari ${totalItems} siswa`;
             
+            // Update desktop info
+            const tableInfoDesktop = document.getElementById('tableInfo');
+            if (tableInfoDesktop) {
+                tableInfoDesktop.textContent = pageInfoText;
+            }
+            
+            // Update mobile info
+            const tableInfoMobile = document.getElementById('tableInfoMobile');
+            if (tableInfoMobile) {
+                tableInfoMobile.textContent = pageInfoText;
+            }
+            
+            // Update desktop buttons
             const prevBtn = document.getElementById('tablePrevBtn');
             const nextBtn = document.getElementById('tableNextBtn');
-            
             if (prevBtn) {
                 prevBtn.disabled = tableCurrentPage === 1 || totalPages === 1;
             }
@@ -1634,26 +1797,26 @@
                 nextBtn.disabled = tableCurrentPage === totalPages || totalPages === 1;
             }
             
+            // Update mobile buttons
+            const prevBtnMobile = document.getElementById('tablePrevBtnMobile');
+            const nextBtnMobile = document.getElementById('tableNextBtnMobile');
+            if (prevBtnMobile) {
+                prevBtnMobile.disabled = tableCurrentPage === 1 || totalPages === 1;
+            }
+            if (nextBtnMobile) {
+                nextBtnMobile.disabled = tableCurrentPage === totalPages || totalPages === 1;
+            }
+            
+            // Update desktop page numbers
             const pageNumbersContainer = document.getElementById('tablePageNumbers');
             if (pageNumbersContainer) {
-                pageNumbersContainer.innerHTML = '';
-                
-                if (totalPages > 1) {
-                    for (let i = 1; i <= totalPages; i++) {
-                        const pageBtn = document.createElement('button');
-                        pageBtn.className = `px-2 py-1 text-xs font-medium rounded ${
-                            i === tableCurrentPage 
-                                ? 'bg-blue-600 text-white' 
-                                : 'text-gray-500 hover:bg-gray-100'
-                        }`;
-                        pageBtn.textContent = i;
-                        pageBtn.onclick = () => {
-                            tableCurrentPage = i;
-                            renderStudentTable();
-                        };
-                        pageNumbersContainer.appendChild(pageBtn);
-                    }
-                }
+                updatePageNumbers(pageNumbersContainer, totalPages, tableCurrentPage, 'table');
+            }
+            
+            // Update mobile page numbers
+            const pageNumbersContainerMobile = document.getElementById('tablePageNumbersMobile');
+            if (pageNumbersContainerMobile) {
+                updatePageNumbers(pageNumbersContainerMobile, totalPages, tableCurrentPage, 'table', true);
             }
         }
 
@@ -1768,5 +1931,5 @@
             }, 2000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ac6c68172d5f54',t:'MTc1NzE0NTUzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ae0f0ae17489bc',t:'MTc1NzE2MjY3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
