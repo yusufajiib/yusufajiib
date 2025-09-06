@@ -918,6 +918,8 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing...');
+            
             studentsGrid = document.getElementById('studentsGrid');
             instructorGroups = document.getElementById('instructorGroups');
             instructorFilter = document.getElementById('instructorFilter');
@@ -932,11 +934,19 @@
             individualView = document.getElementById('individualView');
             overallView = document.getElementById('overallView');
             
+            console.log('Elements found:', {
+                studentsGrid: !!studentsGrid,
+                instructorGroups: !!instructorGroups,
+                individualView: !!individualView
+            });
+            
             studentsData = studentsData.map(student => ({
                 ...student,
                 totalHafalan: calculateTotalAyat(student.completedSurahs, student.currentSurah, student.currentAyat, student.name),
                 juzCompleted: calculateCompletedJuz(student.completedSurahs, student.currentSurah, student.currentAyat)
             }));
+            
+            console.log('Processed students data:', studentsData.length, 'students');
             
             // Initialize current filtered data FIRST
             currentFilteredData = studentsData;
@@ -946,16 +956,36 @@
             
             // FORCE individual view to be active and visible
             currentView = 'individual';
-            individualView.classList.remove('hidden');
-            overallView.classList.add('hidden');
+            if (individualView) {
+                individualView.classList.remove('hidden');
+                console.log('Individual view made visible');
+            }
+            if (overallView) {
+                overallView.classList.add('hidden');
+                console.log('Overall view hidden');
+            }
             
-            // FORCE render students by instructor immediately
+            // IMMEDIATELY render students by instructor
+            console.log('About to render students by instructor...');
             renderStudentsByInstructor(studentsData);
             
-            // FORCE instructor groups to be visible
-            instructorGroups.classList.remove('hidden');
-            studentsGrid.classList.add('hidden');
-            document.getElementById('individualPagination').classList.add('hidden');
+            // FORCE instructor groups to be visible and grid hidden
+            if (instructorGroups) {
+                instructorGroups.classList.remove('hidden');
+                console.log('Instructor groups made visible');
+            }
+            if (studentsGrid) {
+                studentsGrid.classList.add('hidden');
+                console.log('Students grid hidden');
+            }
+            
+            const individualPagination = document.getElementById('individualPagination');
+            if (individualPagination) {
+                individualPagination.classList.add('hidden');
+                console.log('Individual pagination hidden');
+            }
+            
+            console.log('Initial setup complete, loading from Google Sheets...');
             
             // Load from Google Sheets in background
             loadFromGoogleSheets();
@@ -1539,10 +1569,12 @@
                 return;
             }
             
+            // Clear existing content
             instructorGroups.innerHTML = '';
             
+            // Group students by instructor
             const groupedByInstructor = students.reduce((groups, student) => {
-                const instructor = student.instructor;
+                const instructor = student.instructor || 'Tidak ada pengampu';
                 if (!groups[instructor]) {
                     groups[instructor] = [];
                 }
@@ -1553,6 +1585,14 @@
             console.log('Grouped by instructor:', groupedByInstructor);
 
             const instructorNames = Object.keys(groupedByInstructor);
+            console.log('Instructor names found:', instructorNames);
+            
+            if (instructorNames.length === 0) {
+                console.error('No instructors found!');
+                instructorGroups.innerHTML = '<div class="text-center py-8 text-gray-500">Tidak ada data pengampu ditemukan</div>';
+                return;
+            }
+            
             const sortedInstructors = instructorNames.sort((a, b) => {
                 const aIsMustofa = a.toLowerCase().includes('mustofa');
                 const bIsMustofa = b.toLowerCase().includes('mustofa');
@@ -1571,14 +1611,26 @@
 
             console.log('Sorted instructors:', sortedInstructors);
 
-            sortedInstructors.forEach(instructor => {
+            // Create sections for each instructor
+            sortedInstructors.forEach((instructor, index) => {
                 const instructorStudents = groupedByInstructor[instructor];
-                console.log(`Creating section for ${instructor} with ${instructorStudents.length} students`);
-                const instructorSection = createInstructorSection(instructor, instructorStudents);
-                instructorGroups.appendChild(instructorSection);
+                console.log(`Creating section ${index + 1} for ${instructor} with ${instructorStudents.length} students`);
+                
+                try {
+                    const instructorSection = createInstructorSection(instructor, instructorStudents);
+                    instructorGroups.appendChild(instructorSection);
+                    console.log(`Successfully added section for ${instructor}`);
+                } catch (error) {
+                    console.error(`Error creating section for ${instructor}:`, error);
+                }
             });
             
-            console.log('Finished rendering instructor groups');
+            console.log('Finished rendering instructor groups. Total sections:', sortedInstructors.length);
+            console.log('instructorGroups innerHTML length:', instructorGroups.innerHTML.length);
+            
+            // Force visibility
+            instructorGroups.style.display = 'block';
+            instructorGroups.classList.remove('hidden');
         }
 
         function createInstructorSection(instructor, students) {
@@ -2254,5 +2306,5 @@
             }, 2000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97aebdb401e86045',t:'MTc1NzE2OTgzMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97aed01fb1d544c3',t:'MTc1NzE3MDU4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
