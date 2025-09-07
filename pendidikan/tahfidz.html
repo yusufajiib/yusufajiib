@@ -918,9 +918,6 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 DOM loaded, initializing...');
-            
-            // Get DOM elements
             studentsGrid = document.getElementById('studentsGrid');
             instructorGroups = document.getElementById('instructorGroups');
             instructorFilter = document.getElementById('instructorFilter');
@@ -935,195 +932,63 @@
             individualView = document.getElementById('individualView');
             overallView = document.getElementById('overallView');
             
-            console.log('✅ Elements found:', {
-                studentsGrid: !!studentsGrid,
-                instructorGroups: !!instructorGroups,
-                individualView: !!individualView,
-                instructorFilter: !!instructorFilter
-            });
-            
-            // Process student data
             studentsData = studentsData.map(student => ({
                 ...student,
                 totalHafalan: calculateTotalAyat(student.completedSurahs, student.currentSurah, student.currentAyat, student.name),
                 juzCompleted: calculateCompletedJuz(student.completedSurahs, student.currentSurah, student.currentAyat)
             }));
             
-            console.log('📊 Processed students data:', studentsData.length, 'students');
-            console.log('📋 Sample student data:', studentsData[0]);
-            
-            // Initialize current filtered data
-            currentFilteredData = studentsData;
-            
-            // Setup UI
             populateInstructorFilter();
+            renderStudentsByInstructor(studentsData);
             updateStatistics();
             
-            // Set individual view as active
-            currentView = 'individual';
-            if (individualView) {
-                individualView.classList.remove('hidden');
-                individualView.style.display = 'block';
-                console.log('✅ Individual view made visible');
-            }
-            if (overallView) {
-                overallView.classList.add('hidden');
-                console.log('✅ Overall view hidden');
-            }
-            
-            // CRITICAL: Render students immediately with demo data
-            console.log('🎯 Rendering students by instructor with demo data...');
-            
-            // Force render with demo data first
-            if (instructorGroups) {
-                console.log('📝 Instructor groups element found, rendering...');
-                
-                // IMMEDIATE render without any delays
-                renderStudentsByInstructor(studentsData);
-                
-                // Force visibility with multiple methods
-                instructorGroups.classList.remove('hidden');
-                instructorGroups.style.display = 'block';
-                instructorGroups.style.visibility = 'visible';
-                instructorGroups.style.opacity = '1';
-                
-                console.log('✅ Instructor groups made visible');
-                
-                // Force a reflow to ensure rendering
-                instructorGroups.offsetHeight;
-                
-                // Double-check rendering after a brief moment
-                setTimeout(() => {
-                    if (instructorGroups.children.length === 0) {
-                        console.warn('⚠️ No children found, forcing emergency render...');
-                        // Emergency fallback render
-                        instructorGroups.innerHTML = `
-                            <div class="bg-white rounded-xl shadow-md p-6">
-                                <h3 class="text-lg font-semibold mb-4">📚 Data Siswa Tahfidz</h3>
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    ${studentsData.slice(0, 6).map(student => `
-                                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                            <h4 class="font-semibold text-blue-800">${student.name}</h4>
-                                            <p class="text-sm text-blue-600">${student.currentSurah} - Ayat ${student.currentAyat}</p>
-                                            <p class="text-xs text-blue-500">Pengampu: ${student.instructor}</p>
-                                            <div class="mt-2 bg-blue-200 rounded-full h-2">
-                                                <div class="bg-blue-600 h-2 rounded-full" style="width: ${(student.totalHafalan / 6236 * 100).toFixed(1)}%"></div>
-                                            </div>
-                                            <p class="text-xs text-blue-600 mt-1">${student.totalHafalan} ayat (${(student.totalHafalan / 6236 * 100).toFixed(1)}%)</p>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                                ${studentsData.length > 6 ? `
-                                    <div class="mt-4 text-center">
-                                        <button onclick="renderStudentsByInstructor(studentsData)" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-                                            Tampilkan Semua ${studentsData.length} Siswa
-                                        </button>
-                                    </div>
-                                ` : ''}
-                            </div>
-                        `;
-                    }
-                    
-                    console.log('🔍 Final instructor groups check:', {
-                        innerHTML: instructorGroups.innerHTML.length,
-                        children: instructorGroups.children.length,
-                        visible: !instructorGroups.classList.contains('hidden'),
-                        display: instructorGroups.style.display,
-                        opacity: instructorGroups.style.opacity
-                    });
-                }, 50);
-            } else {
-                console.error('❌ instructorGroups element not found!');
-            }
-            
-            if (studentsGrid) {
-                studentsGrid.classList.add('hidden');
-                console.log('✅ Students grid hidden');
-            }
-            
-            const individualPagination = document.getElementById('individualPagination');
-            if (individualPagination) {
-                individualPagination.classList.add('hidden');
-                console.log('✅ Individual pagination hidden');
-            }
-            
-            console.log('✅ Initial setup complete, loading from Google Sheets in background...');
-            
-            // Load from Google Sheets in background (don't wait for it)
-            setTimeout(() => {
-                loadFromGoogleSheets();
-            }, 1000);
+            loadFromGoogleSheets();
         });
 
         function switchView(view) {
             currentView = view;
             
             if (view === 'individual') {
-                // Show individual view
                 individualView.classList.remove('hidden');
-                individualView.style.display = 'block';
-                
-                // Hide overall view completely
                 overallView.classList.add('hidden');
-                overallView.style.display = 'none';
                 
-                // Update button styles
                 individualViewBtn.classList.add('bg-blue-600', 'text-white');
                 individualViewBtn.classList.remove('text-gray-600');
                 overallViewBtn.classList.remove('bg-blue-600', 'text-white');
                 overallViewBtn.classList.add('text-gray-600');
                 
-                // Render individual view content
-                renderStudentsByInstructor(studentsData);
+                renderStudents(studentsData);
             } else {
-                // Hide individual view completely
                 individualView.classList.add('hidden');
-                individualView.style.display = 'none';
-                
-                // Show overall view
                 overallView.classList.remove('hidden');
-                overallView.style.display = 'block';
                 
-                // Update button styles
                 overallViewBtn.classList.add('bg-blue-600', 'text-white');
                 overallViewBtn.classList.remove('text-gray-600');
                 individualViewBtn.classList.remove('bg-blue-600', 'text-white');
                 individualViewBtn.classList.add('text-gray-600');
                 
-                // Render overall view content
                 renderOverallView();
             }
         }
 
         async function loadFromGoogleSheets() {
-            console.log('🔄 Starting Google Sheets data load...');
             showLoading(true);
             refreshIcon.textContent = '⏳';
             
             try {
                 const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${CONFIG.SHEET_NAME}?key=${CONFIG.API_KEY}`;
-                console.log('📡 Fetching from URL:', url);
-                
                 const response = await fetch(url);
-                console.log('📥 Response status:', response.status, response.statusText);
                 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('❌ Response error:', errorText);
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    throw new Error('Gagal mengambil data dari Google Sheets');
                 }
                 
                 const data = await response.json();
-                console.log('✅ Data received:', data);
                 
                 if (data.values && data.values.length > 1) {
-                    console.log('📊 Processing', data.values.length - 1, 'rows of data...');
                     const processedData = processSheetData(data.values);
                     studentsData = processedData;
-                    currentFilteredData = studentsData;
                     populateInstructorFilter();
-                    
-                    console.log('✅ Processed', processedData.length, 'students successfully');
                     
                     if (currentView === 'individual') {
                         renderStudentsByInstructor(studentsData);
@@ -1133,118 +998,20 @@
                     }
                     
                     updateConnectionStatus(true, 'Data berhasil dimuat dari Google Sheets');
-                    showNotification(`✅ Data berhasil dimuat! (${processedData.length} siswa)`, 'success');
+                    showNotification('Data berhasil dimuat dari Google Sheets!', 'success');
                 } else {
-                    console.warn('⚠️ No data found in sheets response');
                     updateConnectionStatus(false, 'Data tidak ditemukan di Google Sheets');
-                    showNotification('⚠️ Data tidak ditemukan di Google Sheets', 'error');
+                    showNotification('Data tidak ditemukan di Google Sheets', 'error');
                 }
                 
             } catch (error) {
-                console.error('❌ Error loading from Google Sheets:', error);
-                console.log('🔄 Using demo data instead...');
-                
-                // Ensure we still have working data
-                if (studentsData.length === 0) {
-                    console.log('📝 Initializing with demo data...');
-                    initializeDemoData();
-                }
-                
+                console.error('Error loading from Google Sheets:', error);
                 updateConnectionStatus(false, 'Menggunakan data demo - ' + error.message);
-                showNotification('⚠️ Gagal memuat data online, menggunakan data demo', 'error');
-                
-                // Still render the current view with demo data
-                if (currentView === 'individual') {
-                    renderStudentsByInstructor(studentsData);
-                    updateStatistics();
-                } else {
-                    renderOverallView();
-                }
+                showNotification('Gagal memuat data, menggunakan data demo', 'error');
             } finally {
                 showLoading(false);
                 refreshIcon.textContent = '🔄';
-                console.log('✅ Load process completed');
             }
-        }
-
-        function initializeDemoData() {
-            // Reinitialize demo data if needed
-            studentsData = [
-                { 
-                    name: 'A. Azam', 
-                    currentSurah: 'An-Naba\'', 
-                    currentAyat: 20, 
-                    totalHafalan: 20,
-                    currentJuz: 'Juz 30',
-                    completedSurahs: '',
-                    surahsCompleted: 0,
-                    juzCompleted: 0,
-                    lastUpdate: '1/9/2025 20.58.35',
-                    status: '1',
-                    instructor: 'Ustadz Ahmad'
-                },
-                { 
-                    name: 'Abyan', 
-                    currentSurah: 'An-Naba\'', 
-                    currentAyat: 12, 
-                    totalHafalan: 12,
-                    currentJuz: 'Juz 30',
-                    completedSurahs: '',
-                    surahsCompleted: 0,
-                    juzCompleted: 0,
-                    lastUpdate: '1/9/2025 20.58.35',
-                    status: '1',
-                    instructor: 'Ustadz Ahmad'
-                },
-                { 
-                    name: 'Zakariya', 
-                    currentSurah: 'An-Naba\'', 
-                    currentAyat: 11, 
-                    totalHafalan: 11,
-                    currentJuz: 'Juz 30',
-                    completedSurahs: '',
-                    surahsCompleted: 0,
-                    juzCompleted: 0,
-                    lastUpdate: '1/9/2025 20.58.35',
-                    status: '1',
-                    instructor: 'Ustadz Ahmad'
-                },
-                { 
-                    name: 'Navisa', 
-                    currentSurah: 'An-Nazi\'at', 
-                    currentAyat: 7, 
-                    totalHafalan: 47,
-                    currentJuz: 'Juz 30',
-                    completedSurahs: 'An-Naba\'',
-                    surahsCompleted: 1,
-                    juzCompleted: 1,
-                    lastUpdate: '1/9/2025 20.58.35',
-                    status: '2',
-                    instructor: 'Ustadzah Fatimah'
-                },
-                { 
-                    name: 'Jelita N', 
-                    currentSurah: 'An-Naba\'', 
-                    currentAyat: 34, 
-                    totalHafalan: 34,
-                    currentJuz: 'Juz 30',
-                    completedSurahs: '',
-                    surahsCompleted: 0,
-                    juzCompleted: 0,
-                    lastUpdate: '1/9/2025 20.58.35',
-                    status: '2',
-                    instructor: 'Ustadzah Fatimah'
-                }
-            ];
-            
-            // Recalculate totals
-            studentsData = studentsData.map(student => ({
-                ...student,
-                totalHafalan: calculateTotalAyat(student.completedSurahs, student.currentSurah, student.currentAyat, student.name)
-            }));
-            
-            currentFilteredData = studentsData;
-            console.log('📝 Demo data initialized with', studentsData.length, 'students');
         }
 
         function processSheetData(values) {
@@ -1620,42 +1387,27 @@
 
         function handleSearch() {
             const query = searchInput.value.toLowerCase();
-            const selectedInstructor = instructorFilter.value;
+            const filtered = studentsData.filter(student => 
+                student.name.toLowerCase().includes(query)
+            );
             
-            if (selectedInstructor === 'all') {
-                let dataToShow = studentsData;
-                if (query) {
-                    dataToShow = studentsData.filter(student => 
-                        student.name.toLowerCase().includes(query)
-                    );
-                }
-                
-                if (currentView === 'individual') {
-                    renderStudentsByInstructor(dataToShow);
-                    studentsGrid.classList.add('hidden');
-                    instructorGroups.classList.remove('hidden');
-                    document.getElementById('individualPagination').classList.add('hidden');
-                }
+            if (instructorFilter.value === 'all' && query === '') {
+                renderStudentsByInstructor(filtered);
+                studentsGrid.classList.add('hidden');
+                instructorGroups.classList.remove('hidden');
+                document.getElementById('individualPagination').classList.add('hidden');
             } else {
-                let filtered = studentsData.filter(student => student.instructor === selectedInstructor);
-                if (query) {
-                    filtered = filtered.filter(student => 
-                        student.name.toLowerCase().includes(query)
-                    );
-                }
-                
-                if (currentView === 'individual') {
-                    renderStudents(filtered);
-                    studentsGrid.classList.remove('hidden');
-                    instructorGroups.classList.add('hidden');
-                }
+                const finalFiltered = instructorFilter.value === 'all' ? 
+                    filtered : 
+                    filtered.filter(student => student.instructor === instructorFilter.value);
+                renderStudents(finalFiltered);
+                studentsGrid.classList.remove('hidden');
+                instructorGroups.classList.add('hidden');
             }
         }
 
         function handleSort() {
             const sortType = sortBy.value;
-            const selectedInstructor = instructorFilter.value;
-            const query = searchInput.value.toLowerCase();
             let sorted = [...studentsData];
             
             switch(sortType) {
@@ -1670,33 +1422,16 @@
                     break;
             }
             
-            if (selectedInstructor === 'all') {
-                let dataToShow = sorted;
-                if (query) {
-                    dataToShow = sorted.filter(student => 
-                        student.name.toLowerCase().includes(query)
-                    );
-                }
-                
-                if (currentView === 'individual') {
-                    renderStudentsByInstructor(dataToShow);
-                    studentsGrid.classList.add('hidden');
-                    instructorGroups.classList.remove('hidden');
-                    document.getElementById('individualPagination').classList.add('hidden');
-                }
+            if (instructorFilter.value === 'all') {
+                renderStudentsByInstructor(sorted);
+                studentsGrid.classList.add('hidden');
+                instructorGroups.classList.remove('hidden');
+                document.getElementById('individualPagination').classList.add('hidden');
             } else {
-                let filtered = sorted.filter(student => student.instructor === selectedInstructor);
-                if (query) {
-                    filtered = filtered.filter(student => 
-                        student.name.toLowerCase().includes(query)
-                    );
-                }
-                
-                if (currentView === 'individual') {
-                    renderStudents(filtered);
-                    studentsGrid.classList.remove('hidden');
-                    instructorGroups.classList.add('hidden');
-                }
+                const filtered = sorted.filter(student => student.instructor === instructorFilter.value);
+                renderStudents(filtered);
+                studentsGrid.classList.remove('hidden');
+                instructorGroups.classList.add('hidden');
             }
         }
 
@@ -1714,59 +1449,25 @@
 
         function handleInstructorFilter() {
             const selectedInstructor = instructorFilter.value;
-            const query = searchInput.value.toLowerCase();
             
             if (selectedInstructor === 'all') {
-                let dataToShow = studentsData;
-                if (query) {
-                    dataToShow = studentsData.filter(student => 
-                        student.name.toLowerCase().includes(query)
-                    );
-                }
-                
-                // Show instructor groups for "all" selection in individual view
-                if (currentView === 'individual') {
-                    renderStudentsByInstructor(dataToShow);
-                    studentsGrid.classList.add('hidden');
-                    instructorGroups.classList.remove('hidden');
-                    document.getElementById('individualPagination').classList.add('hidden');
-                }
+                renderStudentsByInstructor(studentsData);
+                studentsGrid.classList.add('hidden');
+                instructorGroups.classList.remove('hidden');
+                document.getElementById('individualPagination').classList.add('hidden');
             } else {
-                let filtered = studentsData.filter(student => student.instructor === selectedInstructor);
-                if (query) {
-                    filtered = filtered.filter(student => 
-                        student.name.toLowerCase().includes(query)
-                    );
-                }
-                
-                if (currentView === 'individual') {
-                    renderStudents(filtered);
-                    studentsGrid.classList.remove('hidden');
-                    instructorGroups.classList.add('hidden');
-                }
+                const filtered = studentsData.filter(student => student.instructor === selectedInstructor);
+                renderStudents(filtered);
+                studentsGrid.classList.remove('hidden');
+                instructorGroups.classList.add('hidden');
             }
         }
 
         function renderStudentsByInstructor(students) {
-            console.log('🎯 renderStudentsByInstructor called with', students.length, 'students');
+            instructorGroups.innerHTML = '';
             
-            if (!instructorGroups) {
-                console.error('❌ instructorGroups element not found');
-                // EMERGENCY: Try to find it again
-                instructorGroups = document.getElementById('instructorGroups');
-                if (!instructorGroups) {
-                    console.error('❌ Still cannot find instructorGroups element!');
-                    return;
-                }
-            }
-            
-            // EMERGENCY: Add immediate visible content
-            instructorGroups.innerHTML = '<div class="bg-blue-100 p-4 rounded-lg text-center">🔄 Memuat data siswa...</div>';
-            console.log('🔄 Added loading message');
-            
-            // Group students by instructor
             const groupedByInstructor = students.reduce((groups, student) => {
-                const instructor = student.instructor || 'Tidak ada pengampu';
+                const instructor = student.instructor;
                 if (!groups[instructor]) {
                     groups[instructor] = [];
                 }
@@ -1774,26 +1475,7 @@
                 return groups;
             }, {});
 
-            console.log('📊 Grouped by instructor:', Object.keys(groupedByInstructor));
-
             const instructorNames = Object.keys(groupedByInstructor);
-            console.log('👨‍🏫 Instructor names found:', instructorNames);
-            
-            if (instructorNames.length === 0) {
-                console.error('❌ No instructors found!');
-                instructorGroups.innerHTML = `
-                    <div class="bg-red-100 border border-red-300 rounded-lg p-6 text-center">
-                        <div class="text-red-600 text-lg mb-2">⚠️ Tidak ada data pengampu</div>
-                        <div class="text-red-500 text-sm">Debug: ${students.length} siswa ditemukan</div>
-                        <div class="text-red-500 text-xs mt-2">Sample: ${JSON.stringify(students[0] || {})}</div>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Clear loading message
-            instructorGroups.innerHTML = '';
-            
             const sortedInstructors = instructorNames.sort((a, b) => {
                 const aIsMustofa = a.toLowerCase().includes('mustofa');
                 const bIsMustofa = b.toLowerCase().includes('mustofa');
@@ -1810,53 +1492,11 @@
                 return a.localeCompare(b);
             });
 
-            console.log('📋 Sorted instructors:', sortedInstructors);
-
-            // Create sections for each instructor
-            sortedInstructors.forEach((instructor, index) => {
+            sortedInstructors.forEach(instructor => {
                 const instructorStudents = groupedByInstructor[instructor];
-                console.log(`🏗️ Creating section ${index + 1} for ${instructor} with ${instructorStudents.length} students`);
-                
-                try {
-                    const instructorSection = createInstructorSection(instructor, instructorStudents);
-                    instructorGroups.appendChild(instructorSection);
-                    console.log(`✅ Successfully added section for ${instructor}`);
-                } catch (error) {
-                    console.error(`❌ Error creating section for ${instructor}:`, error);
-                    
-                    // EMERGENCY: Add basic section if creation fails
-                    const emergencySection = document.createElement('div');
-                    emergencySection.className = 'bg-yellow-100 border border-yellow-300 rounded-lg p-4 mb-4';
-                    emergencySection.innerHTML = `
-                        <h3 class="font-bold text-yellow-800">⚠️ ${instructor}</h3>
-                        <p class="text-yellow-700">${instructorStudents.length} siswa (Error dalam rendering)</p>
-                        <div class="text-xs text-yellow-600 mt-2">
-                            Siswa: ${instructorStudents.map(s => s.name).join(', ')}
-                        </div>
-                    `;
-                    instructorGroups.appendChild(emergencySection);
-                }
+                const instructorSection = createInstructorSection(instructor, instructorStudents);
+                instructorGroups.appendChild(instructorSection);
             });
-            
-            console.log('✅ Finished rendering instructor groups. Total sections:', sortedInstructors.length);
-            console.log('📏 instructorGroups innerHTML length:', instructorGroups.innerHTML.length);
-            
-            // FORCE visibility with multiple methods
-            instructorGroups.style.display = 'block';
-            instructorGroups.style.visibility = 'visible';
-            instructorGroups.classList.remove('hidden');
-            instructorGroups.setAttribute('data-rendered', 'true');
-            
-            // Final check
-            setTimeout(() => {
-                console.log('🔍 Final visibility check:', {
-                    display: instructorGroups.style.display,
-                    visibility: instructorGroups.style.visibility,
-                    hidden: instructorGroups.classList.contains('hidden'),
-                    children: instructorGroups.children.length,
-                    rendered: instructorGroups.getAttribute('data-rendered')
-                });
-            }, 200);
         }
 
         function createInstructorSection(instructor, students) {
@@ -1868,12 +1508,6 @@
             const topStudent = students.reduce((top, s) => s.totalHafalan > top.totalHafalan ? s : top);
             
             const safeInstructorId = 'instructor-' + Math.random().toString(36).substr(2, 9);
-            const paginationId = 'pagination-' + Math.random().toString(36).substr(2, 9);
-            
-            // Pagination settings for instructor sections
-            const studentsPerPage = 6;
-            const totalPages = Math.ceil(totalStudents / studentsPerPage);
-            let currentPage = 1;
             
             section.innerHTML = `
                 <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
@@ -1904,71 +1538,14 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="${safeInstructorId}">
                         <!-- Student cards will be populated here -->
                     </div>
-                    
-                    ${totalPages > 1 ? `
-                    <div class="mt-6 pt-4 border-t border-gray-200" id="${paginationId}">
-                        <!-- Mobile Pagination -->
-                        <div class="block sm:hidden">
-                            <div class="text-center mb-3">
-                                <span class="text-sm text-gray-600" id="${paginationId}-info-mobile">Menampilkan 1-${Math.min(studentsPerPage, totalStudents)} dari ${totalStudents} siswa</span>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <button class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
-                                        id="${paginationId}-prev-mobile" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', [], -1)">
-                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                                    </svg>
-                                    <span class="hidden xs:inline">Sebelumnya</span>
-                                </button>
-                                <div class="flex items-center space-x-1" id="${paginationId}-numbers-mobile">
-                                    <!-- Page numbers will be populated here -->
-                                </div>
-                                <button class="flex items-center px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
-                                        id="${paginationId}-next-mobile" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', [], 1)">
-                                    <span class="hidden xs:inline">Selanjutnya</span>
-                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Desktop Pagination -->
-                        <div class="hidden sm:flex items-center justify-between">
-                            <div class="flex items-center space-x-4">
-                                <span class="text-sm text-gray-600" id="${paginationId}-info">Menampilkan 1-${Math.min(studentsPerPage, totalStudents)} dari ${totalStudents} siswa</span>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <button class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
-                                        id="${paginationId}-prev" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', [], -1)">
-                                    ← Sebelumnya
-                                </button>
-                                <div class="flex items-center space-x-1" id="${paginationId}-numbers">
-                                    <!-- Page numbers will be populated here -->
-                                </div>
-                                <button class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
-                                        id="${paginationId}-next" onclick="changeInstructorPage('${safeInstructorId}', '${paginationId}', [], 1)">
-                                    Selanjutnya →
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    ` : ''}
                 </div>
             `;
             
-            // Store pagination data on the section element
-            section.instructorData = {
-                students: students,
-                currentPage: 1,
-                studentsPerPage: studentsPerPage,
-                totalPages: totalPages,
-                containerId: safeInstructorId,
-                paginationId: paginationId
-            };
-            
-            // Render first page of students
-            renderInstructorStudents(safeInstructorId, paginationId, students, 1);
+            const studentsContainer = section.querySelector(`#${safeInstructorId}`);
+            students.forEach((student, index) => {
+                const card = createStudentCard(student, index);
+                studentsContainer.appendChild(card);
+            });
             
             return section;
         }
@@ -1996,166 +1573,6 @@
                 }
             }
         }
-
-        // Global storage for instructor pagination states
-        const instructorPaginationStates = {};
-
-        function renderInstructorStudents(containerId, paginationId, students, currentPage) {
-            const studentsPerPage = 6;
-            const totalPages = Math.ceil(students.length / studentsPerPage);
-            
-            // Store state
-            instructorPaginationStates[containerId] = {
-                students: students,
-                currentPage: currentPage,
-                studentsPerPage: studentsPerPage,
-                totalPages: totalPages,
-                paginationId: paginationId
-            };
-            
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            
-            container.innerHTML = '';
-            
-            const startIndex = (currentPage - 1) * studentsPerPage;
-            const endIndex = startIndex + studentsPerPage;
-            const paginatedStudents = students.slice(startIndex, endIndex);
-            
-            paginatedStudents.forEach((student, index) => {
-                const card = createStudentCard(student, startIndex + index);
-                container.appendChild(card);
-            });
-            
-            // Update pagination info and buttons
-            updateInstructorPagination(containerId, paginationId, students.length, currentPage, studentsPerPage, totalPages);
-        }
-
-        function updateInstructorPagination(containerId, paginationId, totalStudents, currentPage, studentsPerPage, totalPages) {
-            const startItem = (currentPage - 1) * studentsPerPage + 1;
-            const endItem = Math.min(currentPage * studentsPerPage, totalStudents);
-            const pageInfoText = `Menampilkan ${startItem}-${endItem} dari ${totalStudents} siswa`;
-            
-            // Update desktop info
-            const infoDesktop = document.getElementById(`${paginationId}-info`);
-            if (infoDesktop) {
-                infoDesktop.textContent = pageInfoText;
-            }
-            
-            // Update mobile info
-            const infoMobile = document.getElementById(`${paginationId}-info-mobile`);
-            if (infoMobile) {
-                infoMobile.textContent = pageInfoText;
-            }
-            
-            // Update desktop buttons
-            const prevBtn = document.getElementById(`${paginationId}-prev`);
-            const nextBtn = document.getElementById(`${paginationId}-next`);
-            if (prevBtn) prevBtn.disabled = currentPage === 1;
-            if (nextBtn) nextBtn.disabled = currentPage === totalPages;
-            
-            // Update mobile buttons
-            const prevBtnMobile = document.getElementById(`${paginationId}-prev-mobile`);
-            const nextBtnMobile = document.getElementById(`${paginationId}-next-mobile`);
-            if (prevBtnMobile) prevBtnMobile.disabled = currentPage === 1;
-            if (nextBtnMobile) nextBtnMobile.disabled = currentPage === totalPages;
-            
-            // Update desktop page numbers
-            const pageNumbersContainer = document.getElementById(`${paginationId}-numbers`);
-            if (pageNumbersContainer) {
-                updateInstructorPageNumbers(pageNumbersContainer, totalPages, currentPage, containerId, false);
-            }
-            
-            // Update mobile page numbers
-            const pageNumbersContainerMobile = document.getElementById(`${paginationId}-numbers-mobile`);
-            if (pageNumbersContainerMobile) {
-                updateInstructorPageNumbers(pageNumbersContainerMobile, totalPages, currentPage, containerId, true);
-            }
-        }
-
-        function updateInstructorPageNumbers(container, totalPages, currentPage, containerId, isMobile = false) {
-            container.innerHTML = '';
-            
-            if (totalPages <= 1) return;
-            
-            const maxVisiblePages = isMobile ? 3 : 5;
-            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-            
-            if (endPage - startPage + 1 < maxVisiblePages) {
-                startPage = Math.max(1, endPage - maxVisiblePages + 1);
-            }
-            
-            // Add first page and ellipsis if needed
-            if (startPage > 1) {
-                addInstructorPageButton(container, 1, currentPage, containerId, isMobile);
-                if (startPage > 2) {
-                    const ellipsis = document.createElement('span');
-                    ellipsis.className = 'px-2 py-1 text-gray-400 text-sm';
-                    ellipsis.textContent = '...';
-                    container.appendChild(ellipsis);
-                }
-            }
-            
-            // Add visible page numbers
-            for (let i = startPage; i <= endPage; i++) {
-                addInstructorPageButton(container, i, currentPage, containerId, isMobile);
-            }
-            
-            // Add ellipsis and last page if needed
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) {
-                    const ellipsis = document.createElement('span');
-                    ellipsis.className = 'px-2 py-1 text-gray-400 text-sm';
-                    ellipsis.textContent = '...';
-                    container.appendChild(ellipsis);
-                }
-                addInstructorPageButton(container, totalPages, currentPage, containerId, isMobile);
-            }
-        }
-
-        function addInstructorPageButton(container, pageNum, currentPage, containerId, isMobile = false) {
-            const pageBtn = document.createElement('button');
-            const isActive = pageNum === currentPage;
-            const sizeClass = isMobile ? 'px-2 py-1 text-xs' : 'px-3 py-1 text-sm';
-            
-            pageBtn.className = `${sizeClass} font-medium rounded ${
-                isActive 
-                    ? 'bg-blue-600 text-white' 
-                    : 'text-gray-500 hover:bg-gray-100'
-            }`;
-            pageBtn.textContent = pageNum;
-            pageBtn.onclick = () => {
-                const state = instructorPaginationStates[containerId];
-                if (state) {
-                    renderInstructorStudents(containerId, state.paginationId, state.students, pageNum);
-                }
-            };
-            container.appendChild(pageBtn);
-        }
-
-        function changeInstructorPage(containerId, paginationId, studentsData, direction) {
-            const state = instructorPaginationStates[containerId];
-            if (!state) return;
-            
-            const newPage = state.currentPage + direction;
-            
-            if (newPage >= 1 && newPage <= state.totalPages) {
-                renderInstructorStudents(containerId, paginationId, state.students, newPage);
-            }
-        }
-
-        // Safe event handling helper
-        function safeGetClassName(element) {
-            if (!element) return '';
-            if (typeof element.className === 'string') return element.className;
-            if (element.className && typeof element.className.toString === 'function') {
-                return element.className.toString();
-            }
-            return '';
-        }
-
-
 
         function renderOverallView() {
             renderClassRanking();
@@ -2542,5 +1959,5 @@
             }, 2000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b25d9cc754fd96',t:'MTc1NzIwNzgzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b359e4c4bdf93e',t:'MTc1NzIxODE3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
