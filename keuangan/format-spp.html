@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contoh Struktur Google Sheets - Sistem SPP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .table-container {
+            overflow-x: auto;
+            max-height: 600px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            background: #f9fafb;
+            z-index: 10;
+        }
+        .sticky-column {
+            position: sticky;
+            left: 0;
+            background: #ffffff;
+            z-index: 5;
+        }
+        .sticky-header.sticky-column {
+            z-index: 15;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-blue-600">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-600 text-white p-3 rounded-lg">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3a2 2 0 012-2h2a2 2 0 012 2v1a1 1 0 102 0V3a2 2 0 012 2v6.5A1.5 1.5 0 0116.5 13H16v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2h-.5A1.5 1.5 0 012 11.5V5zm2.5 6a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm6.207.293a1 1 0 00-1.414-1.414l-6 6a1 1 0 101.414 1.414l6-6z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">Contoh Google Sheets</h1>
+                        <p class="text-sm text-gray-600">Struktur Kolom untuk Sistem Pembayaran SPP</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">20 Komponen</p>
+                    <p class="font-semibold text-gray-800">Pembayaran Lengkap</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Instructions -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Panduan Struktur Google Sheets</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="space-y-4">
+                    <h3 class="text-xl font-semibold text-blue-600">Format Penamaan Kolom</h3>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-blue-50 rounded-lg">
+                            <h4 class="font-medium text-blue-800">Pembayaran Bulanan</h4>
+                            <p class="text-sm text-blue-600">Format: <code class="bg-blue-200 px-1 rounded">[komponen]_[kelas]_[bulan]</code></p>
+                            <p class="text-xs text-blue-500">Contoh: spp_10_jul, spp_11_agu, tabungan_10_sep</p>
+                        </div>
+                        <div class="p-3 bg-green-50 rounded-lg">
+                            <h4 class="font-medium text-green-800">Pembayaran Semester</h4>
+                            <p class="text-sm text-green-600">Format: <code class="bg-green-200 px-1 rounded">[komponen]_[kelas]_sem[1/2]</code></p>
+                            <p class="text-xs text-green-500">Contoh: lks_10_sem1, ujian_11_sem2</p>
+                        </div>
+                        <div class="p-3 bg-yellow-50 rounded-lg">
+                            <h4 class="font-medium text-yellow-800">Pembayaran Tahunan</h4>
+                            <p class="text-sm text-yellow-600">Format: <code class="bg-yellow-200 px-1 rounded">[komponen]_[kelas]</code></p>
+                            <p class="text-xs text-yellow-500">Contoh: infaq_10, seragam_11, komputer_12</p>
+                        </div>
+                        <div class="p-3 bg-purple-50 rounded-lg">
+                            <h4 class="font-medium text-purple-800">Pembayaran Sekali</h4>
+                            <p class="text-sm text-purple-600">Format: <code class="bg-purple-200 px-1 rounded">[komponen]</code></p>
+                            <p class="text-xs text-purple-500">Contoh: siswa_baru, kartu_pelajar, wisuda</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    <h3 class="text-xl font-semibold text-green-600">Nilai yang Diterima</h3>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
+                            <h4 class="font-medium text-green-800">Sudah Bayar</h4>
+                            <p class="text-sm text-green-600">
+                                <code class="bg-green-200 px-1 rounded mr-1">lunas</code>
+                                <code class="bg-green-200 px-1 rounded mr-1">paid</code>
+                                <code class="bg-green-200 px-1 rounded mr-1">1</code>
+                                <code class="bg-green-200 px-1 rounded">true</code>
+                            </p>
+                        </div>
+                        <div class="p-3 bg-red-50 rounded-lg border-l-4 border-red-400">
+                            <h4 class="font-medium text-red-800">Belum Bayar</h4>
+                            <p class="text-sm text-red-600">
+                                <code class="bg-red-200 px-1 rounded mr-1">belum</code>
+                                <code class="bg-red-200 px-1 rounded mr-1">unpaid</code>
+                                <code class="bg-red-200 px-1 rounded mr-1">0</code>
+                                <code class="bg-red-200 px-1 rounded mr-1">false</code>
+                                <span class="text-xs">atau kosong</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                        <h4 class="font-medium text-blue-800 mb-2">Informasi Penting</h4>
+                        <ul class="text-sm text-blue-600 space-y-1">
+                            <li>• Sheet ID: <code class="bg-blue-200 px-1 rounded text-xs">17MDc804lNUm_XwUM6hPj6Ui8T-JVtpxJCLq4XovVs0A</code></li>
+                            <li>• Sheet Name: <code class="bg-blue-200 px-1 rounded">Sheet7</code></li>
+                            <li>• Total Kolom: 50+ kolom untuk tracking lengkap</li>
+                            <li>• Baris pertama harus berisi header kolom</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Table -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-2xl font-bold text-gray-800">Contoh Struktur Tabel</h3>
+                <div class="flex space-x-2">
+                    <button onclick="downloadTemplate()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm flex items-center space-x-2">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Download Template</span>
+                    </button>
+                    <button onclick="copyHeaders()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center space-x-2">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z"/>
+                            <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z"/>
+                        </svg>
+                        <span>Copy Headers</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="min-w-full text-xs">
+                    <thead>
+                        <tr class="sticky-header border-b-2 border-gray-200">
+                            <th class="sticky-column sticky-header px-2 py-3 text-left font-semibold text-gray-700 bg-gray-50 border-r">A<br>NISN</th>
+                            <th class="px-2 py-3 text-left font-semibold text-gray-700 bg-gray-50 border-r">B<br>Nama</th>
+                            <th class="px-2 py-3 text-left font-semibold text-gray-700 bg-gray-50 border-r">C<br>Kelas</th>
+                            
+                            <!-- SPP Kelas 10 -->
+                            <th class="px-2 py-3 text-center font-semibold text-blue-700 bg-blue-50 border-r">D<br>spp_10_jul</th>
+                            <th class="px-2 py-3 text-center font-semibold text-blue-700 bg-blue-50 border-r">E<br>spp_10_agu</th>
+                            <th class="px-2 py-3 text-center font-semibold text-blue-700 bg-blue-50 border-r">F<br>spp_10_sep</th>
+                            <th class="px-2 py-3 text-center font-semibold text-blue-700 bg-blue-50 border-r">G<br>spp_10_okt</th>
+                            <th class="px-2 py-3 text-center font-semibold text-blue-700 bg-blue-50 border-r">H<br>spp_10_nov</th>
+                            <th class="px-2 py-3 text-center font-semibold text-blue-700 bg-blue-50 border-r">I<br>spp_10_des</th>
+                            <th class="px-2 py-3 text-center font-semibold text-blue-700 bg-blue-50 border-r">J<br>spp_10_jan</th>
+                            <th class="px-2 py-3 text-center font-semibold text-blue-700 bg-blue-50 border-r">K<br>spp_10_feb</th>
+                            <th class="px-2 py-3 text-center font-semibold text-blue-700 bg-blue-50 border-r">L<br>spp_10_mar</th>
+                            <th class="px-2 py-3 text-center font-semibold text-blue-700 bg-blue-50 border-r">M<br>spp_10_apr</th>
+                            <th class="px-2 py-3 text-center font-semibold text-blue-700 bg-blue-50 border-r">N<br>spp_10_mei</th>
+                            <th class="px-2 py-3 text-center font-semibold text-blue-700 bg-blue-50 border-r">O<br>spp_10_jun</th>
+                            
+                            <!-- Tabungan Kelas 10 -->
+                            <th class="px-2 py-3 text-center font-semibold text-indigo-700 bg-indigo-50 border-r">P<br>tabungan_10_jul</th>
+                            <th class="px-2 py-3 text-center font-semibold text-indigo-700 bg-indigo-50 border-r">Q<br>tabungan_10_agu</th>
+                            <th class="px-2 py-3 text-center font-semibold text-indigo-700 bg-indigo-50 border-r">R<br>tabungan_10_sep</th>
+                            
+                            <!-- LKS -->
+                            <th class="px-2 py-3 text-center font-semibold text-green-700 bg-green-50 border-r">S<br>lks_10_sem1</th>
+                            <th class="px-2 py-3 text-center font-semibold text-green-700 bg-green-50 border-r">T<br>lks_10_sem2</th>
+                            
+                            <!-- Pembayaran Tahunan -->
+                            <th class="px-2 py-3 text-center font-semibold text-yellow-700 bg-yellow-50 border-r">U<br>infaq_10</th>
+                            <th class="px-2 py-3 text-center font-semibold text-yellow-700 bg-yellow-50 border-r">V<br>seragam_10</th>
+                            
+                            <!-- Pembayaran Sekali -->
+                            <th class="px-2 py-3 text-center font-semibold text-purple-700 bg-purple-50 border-r">W<br>siswa_baru</th>
+                            <th class="px-2 py-3 text-center font-semibold text-purple-700 bg-purple-50 border-r">X<br>kartu_pelajar</th>
+                            
+                            <th class="px-2 py-3 text-center font-semibold text-gray-500 bg-gray-100">...<br>dst</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sampleData">
+                        <!-- Sample data will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Column List -->
+        <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Monthly Payments -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-blue-600 mb-4">Pembayaran Bulanan (36 Kolom)</h3>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">SPP (36 kolom)</h4>
+                        <div class="grid grid-cols-3 gap-2 text-xs">
+                            <div class="p-2 bg-blue-50 rounded">
+                                <div class="font-medium text-blue-800">Kelas 10 (12 bulan)</div>
+                                <div class="text-blue-600">spp_10_jul hingga spp_10_jun</div>
+                            </div>
+                            <div class="p-2 bg-blue-50 rounded">
+                                <div class="font-medium text-blue-800">Kelas 11 (12 bulan)</div>
+                                <div class="text-blue-600">spp_11_jul hingga spp_11_jun</div>
+                            </div>
+                            <div class="p-2 bg-blue-50 rounded">
+                                <div class="font-medium text-blue-800">Kelas 12 (12 bulan)</div>
+                                <div class="text-blue-600">spp_12_jul hingga spp_12_jun</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Tabungan (12 kolom - Khusus Kelas 10)</h4>
+                        <div class="p-2 bg-indigo-50 rounded text-xs">
+                            <div class="font-medium text-indigo-800">Kelas 10 saja</div>
+                            <div class="text-indigo-600">tabungan_10_jul hingga tabungan_10_jun</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Payments -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-green-600 mb-4">Pembayaran Lainnya</h3>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Semester (24 kolom)</h4>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="p-2 bg-green-50 rounded">
+                                <div class="font-medium text-green-800">LKS, Ulangan</div>
+                                <div class="text-green-600">6 kolom per komponen</div>
+                            </div>
+                            <div class="p-2 bg-green-50 rounded">
+                                <div class="font-medium text-green-800">Ujian, Praktikum</div>
+                                <div class="text-green-600">6 kolom per komponen</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Tahunan (18 kolom)</h4>
+                        <div class="text-xs p-2 bg-yellow-50 rounded">
+                            <div class="font-medium text-yellow-800">Infaq, Seragam, Kegiatan, Asuransi, Komputer, Olahraga</div>
+                            <div class="text-yellow-600">3 kolom per komponen (kelas 10, 11, 12)</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Sekali Bayar (8 kolom)</h4>
+                        <div class="text-xs p-2 bg-purple-50 rounded">
+                            <div class="font-medium text-purple-800">Siswa Baru, Perpisahan, Study Tour, dll</div>
+                            <div class="text-purple-600">1 kolom per komponen</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Generate sample data
+        const sampleStudents = [
+            {
+                nisn: '1234567890',
+                name: 'Ahmad Rizki Pratama',
+                class: 'XII IPA 1',
+                payments: {
+                    spp_10_jul: 'lunas', spp_10_agu: 'lunas', spp_10_sep: 'lunas',
+                    tabungan_10_jul: 'lunas', tabungan_10_agu: 'lunas', tabungan_10_sep: 'lunas',
+                    lks_10_sem1: 'lunas', lks_10_sem2: 'lunas',
+                    infaq_10: 'lunas', seragam_10: 'lunas',
+                    siswa_baru: 'lunas', kartu_pelajar: 'lunas'
+                }
+            },
+            {
+                nisn: '0987654321',
+                name: 'Siti Nurhaliza',
+                class: 'XI IPS 2',
+                payments: {
+                    spp_10_jul: 'lunas', spp_10_agu: 'lunas', spp_10_sep: 'belum',
+                    tabungan_10_jul: 'lunas', tabungan_10_agu: 'belum', tabungan_10_sep: 'belum',
+                    lks_10_sem1: 'lunas', lks_10_sem2: 'belum',
+                    infaq_10: 'belum', seragam_10: 'lunas',
+                    siswa_baru: 'lunas', kartu_pelajar: 'belum'
+                }
+            },
+            {
+                nisn: '1122334455',
+                name: 'Budi Santoso',
+                class: 'X MIPA 3',
+                payments: {
+                    spp_10_jul: 'lunas', spp_10_agu: 'lunas', spp_10_sep: 'lunas',
+                    tabungan_10_jul: 'lunas', tabungan_10_agu: 'lunas', tabungan_10_sep: 'belum',
+                    lks_10_sem1: 'lunas', lks_10_sem2: 'belum',
+                    infaq_10: 'belum', seragam_10: 'belum',
+                    siswa_baru: 'lunas', kartu_pelajar: 'belum'
+                }
+            }
+        ];
+
+        function generateSampleData() {
+            const tbody = document.getElementById('sampleData');
+            tbody.innerHTML = '';
+
+            sampleStudents.forEach((student, index) => {
+                const row = document.createElement('tr');
+                row.className = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+                
+                row.innerHTML = `
+                    <td class="sticky-column px-2 py-3 border-r font-mono text-xs bg-white">${student.nisn}</td>
+                    <td class="px-2 py-3 border-r text-xs font-medium">${student.name}</td>
+                    <td class="px-2 py-3 border-r text-xs">${student.class}</td>
+                    <td class="px-2 py-3 border-r text-center text-xs ${getStatusClass(student.payments.spp_10_jul)}">${student.payments.spp_10_jul}</td>
+                    <td class="px-2 py-3 border-r text-center text-xs ${getStatusClass(student.payments.spp_10_agu)}">${student.payments.spp_10_agu}</td>
+                    <td class="px-2 py-3 border-r text-center text-xs ${getStatusClass(student.payments.spp_10_sep)}">${student.payments.spp_10_sep}</td>
+                    <td class="px-2 py-3 border-r text-center text-xs">lunas</td>
+                    <td class="px-2 py-3 border-r text-center text-xs">lunas</td>
+                    <td class="px-2 py-3 border-r text-center text-xs">lunas</td>
+                    <td class="px-2 py-3 border-r text-center text-xs">lunas</td>
+                    <td class="px-2 py-3 border-r text-center text-xs">lunas</td>
+                    <td class="px-2 py-3 border-r text-center text-xs">lunas</td>
+                    <td class="px-2 py-3 border-r text-center text-xs">lunas</td>
+                    <td class="px-2 py-3 border-r text-center text-xs">lunas</td>
+                    <td class="px-2 py-3 border-r text-center text-xs">lunas</td>
+                    <td class="px-2 py-3 border-r text-center text-xs ${getStatusClass(student.payments.tabungan_10_jul)}">${student.payments.tabungan_10_jul}</td>
+                    <td class="px-2 py-3 border-r text-center text-xs ${getStatusClass(student.payments.tabungan_10_agu)}">${student.payments.tabungan_10_agu}</td>
+                    <td class="px-2 py-3 border-r text-center text-xs ${getStatusClass(student.payments.tabungan_10_sep)}">${student.payments.tabungan_10_sep}</td>
+                    <td class="px-2 py-3 border-r text-center text-xs ${getStatusClass(student.payments.lks_10_sem1)}">${student.payments.lks_10_sem1}</td>
+                    <td class="px-2 py-3 border-r text-center text-xs ${getStatusClass(student.payments.lks_10_sem2)}">${student.payments.lks_10_sem2}</td>
+                    <td class="px-2 py-3 border-r text-center text-xs ${getStatusClass(student.payments.infaq_10)}">${student.payments.infaq_10}</td>
+                    <td class="px-2 py-3 border-r text-center text-xs ${getStatusClass(student.payments.seragam_10)}">${student.payments.seragam_10}</td>
+                    <td class="px-2 py-3 border-r text-center text-xs ${getStatusClass(student.payments.siswa_baru)}">${student.payments.siswa_baru}</td>
+                    <td class="px-2 py-3 border-r text-center text-xs ${getStatusClass(student.payments.kartu_pelajar)}">${student.payments.kartu_pelajar}</td>
+                    <td class="px-2 py-3 text-center text-xs text-gray-400">...</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function getStatusClass(status) {
+            return status === 'lunas' ? 'text-green-600 bg-green-50' : 'text-red-600 bg-red-50';
+        }
+
+        function copyHeaders() {
+            const headers = [
+                'NISN', 'Nama', 'Kelas',
+                // SPP Kelas 10
+                'spp_10_jul', 'spp_10_agu', 'spp_10_sep', 'spp_10_okt', 'spp_10_nov', 'spp_10_des',
+                'spp_10_jan', 'spp_10_feb', 'spp_10_mar', 'spp_10_apr', 'spp_10_mei', 'spp_10_jun',
+                // SPP Kelas 11
+                'spp_11_jul', 'spp_11_agu', 'spp_11_sep', 'spp_11_okt', 'spp_11_nov', 'spp_11_des',
+                'spp_11_jan', 'spp_11_feb', 'spp_11_mar', 'spp_11_apr', 'spp_11_mei', 'spp_11_jun',
+                // SPP Kelas 12
+                'spp_12_jul', 'spp_12_agu', 'spp_12_sep', 'spp_12_okt', 'spp_12_nov', 'spp_12_des',
+                'spp_12_jan', 'spp_12_feb', 'spp_12_mar', 'spp_12_apr', 'spp_12_mei', 'spp_12_jun',
+                // Tabungan Kelas 10
+                'tabungan_10_jul', 'tabungan_10_agu', 'tabungan_10_sep', 'tabungan_10_okt', 'tabungan_10_nov', 'tabungan_10_des',
+                'tabungan_10_jan', 'tabungan_10_feb', 'tabungan_10_mar', 'tabungan_10_apr', 'tabungan_10_mei', 'tabungan_10_jun',
+                // LKS
+                'lks_10_sem1', 'lks_10_sem2', 'lks_11_sem1', 'lks_11_sem2', 'lks_12_sem1', 'lks_12_sem2',
+                // Ulangan
+                'ulangan_10_sem1', 'ulangan_10_sem2', 'ulangan_11_sem1', 'ulangan_11_sem2', 'ulangan_12_sem1', 'ulangan_12_sem2',
+                // Ujian
+                'ujian_10_sem1', 'ujian_10_sem2', 'ujian_11_sem1', 'ujian_11_sem2', 'ujian_12_sem1', 'ujian_12_sem2',
+                // Praktikum
+                'praktikum_10_sem1', 'praktikum_10_sem2', 'praktikum_11_sem1', 'praktikum_11_sem2', 'praktikum_12_sem1', 'praktikum_12_sem2',
+                // Tahunan
+                'infaq_10', 'infaq_11', 'infaq_12',
+                'seragam_10', 'seragam_11', 'seragam_12',
+                'kegiatan_10', 'kegiatan_11', 'kegiatan_12',
+                'asuransi_10', 'asuransi_11', 'asuransi_12',
+                'komputer_10', 'komputer_11', 'komputer_12',
+                'olahraga_10', 'olahraga_11', 'olahraga_12',
+                // Sekali Bayar
+                'siswa_baru', 'perpisahan', 'study_tour', 'buku_kenangan', 'kartu_pelajar', 'perpustakaan', 'wisuda', 'sertifikat'
+            ];
+
+            navigator.clipboard.writeText(headers.join('\t')).then(() => {
+                showNotification('Header kolom berhasil disalin! Paste di baris pertama Google Sheets Anda.', 'success');
+            }).catch(() => {
+                showNotification('Gagal menyalin header. Silakan salin manual.', 'error');
+            });
+        }
+
+        function downloadTemplate() {
+            const headers = [
+                'NISN', 'Nama', 'Kelas',
+                // All payment columns (abbreviated for demo)
+                'spp_10_jul', 'spp_10_agu', 'spp_10_sep', '...', 'siswa_baru', 'kartu_pelajar'
+            ];
+            
+            const csvContent = headers.join(',') + '\n' + 
+                              '1234567890,Ahmad Rizki Pratama,XII IPA 1,lunas,lunas,lunas,...,lunas,lunas\n' +
+                              '0987654321,Siti Nurhaliza,XI IPS 2,lunas,lunas,belum,...,lunas,belum';
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'template_spp.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('Template berhasil didownload!', 'success');
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+                type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-gray-500 hover:text-gray-700">×</button>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Initialize sample data
+        generateSampleData();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b97907971af93e',t:'MTc1NzI4MjM2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
