@@ -1059,24 +1059,38 @@
             currentView = view;
             
             if (view === 'individual') {
+                // Show individual view
                 individualView.classList.remove('hidden');
-                overallView.classList.add('hidden');
+                individualView.style.display = 'block';
                 
+                // Hide overall view completely
+                overallView.classList.add('hidden');
+                overallView.style.display = 'none';
+                
+                // Update button styles
                 individualViewBtn.classList.add('bg-blue-600', 'text-white');
                 individualViewBtn.classList.remove('text-gray-600');
                 overallViewBtn.classList.remove('bg-blue-600', 'text-white');
                 overallViewBtn.classList.add('text-gray-600');
                 
-                renderStudents(studentsData);
+                // Render individual view content
+                renderStudentsByInstructor(studentsData);
             } else {
+                // Hide individual view completely
                 individualView.classList.add('hidden');
-                overallView.classList.remove('hidden');
+                individualView.style.display = 'none';
                 
+                // Show overall view
+                overallView.classList.remove('hidden');
+                overallView.style.display = 'block';
+                
+                // Update button styles
                 overallViewBtn.classList.add('bg-blue-600', 'text-white');
                 overallViewBtn.classList.remove('text-gray-600');
                 individualViewBtn.classList.remove('bg-blue-600', 'text-white');
                 individualViewBtn.classList.add('text-gray-600');
                 
+                // Render overall view content
                 renderOverallView();
             }
         }
@@ -2528,5 +2542,5 @@
             }, 2000);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97af0fd2d1d65f54',t:'MTc1NzE3MzE5NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b25d9cc754fd96',t:'MTc1NzIwNzgzOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
