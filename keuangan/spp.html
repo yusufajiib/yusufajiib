@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Informasi Pembayaran SPP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg border-b-4 border-blue-600">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-blue-600 text-white p-3 rounded-lg">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">SMA Negeri 1</h1>
+                        <p class="text-sm text-gray-600">Sistem Informasi Pembayaran SPP</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-600">Tahun Ajaran</p>
+                    <p class="font-semibold text-gray-800">2024/2025</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Search Section -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Cek Status Pembayaran SPP</h2>
+                <p class="text-gray-600">Masukkan NISN untuk melihat informasi pembayaran</p>
+            </div>
+            
+            <div class="max-w-md mx-auto">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="nisnInput" 
+                        placeholder="Masukkan NISN (10 digit)"
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none text-center text-lg font-mono"
+                        maxlength="10"
+                    >
+                    <button 
+                        onclick="searchStudent()" 
+                        class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center space-x-2"
+                    >
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Cari Data Siswa</span>
+                    </button>
+                    <button 
+                        onclick="refreshData()" 
+                        class="w-full mt-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-6 rounded-lg transition duration-200 flex items-center justify-center space-x-2 text-sm"
+                    >
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Refresh Data</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Info Section -->
+        <div id="studentInfo" class="hidden bg-white rounded-xl shadow-lg p-8 mb-8">
+            <div class="flex items-center space-x-4 mb-6 pb-6 border-b">
+                <div class="bg-blue-100 p-4 rounded-full">
+                    <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 id="studentName" class="text-2xl font-bold text-gray-800"></h3>
+                    <p id="studentClass" class="text-gray-600"></p>
+                    <p id="studentNISN" class="text-sm text-gray-500"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Status Section -->
+        <div id="paymentStatus" class="hidden space-y-6">
+            <!-- Current Month Status -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h4 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <span class="bg-yellow-100 text-yellow-800 p-2 rounded-lg mr-3">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                        </svg>
+                    </span>
+                    Status Bulan Berjalan
+                </h4>
+                <div id="currentMonthStatus" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Current month payment status will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Payment History by Year -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h4 class="text-xl font-bold text-gray-800 mb-6">Riwayat Pembayaran Lengkap</h4>
+                    
+                    <!-- Payment Categories Tabs -->
+                    <div class="flex flex-wrap gap-2 mb-6 border-b">
+                        <button onclick="showPaymentCategory('monthly')" id="monthlyTab" class="px-4 py-2 font-medium text-blue-600 border-b-2 border-blue-600 bg-blue-50 rounded-t-lg">
+                            Pembayaran Bulanan
+                        </button>
+                        <button onclick="showPaymentCategory('semester')" id="semesterTab" class="px-4 py-2 font-medium text-gray-600 hover:text-blue-600 rounded-t-lg">
+                            Pembayaran Semester
+                        </button>
+                        <button onclick="showPaymentCategory('yearly')" id="yearlyTab" class="px-4 py-2 font-medium text-gray-600 hover:text-blue-600 rounded-t-lg">
+                            Pembayaran Tahunan
+                        </button>
+                        <button onclick="showPaymentCategory('onetime')" id="onetimeTab" class="px-4 py-2 font-medium text-gray-600 hover:text-blue-600 rounded-t-lg">
+                            Pembayaran Sekali
+                        </button>
+                    </div>
+
+                    <!-- Monthly Payments -->
+                    <div id="monthlyPayments" class="payment-category">
+                        <div class="space-y-6">
+                            <!-- Class 10 Monthly -->
+                            <div class="mb-6">
+                                <h5 class="text-lg font-semibold text-blue-600 mb-4 flex items-center">
+                                    <span class="bg-blue-100 px-3 py-1 rounded-full mr-3">Kelas 10</span>
+                                    Tahun Ajaran 2022/2023
+                                </h5>
+                                <div id="class10MonthlyPayments" class="space-y-4">
+                                    <!-- Monthly payments for class 10 will be inserted here -->
+                                </div>
+                            </div>
+
+                            <!-- Class 11 Monthly -->
+                            <div class="mb-6">
+                                <h5 class="text-lg font-semibold text-green-600 mb-4 flex items-center">
+                                    <span class="bg-green-100 px-3 py-1 rounded-full mr-3">Kelas 11</span>
+                                    Tahun Ajaran 2023/2024
+                                </h5>
+                                <div id="class11MonthlyPayments" class="space-y-4">
+                                    <!-- Monthly payments for class 11 will be inserted here -->
+                                </div>
+                            </div>
+
+                            <!-- Class 12 Monthly -->
+                            <div class="mb-6">
+                                <h5 class="text-lg font-semibold text-purple-600 mb-4 flex items-center">
+                                    <span class="bg-purple-100 px-3 py-1 rounded-full mr-3">Kelas 12</span>
+                                    Tahun Ajaran 2024/2025
+                                </h5>
+                                <div id="class12MonthlyPayments" class="space-y-4">
+                                    <!-- Monthly payments for class 12 will be inserted here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Semester Payments -->
+                    <div id="semesterPayments" class="payment-category hidden">
+                        <div id="allSemesterPayments" class="space-y-6">
+                            <!-- Semester payments will be inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- Yearly Payments -->
+                    <div id="yearlyPayments" class="payment-category hidden">
+                        <div id="allYearlyPayments" class="space-y-6">
+                            <!-- Yearly payments will be inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- One-time Payments -->
+                    <div id="onetimePayments" class="payment-category hidden">
+                        <div id="allOnetimePayments" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- One-time payments will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h4 class="text-xl font-bold text-gray-800 mb-4">Ringkasan Pembayaran</h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="text-center p-4 bg-green-50 rounded-lg">
+                        <div class="text-3xl font-bold text-green-600" id="totalPaid">0</div>
+                        <div class="text-sm text-gray-600">Bulan Terbayar</div>
+                    </div>
+                    <div class="text-center p-4 bg-red-50 rounded-lg">
+                        <div class="text-3xl font-bold text-red-600" id="totalUnpaid">0</div>
+                        <div class="text-sm text-gray-600">Bulan Belum Bayar</div>
+                    </div>
+                    <div class="text-center p-4 bg-blue-50 rounded-lg">
+                        <div class="text-3xl font-bold text-blue-600" id="totalAmount">Rp 0</div>
+                        <div class="text-sm text-gray-600">Total Tunggakan</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Data Message -->
+        <div id="noDataMessage" class="hidden bg-white rounded-xl shadow-lg p-8 text-center">
+            <div class="text-gray-400 mb-4">
+                <svg class="w-16 h-16 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">Data Tidak Ditemukan</h3>
+            <p class="text-gray-500">NISN yang Anda masukkan tidak terdaftar dalam sistem</p>
+        </div>
+    </main>
+
+    <script>
+        // Payment components configuration
+        const paymentComponents = {
+            // Monthly payments
+            spp: { name: 'SPP', amount: 175000, type: 'monthly', description: 'Sumbangan Pembinaan Pendidikan' },
+            tabungan: { name: 'Tabungan', amount: 50000, type: 'monthly_class10', description: 'Tabungan Siswa (Khusus Kelas 10)' },
+            
+            // Semester payments
+            lks: { name: 'Buku LKS', amount: 150000, type: 'semester', description: 'Lembar Kerja Siswa' },
+            ulangan: { name: 'Ulangan Harian', amount: 100000, type: 'semester', description: 'Biaya Ulangan Harian' },
+            ujian: { name: 'Ujian Semester', amount: 125000, type: 'semester', description: 'Biaya Ujian Tengah & Akhir Semester' },
+            praktikum: { name: 'Praktikum', amount: 200000, type: 'semester', description: 'Biaya Praktikum Laboratorium' },
+            
+            // Yearly payments
+            infaq: { name: 'Infaq Kenaikan Kelas', amount: 150000, type: 'yearly', description: 'Infaq Kenaikan Kelas' },
+            seragam: { name: 'Seragam Sekolah', amount: 300000, type: 'yearly', description: 'Seragam & Atribut Sekolah' },
+            kegiatan: { name: 'Kegiatan Ekstrakurikuler', amount: 100000, type: 'yearly', description: 'Biaya Kegiatan Ekstrakurikuler' },
+            asuransi: { name: 'Asuransi Siswa', amount: 75000, type: 'yearly', description: 'Asuransi Kecelakaan Siswa' },
+            
+            // One-time payments (3 years)
+            siswa_baru: { name: 'Siswa Baru', amount: 1250000, type: 'onetime', description: 'Biaya Pendaftaran Siswa Baru' },
+            perpisahan: { name: 'Perpisahan', amount: 1000000, type: 'onetime', description: 'Biaya Perpisahan Kelas XII' },
+            study_tour: { name: 'Study Tour', amount: 500000, type: 'onetime', description: 'Tambahan Study Tour' },
+            buku_kenangan: { name: 'Buku Kenangan', amount: 50000, type: 'onetime', description: 'Buku Kenangan Sekolah' },
+            kartu_pelajar: { name: 'Kartu Pelajar', amount: 50000, type: 'onetime', description: 'Kartu Identitas Pelajar' },
+            
+            // Additional components
+            perpustakaan: { name: 'Perpustakaan', amount: 100000, type: 'onetime', description: 'Biaya Keanggotaan Perpustakaan' },
+            komputer: { name: 'Lab Komputer', amount: 150000, type: 'yearly', description: 'Biaya Penggunaan Lab Komputer' },
+            olahraga: { name: 'Peralatan Olahraga', amount: 80000, type: 'yearly', description: 'Biaya Peralatan Olahraga' },
+            wisuda: { name: 'Wisuda', amount: 250000, type: 'onetime', description: 'Biaya Wisuda Kelulusan' },
+            sertifikat: { name: 'Sertifikat', amount: 25000, type: 'onetime', description: 'Biaya Pembuatan Sertifikat' }
+        };
+
+        // Google Sheets Configuration
+        const GOOGLE_SHEETS_CONFIG = {
+            SHEET_ID: '17MDc804lNUm_XwUM6hPj6Ui8T-JVtpxJCLq4XovVs0A',
+            SHEET_NAME: 'Sheet7',
+            API_KEY: 'AIzaSyCAJWvsjw92iebZM54KZivepTpl_Q2gk70'
+        };
+
+        // Cache for storing fetched data
+        let studentsData = {};
+        let isDataLoaded = false;
+
+        // Function to fetch data from Google Sheets
+        async function fetchStudentData() {
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEETS_CONFIG.SHEET_ID}/values/${GOOGLE_SHEETS_CONFIG.SHEET_NAME}?key=${GOOGLE_SHEETS_CONFIG.API_KEY}`;
+                
+                showLoadingMessage('Mengambil data dari database...');
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.values && data.values.length > 1) {
+                    parseSheetData(data.values);
+                    isDataLoaded = true;
+                    hideLoadingMessage();
+                } else {
+                    throw new Error('Data tidak ditemukan dalam spreadsheet');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                showErrorMessage('Gagal mengambil data dari database. Menggunakan data contoh.');
+                loadSampleData();
+                isDataLoaded = true;
+            }
+        }
+
+        // Function to parse Google Sheets data
+        function parseSheetData(rows) {
+            const headers = rows[0];
+            studentsData = {};
+            
+            // Expected column structure:
+            // NISN, Nama, Kelas, [Payment columns for each component and period]
+            
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                if (row.length < 3) continue; // Skip incomplete rows
+                
+                const nisn = row[0]?.toString().trim();
+                const name = row[1]?.toString().trim();
+                const currentClass = row[2]?.toString().trim();
+                
+                if (!nisn || !name || !currentClass) continue;
+                
+                // Initialize student data structure
+                studentsData[nisn] = {
+                    name: name,
+                    currentClass: currentClass,
+                    nisn: nisn,
+                    payments: initializePaymentStructure()
+                };
+                
+                // Parse payment data from remaining columns
+                parsePaymentData(studentsData[nisn], row, headers);
+            }
+        }
+
+        // Function to initialize payment structure
+        function initializePaymentStructure() {
+            return {
+                // Monthly payments
+                spp: {
+                    class10: new Array(12).fill(false),
+                    class11: new Array(12).fill(false),
+                    class12: new Array(12).fill(false)
+                },
+                tabungan: {
+                    class10: new Array(12).fill(false),
+                    class11: new Array(12).fill(false),
+                    class12: new Array(12).fill(false)
+                },
+                // Semester payments
+                lks: { class10: [false, false], class11: [false, false], class12: [false, false] },
+                ulangan: { class10: [false, false], class11: [false, false], class12: [false, false] },
+                ujian: { class10: [false, false], class11: [false, false], class12: [false, false] },
+                praktikum: { class10: [false, false], class11: [false, false], class12: [false, false] },
+                // Yearly payments
+                infaq: { class10: [false], class11: [false], class12: [false] },
+                seragam: { class10: [false], class11: [false], class12: [false] },
+                kegiatan: { class10: [false], class11: [false], class12: [false] },
+                asuransi: { class10: [false], class11: [false], class12: [false] },
+                komputer: { class10: [false], class11: [false], class12: [false] },
+                olahraga: { class10: [false], class11: [false], class12: [false] },
+                // One-time payments
+                siswa_baru: [false],
+                perpisahan: [false],
+                study_tour: [false],
+                buku_kenangan: [false],
+                kartu_pelajar: [false],
+                perpustakaan: [false],
+                wisuda: [false],
+                sertifikat: [false]
+            };
+        }
+
+        // Function to parse payment data from spreadsheet row
+        function parsePaymentData(student, row, headers) {
+            // This function maps spreadsheet columns to payment data
+            // Adjust column mapping based on your actual spreadsheet structure
+            
+            for (let colIndex = 3; colIndex < row.length && colIndex < headers.length; colIndex++) {
+                const header = headers[colIndex]?.toString().toLowerCase().trim();
+                const value = row[colIndex]?.toString().toLowerCase().trim();
+                const isPaid = value === 'lunas' || value === 'paid' || value === '1' || value === 'true';
+                
+                // Map headers to payment components and periods
+                mapHeaderToPayment(student, header, isPaid);
+            }
+        }
+
+        // Function to map spreadsheet headers to payment structure
+        function mapHeaderToPayment(student, header, isPaid) {
+            // Example mapping - adjust based on your spreadsheet column names
+            const headerMappings = {
+                // SPP mappings
+                'spp_10_jul': () => student.payments.spp.class10[0] = isPaid,
+                'spp_10_agu': () => student.payments.spp.class10[1] = isPaid,
+                'spp_10_sep': () => student.payments.spp.class10[2] = isPaid,
+                'spp_10_okt': () => student.payments.spp.class10[3] = isPaid,
+                'spp_10_nov': () => student.payments.spp.class10[4] = isPaid,
+                'spp_10_des': () => student.payments.spp.class10[5] = isPaid,
+                'spp_10_jan': () => student.payments.spp.class10[6] = isPaid,
+                'spp_10_feb': () => student.payments.spp.class10[7] = isPaid,
+                'spp_10_mar': () => student.payments.spp.class10[8] = isPaid,
+                'spp_10_apr': () => student.payments.spp.class10[9] = isPaid,
+                'spp_10_mei': () => student.payments.spp.class10[10] = isPaid,
+                'spp_10_jun': () => student.payments.spp.class10[11] = isPaid,
+                
+                // Add more mappings for other components...
+                'siswa_baru': () => student.payments.siswa_baru[0] = isPaid,
+                'kartu_pelajar': () => student.payments.kartu_pelajar[0] = isPaid,
+                'lks_10_sem1': () => student.payments.lks.class10[0] = isPaid,
+                'lks_10_sem2': () => student.payments.lks.class10[1] = isPaid,
+                'infaq_10': () => student.payments.infaq.class10[0] = isPaid,
+                
+                // Generic pattern matching for common formats
+                default: (header) => {
+                    // Try to parse common patterns like "component_class_period"
+                    const parts = header.split('_');
+                    if (parts.length >= 2) {
+                        const component = parts[0];
+                        const classNum = parts[1];
+                        const period = parts[2];
+                        
+                        // Map to appropriate payment structure
+                        if (student.payments[component] && classNum) {
+                            const classKey = `class${classNum}`;
+                            if (student.payments[component][classKey]) {
+                                // Handle different period types
+                                if (period && !isNaN(parseInt(period))) {
+                                    const index = parseInt(period) - 1;
+                                    if (index >= 0 && index < student.payments[component][classKey].length) {
+                                        student.payments[component][classKey][index] = isPaid;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            
+            // Execute mapping function if exists, otherwise try default pattern
+            if (headerMappings[header]) {
+                headerMappings[header]();
+            } else {
+                headerMappings.default(header);
+            }
+        }
+
+        // Function to load sample data as fallback
+        function loadSampleData() {
+            studentsData = {
+                '1234567890': {
+                    name: 'Ahmad Rizki Pratama',
+                    currentClass: 'XII IPA 1',
+                    nisn: '1234567890',
+                    payments: {
+                        spp: {
+                            class10: [true, true, true, true, true, true, true, true, true, true, true, true],
+                            class11: [true, true, true, true, true, true, true, true, true, true, true, false],
+                            class12: [true, true, true, true, false, false, false, false, false, false, false, false]
+                        },
+                        tabungan: {
+                            class10: [true, true, true, true, true, true, true, true, true, true, true, true],
+                            class11: [false, false, false, false, false, false, false, false, false, false, false, false],
+                            class12: [false, false, false, false, false, false, false, false, false, false, false, false]
+                        },
+                        lks: { class10: [true, true], class11: [true, true], class12: [true, false] },
+                        ulangan: { class10: [true, true], class11: [true, true], class12: [true, false] },
+                        ujian: { class10: [true, true], class11: [true, true], class12: [true, false] },
+                        praktikum: { class10: [true, true], class11: [true, true], class12: [true, false] },
+                        infaq: { class10: [true], class11: [true], class12: [false] },
+                        seragam: { class10: [true], class11: [true], class12: [false] },
+                        kegiatan: { class10: [true], class11: [true], class12: [false] },
+                        asuransi: { class10: [true], class11: [true], class12: [false] },
+                        komputer: { class10: [true], class11: [true], class12: [false] },
+                        olahraga: { class10: [true], class11: [true], class12: [false] },
+                        siswa_baru: [true],
+                        perpisahan: [false],
+                        study_tour: [true],
+                        buku_kenangan: [false],
+                        kartu_pelajar: [true],
+                        perpustakaan: [true],
+                        wisuda: [false],
+                        sertifikat: [false]
+                    }
+                }
+            };
+        }
+
+        // Loading and error message functions
+        function showLoadingMessage(message) {
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loadingMessage';
+            loadingDiv.className = 'fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50';
+            loadingDiv.innerHTML = `
+                <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p class="text-gray-700">${message}</p>
+                </div>
+            `;
+            document.body.appendChild(loadingDiv);
+        }
+
+        function hideLoadingMessage() {
+            const loadingDiv = document.getElementById('loadingMessage');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+
+        function showErrorMessage(message) {
+            hideLoadingMessage();
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-50';
+            errorDiv.innerHTML = `
+                <span class="block sm:inline">${message}</span>
+                <button onclick="this.parentElement.remove()" class="float-right ml-4 text-red-500 hover:text-red-700">×</button>
+            `;
+            document.body.appendChild(errorDiv);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (errorDiv.parentElement) {
+                    errorDiv.remove();
+                }
+            }, 5000);
+        }
+
+        const months = ['Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni'];
+        const semesters = ['Semester 1', 'Semester 2'];
+
+        async function searchStudent() {
+            const nisn = document.getElementById('nisnInput').value.trim();
+            
+            if (nisn.length !== 10) {
+                alert('NISN harus 10 digit');
+                return;
+            }
+
+            // Load data from Google Sheets if not already loaded
+            if (!isDataLoaded) {
+                await fetchStudentData();
+            }
+
+            const student = studentsData[nisn];
+            
+            if (student) {
+                displayStudentInfo(student);
+                displayPaymentStatus(student);
+                document.getElementById('noDataMessage').classList.add('hidden');
+            } else {
+                hideStudentInfo();
+                document.getElementById('noDataMessage').classList.remove('hidden');
+            }
+        }
+
+        function displayStudentInfo(student) {
+            document.getElementById('studentName').textContent = student.name;
+            document.getElementById('studentClass').textContent = student.currentClass;
+            document.getElementById('studentNISN').textContent = `NISN: ${student.nisn}`;
+            document.getElementById('studentInfo').classList.remove('hidden');
+        }
+
+        function displayPaymentStatus(student) {
+            // Current month status (assuming we're in April - month index 9)
+            const currentMonth = 9; // April (0-based index)
+            displayCurrentMonthStatus(student, currentMonth);
+            
+            // Display all payment categories
+            displayAllPayments(student);
+            
+            // Calculate and display summary
+            displaySummary(student.payments);
+            
+            document.getElementById('paymentStatus').classList.remove('hidden');
+        }
+
+        function displayCurrentMonthStatus(student, currentMonth) {
+            const container = document.getElementById('currentMonthStatus');
+            const currentClass = student.currentClass.includes('XII') ? 'class12' : 
+                               student.currentClass.includes('XI') ? 'class11' : 'class10';
+            
+            const sppPaid = student.payments.spp[currentClass][currentMonth];
+            const tabunganPaid = currentClass === 'class10' ? student.payments.tabungan[currentClass][currentMonth] : null;
+            const monthName = months[currentMonth];
+            
+            let currentMonthCards = `
+                <div class="p-4 rounded-lg ${sppPaid ? 'bg-green-50 border-2 border-green-200' : 'bg-red-50 border-2 border-red-200'}">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h5 class="font-semibold ${sppPaid ? 'text-green-800' : 'text-red-800'}">${monthName} 2024</h5>
+                            <p class="text-sm ${sppPaid ? 'text-green-600' : 'text-red-600'}">SPP Bulanan</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-lg font-bold ${sppPaid ? 'text-green-600' : 'text-red-600'}">
+                                ${sppPaid ? '✓ LUNAS' : '✗ BELUM BAYAR'}
+                            </div>
+                            <div class="text-sm text-gray-600">Rp ${paymentComponents.spp.amount.toLocaleString('id-ID')}</div>
+                        </div>
+                    </div>
+                </div>`;
+            
+            if (tabunganPaid !== null) {
+                currentMonthCards += `
+                <div class="p-4 rounded-lg ${tabunganPaid ? 'bg-green-50 border-2 border-green-200' : 'bg-red-50 border-2 border-red-200'}">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h5 class="font-semibold ${tabunganPaid ? 'text-green-800' : 'text-red-800'}">${monthName} 2024</h5>
+                            <p class="text-sm ${tabunganPaid ? 'text-green-600' : 'text-red-600'}">Tabungan Siswa</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-lg font-bold ${tabunganPaid ? 'text-green-600' : 'text-red-600'}">
+                                ${tabunganPaid ? '✓ LUNAS' : '✗ BELUM BAYAR'}
+                            </div>
+                            <div class="text-sm text-gray-600">Rp ${paymentComponents.tabungan.amount.toLocaleString('id-ID')}</div>
+                        </div>
+                    </div>
+                </div>`;
+            } else {
+                currentMonthCards += `
+                <div class="p-4 bg-blue-50 rounded-lg border-2 border-blue-200">
+                    <div class="text-center">
+                        <h5 class="font-semibold text-blue-800 mb-2">Informasi Pembayaran</h5>
+                        <p class="text-sm text-blue-600">Pembayaran dapat dilakukan melalui:</p>
+                        <p class="text-xs text-blue-500 mt-1">Bank BNI • ATM • Mobile Banking • Teller</p>
+                    </div>
+                </div>`;
+            }
+            
+            container.innerHTML = currentMonthCards;
+        }
+
+        function displayAllPayments(student) {
+            displayMonthlyPayments(student);
+            displaySemesterPayments(student);
+            displayYearlyPayments(student);
+            displayOnetimePayments(student);
+        }
+
+        function displayMonthlyPayments(student) {
+            // SPP Payments
+            displayMonthlyPaymentType(student, 'spp', 'class10MonthlyPayments', 'class10');
+            displayMonthlyPaymentType(student, 'spp', 'class11MonthlyPayments', 'class11');
+            displayMonthlyPaymentType(student, 'spp', 'class12MonthlyPayments', 'class12');
+            
+            // Tabungan Payments (only class 10)
+            displayMonthlyPaymentType(student, 'tabungan', 'class10MonthlyPayments', 'class10', true);
+        }
+
+        function displayMonthlyPaymentType(student, paymentType, containerId, classType, append = false) {
+            const container = document.getElementById(containerId);
+            const payments = student.payments[paymentType][classType];
+            const component = paymentComponents[paymentType];
+            
+            if (!append) container.innerHTML = '';
+            
+            if (paymentType === 'tabungan' && classType !== 'class10') return;
+            
+            const paymentDiv = document.createElement('div');
+            paymentDiv.className = 'mb-4';
+            
+            let paymentHTML = `
+                <h6 class="font-medium text-gray-700 mb-3 flex items-center">
+                    <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                    ${component.name} - ${component.description}
+                </h6>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+            `;
+            
+            payments.forEach((isPaid, index) => {
+                paymentHTML += `
+                    <div class="p-2 rounded text-center text-xs font-medium ${
+                        isPaid 
+                            ? 'bg-green-100 text-green-800 border border-green-200' 
+                            : 'bg-red-100 text-red-800 border border-red-200'
+                    }">
+                        <div class="font-semibold">${months[index]}</div>
+                        <div class="text-xs mt-1">${isPaid ? '✓' : '✗'}</div>
+                        <div class="text-xs text-gray-600">Rp ${(component.amount / 1000)}k</div>
+                    </div>
+                `;
+            });
+            
+            paymentHTML += '</div>';
+            paymentDiv.innerHTML = paymentHTML;
+            container.appendChild(paymentDiv);
+        }
+
+        function displaySemesterPayments(student) {
+            const container = document.getElementById('allSemesterPayments');
+            container.innerHTML = '';
+            
+            const semesterComponents = ['lks', 'ulangan', 'ujian', 'praktikum'];
+            const classes = ['class10', 'class11', 'class12'];
+            const classNames = ['Kelas 10 (2022/2023)', 'Kelas 11 (2023/2024)', 'Kelas 12 (2024/2025)'];
+            const classColors = ['blue', 'green', 'purple'];
+            
+            classes.forEach((classType, classIndex) => {
+                const classDiv = document.createElement('div');
+                classDiv.className = 'mb-6';
+                
+                let classHTML = `
+                    <h5 class="text-lg font-semibold text-${classColors[classIndex]}-600 mb-4 flex items-center">
+                        <span class="bg-${classColors[classIndex]}-100 px-3 py-1 rounded-full mr-3">${classNames[classIndex]}</span>
+                    </h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                `;
+                
+                semesterComponents.forEach(componentKey => {
+                    const component = paymentComponents[componentKey];
+                    const payments = student.payments[componentKey][classType];
+                    
+                    classHTML += `
+                        <div class="p-4 border rounded-lg">
+                            <h6 class="font-medium text-gray-700 mb-2">${component.name}</h6>
+                            <p class="text-sm text-gray-600 mb-3">${component.description}</p>
+                            <div class="flex gap-2">
+                    `;
+                    
+                    payments.forEach((isPaid, semIndex) => {
+                        classHTML += `
+                            <div class="flex-1 p-2 rounded text-center text-sm ${
+                                isPaid 
+                                    ? 'bg-green-100 text-green-800 border border-green-200' 
+                                    : 'bg-red-100 text-red-800 border border-red-200'
+                            }">
+                                <div class="font-medium">${semesters[semIndex]}</div>
+                                <div class="text-xs mt-1">${isPaid ? '✓ Lunas' : '✗ Belum'}</div>
+                                <div class="text-xs text-gray-600">Rp ${(component.amount / 1000)}k</div>
+                            </div>
+                        `;
+                    });
+                    
+                    classHTML += '</div></div>';
+                });
+                
+                classHTML += '</div>';
+                classDiv.innerHTML = classHTML;
+                container.appendChild(classDiv);
+            });
+        }
+
+        function displayYearlyPayments(student) {
+            const container = document.getElementById('allYearlyPayments');
+            container.innerHTML = '';
+            
+            const yearlyComponents = ['infaq', 'seragam', 'kegiatan', 'asuransi', 'komputer', 'olahraga'];
+            const classes = ['class10', 'class11', 'class12'];
+            const classNames = ['Kelas 10 (2022/2023)', 'Kelas 11 (2023/2024)', 'Kelas 12 (2024/2025)'];
+            const classColors = ['blue', 'green', 'purple'];
+            
+            classes.forEach((classType, classIndex) => {
+                const classDiv = document.createElement('div');
+                classDiv.className = 'mb-6';
+                
+                let classHTML = `
+                    <h5 class="text-lg font-semibold text-${classColors[classIndex]}-600 mb-4 flex items-center">
+                        <span class="bg-${classColors[classIndex]}-100 px-3 py-1 rounded-full mr-3">${classNames[classIndex]}</span>
+                    </h5>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                `;
+                
+                yearlyComponents.forEach(componentKey => {
+                    const component = paymentComponents[componentKey];
+                    const isPaid = student.payments[componentKey][classType][0];
+                    
+                    classHTML += `
+                        <div class="p-4 border rounded-lg ${
+                            isPaid 
+                                ? 'bg-green-50 border-green-200' 
+                                : 'bg-red-50 border-red-200'
+                        }">
+                            <h6 class="font-medium ${isPaid ? 'text-green-800' : 'text-red-800'} mb-2">${component.name}</h6>
+                            <p class="text-sm text-gray-600 mb-3">${component.description}</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-bold ${isPaid ? 'text-green-600' : 'text-red-600'}">
+                                    ${isPaid ? '✓ LUNAS' : '✗ BELUM BAYAR'}
+                                </span>
+                                <span class="text-sm text-gray-600">Rp ${component.amount.toLocaleString('id-ID')}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                classHTML += '</div>';
+                classDiv.innerHTML = classHTML;
+                container.appendChild(classDiv);
+            });
+        }
+
+        function displayOnetimePayments(student) {
+            const container = document.getElementById('allOnetimePayments');
+            container.innerHTML = '';
+            
+            const onetimeComponents = ['siswa_baru', 'perpisahan', 'study_tour', 'buku_kenangan', 'kartu_pelajar', 'perpustakaan', 'wisuda', 'sertifikat'];
+            
+            onetimeComponents.forEach(componentKey => {
+                const component = paymentComponents[componentKey];
+                const isPaid = student.payments[componentKey][0];
+                
+                const paymentDiv = document.createElement('div');
+                paymentDiv.className = `p-4 border rounded-lg ${
+                    isPaid 
+                        ? 'bg-green-50 border-green-200' 
+                        : 'bg-red-50 border-red-200'
+                }`;
+                
+                paymentDiv.innerHTML = `
+                    <h6 class="font-medium ${isPaid ? 'text-green-800' : 'text-red-800'} mb-2">${component.name}</h6>
+                    <p class="text-sm text-gray-600 mb-3">${component.description}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-lg font-bold ${isPaid ? 'text-green-600' : 'text-red-600'}">
+                            ${isPaid ? '✓ LUNAS' : '✗ BELUM BAYAR'}
+                        </span>
+                        <span class="text-sm text-gray-600">Rp ${component.amount.toLocaleString('id-ID')}</span>
+                    </div>
+                `;
+                
+                container.appendChild(paymentDiv);
+            });
+        }
+
+        function showPaymentCategory(category) {
+            // Hide all categories
+            document.querySelectorAll('.payment-category').forEach(el => el.classList.add('hidden'));
+            
+            // Show selected category
+            document.getElementById(category + 'Payments').classList.remove('hidden');
+            
+            // Update tab styles
+            document.querySelectorAll('[id$="Tab"]').forEach(tab => {
+                tab.className = 'px-4 py-2 font-medium text-gray-600 hover:text-blue-600 rounded-t-lg';
+            });
+            
+            document.getElementById(category + 'Tab').className = 'px-4 py-2 font-medium text-blue-600 border-b-2 border-blue-600 bg-blue-50 rounded-t-lg';
+        }
+
+        function displaySummary(payments) {
+            let totalPaid = 0;
+            let totalUnpaid = 0;
+            let totalAmount = 0;
+            
+            // Count monthly payments
+            Object.keys(paymentComponents).forEach(componentKey => {
+                const component = paymentComponents[componentKey];
+                
+                if (component.type === 'monthly' || component.type === 'monthly_class10') {
+                    ['class10', 'class11', 'class12'].forEach(classType => {
+                        if (payments[componentKey] && payments[componentKey][classType]) {
+                            payments[componentKey][classType].forEach(isPaid => {
+                                if (component.type === 'monthly_class10' && classType !== 'class10') return;
+                                if (isPaid) totalPaid++;
+                                else {
+                                    totalUnpaid++;
+                                    totalAmount += component.amount;
+                                }
+                            });
+                        }
+                    });
+                } else if (component.type === 'semester') {
+                    ['class10', 'class11', 'class12'].forEach(classType => {
+                        if (payments[componentKey] && payments[componentKey][classType]) {
+                            payments[componentKey][classType].forEach(isPaid => {
+                                if (isPaid) totalPaid++;
+                                else {
+                                    totalUnpaid++;
+                                    totalAmount += component.amount;
+                                }
+                            });
+                        }
+                    });
+                } else if (component.type === 'yearly') {
+                    ['class10', 'class11', 'class12'].forEach(classType => {
+                        if (payments[componentKey] && payments[componentKey][classType]) {
+                            const isPaid = payments[componentKey][classType][0];
+                            if (isPaid) totalPaid++;
+                            else {
+                                totalUnpaid++;
+                                totalAmount += component.amount;
+                            }
+                        }
+                    });
+                } else if (component.type === 'onetime') {
+                    if (payments[componentKey]) {
+                        const isPaid = payments[componentKey][0];
+                        if (isPaid) totalPaid++;
+                        else {
+                            totalUnpaid++;
+                            totalAmount += component.amount;
+                        }
+                    }
+                }
+            });
+            
+            document.getElementById('totalPaid').textContent = totalPaid;
+            document.getElementById('totalUnpaid').textContent = totalUnpaid;
+            document.getElementById('totalAmount').textContent = `Rp ${totalAmount.toLocaleString('id-ID')}`;
+        }
+
+        function hideStudentInfo() {
+            document.getElementById('studentInfo').classList.add('hidden');
+            document.getElementById('paymentStatus').classList.add('hidden');
+        }
+
+        // Function to refresh data from Google Sheets
+        async function refreshData() {
+            isDataLoaded = false;
+            studentsData = {};
+            await fetchStudentData();
+            
+            // Show success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'fixed top-4 right-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded z-50';
+            successDiv.innerHTML = `
+                <span class="block sm:inline">Data berhasil diperbarui dari Google Sheets!</span>
+                <button onclick="this.parentElement.remove()" class="float-right ml-4 text-green-500 hover:text-green-700">×</button>
+            `;
+            document.body.appendChild(successDiv);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                if (successDiv.parentElement) {
+                    successDiv.remove();
+                }
+            }, 3000);
+        }
+
+        // Initialize data loading on page load
+        window.addEventListener('load', function() {
+            fetchStudentData();
+        });
+
+        // Allow Enter key to search
+        document.getElementById('nisnInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchStudent();
+            }
+        });
+
+        // Format NISN input to numbers only
+        document.getElementById('nisnInput').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97b95c09c03989bc',t:'MTc1NzI4MTE3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
