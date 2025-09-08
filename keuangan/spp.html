@@ -28,7 +28,7 @@
                 </div>
                 <div class="text-right">
                     <p class="text-sm text-gray-600">Tahun Ajaran</p>
-                    <p class="font-semibold text-gray-800">2025/2026</p>
+                    <p class="font-semibold text-gray-800" id="academicYear">2025/2026</p>
                 </div>
             </div>
         </div>
@@ -955,6 +955,59 @@
         const months = ['Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni'];
         const semesters = ['Semester 1', 'Semester 2'];
 
+        // Function to get current academic month (0-based index)
+        function getCurrentAcademicMonth() {
+            const now = new Date();
+            const currentMonth = now.getMonth(); // 0-based (0=January, 11=December)
+            const currentYear = now.getFullYear();
+            
+            // Academic year starts in July
+            // July 2024 - June 2025 = Academic Year 2024/2025
+            // July 2025 - June 2026 = Academic Year 2025/2026
+            
+            if (currentMonth >= 6) { // July (6) to December (11)
+                return currentMonth - 6; // July=0, August=1, ..., December=5
+            } else { // January (0) to June (5)
+                return currentMonth + 6; // January=6, February=7, ..., June=11
+            }
+        }
+
+        // Function to get current academic year string
+        function getCurrentAcademicYear() {
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            
+            if (currentMonth >= 6) { // July to December
+                return `${currentYear}/${currentYear + 1}`;
+            } else { // January to June
+                return `${currentYear - 1}/${currentYear}`;
+            }
+        }
+
+        // Function to get display year for a specific academic month
+        function getCurrentDisplayYear(academicMonth) {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+            
+            // Academic months 0-5 (July-December) use current calendar year
+            // Academic months 6-11 (January-June) use next calendar year
+            if (academicMonth <= 5) { // July to December
+                if (currentMonth >= 6) { // We're in July-December period
+                    return currentYear;
+                } else { // We're in January-June period, so last year's July-December
+                    return currentYear - 1;
+                }
+            } else { // January to June
+                if (currentMonth >= 6) { // We're in July-December period, so next year's January-June
+                    return currentYear + 1;
+                } else { // We're in January-June period
+                    return currentYear;
+                }
+            }
+        }
+
         async function searchStudent() {
             const nisn = document.getElementById('nisnInput').value.trim();
             
@@ -987,7 +1040,7 @@
         }
 
         function displayPaymentStatus(student) {
-            const currentMonth = 0; // Juli (0-based index) - start of academic year 2025/2026
+            const currentMonth = getCurrentAcademicMonth(); // Get actual current month
             displayCurrentMonthStatus(student, currentMonth);
             displayCompletePaymentHistory(student);
             displayPricingChanges();
@@ -1007,11 +1060,12 @@
             
             // SPP Card with class-specific pricing
             const sppTargetAmount = getPaymentAmount('spp', currentClass);
+            const currentYear = getCurrentDisplayYear(currentMonth);
             let currentMonthCards = `
                 <div class="p-4 rounded-lg ${sppPayment.paid ? 'bg-green-50 border-2 border-green-200' : 'bg-red-50 border-2 border-red-200'}">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h5 class="font-semibold ${sppPayment.paid ? 'text-green-800' : 'text-red-800'}">${monthName} 2025</h5>
+                            <h5 class="font-semibold ${sppPayment.paid ? 'text-green-800' : 'text-red-800'}">${monthName} ${currentYear}</h5>
                             <p class="text-sm ${sppPayment.paid ? 'text-green-600' : 'text-red-600'}">SPP Bulanan (${currentClass.replace('class', 'Kelas ')})</p>
                         </div>
                         <div class="text-right">
@@ -1036,7 +1090,7 @@
                 <div class="p-4 rounded-lg ${tabunganPayment.paid ? 'bg-green-50 border-2 border-green-200' : 'bg-red-50 border-2 border-red-200'}">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h5 class="font-semibold ${tabunganPayment.paid ? 'text-green-800' : 'text-red-800'}">${monthName} 2025</h5>
+                            <h5 class="font-semibold ${tabunganPayment.paid ? 'text-green-800' : 'text-red-800'}">${monthName} ${currentYear}</h5>
                             <p class="text-sm ${tabunganPayment.paid ? 'text-green-600' : 'text-red-600'}">Tabungan Siswa (Khusus Kelas 10)</p>
                         </div>
                         <div class="text-right">
@@ -1649,6 +1703,8 @@
         }
 
         window.addEventListener('load', function() {
+            // Set current academic year in header
+            document.getElementById('academicYear').textContent = getCurrentAcademicYear();
             fetchStudentData();
         });
 
@@ -1662,5 +1718,5 @@
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97bdc6afc5f09ccb',t:'MTc1NzMyNzQ4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97bdccd2b77c9ccb',t:'MTc1NzMyNzczNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
