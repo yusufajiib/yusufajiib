@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Informasi SPP - SMA Negeri 1</title>
+    <title>Administrasi Madrasah - MA NU Hasyim Asy'ari 1 Kudus</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -171,16 +171,20 @@
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center">
-                        <span class="text-2xl font-bold text-blue-600">🏫</span>
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center p-1">
+                        <img src="https://lh3.googleusercontent.com/d/1yTmDUC2K2-cSm_EWq1hQt_rtJ1xa4Odc" 
+                             alt="Logo MA NU Hasyim Asy'ari 1 Kudus" 
+                             class="w-full h-full object-contain rounded-full"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <span class="text-2xl font-bold text-blue-600 hidden">🏫</span>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold">Sistem Informasi SPP</h1>
-                        <p class="text-blue-100">SMA Negeri 1 Jakarta</p>
+                        <h1 class="text-2xl font-bold">MA NU Hasyim Asy'ari 1 Kudus</h1>
+                        <p class="text-blue-100">Jl. Mayor H. Basuno No. 17 Sunggingan Kota Kudus 59317</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <p class="text-sm text-blue-100">Tahun Ajaran 2024/2025</p>
+                    <p class="text-sm text-blue-100" id="currentAcademicYear">Tahun Ajaran 2024/2025</p>
                     <p class="text-xs text-blue-200">Periode 3 Tahun (Kelas 10-12)</p>
                 </div>
             </div>
@@ -191,8 +195,8 @@
         <!-- Search Section -->
         <div class="search-card rounded-xl card-shadow p-8 mb-8 floating">
             <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-800 mb-2">Cek Status Pembayaran SPP</h2>
-                <p class="text-gray-600">Masukkan NISN untuk melihat informasi pembayaran Anda</p>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Administrasi Madrasah</h2>
+                <p class="text-gray-600">Masukkan NISN untuk melihat informasi</p>
             </div>
             
             <div class="max-w-md mx-auto">
@@ -334,9 +338,9 @@
                     
                     <h4 class="font-semibold text-gray-700 mb-2">Cara Pembayaran:</h4>
                     <ul class="text-sm text-gray-600 space-y-1">
-                        <li>• Bank BNI: 1234567890 (SMA Negeri 1)</li>
-                        <li>• Bank Mandiri: 0987654321 (SMA Negeri 1)</li>
-                        <li>• Kantin Sekolah (Tunai)</li>
+                        <li>• Bank BNI: 1234567890 (MA NU Hasyim Asy'ari 1)</li>
+                        <li>• Bank Mandiri: 0987654321 (MA NU Hasyim Asy'ari 1)</li>
+                        <li>• Kantin Madrasah (Tunai)</li>
                         <li>• Transfer Digital (QRIS)</li>
                     </ul>
                 </div>
@@ -384,9 +388,30 @@
         let currentStudent = null;
         let currentYear = 10;
 
+        // Get current academic year
+        function getCurrentAcademicYear() {
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
+            
+            // Academic year starts in July (month 7)
+            // If current month is January-June, we're still in the previous academic year
+            if (currentMonth >= 7) {
+                // July-December: current year / next year
+                return `${currentYear}/${currentYear + 1}`;
+            } else {
+                // January-June: previous year / current year
+                return `${currentYear - 1}/${currentYear}`;
+            }
+        }
+
         // Initialize the application
         async function initializeApp() {
             try {
+                // Update academic year display
+                const academicYear = getCurrentAcademicYear();
+                document.getElementById('currentAcademicYear').textContent = `Tahun Ajaran ${academicYear}`;
+                
                 await loadSheetsData();
                 updateConnectionStatus('✅ Terhubung ke database', 'text-green-600');
             } catch (error) {
@@ -662,7 +687,36 @@
                 // Yearly payments
                 Object.keys(FEE_STRUCTURE.yearly).forEach(feeType => {
                     const expectedAmount = FEE_STRUCTURE.yearly[feeType];
-                    const paymentStatus = checkPaymentStatus(headers, row, feeType, grade, expectedAmount);
+                    
+                    // For yearly payments, try exact patterns from spreadsheet
+                    let searchPatterns = [
+                        feeType,
+                        `infaq_naik_kelas_${grade}`,
+                        `${feeType}_${grade}`,
+                        `infaq_${grade}`,
+                        `kenaikan_${grade}`,
+                        `infaq_kenaikan_${grade}`,
+                        `infaqkenaikan_${grade}`,
+                        `infaq_kelas_${grade}`,
+                        `kenaikan_kelas_${grade}`,
+                        `infaq_naik_kelas`,
+                        `naik_kelas_${grade}`
+                    ];
+                    
+                    let paymentStatus = null;
+                    
+                    // Try each pattern until we find a match
+                    for (const pattern of searchPatterns) {
+                        paymentStatus = checkPaymentStatus(headers, row, pattern, grade, expectedAmount);
+                        if (paymentStatus.paid || paymentStatus.amount > 0) {
+                            break;
+                        }
+                    }
+                    
+                    // If no specific pattern found, use the original
+                    if (!paymentStatus || (paymentStatus.amount === 0 && !paymentStatus.paid)) {
+                        paymentStatus = checkPaymentStatus(headers, row, feeType, grade, expectedAmount);
+                    }
                     
                     gradePayments[feeType] = {
                         paid: paymentStatus.paid,
@@ -685,24 +739,107 @@
         
         // Helper function to check payment status with installment support
         function checkPaymentStatus(headers, row, feeType, grade, expectedAmount) {
+            // Special handling for exact column patterns - PRIORITY SEARCH
+            const exactPatternMappings = {
+                'Ulangan Harian Semester 1': [
+                    `uhb_${grade}_sem1`, `UHB_${grade}_sem1`, `uhb_${grade}_semester1`, 
+                    `uhb_sem1_${grade}`, `UHB_sem1_${grade}`, `uhb_s1_${grade}`, 
+                    `uhb${grade}sem1`, `UHB${grade}sem1`, `uhb_1_${grade}`, 
+                    `uhb1_${grade}`, `UHB1_${grade}`, `uh_${grade}_sem1`,
+                    `uh_sem1_${grade}`, `ulangan_harian_${grade}_sem1`,
+                    `ulangan_harian_sem1_${grade}`, `harian_${grade}_sem1`,
+                    `harian_sem1_${grade}`, `uhb_${grade}_1`, `UHB_${grade}_1`
+                ],
+                'Ulangan Harian Semester 2': [
+                    `uhb_${grade}_sem2`, `UHB_${grade}_sem2`, `uhb_${grade}_semester2`, 
+                    `uhb_sem2_${grade}`, `UHB_sem2_${grade}`, `uhb_s2_${grade}`, 
+                    `uhb${grade}sem2`, `UHB${grade}sem2`, `uhb_2_${grade}`, 
+                    `uhb2_${grade}`, `UHB2_${grade}`, `uh_${grade}_sem2`,
+                    `uh_sem2_${grade}`, `ulangan_harian_${grade}_sem2`,
+                    `ulangan_harian_sem2_${grade}`, `harian_${grade}_sem2`,
+                    `harian_sem2_${grade}`, `uhb_${grade}_2`, `UHB_${grade}_2`
+                ],
+                'Ulangan Semester Semester 1': [
+                    `pas_${grade}_sem1`, `PAS_${grade}_sem1`, `pas_${grade}_semester1`, 
+                    `pas_sem1_${grade}`, `PAS_sem1_${grade}`, `pas_s1_${grade}`, 
+                    `pas${grade}sem1`, `PAS${grade}sem1`, `pas_1_${grade}`, 
+                    `pas1_${grade}`, `PAS1_${grade}`, `uas_${grade}_sem1`,
+                    `uas_sem1_${grade}`, `ulangan_semester_${grade}_sem1`,
+                    `ulangan_semester_sem1_${grade}`, `semester_${grade}_sem1`,
+                    `semester_sem1_${grade}`, `pas_${grade}_1`, `PAS_${grade}_1`,
+                    `uas_${grade}_1`, `UAS_${grade}_1`, `us_${grade}_sem1`,
+                    `us_sem1_${grade}`, `us_${grade}_1`, `US_${grade}_1`
+                ],
+                'Ulangan Semester Semester 2': [
+                    `pas_${grade}_sem2`, `PAS_${grade}_sem2`, `pas_${grade}_semester2`, 
+                    `pas_sem2_${grade}`, `PAS_sem2_${grade}`, `pas_s2_${grade}`, 
+                    `pas${grade}sem2`, `PAS${grade}sem2`, `pas_2_${grade}`, 
+                    `pas2_${grade}`, `PAS2_${grade}`, `uas_${grade}_sem2`,
+                    `uas_sem2_${grade}`, `ulangan_semester_${grade}_sem2`,
+                    `ulangan_semester_sem2_${grade}`, `semester_${grade}_sem2`,
+                    `semester_sem2_${grade}`, `pas_${grade}_2`, `PAS_${grade}_2`,
+                    `uas_${grade}_2`, `UAS_${grade}_2`, `us_${grade}_sem2`,
+                    `us_sem2_${grade}`, `us_${grade}_2`, `US_${grade}_2`
+                ],
+                'Buku LKS Semester 1': [
+                    `lks_${grade}_sem1`, `LKS_${grade}_sem1`, `lks_${grade}_semester1`, 
+                    `bukuLKS_${grade}_sem1`, `buku_lks_${grade}_sem1`, `lks${grade}sem1`, 
+                    `LKS${grade}sem1`, `lks_${grade}_s1`, `LKS_${grade}_S1`,
+                    `lks${grade}s1`, `LKS${grade}S1`, `lks_sem1_${grade}`, `LKS_sem1_${grade}`,
+                    `lks_s1_${grade}`, `LKS_S1_${grade}`, `lks_semester1_${grade}`,
+                    `LKS_semester1_${grade}`, `bukuLKS_sem1_${grade}`, `bukuLKS_s1_${grade}`
+                ],
+                'Buku LKS Semester 2': [
+                    `lks_${grade}_sem2`, `LKS_${grade}_sem2`, `lks_${grade}_semester2`, 
+                    `bukuLKS_${grade}_sem2`, `buku_lks_${grade}_sem2`, `lks${grade}sem2`, 
+                    `LKS${grade}sem2`, `lks_${grade}_s2`, `LKS_${grade}_S2`,
+                    `lks${grade}s2`, `LKS${grade}S2`, `lks_sem2_${grade}`, `LKS_sem2_${grade}`,
+                    `lks_s2_${grade}`, `LKS_S2_${grade}`, `lks_semester2_${grade}`,
+                    `LKS_semester2_${grade}`, `bukuLKS_sem2_${grade}`, `bukuLKS_s2_${grade}`
+                ]
+            };
+            
+            // Check for exact pattern matches first
+            if (exactPatternMappings[feeType]) {
+                for (const pattern of exactPatternMappings[feeType]) {
+                    const exactIndex = headers.findIndex(h => h.toLowerCase() === pattern.toLowerCase());
+                    if (exactIndex !== -1) {
+                        console.log(`✅ Found exact column for "${feeType}": "${headers[exactIndex]}" (pattern: ${pattern})`);
+                        const result = processPaymentValue(row[exactIndex], expectedAmount, feeType);
+                        if (result.amount > 0 || result.paid) {
+                            console.log(`💰 ${feeType} payment detected: ${result.amount}, Expected: ${expectedAmount}, Status: ${result.status.toUpperCase()}`);
+                            return result;
+                        }
+                    }
+                }
+                console.log(`🔍 No exact pattern found for "${feeType}", trying patterns:`, exactPatternMappings[feeType]);
+            }
+            
             // Create comprehensive list of possible column name patterns
             const feeTypeClean = feeType.replace(/\s+/g, '').toLowerCase();
             const feeTypeUnderscore = feeType.replace(/\s+/g, '_').toLowerCase();
             
-            // Map common fee type abbreviations
+            // Map common fee type abbreviations with exact column patterns from spreadsheet
             const feeTypeMap = {
                 'spp': ['spp'],
                 'tabungan': ['tabungan', 'tab'],
-                'buku_lks': ['lks', 'buku_lks', 'bukulks'],
-                'ulangan_harian': ['uhb', 'ulangan_harian', 'ulanganharian', 'uh'],
-                'ulangan_semester': ['pas', 'ulangan_semester', 'ulangansemester', 'us', 'uas'],
-                'infaq_kenaikan_kelas': ['infaq', 'infaq_kenaikan', 'infaqkenaikan'],
+                'buku_lks': ['lks', 'buku_lks', 'bukulks', 'bukuLKS'],
+                'ulangan_harian': ['uhb', 'ulangan_harian', 'ulanganharian', 'uh', 'UHB', 'ulangan', 'harian'],
+                'ulangan_semester': ['pas', 'ulangan_semester', 'ulangansemester', 'us', 'uas', 'PAS', 'UAS', 'semester'],
+                'infaq_kenaikan_kelas': ['infaq_naik_kelas', 'infaq_kenaikan', 'infaqkenaikan', 'kenaikan', 'infaq_kelas'],
                 'perpisahan': ['perpisahan'],
                 'study_tour': ['studytour', 'study_tour', 'tour'],
                 'buku_kenangan': ['buku_kenangan', 'bukukenangan'],
                 'ujian_akhir': ['ujian_akhir', 'ujianakhir', 'ua'],
                 'siswa_baru_putra': ['siswa_baru', 'siswabaru', 'putra'],
-                'siswi_baru_putri': ['siswi_baru', 'siswibaruputri', 'putri']
+                'siswi_baru_putri': ['siswa_baru_putri', 'siswi_baru_putri', 'siswi_baru', 'siswibaruputri', 'putri'],
+                // Exact semester-specific mappings from spreadsheet
+                'buku_lks_semester_1': ['lks_sem1', 'lks_semester1', 'lks_s1', 'bukuLKS_sem1', 'lks1'],
+                'buku_lks_semester_2': ['lks_sem2', 'lks_semester2', 'lks_s2', 'bukuLKS_sem2', 'lks2'],
+                'ulangan_harian_semester_1': ['uhb_10_sem1', 'uhb_11_sem1', 'uhb_12_sem1', 'uhb_sem1', 'uhb_semester1', 'uhb_s1', 'UHB_sem1', 'uhb1', 'ulangan_harian_1', 'uh_sem1', 'uh1'],
+                'ulangan_harian_semester_2': ['uhb_10_sem2', 'uhb_11_sem2', 'uhb_12_sem2', 'uhb_sem2', 'uhb_semester2', 'uhb_s2', 'UHB_sem2', 'uhb2', 'ulangan_harian_2', 'uh_sem2', 'uh2'],
+                'ulangan_semester_semester_1': ['pas_10_sem1', 'pas_11_sem1', 'pas_12_sem1', 'pas_sem1', 'pas_semester1', 'pas_s1', 'PAS_sem1', 'uas_sem1', 'pas1', 'uas1', 'ulangan_semester_1', 'us_sem1', 'us1'],
+                'ulangan_semester_semester_2': ['pas_10_sem2', 'pas_11_sem2', 'pas_12_sem2', 'pas_sem2', 'pas_semester2', 'pas_s2', 'PAS_sem2', 'uas_sem2', 'pas2', 'uas2', 'ulangan_semester_2', 'us_sem2', 'us2']
             };
             
             // Get possible fee type variations
@@ -714,6 +851,24 @@
                     feeVariations = feeVariations.concat(variations);
                 }
             });
+            
+            // Special handling for Siswi Baru Putri - add more specific patterns
+            if (feeType === 'Siswi Baru Putri') {
+                feeVariations = feeVariations.concat([
+                    'siswa_baru_putri',
+                    'siswi_baru_putri', 
+                    'siswibaruputri',
+                    'siswa_baru',
+                    'siswi_baru',
+                    'putri',
+                    'baru_putri',
+                    'siswa_putri',
+                    'siswi_putri',
+                    'new_student_female',
+                    'student_baru_putri'
+                ]);
+                console.log(`🔍 Enhanced Siswi Baru Putri patterns:`, feeVariations);
+            }
             
             // Remove duplicates
             feeVariations = [...new Set(feeVariations)];
@@ -751,17 +906,88 @@
                     }
                 }
                 
-                // With semester patterns
+                // With semester patterns - Enhanced
                 if (feeType.includes('Semester')) {
                     const semesterMatch = feeType.match(/(Semester\s*[12])/);
                     if (semesterMatch) {
-                        const semester = semesterMatch[1].replace(/\s+/g, '').toLowerCase();
+                        const semesterNum = semesterMatch[1].replace(/\D/g, ''); // Extract just the number
+                        const semester = `semester${semesterNum}`;
+                        const sem = `sem${semesterNum}`;
+                        const s = `s${semesterNum}`;
                         const baseType = feeType.replace(semesterMatch[1], '').trim().replace(/\s+/g, '').toLowerCase();
                         
+                        // Standard patterns
                         possibleColumnNames.push(`${baseType}_${semester}_${grade}`);
                         possibleColumnNames.push(`${baseType}_${grade}_${semester}`);
                         possibleColumnNames.push(`${semester}_${baseType}_${grade}`);
                         possibleColumnNames.push(`${grade}_${baseType}_${semester}`);
+                        
+                        // Short patterns
+                        possibleColumnNames.push(`${baseType}_${sem}_${grade}`);
+                        possibleColumnNames.push(`${baseType}_${grade}_${sem}`);
+                        possibleColumnNames.push(`${sem}_${baseType}_${grade}`);
+                        possibleColumnNames.push(`${grade}_${baseType}_${sem}`);
+                        
+                        // Very short patterns
+                        possibleColumnNames.push(`${baseType}_${s}_${grade}`);
+                        possibleColumnNames.push(`${baseType}_${grade}_${s}`);
+                        possibleColumnNames.push(`${s}_${baseType}_${grade}`);
+                        possibleColumnNames.push(`${grade}_${baseType}_${s}`);
+                        
+                        // Without grade patterns
+                        possibleColumnNames.push(`${baseType}_${semester}`);
+                        possibleColumnNames.push(`${baseType}_${sem}`);
+                        possibleColumnNames.push(`${baseType}_${s}`);
+                        possibleColumnNames.push(`${semester}_${baseType}`);
+                        possibleColumnNames.push(`${sem}_${baseType}`);
+                        possibleColumnNames.push(`${s}_${baseType}`);
+                        
+                        // Common abbreviations for semester payments
+                        if (baseType.includes('lks') || baseType.includes('buku')) {
+                            possibleColumnNames.push(`lks_${sem}_${grade}`);
+                            possibleColumnNames.push(`lks_${s}_${grade}`);
+                            possibleColumnNames.push(`bukuLKS_${sem}_${grade}`);
+                            possibleColumnNames.push(`bukuLKS_${s}_${grade}`);
+                            possibleColumnNames.push(`lks${semesterNum}_${grade}`);
+                            possibleColumnNames.push(`LKS${semesterNum}_${grade}`);
+                        }
+                        
+                        if (baseType.includes('uhb') || baseType.includes('ulangan_harian') || baseType.includes('ulangan') || baseType.includes('harian')) {
+                            possibleColumnNames.push(`uhb_${sem}_${grade}`);
+                            possibleColumnNames.push(`uhb_${s}_${grade}`);
+                            possibleColumnNames.push(`UHB_${sem}_${grade}`);
+                            possibleColumnNames.push(`UHB_${s}_${grade}`);
+                            possibleColumnNames.push(`uhb${semesterNum}_${grade}`);
+                            possibleColumnNames.push(`UHB${semesterNum}_${grade}`);
+                            possibleColumnNames.push(`uh_${sem}_${grade}`);
+                            possibleColumnNames.push(`uh_${s}_${grade}`);
+                            possibleColumnNames.push(`uh${semesterNum}_${grade}`);
+                            possibleColumnNames.push(`ulangan_harian_${semesterNum}_${grade}`);
+                            possibleColumnNames.push(`ulangan${semesterNum}_${grade}`);
+                            possibleColumnNames.push(`harian_${sem}_${grade}`);
+                            possibleColumnNames.push(`harian${semesterNum}_${grade}`);
+                        }
+                        
+                        if (baseType.includes('pas') || baseType.includes('ulangan_semester') || baseType.includes('semester')) {
+                            possibleColumnNames.push(`pas_${sem}_${grade}`);
+                            possibleColumnNames.push(`pas_${s}_${grade}`);
+                            possibleColumnNames.push(`PAS_${sem}_${grade}`);
+                            possibleColumnNames.push(`PAS_${s}_${grade}`);
+                            possibleColumnNames.push(`uas_${sem}_${grade}`);
+                            possibleColumnNames.push(`uas_${s}_${grade}`);
+                            possibleColumnNames.push(`UAS_${sem}_${grade}`);
+                            possibleColumnNames.push(`UAS_${s}_${grade}`);
+                            possibleColumnNames.push(`pas${semesterNum}_${grade}`);
+                            possibleColumnNames.push(`PAS${semesterNum}_${grade}`);
+                            possibleColumnNames.push(`uas${semesterNum}_${grade}`);
+                            possibleColumnNames.push(`UAS${semesterNum}_${grade}`);
+                            possibleColumnNames.push(`us_${sem}_${grade}`);
+                            possibleColumnNames.push(`us_${s}_${grade}`);
+                            possibleColumnNames.push(`us${semesterNum}_${grade}`);
+                            possibleColumnNames.push(`US${semesterNum}_${grade}`);
+                            possibleColumnNames.push(`ulangan_semester_${semesterNum}_${grade}`);
+                            possibleColumnNames.push(`semester_${semesterNum}_${grade}`);
+                        }
                     }
                 }
             });
@@ -770,48 +996,368 @@
             let matchedColumnName = '';
             let bestMatchScore = 0;
             
-            // Try to find the best matching column with scoring
-            headers.forEach((header, index) => {
-                const headerNormalized = header.toLowerCase().replace(/[\s_-]/g, '');
+            // Special priority search for Siswi Baru Putri
+            if (feeType === 'Siswi Baru Putri') {
+                console.log(`🎯 Priority search for Siswi Baru Putri - checking all headers:`, headers);
                 
-                possibleColumnNames.forEach(columnName => {
-                    const columnNormalized = columnName.toLowerCase().replace(/[\s_-]/g, '');
+                // High priority patterns for Siswi Baru Putri
+                const priorityPatterns = [
+                    'siswa_baru_putri',
+                    'siswi_baru_putri',
+                    'siswibaruputri',
+                    'siswa_baru',
+                    'siswi_baru',
+                    'putri'
+                ];
+                
+                for (const pattern of priorityPatterns) {
+                    const foundIndex = headers.findIndex(header => {
+                        const headerNorm = header.toLowerCase().replace(/[\s_-]/g, '');
+                        const patternNorm = pattern.toLowerCase().replace(/[\s_-]/g, '');
+                        return headerNorm.includes(patternNorm) || patternNorm.includes(headerNorm);
+                    });
                     
-                    let score = 0;
-                    
-                    // Exact match gets highest score
-                    if (headerNormalized === columnNormalized) {
-                        score = 100;
+                    if (foundIndex !== -1) {
+                        paymentColumnIndex = foundIndex;
+                        matchedColumnName = headers[foundIndex];
+                        bestMatchScore = 100;
+                        console.log(`✅ Found Siswi Baru Putri column with priority pattern "${pattern}": "${matchedColumnName}"`);
+                        break;
                     }
-                    // Contains match
-                    else if (headerNormalized.includes(columnNormalized)) {
-                        score = 80;
-                    }
-                    // Reverse contains match
-                    else if (columnNormalized.includes(headerNormalized)) {
-                        score = 70;
-                    }
-                    // Partial match with grade
-                    else if (headerNormalized.includes(grade.toString()) && 
-                             (headerNormalized.includes(feeTypeClean) || 
-                              feeVariations.some(v => headerNormalized.includes(v)))) {
-                        score = 60;
-                    }
-                    
-                    if (score > bestMatchScore) {
-                        bestMatchScore = score;
-                        paymentColumnIndex = index;
-                        matchedColumnName = header;
-                    }
-                });
-            });
+                }
+            }
             
-            // Debug logging
+            // If no priority match found, use regular scoring
+            if (paymentColumnIndex === -1) {
+                headers.forEach((header, index) => {
+                    const headerNormalized = header.toLowerCase().replace(/[\s_-]/g, '');
+                    
+                    possibleColumnNames.forEach(columnName => {
+                        const columnNormalized = columnName.toLowerCase().replace(/[\s_-]/g, '');
+                        
+                        let score = 0;
+                        
+                        // Exact match gets highest score
+                        if (headerNormalized === columnNormalized) {
+                            score = 100;
+                        }
+                        // Contains match
+                        else if (headerNormalized.includes(columnNormalized)) {
+                            score = 80;
+                        }
+                        // Reverse contains match
+                        else if (columnNormalized.includes(headerNormalized)) {
+                            score = 70;
+                        }
+                        // Partial match with grade
+                        else if (headerNormalized.includes(grade.toString()) && 
+                                 (headerNormalized.includes(feeTypeClean) || 
+                                  feeVariations.some(v => headerNormalized.includes(v)))) {
+                            score = 60;
+                        }
+                        
+                        if (score > bestMatchScore) {
+                            bestMatchScore = score;
+                            paymentColumnIndex = index;
+                            matchedColumnName = header;
+                        }
+                    });
+                });
+            }
+            
+            // Debug logging with enhanced semester info
             if (paymentColumnIndex !== -1) {
-                console.log(`Found column for ${feeType} grade ${grade}: "${matchedColumnName}" (score: ${bestMatchScore})`);
+                console.log(`✅ Found column for ${feeType} grade ${grade}: "${matchedColumnName}" (score: ${bestMatchScore})`);
+                if (row[paymentColumnIndex]) {
+                    console.log(`   Value: "${row[paymentColumnIndex]}"`);
+                    
+                    // Special logging for Siswi Baru Putri
+                    if (feeType === 'Siswi Baru Putri') {
+                        console.log(`   🔍 Siswi Baru Putri - Raw value: "${row[paymentColumnIndex]}", Expected: ${expectedAmount}`);
+                    }
+                }
             } else {
-                console.log(`No column found for ${feeType} grade ${grade}. Tried variations:`, feeVariations);
-                console.log('Available headers:', headers);
+                console.log(`❌ No column found for ${feeType} grade ${grade}`);
+                console.log(`   Tried ${possibleColumnNames.length} variations:`, possibleColumnNames.slice(0, 15), '...');
+                
+                if (feeType.includes('Semester')) {
+                    console.log(`   🔍 Semester payment - checking headers for patterns:`, 
+                        headers.filter(h => h.toLowerCase().includes('lks') || 
+                                           h.toLowerCase().includes('uhb') || 
+                                           h.toLowerCase().includes('pas') || 
+                                           h.toLowerCase().includes('uas') ||
+                                           h.toLowerCase().includes('sem') ||
+                                           h.toLowerCase().includes('semester') ||
+                                           h.toLowerCase().includes('ulangan') ||
+                                           h.toLowerCase().includes('harian')));
+                }
+                
+                if (feeType.includes('Infaq') || feeType.includes('Kenaikan')) {
+                    console.log(`   🔍 Yearly payment - checking headers for patterns:`, 
+                        headers.filter(h => h.toLowerCase().includes('infaq') || 
+                                           h.toLowerCase().includes('kenaikan') ||
+                                           h.toLowerCase().includes('kelas')));
+                }
+                
+                // Show all headers for debugging
+                if (feeType.includes('Ulangan Harian') || feeType.includes('Ulangan Semester') || feeType.includes('Infaq') || feeType.includes('Siswi Baru') || feeType.includes('Siswa Baru')) {
+                    console.log(`   📋 All available headers:`, headers);
+                }
+            }
+            
+            // If no exact match found, try fallback patterns for semester payments
+            if (paymentColumnIndex === -1 && feeType.includes('Semester')) {
+                console.log(`🔄 Trying fallback patterns for semester payment: ${feeType}`);
+                
+                // Extract semester number and base type
+                const semesterMatch = feeType.match(/(Semester\s*[12])/);
+                if (semesterMatch) {
+                    const semesterNum = semesterMatch[1].replace(/\D/g, '');
+                    const baseType = feeType.replace(semesterMatch[1], '').trim();
+                    
+                    // Try common fallback patterns
+                    const fallbackPatterns = [];
+                    
+                    if (baseType.toLowerCase().includes('lks')) {
+                        fallbackPatterns.push(`LKS_S${semesterNum}_${grade}`, `lks_s${semesterNum}_${grade}`, `LKS${semesterNum}_${grade}`);
+                    }
+                    if (baseType.toLowerCase().includes('ulangan harian')) {
+                        fallbackPatterns.push(
+                            `UHB_S${semesterNum}_${grade}`, `uhb_s${semesterNum}_${grade}`, `UHB${semesterNum}_${grade}`,
+                            `uhb_${grade}_s${semesterNum}`, `UHB_${grade}_S${semesterNum}`,
+                            `uhb${grade}s${semesterNum}`, `UHB${grade}S${semesterNum}`,
+                            `uh_${grade}_s${semesterNum}`, `UH_${grade}_S${semesterNum}`,
+                            `ulangan_harian_${grade}_s${semesterNum}`, `harian_${grade}_s${semesterNum}`
+                        );
+                    }
+                    if (baseType.toLowerCase().includes('ulangan semester')) {
+                        fallbackPatterns.push(`PAS_S${semesterNum}_${grade}`, `pas_s${semesterNum}_${grade}`, `UAS_S${semesterNum}_${grade}`, `PAS${semesterNum}_${grade}`);
+                    }
+                    
+                    // Try each fallback pattern
+                    for (const pattern of fallbackPatterns) {
+                        const fallbackIndex = headers.findIndex(h => 
+                            h.toLowerCase().replace(/[\s_-]/g, '') === pattern.toLowerCase().replace(/[\s_-]/g, '')
+                        );
+                        
+                        if (fallbackIndex !== -1) {
+                            console.log(`✅ Found fallback column: "${headers[fallbackIndex]}" for pattern: ${pattern}`);
+                            paymentColumnIndex = fallbackIndex;
+                            matchedColumnName = headers[fallbackIndex];
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Special flexible search for Ulangan Harian if still not found
+            if (paymentColumnIndex === -1 && feeType.includes('Ulangan Harian')) {
+                console.log(`🔍 Flexible search for Ulangan Harian: ${feeType}`);
+                
+                // Extract semester info
+                const semesterMatch = feeType.match(/Semester\s*([12])/);
+                const semesterNum = semesterMatch ? semesterMatch[1] : '1';
+                
+                // Try very flexible patterns
+                const flexiblePatterns = [
+                    // Common abbreviations with various formats
+                    `uhb`, `UHB`, `uh`, `UH`,
+                    // With semester indicators
+                    `uhb${semesterNum}`, `UHB${semesterNum}`, `uh${semesterNum}`, `UH${semesterNum}`,
+                    // With grade
+                    `uhb${grade}`, `UHB${grade}`, `uh${grade}`, `UH${grade}`,
+                    // Combined
+                    `uhb${grade}${semesterNum}`, `UHB${grade}${semesterNum}`,
+                    // Full words
+                    `ulangan_harian`, `ulanganharian`, `harian`
+                ];
+                
+                // Search for columns containing these patterns
+                for (const pattern of flexiblePatterns) {
+                    const flexIndex = headers.findIndex(h => {
+                        const headerLower = h.toLowerCase().replace(/[\s_-]/g, '');
+                        const patternLower = pattern.toLowerCase();
+                        
+                        // Check if header contains the pattern and semester info
+                        return headerLower.includes(patternLower) && 
+                               (headerLower.includes(`sem${semesterNum}`) || 
+                                headerLower.includes(`semester${semesterNum}`) ||
+                                headerLower.includes(`s${semesterNum}`) ||
+                                headerLower.includes(semesterNum));
+                    });
+                    
+                    if (flexIndex !== -1) {
+                        console.log(`✅ Found flexible match for Ulangan Harian: "${headers[flexIndex]}" (pattern: ${pattern})`);
+                        paymentColumnIndex = flexIndex;
+                        matchedColumnName = headers[flexIndex];
+                        bestMatchScore = 90;
+                        break;
+                    }
+                }
+                
+                // If still not found, try even more flexible search
+                if (paymentColumnIndex === -1) {
+                    console.log(`🔍 Ultra-flexible search for any UHB/Ulangan Harian column...`);
+                    
+                    const ultraFlexIndex = headers.findIndex(h => {
+                        const headerLower = h.toLowerCase();
+                        return (headerLower.includes('uhb') || 
+                                headerLower.includes('ulangan') && headerLower.includes('harian') ||
+                                headerLower.includes('uh') && !headerLower.includes('buku')) &&
+                               (headerLower.includes(grade.toString()) || 
+                                headerLower.includes(`sem${semesterNum}`) ||
+                                headerLower.includes(semesterNum));
+                    });
+                    
+                    if (ultraFlexIndex !== -1) {
+                        console.log(`✅ Found ultra-flexible match: "${headers[ultraFlexIndex]}"`);
+                        paymentColumnIndex = ultraFlexIndex;
+                        matchedColumnName = headers[ultraFlexIndex];
+                        bestMatchScore = 80;
+                    }
+                }
+            }
+            
+            // Special flexible search for Buku LKS if still not found
+            if (paymentColumnIndex === -1 && feeType.includes('Buku LKS')) {
+                console.log(`🔍 Flexible search for Buku LKS: ${feeType}`);
+                
+                // Extract semester info
+                const semesterMatch = feeType.match(/Semester\s*([12])/);
+                const semesterNum = semesterMatch ? semesterMatch[1] : '1';
+                
+                // Try very flexible patterns for LKS
+                const flexiblePatterns = [
+                    // Common abbreviations with various formats
+                    `lks`, `LKS`, `buku_lks`, `bukuLKS`, `buku`,
+                    // With semester indicators
+                    `lks${semesterNum}`, `LKS${semesterNum}`,
+                    // With grade
+                    `lks${grade}`, `LKS${grade}`,
+                    // Combined
+                    `lks${grade}${semesterNum}`, `LKS${grade}${semesterNum}`,
+                    // Full words
+                    `buku_lks`, `bukuLKS`, `lks_buku`
+                ];
+                
+                // Search for columns containing these patterns
+                for (const pattern of flexiblePatterns) {
+                    const flexIndex = headers.findIndex(h => {
+                        const headerLower = h.toLowerCase().replace(/[\s_-]/g, '');
+                        const patternLower = pattern.toLowerCase();
+                        
+                        // Check if header contains the pattern and semester info
+                        return headerLower.includes(patternLower) && 
+                               (headerLower.includes(`sem${semesterNum}`) || 
+                                headerLower.includes(`semester${semesterNum}`) ||
+                                headerLower.includes(`s${semesterNum}`) ||
+                                headerLower.includes(semesterNum)) &&
+                               (headerLower.includes(grade.toString()) || 
+                                headerLower.includes(`${grade}`));
+                    });
+                    
+                    if (flexIndex !== -1) {
+                        console.log(`✅ Found flexible match for Buku LKS: "${headers[flexIndex]}" (pattern: ${pattern})`);
+                        paymentColumnIndex = flexIndex;
+                        matchedColumnName = headers[flexIndex];
+                        bestMatchScore = 90;
+                        break;
+                    }
+                }
+                
+                // If still not found, try even more flexible search
+                if (paymentColumnIndex === -1) {
+                    console.log(`🔍 Ultra-flexible search for any LKS column...`);
+                    
+                    const ultraFlexIndex = headers.findIndex(h => {
+                        const headerLower = h.toLowerCase();
+                        return headerLower.includes('lks') &&
+                               (headerLower.includes(grade.toString()) || 
+                                headerLower.includes(`sem${semesterNum}`) ||
+                                headerLower.includes(semesterNum));
+                    });
+                    
+                    if (ultraFlexIndex !== -1) {
+                        console.log(`✅ Found ultra-flexible match for Buku LKS: "${headers[ultraFlexIndex]}"`);
+                        paymentColumnIndex = ultraFlexIndex;
+                        matchedColumnName = headers[ultraFlexIndex];
+                        bestMatchScore = 80;
+                    }
+                }
+            }
+            
+            // Special flexible search for Ulangan Semester if still not found
+            if (paymentColumnIndex === -1 && feeType.includes('Ulangan Semester')) {
+                console.log(`🔍 Flexible search for Ulangan Semester: ${feeType}`);
+                
+                // Extract semester info
+                const semesterMatch = feeType.match(/Semester\s*([12])/);
+                const semesterNum = semesterMatch ? semesterMatch[1] : '1';
+                
+                // Try very flexible patterns for PAS/UAS
+                const flexiblePatterns = [
+                    // Common abbreviations with various formats
+                    `pas`, `PAS`, `uas`, `UAS`, `us`, `US`,
+                    // With semester indicators
+                    `pas${semesterNum}`, `PAS${semesterNum}`, `uas${semesterNum}`, `UAS${semesterNum}`,
+                    `us${semesterNum}`, `US${semesterNum}`,
+                    // With grade
+                    `pas${grade}`, `PAS${grade}`, `uas${grade}`, `UAS${grade}`,
+                    `us${grade}`, `US${grade}`,
+                    // Combined
+                    `pas${grade}${semesterNum}`, `PAS${grade}${semesterNum}`,
+                    `uas${grade}${semesterNum}`, `UAS${grade}${semesterNum}`,
+                    `us${grade}${semesterNum}`, `US${grade}${semesterNum}`,
+                    // Full words
+                    `ulangan_semester`, `ulangansemester`, `semester`
+                ];
+                
+                // Search for columns containing these patterns
+                for (const pattern of flexiblePatterns) {
+                    const flexIndex = headers.findIndex(h => {
+                        const headerLower = h.toLowerCase().replace(/[\s_-]/g, '');
+                        const patternLower = pattern.toLowerCase();
+                        
+                        // Check if header contains the pattern and semester info
+                        return headerLower.includes(patternLower) && 
+                               (headerLower.includes(`sem${semesterNum}`) || 
+                                headerLower.includes(`semester${semesterNum}`) ||
+                                headerLower.includes(`s${semesterNum}`) ||
+                                headerLower.includes(semesterNum));
+                    });
+                    
+                    if (flexIndex !== -1) {
+                        console.log(`✅ Found flexible match for Ulangan Semester: "${headers[flexIndex]}" (pattern: ${pattern})`);
+                        paymentColumnIndex = flexIndex;
+                        matchedColumnName = headers[flexIndex];
+                        bestMatchScore = 90;
+                        break;
+                    }
+                }
+                
+                // If still not found, try even more flexible search
+                if (paymentColumnIndex === -1) {
+                    console.log(`🔍 Ultra-flexible search for any PAS/UAS/Ulangan Semester column...`);
+                    
+                    const ultraFlexIndex = headers.findIndex(h => {
+                        const headerLower = h.toLowerCase();
+                        return (headerLower.includes('pas') || 
+                                headerLower.includes('uas') ||
+                                headerLower.includes('us') ||
+                                (headerLower.includes('ulangan') && headerLower.includes('semester')) ||
+                                (headerLower.includes('semester') && !headerLower.includes('lks') && !headerLower.includes('harian'))) &&
+                               (headerLower.includes(grade.toString()) || 
+                                headerLower.includes(`sem${semesterNum}`) ||
+                                headerLower.includes(semesterNum));
+                    });
+                    
+                    if (ultraFlexIndex !== -1) {
+                        console.log(`✅ Found ultra-flexible match for Ulangan Semester: "${headers[ultraFlexIndex]}"`);
+                        paymentColumnIndex = ultraFlexIndex;
+                        matchedColumnName = headers[ultraFlexIndex];
+                        bestMatchScore = 80;
+                    }
+                }
             }
             
             if (paymentColumnIndex === -1 || !row[paymentColumnIndex]) {
@@ -849,6 +1395,16 @@
                 const remaining = Math.max(0, expectedAmount - numericValue);
                 const isPaid = remaining === 0;
                 
+                // Special logging for Siswi Baru Putri
+                if (feeType === 'Siswi Baru Putri') {
+                    console.log(`💰 Siswi Baru Putri payment detected:`);
+                    console.log(`   - Raw value: "${cellValue}"`);
+                    console.log(`   - Parsed amount: ${numericValue}`);
+                    console.log(`   - Expected: ${expectedAmount}`);
+                    console.log(`   - Remaining: ${remaining}`);
+                    console.log(`   - Status: ${isPaid ? 'LUNAS' : 'CICILAN'}`);
+                }
+                
                 return {
                     paid: isPaid,
                     amount: numericValue,
@@ -866,6 +1422,103 @@
             if (cellValue.includes(',') || cellValue.includes(';')) {
                 const separator = cellValue.includes(',') ? ',' : ';';
                 const installmentStrings = cellValue.split(separator);
+                const installments = [];
+                let totalPaid = 0;
+                
+                installmentStrings.forEach((installmentStr, index) => {
+                    const cleanStr = installmentStr.trim();
+                    const amount = parseFloat(cleanStr.replace(/[^\d.-]/g, ''));
+                    
+                    if (!isNaN(amount) && amount > 0) {
+                        totalPaid += amount;
+                        installments.push({
+                            amount: amount,
+                            date: new Date().toISOString().split('T')[0],
+                            note: `Cicilan ${index + 1}`
+                        });
+                    }
+                });
+                
+                if (installments.length > 0) {
+                    const remaining = Math.max(0, expectedAmount - totalPaid);
+                    const isPaid = remaining === 0;
+                    
+                    return {
+                        paid: isPaid,
+                        amount: totalPaid,
+                        remaining: remaining,
+                        status: isPaid ? 'paid' : 'installment',
+                        installments: installments
+                    };
+                }
+            }
+            
+            // Default: unpaid
+            return {
+                paid: false,
+                amount: 0,
+                remaining: expectedAmount,
+                status: 'unpaid',
+                installments: []
+            };
+        }
+        
+        // Helper function to process payment values
+        function processPaymentValue(cellValue, expectedAmount, feeType) {
+            if (!cellValue) {
+                return {
+                    paid: false,
+                    amount: 0,
+                    remaining: expectedAmount,
+                    status: 'unpaid',
+                    installments: []
+                };
+            }
+            
+            const cellValueStr = cellValue.toString().trim();
+            
+            // Check for full payment indicators
+            if (cellValueStr.toLowerCase() === 'lunas' || 
+                cellValueStr.toLowerCase() === 'paid' || 
+                cellValueStr === '1') {
+                return {
+                    paid: true,
+                    amount: expectedAmount,
+                    remaining: 0,
+                    status: 'paid',
+                    installments: [{
+                        amount: expectedAmount,
+                        date: new Date().toISOString().split('T')[0],
+                        note: 'Lunas'
+                    }]
+                };
+            }
+            
+            // Check for numeric values (installments)
+            const numericValue = parseFloat(cellValueStr.replace(/[^\d.-]/g, ''));
+            if (!isNaN(numericValue) && numericValue > 0) {
+                const remaining = Math.max(0, expectedAmount - numericValue);
+                const isPaid = remaining === 0;
+                
+                console.log(`💰 ${feeType} payment: ${numericValue}, Expected: ${expectedAmount}, Status: ${isPaid ? 'LUNAS' : 'CICILAN'}`);
+                
+                return {
+                    paid: isPaid,
+                    amount: numericValue,
+                    remaining: remaining,
+                    status: isPaid ? 'paid' : 'installment',
+                    installments: [{
+                        amount: numericValue,
+                        date: new Date().toISOString().split('T')[0],
+                        note: isPaid ? 'Lunas' : 'Cicilan'
+                    }]
+                };
+            }
+            
+            // Check for multiple installments (comma or semicolon separated)
+            if (cellValueStr.includes(',') || cellValueStr.includes(';')) {
+                const separator = cellValueStr.includes(',') ? ',' : ';';
+                const installmentStrings = cellValueStr.split(separator);
                 const installments = [];
                 let totalPaid = 0;
                 
@@ -1327,5 +1980,5 @@
         // Initialize the application when page loads
         window.addEventListener('load', initializeApp);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97bfc0b0a0e899a9',t:'MTc1NzM0ODIxMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97c008bb47b899a9',t:'MTc1NzM1MTE2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
