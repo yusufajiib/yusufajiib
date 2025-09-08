@@ -311,31 +311,47 @@
             }
         }
 
-        // Function to initialize payment structure (Updated)
+        // Function to initialize payment structure (Updated with amounts)
         function initializePaymentStructure() {
             return {
-                // Monthly payments
+                // Monthly payments - store {paid: boolean, amount: number}
                 spp: {
-                    class10: new Array(12).fill(false),
-                    class11: new Array(12).fill(false),
-                    class12: new Array(12).fill(false)
+                    class10: new Array(12).fill().map(() => ({paid: false, amount: 0})),
+                    class11: new Array(12).fill().map(() => ({paid: false, amount: 0})),
+                    class12: new Array(12).fill().map(() => ({paid: false, amount: 0}))
                 },
                 tabungan: {
-                    class10: new Array(12).fill(false),
-                    class11: new Array(12).fill(false),
-                    class12: new Array(12).fill(false)
+                    class10: new Array(12).fill().map(() => ({paid: false, amount: 0})),
+                    class11: new Array(12).fill().map(() => ({paid: false, amount: 0})),
+                    class12: new Array(12).fill().map(() => ({paid: false, amount: 0}))
                 },
-                // Semester payments (removed praktikum)
-                lks: { class10: [false, false], class11: [false, false], class12: [false, false] },
-                ulangan: { class10: [false, false], class11: [false, false], class12: [false, false] },
-                ujian: { class10: [false, false], class11: [false, false], class12: [false, false] },
-                // Yearly payments (only infaq remains)
-                infaq: { class10: [false], class11: [false], class12: [false] },
-                // One-time payments (reduced to 4 components)
-                siswa_baru: [false],
-                perpisahan: [false],
-                study_tour: [false],
-                buku_kenangan: [false]
+                // Semester payments
+                lks: { 
+                    class10: [{paid: false, amount: 0}, {paid: false, amount: 0}], 
+                    class11: [{paid: false, amount: 0}, {paid: false, amount: 0}], 
+                    class12: [{paid: false, amount: 0}, {paid: false, amount: 0}] 
+                },
+                ulangan: { 
+                    class10: [{paid: false, amount: 0}, {paid: false, amount: 0}], 
+                    class11: [{paid: false, amount: 0}, {paid: false, amount: 0}], 
+                    class12: [{paid: false, amount: 0}, {paid: false, amount: 0}] 
+                },
+                ujian: { 
+                    class10: [{paid: false, amount: 0}, {paid: false, amount: 0}], 
+                    class11: [{paid: false, amount: 0}, {paid: false, amount: 0}], 
+                    class12: [{paid: false, amount: 0}, {paid: false, amount: 0}] 
+                },
+                // Yearly payments
+                infaq: { 
+                    class10: [{paid: false, amount: 0}], 
+                    class11: [{paid: false, amount: 0}], 
+                    class12: [{paid: false, amount: 0}] 
+                },
+                // One-time payments
+                siswa_baru: [{paid: false, amount: 0}],
+                perpisahan: [{paid: false, amount: 0}],
+                study_tour: [{paid: false, amount: 0}],
+                buku_kenangan: [{paid: false, amount: 0}]
             };
         }
 
@@ -417,34 +433,40 @@
                     const headerLower = header.toString().toLowerCase().trim();
                     const value = row[colIndex]?.toString().trim();
                     
-                    // Enhanced payment detection - check for various payment indicators
+                    // Parse payment amount - handle cicilan (partial payments)
+                    let paidAmount = 0;
                     let isPaid = false;
                     
                     if (value) {
                         const valueLower = value.toLowerCase();
-                        const numericValue = parseFloat(value.replace(/[^\d.]/g, ''));
                         
-                        // Check for text indicators
-                        if (valueLower === 'lunas' || valueLower === 'paid' || valueLower === '1' || valueLower === 'true' || valueLower === 'sudah' || valueLower === 'bayar') {
+                        // Check for text indicators (full payment)
+                        if (valueLower === 'lunas' || valueLower === 'paid' || valueLower === 'sudah' || valueLower === 'bayar') {
                             isPaid = true;
+                            paidAmount = null; // Full payment, amount will be determined by component
                         }
-                        // Check for numeric values (if there's a number > 0, consider it paid)
-                        else if (!isNaN(numericValue) && numericValue > 0) {
-                            isPaid = true;
-                        }
-                        // Check for dates (if it looks like a date, consider it paid)
+                        // Check for dates (full payment)
                         else if (value.match(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/) || value.match(/\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}/)) {
                             isPaid = true;
+                            paidAmount = null; // Full payment
+                        }
+                        // Check for numeric values (could be partial or full payment)
+                        else {
+                            const numericValue = parseFloat(value.replace(/[^\d.]/g, ''));
+                            if (!isNaN(numericValue) && numericValue > 0) {
+                                paidAmount = numericValue;
+                                isPaid = true; // Any payment > 0 is considered "paid" but we track the amount
+                            }
                         }
                     }
                     
-                    mapHeaderToPayment(student, headerLower, isPaid);
+                    mapHeaderToPayment(student, headerLower, isPaid, paidAmount);
                 }
             });
         }
 
-        // Function to map spreadsheet headers to payment structure (Flexible positioning)
-        function mapHeaderToPayment(student, header, isPaid) {
+        // Function to map spreadsheet headers to payment structure (Updated for amounts)
+        function mapHeaderToPayment(student, header, isPaid, paidAmount) {
             // Normalize header for flexible matching
             const normalizedHeader = header.replace(/[^a-z0-9]/g, '').toLowerCase();
             
@@ -520,16 +542,29 @@
                         if (period !== '') {
                             const index = parseInt(period);
                             if (index >= 0 && index < student.payments[component][classKey].length) {
-                                student.payments[component][classKey][index] = isPaid;
+                                // Set payment data with amount
+                                const finalAmount = paidAmount === null ? getPaymentAmount(component) : paidAmount;
+                                student.payments[component][classKey][index] = {
+                                    paid: isPaid,
+                                    amount: finalAmount
+                                };
                             }
                         } else if (student.payments[component][classKey].length === 1) {
                             // For yearly payments
-                            student.payments[component][classKey][0] = isPaid;
+                            const finalAmount = paidAmount === null ? getPaymentAmount(component) : paidAmount;
+                            student.payments[component][classKey][0] = {
+                                paid: isPaid,
+                                amount: finalAmount
+                            };
                         }
                     }
                 } else if (Array.isArray(student.payments[component])) {
                     // For one-time payments without class specification
-                    student.payments[component][0] = isPaid;
+                    const finalAmount = paidAmount === null ? getPaymentAmount(component) : paidAmount;
+                    student.payments[component][0] = {
+                        paid: isPaid,
+                        amount: finalAmount
+                    };
                 }
             }
             
@@ -545,14 +580,18 @@
                 flexibleMappings[componentKey].forEach(keyword => {
                     if (normalizedHeader.includes(keyword)) {
                         if (student.payments[componentKey]) {
-                            student.payments[componentKey][0] = isPaid;
+                            const finalAmount = paidAmount === null ? getPaymentAmount(componentKey) : paidAmount;
+                            student.payments[componentKey][0] = {
+                                paid: isPaid,
+                                amount: finalAmount
+                            };
                         }
                     }
                 });
             });
         }
 
-        // Function to load sample data as fallback (Updated)
+        // Function to load sample data as fallback (Updated with amounts)
         function loadSampleData() {
             studentsData = {
                 '1234567890': {
@@ -561,23 +600,59 @@
                     nisn: '1234567890',
                     payments: {
                         spp: {
-                            class10: [true, true, true, true, true, true, true, true, true, true, true, true],
-                            class11: [true, true, true, true, true, true, true, true, true, true, true, false],
-                            class12: [true, true, true, true, false, false, false, false, false, false, false, false]
+                            class10: [
+                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 175000}, 
+                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 175000},
+                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 175000},
+                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 175000}
+                            ],
+                            class11: [
+                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 175000}, 
+                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 175000},
+                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 175000},
+                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: false, amount: 0}
+                            ],
+                            class12: [
+                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 100000}, 
+                                {paid: true, amount: 175000}, {paid: false, amount: 0}, {paid: false, amount: 0},
+                                {paid: false, amount: 0}, {paid: false, amount: 0}, {paid: false, amount: 0},
+                                {paid: false, amount: 0}, {paid: false, amount: 0}, {paid: false, amount: 0}
+                            ]
                         },
                         tabungan: {
-                            class10: [true, true, true, true, true, true, true, true, true, true, true, true],
-                            class11: [false, false, false, false, false, false, false, false, false, false, false, false],
-                            class12: [false, false, false, false, false, false, false, false, false, false, false, false]
+                            class10: [
+                                {paid: true, amount: 50000}, {paid: true, amount: 50000}, {paid: true, amount: 50000}, 
+                                {paid: true, amount: 50000}, {paid: true, amount: 50000}, {paid: true, amount: 50000},
+                                {paid: true, amount: 50000}, {paid: true, amount: 50000}, {paid: true, amount: 50000},
+                                {paid: true, amount: 50000}, {paid: true, amount: 50000}, {paid: true, amount: 50000}
+                            ],
+                            class11: new Array(12).fill().map(() => ({paid: false, amount: 0})),
+                            class12: new Array(12).fill().map(() => ({paid: false, amount: 0}))
                         },
-                        lks: { class10: [true, true], class11: [true, true], class12: [true, false] },
-                        ulangan: { class10: [true, true], class11: [true, true], class12: [true, false] },
-                        ujian: { class10: [true, true], class11: [true, true], class12: [true, false] },
-                        infaq: { class10: [true], class11: [true], class12: [false] },
-                        siswa_baru: [true],
-                        perpisahan: [false],
-                        study_tour: [true],
-                        buku_kenangan: [false]
+                        lks: { 
+                            class10: [{paid: true, amount: 150000}, {paid: true, amount: 150000}], 
+                            class11: [{paid: true, amount: 150000}, {paid: true, amount: 150000}], 
+                            class12: [{paid: true, amount: 150000}, {paid: false, amount: 0}] 
+                        },
+                        ulangan: { 
+                            class10: [{paid: true, amount: 100000}, {paid: true, amount: 100000}], 
+                            class11: [{paid: true, amount: 100000}, {paid: true, amount: 100000}], 
+                            class12: [{paid: true, amount: 100000}, {paid: false, amount: 0}] 
+                        },
+                        ujian: { 
+                            class10: [{paid: true, amount: 125000}, {paid: true, amount: 125000}], 
+                            class11: [{paid: true, amount: 125000}, {paid: true, amount: 125000}], 
+                            class12: [{paid: true, amount: 125000}, {paid: false, amount: 0}] 
+                        },
+                        infaq: { 
+                            class10: [{paid: true, amount: 150000}], 
+                            class11: [{paid: true, amount: 150000}], 
+                            class12: [{paid: false, amount: 0}] 
+                        },
+                        siswa_baru: [{paid: true, amount: 1250000}],
+                        perpisahan: [{paid: false, amount: 0}],
+                        study_tour: [{paid: true, amount: 500000}],
+                        buku_kenangan: [{paid: false, amount: 0}]
                     }
                 }
             };
@@ -668,39 +743,55 @@
             const currentClass = student.currentClass.includes('XII') ? 'class12' : 
                                student.currentClass.includes('XI') ? 'class11' : 'class10';
             
-            const sppPaid = student.payments.spp[currentClass][currentMonth];
-            const tabunganPaid = currentClass === 'class10' ? student.payments.tabungan[currentClass][currentMonth] : null;
+            const sppPayment = student.payments.spp[currentClass][currentMonth];
+            const tabunganPayment = currentClass === 'class10' ? student.payments.tabungan[currentClass][currentMonth] : null;
             const monthName = months[currentMonth];
             
+            // SPP Card with actual amount paid
             let currentMonthCards = `
-                <div class="p-4 rounded-lg ${sppPaid ? 'bg-green-50 border-2 border-green-200' : 'bg-red-50 border-2 border-red-200'}">
+                <div class="p-4 rounded-lg ${sppPayment.paid ? 'bg-green-50 border-2 border-green-200' : 'bg-red-50 border-2 border-red-200'}">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h5 class="font-semibold ${sppPaid ? 'text-green-800' : 'text-red-800'}">${monthName} 2024</h5>
-                            <p class="text-sm ${sppPaid ? 'text-green-600' : 'text-red-600'}">SPP Bulanan</p>
+                            <h5 class="font-semibold ${sppPayment.paid ? 'text-green-800' : 'text-red-800'}">${monthName} 2024</h5>
+                            <p class="text-sm ${sppPayment.paid ? 'text-green-600' : 'text-red-600'}">SPP Bulanan</p>
                         </div>
                         <div class="text-right">
-                            <div class="text-lg font-bold ${sppPaid ? 'text-green-600' : 'text-red-600'}">
-                                ${sppPaid ? '✓ LUNAS' : '✗ BELUM BAYAR'}
+                            <div class="text-lg font-bold ${sppPayment.paid ? 'text-green-600' : 'text-red-600'}">
+                                ${sppPayment.paid ? '✓ LUNAS' : '✗ BELUM BAYAR'}
                             </div>
-                            <div class="text-sm text-gray-600">Rp ${getPaymentAmount('spp').toLocaleString('id-ID')}</div>
+                            <div class="text-sm text-gray-600">
+                                ${sppPayment.paid ? 
+                                    `Dibayar: Rp ${sppPayment.amount.toLocaleString('id-ID')}` : 
+                                    `Target: Rp ${getPaymentAmount('spp').toLocaleString('id-ID')}`
+                                }
+                            </div>
+                            ${sppPayment.paid && sppPayment.amount < getPaymentAmount('spp') ? 
+                                `<div class="text-xs text-orange-600">Kurang: Rp ${(getPaymentAmount('spp') - sppPayment.amount).toLocaleString('id-ID')}</div>` : 
+                                ''
+                            }
                         </div>
                     </div>
                 </div>`;
             
-            if (tabunganPaid !== null) {
+            // Tabungan Card (only for class 10)
+            if (tabunganPayment !== null) {
                 currentMonthCards += `
-                <div class="p-4 rounded-lg ${tabunganPaid ? 'bg-green-50 border-2 border-green-200' : 'bg-red-50 border-2 border-red-200'}">
+                <div class="p-4 rounded-lg ${tabunganPayment.paid ? 'bg-green-50 border-2 border-green-200' : 'bg-red-50 border-2 border-red-200'}">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h5 class="font-semibold ${tabunganPaid ? 'text-green-800' : 'text-red-800'}">${monthName} 2024</h5>
-                            <p class="text-sm ${tabunganPaid ? 'text-green-600' : 'text-red-600'}">Tabungan Siswa</p>
+                            <h5 class="font-semibold ${tabunganPayment.paid ? 'text-green-800' : 'text-red-800'}">${monthName} 2024</h5>
+                            <p class="text-sm ${tabunganPayment.paid ? 'text-green-600' : 'text-red-600'}">Tabungan Siswa</p>
                         </div>
                         <div class="text-right">
-                            <div class="text-lg font-bold ${tabunganPaid ? 'text-green-600' : 'text-red-600'}">
-                                ${tabunganPaid ? '✓ LUNAS' : '✗ BELUM BAYAR'}
+                            <div class="text-lg font-bold ${tabunganPayment.paid ? 'text-green-600' : 'text-red-600'}">
+                                ${tabunganPayment.paid ? '✓ LUNAS' : '✗ BELUM BAYAR'}
                             </div>
-                            <div class="text-sm text-gray-600">Rp ${getPaymentAmount('tabungan').toLocaleString('id-ID')}</div>
+                            <div class="text-sm text-gray-600">
+                                ${tabunganPayment.paid ? 
+                                    `Dibayar: Rp ${tabunganPayment.amount.toLocaleString('id-ID')}` : 
+                                    `Target: Rp ${getPaymentAmount('tabungan').toLocaleString('id-ID')}`
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>`;
@@ -752,16 +843,28 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
             `;
             
-            payments.forEach((isPaid, index) => {
+            payments.forEach((payment, index) => {
+                const targetAmount = getPaymentAmount(paymentType);
+                const isPartial = payment.paid && payment.amount > 0 && payment.amount < targetAmount;
+                
                 paymentHTML += `
                     <div class="p-2 rounded text-center text-xs font-medium ${
-                        isPaid 
-                            ? 'bg-green-100 text-green-800 border border-green-200' 
+                        payment.paid 
+                            ? (isPartial ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' : 'bg-green-100 text-green-800 border border-green-200')
                             : 'bg-red-100 text-red-800 border border-red-200'
                     }">
                         <div class="font-semibold">${months[index]}</div>
-                        <div class="text-xs mt-1">${isPaid ? '✓' : '✗'}</div>
-                        <div class="text-xs text-gray-600">Rp ${(getPaymentAmount(paymentType) / 1000)}k</div>
+                        <div class="text-xs mt-1">${payment.paid ? (isPartial ? '◐' : '✓') : '✗'}</div>
+                        <div class="text-xs text-gray-600">
+                            ${payment.paid ? 
+                                `Rp ${(payment.amount / 1000)}k` : 
+                                `Rp ${(targetAmount / 1000)}k`
+                            }
+                        </div>
+                        ${isPartial ? 
+                            `<div class="text-xs text-orange-600">Kurang ${((targetAmount - payment.amount) / 1000)}k</div>` : 
+                            ''
+                        }
                     </div>
                 `;
             });
@@ -802,16 +905,28 @@
                             <div class="flex gap-2">
                     `;
                     
-                    payments.forEach((isPaid, semIndex) => {
+                    payments.forEach((payment, semIndex) => {
+                        const targetAmount = getPaymentAmount(componentKey);
+                        const isPartial = payment.paid && payment.amount > 0 && payment.amount < targetAmount;
+                        
                         classHTML += `
                             <div class="flex-1 p-2 rounded text-center text-sm ${
-                                isPaid 
-                                    ? 'bg-green-100 text-green-800 border border-green-200' 
+                                payment.paid 
+                                    ? (isPartial ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' : 'bg-green-100 text-green-800 border border-green-200')
                                     : 'bg-red-100 text-red-800 border border-red-200'
                             }">
                                 <div class="font-medium">${semesters[semIndex]}</div>
-                                <div class="text-xs mt-1">${isPaid ? '✓ Lunas' : '✗ Belum'}</div>
-                                <div class="text-xs text-gray-600">Rp ${(getPaymentAmount(componentKey) / 1000)}k</div>
+                                <div class="text-xs mt-1">${payment.paid ? (isPartial ? '◐ Cicil' : '✓ Lunas') : '✗ Belum'}</div>
+                                <div class="text-xs text-gray-600">
+                                    ${payment.paid ? 
+                                        `Rp ${(payment.amount / 1000)}k` : 
+                                        `Rp ${(targetAmount / 1000)}k`
+                                    }
+                                </div>
+                                ${isPartial ? 
+                                    `<div class="text-xs text-orange-600">Kurang ${((targetAmount - payment.amount) / 1000)}k</div>` : 
+                                    ''
+                                }
                             </div>
                         `;
                     });
@@ -847,21 +962,34 @@
                 
                 yearlyComponents.forEach(componentKey => {
                     const component = paymentComponents[componentKey];
-                    const isPaid = student.payments[componentKey][classType][0];
+                    const payment = student.payments[componentKey][classType][0];
+                    const targetAmount = getPaymentAmount(componentKey);
+                    const isPartial = payment.paid && payment.amount > 0 && payment.amount < targetAmount;
                     
                     classHTML += `
                         <div class="p-4 border rounded-lg ${
-                            isPaid 
-                                ? 'bg-green-50 border-green-200' 
+                            payment.paid 
+                                ? (isPartial ? 'bg-yellow-50 border-yellow-200' : 'bg-green-50 border-green-200')
                                 : 'bg-red-50 border-red-200'
                         }">
-                            <h6 class="font-medium ${isPaid ? 'text-green-800' : 'text-red-800'} mb-2">${component.name}</h6>
+                            <h6 class="font-medium ${payment.paid ? (isPartial ? 'text-yellow-800' : 'text-green-800') : 'text-red-800'} mb-2">${component.name}</h6>
                             <p class="text-sm text-gray-600 mb-3">${component.description}</p>
                             <div class="flex justify-between items-center">
-                                <span class="text-lg font-bold ${isPaid ? 'text-green-600' : 'text-red-600'}">
-                                    ${isPaid ? '✓ LUNAS' : '✗ BELUM BAYAR'}
+                                <span class="text-lg font-bold ${payment.paid ? (isPartial ? 'text-yellow-600' : 'text-green-600') : 'text-red-600'}">
+                                    ${payment.paid ? (isPartial ? '◐ CICILAN' : '✓ LUNAS') : '✗ BELUM BAYAR'}
                                 </span>
-                                <span class="text-sm text-gray-600">Rp ${getPaymentAmount(componentKey).toLocaleString('id-ID')}</span>
+                                <div class="text-right">
+                                    <span class="text-sm text-gray-600">
+                                        ${payment.paid ? 
+                                            `Dibayar: Rp ${payment.amount.toLocaleString('id-ID')}` : 
+                                            `Target: Rp ${targetAmount.toLocaleString('id-ID')}`
+                                        }
+                                    </span>
+                                    ${isPartial ? 
+                                        `<div class="text-xs text-orange-600">Kurang: Rp ${(targetAmount - payment.amount).toLocaleString('id-ID')}</div>` : 
+                                        ''
+                                    }
+                                </div>
                             </div>
                         </div>
                     `;
@@ -881,23 +1009,36 @@
             
             onetimeComponents.forEach(componentKey => {
                 const component = paymentComponents[componentKey];
-                const isPaid = student.payments[componentKey][0];
+                const payment = student.payments[componentKey][0];
+                const targetAmount = getPaymentAmount(componentKey);
+                const isPartial = payment.paid && payment.amount > 0 && payment.amount < targetAmount;
                 
                 const paymentDiv = document.createElement('div');
                 paymentDiv.className = `p-4 border rounded-lg ${
-                    isPaid 
-                        ? 'bg-green-50 border-green-200' 
+                    payment.paid 
+                        ? (isPartial ? 'bg-yellow-50 border-yellow-200' : 'bg-green-50 border-green-200')
                         : 'bg-red-50 border-red-200'
                 }`;
                 
                 paymentDiv.innerHTML = `
-                    <h6 class="font-medium ${isPaid ? 'text-green-800' : 'text-red-800'} mb-2">${component.name}</h6>
+                    <h6 class="font-medium ${payment.paid ? (isPartial ? 'text-yellow-800' : 'text-green-800') : 'text-red-800'} mb-2">${component.name}</h6>
                     <p class="text-sm text-gray-600 mb-3">${component.description}</p>
                     <div class="flex justify-between items-center">
-                        <span class="text-lg font-bold ${isPaid ? 'text-green-600' : 'text-red-600'}">
-                            ${isPaid ? '✓ LUNAS' : '✗ BELUM BAYAR'}
+                        <span class="text-lg font-bold ${payment.paid ? (isPartial ? 'text-yellow-600' : 'text-green-600') : 'text-red-600'}">
+                            ${payment.paid ? (isPartial ? '◐ CICILAN' : '✓ LUNAS') : '✗ BELUM BAYAR'}
                         </span>
-                        <span class="text-sm text-gray-600">Rp ${getPaymentAmount(componentKey).toLocaleString('id-ID')}</span>
+                        <div class="text-right">
+                            <span class="text-sm text-gray-600">
+                                ${payment.paid ? 
+                                    `Dibayar: Rp ${payment.amount.toLocaleString('id-ID')}` : 
+                                    `Target: Rp ${targetAmount.toLocaleString('id-ID')}`
+                                }
+                            </span>
+                            ${isPartial ? 
+                                `<div class="text-xs text-orange-600">Kurang: Rp ${(targetAmount - payment.amount).toLocaleString('id-ID')}</div>` : 
+                                ''
+                            }
+                        </div>
                     </div>
                 `;
                 
@@ -919,7 +1060,7 @@
         function displaySummary(payments) {
             let totalPaid = 0;
             let totalUnpaid = 0;
-            let totalAmount = 0;
+            let totalOutstanding = 0; // Total amount still owed (including partial payments)
             
             Object.keys(paymentComponents).forEach(componentKey => {
                 const component = paymentComponents[componentKey];
@@ -927,12 +1068,19 @@
                 if (component.type === 'monthly' || component.type === 'monthly_class10') {
                     ['class10', 'class11', 'class12'].forEach(classType => {
                         if (payments[componentKey] && payments[componentKey][classType]) {
-                            payments[componentKey][classType].forEach(isPaid => {
+                            payments[componentKey][classType].forEach(payment => {
                                 if (component.type === 'monthly_class10' && classType !== 'class10') return;
-                                if (isPaid) totalPaid++;
-                                else {
+                                
+                                const targetAmount = getPaymentAmount(componentKey);
+                                if (payment.paid) {
+                                    totalPaid++;
+                                    // Add remaining amount if it's a partial payment
+                                    if (payment.amount < targetAmount) {
+                                        totalOutstanding += (targetAmount - payment.amount);
+                                    }
+                                } else {
                                     totalUnpaid++;
-                                    totalAmount += getPaymentAmount(componentKey);
+                                    totalOutstanding += targetAmount;
                                 }
                             });
                         }
@@ -940,11 +1088,16 @@
                 } else if (component.type === 'semester') {
                     ['class10', 'class11', 'class12'].forEach(classType => {
                         if (payments[componentKey] && payments[componentKey][classType]) {
-                            payments[componentKey][classType].forEach(isPaid => {
-                                if (isPaid) totalPaid++;
-                                else {
+                            payments[componentKey][classType].forEach(payment => {
+                                const targetAmount = getPaymentAmount(componentKey);
+                                if (payment.paid) {
+                                    totalPaid++;
+                                    if (payment.amount < targetAmount) {
+                                        totalOutstanding += (targetAmount - payment.amount);
+                                    }
+                                } else {
                                     totalUnpaid++;
-                                    totalAmount += getPaymentAmount(componentKey);
+                                    totalOutstanding += targetAmount;
                                 }
                             });
                         }
@@ -952,21 +1105,31 @@
                 } else if (component.type === 'yearly') {
                     ['class10', 'class11', 'class12'].forEach(classType => {
                         if (payments[componentKey] && payments[componentKey][classType]) {
-                            const isPaid = payments[componentKey][classType][0];
-                            if (isPaid) totalPaid++;
-                            else {
+                            const payment = payments[componentKey][classType][0];
+                            const targetAmount = getPaymentAmount(componentKey);
+                            if (payment.paid) {
+                                totalPaid++;
+                                if (payment.amount < targetAmount) {
+                                    totalOutstanding += (targetAmount - payment.amount);
+                                }
+                            } else {
                                 totalUnpaid++;
-                                totalAmount += getPaymentAmount(componentKey);
+                                totalOutstanding += targetAmount;
                             }
                         }
                     });
                 } else if (component.type === 'onetime') {
                     if (payments[componentKey]) {
-                        const isPaid = payments[componentKey][0];
-                        if (isPaid) totalPaid++;
-                        else {
+                        const payment = payments[componentKey][0];
+                        const targetAmount = getPaymentAmount(componentKey);
+                        if (payment.paid) {
+                            totalPaid++;
+                            if (payment.amount < targetAmount) {
+                                totalOutstanding += (targetAmount - payment.amount);
+                            }
+                        } else {
                             totalUnpaid++;
-                            totalAmount += getPaymentAmount(componentKey);
+                            totalOutstanding += targetAmount;
                         }
                     }
                 }
@@ -974,7 +1137,7 @@
             
             document.getElementById('totalPaid').textContent = totalPaid;
             document.getElementById('totalUnpaid').textContent = totalUnpaid;
-            document.getElementById('totalAmount').textContent = `Rp ${totalAmount.toLocaleString('id-ID')}`;
+            document.getElementById('totalAmount').textContent = `Rp ${totalOutstanding.toLocaleString('id-ID')}`;
         }
 
         function hideStudentInfo() {
@@ -1016,5 +1179,5 @@
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97bb6ea7256d44c3',t:'MTc1NzMwMjkwOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97bba91df44e99a9',t:'MTc1NzMwNTMwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
