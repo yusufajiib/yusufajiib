@@ -1880,102 +1880,43 @@
 
             let html = `
                 <div class="payment-section rounded-lg p-6">
-                    <h4 class="text-lg font-semibold text-gray-800 mb-6">Detail Pembayaran Kelas ${year}</h4>
-            `;
-
-            // Monthly Payments Section
-            if (paymentsByFrequency.monthly.length > 0) {
-                html += `
-                    <div class="mb-8 monthly-section rounded-lg p-4">
-                        <div class="flex items-center mb-4">
-                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
-                                <span class="text-white text-sm font-bold">📅</span>
-                            </div>
-                            <h5 class="text-lg font-semibold text-blue-800">Pembayaran Bulanan</h5>
+                    <div class="flex items-center justify-between mb-6">
+                        <h4 class="text-lg font-semibold text-gray-800">Detail Pembayaran Kelas ${year}</h4>
+                        <button onclick="downloadExcel(${year})" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2">
+                            <span>📊</span>
+                            <span>Download Excel</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Detailed Payment Table -->
+                    <div class="mb-8 bg-white rounded-lg border border-gray-200 overflow-hidden">
+                        <div class="bg-gray-50 px-6 py-3 border-b border-gray-200">
+                            <h5 class="text-md font-semibold text-gray-800">📋 Tabel Detail Pembayaran Kelas ${year}</h5>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                `;
-                
-                paymentsByFrequency.monthly.forEach(payment => {
-                    html += generatePaymentCard(payment);
-                });
-                
-                html += `
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm" id="paymentTable${year}">
+                                <thead class="bg-gray-100">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-700 border-b">No</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-700 border-b">Jenis Pembayaran</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-700 border-b">Kategori</th>
+                                        <th class="px-4 py-3 text-right font-semibold text-gray-700 border-b">Nominal</th>
+                                        <th class="px-4 py-3 text-right font-semibold text-gray-700 border-b">Terbayar</th>
+                                        <th class="px-4 py-3 text-right font-semibold text-gray-700 border-b">Sisa</th>
+                                        <th class="px-4 py-3 text-center font-semibold text-gray-700 border-b">Status</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-700 border-b">Tanggal Bayar</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-700 border-b">Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${generateTableRows(paymentsByFrequency, year)}
+                                </tbody>
+                                <tfoot class="bg-gray-50 border-t-2 border-gray-300">
+                                    ${generateTableFooter(paymentsByFrequency)}
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
-                `;
-            }
-
-            // Semester Payments Section
-            if (paymentsByFrequency.semester.length > 0) {
-                html += `
-                    <div class="mb-8 semester-section rounded-lg p-4">
-                        <div class="flex items-center mb-4">
-                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
-                                <span class="text-white text-sm font-bold">📚</span>
-                            </div>
-                            <h5 class="text-lg font-semibold text-green-800">Pembayaran Per Semester</h5>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                `;
-                
-                paymentsByFrequency.semester.forEach(payment => {
-                    html += generatePaymentCard(payment);
-                });
-                
-                html += `
-                        </div>
-                    </div>
-                `;
-            }
-
-            // Yearly Payments Section
-            if (paymentsByFrequency.yearly.length > 0) {
-                html += `
-                    <div class="mb-8 yearly-section rounded-lg p-4">
-                        <div class="flex items-center mb-4">
-                            <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center mr-3">
-                                <span class="text-white text-sm font-bold">🗓️</span>
-                            </div>
-                            <h5 class="text-lg font-semibold text-purple-800">Pembayaran Tahunan</h5>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                `;
-                
-                paymentsByFrequency.yearly.forEach(payment => {
-                    html += generatePaymentCard(payment);
-                });
-                
-                html += `
-                        </div>
-                    </div>
-                `;
-            }
-
-            // One-time Payments Section
-            if (paymentsByFrequency.oneTime.length > 0) {
-                html += `
-                    <div class="mb-8 onetime-section rounded-lg p-4">
-                        <div class="flex items-center mb-4">
-                            <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center mr-3">
-                                <span class="text-white text-sm font-bold">⭐</span>
-                            </div>
-                            <h5 class="text-lg font-semibold text-orange-800">Pembayaran Sekali dalam 3 Tahun</h5>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                `;
-                
-                paymentsByFrequency.oneTime.forEach(payment => {
-                    html += generatePaymentCard(payment);
-                });
-                
-                html += `
-                        </div>
-                    </div>
-                `;
-            }
-
-            html += `
                 </div>
             `;
 
@@ -2091,6 +2032,244 @@
             });
         }
 
+        // Generate table rows for payment details
+        function generateTableRows(paymentsByFrequency, year) {
+            let rows = '';
+            let rowNumber = 1;
+            
+            // Define order of categories
+            const categoryOrder = ['monthly', 'semester', 'yearly', 'oneTime'];
+            const categoryNames = {
+                'monthly': 'Bulanan',
+                'semester': 'Per Semester', 
+                'yearly': 'Tahunan',
+                'oneTime': 'Sekali Bayar'
+            };
+            
+            categoryOrder.forEach(category => {
+                if (paymentsByFrequency[category].length > 0) {
+                    paymentsByFrequency[category].forEach(payment => {
+                        const statusBadge = getStatusBadge(payment.status);
+                        const paymentDate = payment.paid ? formatDate(payment.date) : '-';
+                        const keterangan = generateKeterangan(payment);
+                        
+                        rows += `
+                            <tr class="hover:bg-gray-50 border-b border-gray-100">
+                                <td class="px-4 py-3 text-gray-700">${rowNumber}</td>
+                                <td class="px-4 py-3 text-gray-800 font-medium">${payment.feeType}</td>
+                                <td class="px-4 py-3 text-gray-600">${categoryNames[category]}</td>
+                                <td class="px-4 py-3 text-right text-gray-800 font-medium">${formatCurrency(payment.amount)}</td>
+                                <td class="px-4 py-3 text-right text-green-600 font-medium">${formatCurrency(payment.paidAmount || 0)}</td>
+                                <td class="px-4 py-3 text-right text-red-600 font-medium">${formatCurrency(payment.remaining || 0)}</td>
+                                <td class="px-4 py-3 text-center">${statusBadge}</td>
+                                <td class="px-4 py-3 text-gray-600">${paymentDate}</td>
+                                <td class="px-4 py-3 text-gray-600 text-xs">${keterangan}</td>
+                            </tr>
+                        `;
+                        rowNumber++;
+                    });
+                }
+            });
+            
+            return rows;
+        }
+
+        // Generate table footer with totals
+        function generateTableFooter(paymentsByFrequency) {
+            let totalNominal = 0;
+            let totalTerbayar = 0;
+            let totalSisa = 0;
+            
+            Object.values(paymentsByFrequency).forEach(categoryPayments => {
+                categoryPayments.forEach(payment => {
+                    totalNominal += payment.amount || 0;
+                    totalTerbayar += payment.paidAmount || 0;
+                    totalSisa += payment.remaining || 0;
+                });
+            });
+            
+            return `
+                <tr class="bg-gray-100 font-bold">
+                    <td colspan="3" class="px-4 py-4 text-gray-800 font-bold">TOTAL KESELURUHAN</td>
+                    <td class="px-4 py-4 text-right text-blue-800 font-bold text-lg">${formatCurrency(totalNominal)}</td>
+                    <td class="px-4 py-4 text-right text-green-700 font-bold text-lg">${formatCurrency(totalTerbayar)}</td>
+                    <td class="px-4 py-4 text-right text-red-700 font-bold text-lg">${formatCurrency(totalSisa)}</td>
+                    <td colspan="3" class="px-4 py-4"></td>
+                </tr>
+            `;
+        }
+
+        // Get status badge HTML
+        function getStatusBadge(status) {
+            if (status === 'paid') {
+                return '<span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">✅ Lunas</span>';
+            } else if (status === 'installment') {
+                return '<span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">🔄 Cicilan</span>';
+            } else {
+                return '<span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">⏰ Belum Bayar</span>';
+            }
+        }
+
+        // Generate keterangan text
+        function generateKeterangan(payment) {
+            if (payment.installments && payment.installments.length > 0) {
+                const installmentDetails = payment.installments.map(inst => 
+                    `${inst.note}: ${formatCurrency(inst.amount)}`
+                ).join(', ');
+                return installmentDetails;
+            } else if (payment.paid) {
+                return 'Pembayaran lunas';
+            } else {
+                return 'Belum ada pembayaran';
+            }
+        }
+
+        // Download Excel function
+        function downloadExcel(year) {
+            if (!currentStudent) {
+                alert('Tidak ada data siswa untuk diunduh!');
+                return;
+            }
+
+            // Get table data
+            const payments = currentStudent.payments[year];
+            const paymentsByFrequency = {
+                monthly: [],
+                semester: [],
+                yearly: [],
+                oneTime: []
+            };
+
+            Object.entries(payments).forEach(([feeType, payment]) => {
+                const paymentData = { feeType, ...payment };
+                
+                if (payment.type === 'monthly') {
+                    paymentsByFrequency.monthly.push(paymentData);
+                } else if (payment.type === 'semester') {
+                    paymentsByFrequency.semester.push(paymentData);
+                } else if (payment.type === 'yearly') {
+                    paymentsByFrequency.yearly.push(paymentData);
+                } else if (payment.type === 'oneTime') {
+                    paymentsByFrequency.oneTime.push(paymentData);
+                }
+            });
+
+            // Create Excel data
+            const excelData = [];
+            
+            // Header information
+            excelData.push(['DETAIL PEMBAYARAN SISWA']);
+            excelData.push(['MA NU HASYIM ASY\'ARI 1 KUDUS']);
+            excelData.push(['']);
+            excelData.push(['Nama Siswa:', currentStudent.name || '-']);
+            excelData.push(['NISN:', document.getElementById('displayNisn').textContent]);
+            excelData.push(['Kelas:', `${year}`]);
+            excelData.push(['Jurusan:', currentStudent.major || '-']);
+            excelData.push(['Jenis Kelamin:', currentStudent.gender || '-']);
+            excelData.push(['Tahun Masuk:', currentStudent.entryYear || '-']);
+            excelData.push(['Tanggal Export:', new Date().toLocaleDateString('id-ID')]);
+            excelData.push(['']);
+            
+            // Table headers
+            excelData.push([
+                'No',
+                'Jenis Pembayaran', 
+                'Kategori',
+                'Nominal',
+                'Terbayar',
+                'Sisa',
+                'Status',
+                'Tanggal Bayar',
+                'Keterangan'
+            ]);
+            
+            // Table data
+            let rowNumber = 1;
+            const categoryOrder = ['monthly', 'semester', 'yearly', 'oneTime'];
+            const categoryNames = {
+                'monthly': 'Bulanan',
+                'semester': 'Per Semester', 
+                'yearly': 'Tahunan',
+                'oneTime': 'Sekali Bayar'
+            };
+            
+            let totalNominal = 0;
+            let totalTerbayar = 0;
+            let totalSisa = 0;
+            
+            categoryOrder.forEach(category => {
+                if (paymentsByFrequency[category].length > 0) {
+                    paymentsByFrequency[category].forEach(payment => {
+                        const statusText = payment.status === 'paid' ? 'Lunas' : 
+                                         payment.status === 'installment' ? 'Cicilan' : 'Belum Bayar';
+                        const paymentDate = payment.paid ? formatDate(payment.date) : '-';
+                        const keterangan = generateKeterangan(payment);
+                        
+                        excelData.push([
+                            rowNumber,
+                            payment.feeType,
+                            categoryNames[category],
+                            payment.amount || 0,
+                            payment.paidAmount || 0,
+                            payment.remaining || 0,
+                            statusText,
+                            paymentDate,
+                            keterangan
+                        ]);
+                        
+                        totalNominal += payment.amount || 0;
+                        totalTerbayar += payment.paidAmount || 0;
+                        totalSisa += payment.remaining || 0;
+                        rowNumber++;
+                    });
+                }
+            });
+            
+            // Total row
+            excelData.push(['']);
+            excelData.push([
+                '',
+                '',
+                'TOTAL KESELURUHAN',
+                totalNominal,
+                totalTerbayar,
+                totalSisa,
+                '',
+                '',
+                ''
+            ]);
+            
+            // Convert to CSV format
+            const csvContent = excelData.map(row => 
+                row.map(cell => {
+                    // Handle numbers and currency
+                    if (typeof cell === 'number') {
+                        return cell;
+                    }
+                    // Escape quotes and wrap in quotes if contains comma
+                    const cellStr = String(cell || '');
+                    if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+                        return '"' + cellStr.replace(/"/g, '""') + '"';
+                    }
+                    return cellStr;
+                }).join(',')
+            ).join('\n');
+            
+            // Create and download file
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `Detail_Pembayaran_${currentStudent.name || 'Siswa'}_Kelas_${year}_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Show success message
+            alert(`✅ File Excel berhasil diunduh!\n\nDetail Pembayaran Kelas ${year}\nNama: ${currentStudent.name || '-'}\nTotal Nominal: ${formatCurrency(totalNominal)}\nTotal Terbayar: ${formatCurrency(totalTerbayar)}\nTotal Sisa: ${formatCurrency(totalSisa)}`);
+        }
+
         // Event listeners
         document.getElementById('nisnInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -2106,5 +2285,5 @@
         // Initialize the application when page loads
         window.addEventListener('load', initializeApp);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97c1dbb284ccce19',t:'MTc1NzM3MDI4OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97c1fab2578dfd96',t:'MTc1NzM3MTU1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
