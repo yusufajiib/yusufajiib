@@ -339,37 +339,56 @@
             };
         }
 
-        // Function to parse payment amounts from Google Sheets
+        // Function to parse payment amounts from Google Sheets (Flexible positioning)
         function parsePaymentAmounts(rows) {
             const headers = rows[0];
             
-            // Look for amount columns (format: [component]_amount or amount_[component])
+            // Look for amount columns with flexible positioning and naming
             headers.forEach((header, index) => {
-                const headerLower = header.toString().toLowerCase().trim();
+                if (!header) return;
                 
-                // Check for amount columns
-                if (headerLower.includes('amount') || headerLower.includes('nominal') || headerLower.includes('biaya')) {
-                    // Extract component name from header
+                const headerLower = header.toString().toLowerCase().trim();
+                const normalizedHeader = headerLower.replace(/[^a-z0-9]/g, '');
+                
+                // Check for amount/nominal/biaya keywords
+                if (headerLower.includes('amount') || headerLower.includes('nominal') || headerLower.includes('biaya') || headerLower.includes('tarif') || headerLower.includes('harga')) {
+                    // Extract component name from header with flexible matching
                     let componentName = '';
                     
-                    if (headerLower.includes('spp')) componentName = 'spp';
-                    else if (headerLower.includes('tabungan')) componentName = 'tabungan';
-                    else if (headerLower.includes('lks')) componentName = 'lks';
-                    else if (headerLower.includes('ulangan')) componentName = 'ulangan';
-                    else if (headerLower.includes('ujian')) componentName = 'ujian';
-                    else if (headerLower.includes('infaq')) componentName = 'infaq';
-                    else if (headerLower.includes('siswa_baru')) componentName = 'siswa_baru';
-                    else if (headerLower.includes('perpisahan')) componentName = 'perpisahan';
-                    else if (headerLower.includes('study_tour')) componentName = 'study_tour';
-                    else if (headerLower.includes('buku_kenangan')) componentName = 'buku_kenangan';
+                    // Component detection with various naming patterns
+                    const componentPatterns = {
+                        'spp': ['spp'],
+                        'tabungan': ['tabungan', 'saving'],
+                        'lks': ['lks', 'lembarkerja'],
+                        'ulangan': ['ulangan', 'ulhar', 'quiz'],
+                        'ujian': ['ujian', 'exam', 'test'],
+                        'infaq': ['infaq', 'donasi'],
+                        'siswa_baru': ['siswabaru', 'newstudent', 'pendaftaran'],
+                        'perpisahan': ['perpisahan', 'farewell'],
+                        'study_tour': ['studytour', 'tour', 'wisata'],
+                        'buku_kenangan': ['bukukenangan', 'yearbook', 'kenangan']
+                    };
+                    
+                    // Find matching component
+                    Object.keys(componentPatterns).forEach(key => {
+                        componentPatterns[key].forEach(pattern => {
+                            if (normalizedHeader.includes(pattern)) {
+                                componentName = key;
+                            }
+                        });
+                    });
                     
                     if (componentName && rows.length > 1) {
-                        // Get amount from first data row
-                        const amountValue = rows[1][index];
-                        if (amountValue) {
-                            const amount = parseFloat(amountValue.toString().replace(/[^\d]/g, ''));
-                            if (!isNaN(amount) && amount > 0) {
-                                paymentAmounts[componentName] = amount;
+                        // Get amount from first data row that has a valid amount
+                        for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
+                            const amountValue = rows[rowIndex][index];
+                            if (amountValue) {
+                                const cleanValue = amountValue.toString().replace(/[^\d]/g, '');
+                                const amount = parseFloat(cleanValue);
+                                if (!isNaN(amount) && amount > 0) {
+                                    paymentAmounts[componentName] = amount;
+                                    break; // Use first valid amount found
+                                }
                             }
                         }
                     }
@@ -384,68 +403,153 @@
 
         // Function to parse payment data from spreadsheet row
         function parsePaymentData(student, row, headers) {
-            for (let colIndex = 3; colIndex < row.length && colIndex < headers.length; colIndex++) {
-                const header = headers[colIndex]?.toString().toLowerCase().trim();
-                const value = row[colIndex]?.toString().toLowerCase().trim();
-                const isPaid = value === 'lunas' || value === 'paid' || value === '1' || value === 'true';
-                
-                mapHeaderToPayment(student, header, isPaid);
-            }
-        }
-
-        // Function to map spreadsheet headers to payment structure (Updated)
-        function mapHeaderToPayment(student, header, isPaid) {
-            const headerMappings = {
-                // SPP mappings
-                'spp_10_jul': () => student.payments.spp.class10[0] = isPaid,
-                'spp_10_agu': () => student.payments.spp.class10[1] = isPaid,
-                'spp_10_sep': () => student.payments.spp.class10[2] = isPaid,
-                'spp_10_okt': () => student.payments.spp.class10[3] = isPaid,
-                'spp_10_nov': () => student.payments.spp.class10[4] = isPaid,
-                'spp_10_des': () => student.payments.spp.class10[5] = isPaid,
-                'spp_10_jan': () => student.payments.spp.class10[6] = isPaid,
-                'spp_10_feb': () => student.payments.spp.class10[7] = isPaid,
-                'spp_10_mar': () => student.payments.spp.class10[8] = isPaid,
-                'spp_10_apr': () => student.payments.spp.class10[9] = isPaid,
-                'spp_10_mei': () => student.payments.spp.class10[10] = isPaid,
-                'spp_10_jun': () => student.payments.spp.class10[11] = isPaid,
-                
-                // One-time payments (updated list)
-                'siswa_baru': () => student.payments.siswa_baru[0] = isPaid,
-                'perpisahan': () => student.payments.perpisahan[0] = isPaid,
-                'study_tour': () => student.payments.study_tour[0] = isPaid,
-                'buku_kenangan': () => student.payments.buku_kenangan[0] = isPaid,
-                'lks_10_sem1': () => student.payments.lks.class10[0] = isPaid,
-                'lks_10_sem2': () => student.payments.lks.class10[1] = isPaid,
-                'infaq_10': () => student.payments.infaq.class10[0] = isPaid,
-                
-                default: (header) => {
-                    const parts = header.split('_');
-                    if (parts.length >= 2) {
-                        const component = parts[0];
-                        const classNum = parts[1];
-                        const period = parts[2];
+            // Create a mapping of header names to column indices for flexible positioning
+            const headerMap = {};
+            headers.forEach((header, index) => {
+                if (header) {
+                    headerMap[header.toString().toLowerCase().trim()] = index;
+                }
+            });
+            
+            // Process all columns regardless of position
+            headers.forEach((header, colIndex) => {
+                if (colIndex < row.length && header) {
+                    const headerLower = header.toString().toLowerCase().trim();
+                    const value = row[colIndex]?.toString().trim();
+                    
+                    // Enhanced payment detection - check for various payment indicators
+                    let isPaid = false;
+                    
+                    if (value) {
+                        const valueLower = value.toLowerCase();
+                        const numericValue = parseFloat(value.replace(/[^\d.]/g, ''));
                         
-                        if (student.payments[component] && classNum) {
-                            const classKey = `class${classNum}`;
-                            if (student.payments[component][classKey]) {
-                                if (period && !isNaN(parseInt(period))) {
-                                    const index = parseInt(period) - 1;
-                                    if (index >= 0 && index < student.payments[component][classKey].length) {
-                                        student.payments[component][classKey][index] = isPaid;
-                                    }
-                                }
-                            }
+                        // Check for text indicators
+                        if (valueLower === 'lunas' || valueLower === 'paid' || valueLower === '1' || valueLower === 'true' || valueLower === 'sudah' || valueLower === 'bayar') {
+                            isPaid = true;
+                        }
+                        // Check for numeric values (if there's a number > 0, consider it paid)
+                        else if (!isNaN(numericValue) && numericValue > 0) {
+                            isPaid = true;
+                        }
+                        // Check for dates (if it looks like a date, consider it paid)
+                        else if (value.match(/\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}/) || value.match(/\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}/)) {
+                            isPaid = true;
                         }
                     }
+                    
+                    mapHeaderToPayment(student, headerLower, isPaid);
                 }
+            });
+        }
+
+        // Function to map spreadsheet headers to payment structure (Flexible positioning)
+        function mapHeaderToPayment(student, header, isPaid) {
+            // Normalize header for flexible matching
+            const normalizedHeader = header.replace(/[^a-z0-9]/g, '').toLowerCase();
+            
+            // Month name mappings for flexible header formats
+            const monthMappings = {
+                'jul': 0, 'juli': 0, 'july': 0,
+                'agu': 1, 'agustus': 1, 'august': 1,
+                'sep': 2, 'september': 2,
+                'okt': 3, 'oktober': 3, 'october': 3,
+                'nov': 4, 'november': 4,
+                'des': 5, 'desember': 5, 'december': 5,
+                'jan': 6, 'januari': 6, 'january': 6,
+                'feb': 7, 'februari': 7, 'february': 7,
+                'mar': 8, 'maret': 8, 'march': 8,
+                'apr': 9, 'april': 9,
+                'mei': 10, 'may': 10,
+                'jun': 11, 'juni': 11, 'june': 11
             };
             
-            if (headerMappings[header]) {
-                headerMappings[header]();
-            } else {
-                headerMappings.default(header);
+            // Semester mappings
+            const semesterMappings = {
+                'sem1': 0, 'semester1': 0, 'ganjil': 0,
+                'sem2': 1, 'semester2': 1, 'genap': 1
+            };
+            
+            // Try to parse the header intelligently
+            const parts = header.split(/[_\s-]+/);
+            let component = '';
+            let classNum = '';
+            let period = '';
+            
+            // Identify component, class, and period from any position in header
+            parts.forEach(part => {
+                const partLower = part.toLowerCase();
+                
+                // Check for component names with more flexible matching
+                if (partLower.includes('spp')) component = 'spp';
+                else if (partLower.includes('tabungan')) component = 'tabungan';
+                else if (partLower.includes('lks')) component = 'lks';
+                else if (partLower.includes('ulangan')) component = 'ulangan';
+                else if (partLower.includes('ujian')) component = 'ujian';
+                else if (partLower.includes('infaq')) component = 'infaq';
+                else if (partLower.includes('siswa') || partLower.includes('baru') || partLower.includes('pendaftaran')) component = 'siswa_baru';
+                else if (partLower.includes('perpisahan') || partLower.includes('farewell')) component = 'perpisahan';
+                else if (partLower.includes('study') || partLower.includes('tour') || partLower.includes('wisata')) component = 'study_tour';
+                else if (partLower.includes('buku') || partLower.includes('kenangan') || partLower.includes('yearbook')) component = 'buku_kenangan';
+                
+                // Check for class numbers
+                if (partLower.match(/^(10|11|12)$/)) {
+                    classNum = partLower;
+                }
+                
+                // Check for months
+                Object.keys(monthMappings).forEach(monthKey => {
+                    if (partLower.includes(monthKey)) {
+                        period = monthMappings[monthKey].toString();
+                    }
+                });
+                
+                // Check for semesters
+                Object.keys(semesterMappings).forEach(semKey => {
+                    if (partLower.includes(semKey)) {
+                        period = semesterMappings[semKey].toString();
+                    }
+                });
+            });
+            
+            // Apply the mapping if we found valid components
+            if (component && student.payments[component]) {
+                if (classNum) {
+                    const classKey = `class${classNum}`;
+                    if (student.payments[component][classKey]) {
+                        if (period !== '') {
+                            const index = parseInt(period);
+                            if (index >= 0 && index < student.payments[component][classKey].length) {
+                                student.payments[component][classKey][index] = isPaid;
+                            }
+                        } else if (student.payments[component][classKey].length === 1) {
+                            // For yearly payments
+                            student.payments[component][classKey][0] = isPaid;
+                        }
+                    }
+                } else if (Array.isArray(student.payments[component])) {
+                    // For one-time payments without class specification
+                    student.payments[component][0] = isPaid;
+                }
             }
+            
+            // Enhanced fallback: more flexible header matching for one-time payments
+            const flexibleMappings = {
+                'siswa_baru': ['siswa', 'baru', 'pendaftaran', 'daftar', 'masuk'],
+                'perpisahan': ['perpisahan', 'farewell', 'pisah'],
+                'study_tour': ['study', 'tour', 'wisata', 'karyawisata'],
+                'buku_kenangan': ['buku', 'kenangan', 'yearbook']
+            };
+            
+            Object.keys(flexibleMappings).forEach(componentKey => {
+                flexibleMappings[componentKey].forEach(keyword => {
+                    if (normalizedHeader.includes(keyword)) {
+                        if (student.payments[componentKey]) {
+                            student.payments[componentKey][0] = isPaid;
+                        }
+                    }
+                });
+            });
         }
 
         // Function to load sample data as fallback (Updated)
@@ -912,5 +1016,5 @@
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97bb042cc6964112',t:'MTc1NzI5ODU0Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97bb6ea7256d44c3',t:'MTc1NzMwMjkwOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
