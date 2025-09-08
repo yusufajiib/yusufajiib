@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Informasi Pembayaran SPP</title>
+    <title>Sistem Informasi Pembayaran SPP - Panduan Harga Per Kelas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -22,13 +22,13 @@
                         </svg>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-800">SMA Negeri 1</h1>
-                        <p class="text-sm text-gray-600">Sistem Informasi Pembayaran SPP</p>
+                        <h1 class="text-2xl font-bold text-gray-800">MA NU Hasyim Asy'ari 1 Kudus</h1>
+                        <p class="text-sm text-gray-600">Jl. Mayor H. Basuno No. 17 Sunggingan Kota Kudus 59317</p>
                     </div>
                 </div>
                 <div class="text-right">
                     <p class="text-sm text-gray-600">Tahun Ajaran</p>
-                    <p class="font-semibold text-gray-800">2024/2025</p>
+                    <p class="font-semibold text-gray-800">2025/2026</p>
                 </div>
             </div>
         </div>
@@ -36,11 +36,16 @@
 
     <!-- Main Content -->
     <main class="container mx-auto px-6 py-8">
+        <!-- Pricing Guide Section - Hidden -->
+        <div class="bg-white rounded-xl shadow-lg p-8 mb-8 hidden">
+            <!-- Panduan pengaturan harga disembunyikan untuk fokus pada pencarian -->
+        </div>
+
         <!-- Search Section -->
         <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
             <div class="text-center mb-6">
-                <h2 class="text-3xl font-bold text-gray-800 mb-2">Cek Status Pembayaran SPP</h2>
-                <p class="text-gray-600">Masukkan NISN untuk melihat informasi pembayaran</p>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Administrasi Madrasah</h2>
+                <p class="text-gray-600">Masukkan NISN untuk melihat informasi</p>
             </div>
             
             <div class="max-w-md mx-auto">
@@ -107,85 +112,33 @@
                 </div>
             </div>
 
-            <!-- Payment History by Year -->
-            <div class="space-y-6">
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h4 class="text-xl font-bold text-gray-800 mb-6">Riwayat Pembayaran Lengkap</h4>
-                    
-                    <!-- Payment Categories Tabs -->
-                    <div class="flex flex-wrap gap-2 mb-6 border-b">
-                        <button onclick="showPaymentCategory('monthly')" id="monthlyTab" class="px-4 py-2 font-medium text-blue-600 border-b-2 border-blue-600 bg-blue-50 rounded-t-lg">
-                            Pembayaran Bulanan
-                        </button>
-                        <button onclick="showPaymentCategory('semester')" id="semesterTab" class="px-4 py-2 font-medium text-gray-600 hover:text-blue-600 rounded-t-lg">
-                            Pembayaran Semester
-                        </button>
-                        <button onclick="showPaymentCategory('yearly')" id="yearlyTab" class="px-4 py-2 font-medium text-gray-600 hover:text-blue-600 rounded-t-lg">
-                            Pembayaran Tahunan
-                        </button>
-                        <button onclick="showPaymentCategory('onetime')" id="onetimeTab" class="px-4 py-2 font-medium text-gray-600 hover:text-blue-600 rounded-t-lg">
-                            Pembayaran Sekali
-                        </button>
-                    </div>
+            <!-- Complete Payment History -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h4 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <span class="bg-blue-100 text-blue-800 p-2 rounded-lg mr-3">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </span>
+                    Riwayat Pembayaran Lengkap
+                </h4>
+                <div id="completePaymentHistory">
+                    <!-- Complete payment history will be inserted here -->
+                </div>
+            </div>
 
-                    <!-- Monthly Payments -->
-                    <div id="monthlyPayments" class="payment-category">
-                        <div class="space-y-6">
-                            <!-- Class 10 Monthly -->
-                            <div class="mb-6">
-                                <h5 class="text-lg font-semibold text-blue-600 mb-4 flex items-center">
-                                    <span class="bg-blue-100 px-3 py-1 rounded-full mr-3">Kelas 10</span>
-                                    Tahun Ajaran 2022/2023
-                                </h5>
-                                <div id="class10MonthlyPayments" class="space-y-4">
-                                    <!-- Monthly payments for class 10 will be inserted here -->
-                                </div>
-                            </div>
-
-                            <!-- Class 11 Monthly -->
-                            <div class="mb-6">
-                                <h5 class="text-lg font-semibold text-green-600 mb-4 flex items-center">
-                                    <span class="bg-green-100 px-3 py-1 rounded-full mr-3">Kelas 11</span>
-                                    Tahun Ajaran 2023/2024
-                                </h5>
-                                <div id="class11MonthlyPayments" class="space-y-4">
-                                    <!-- Monthly payments for class 11 will be inserted here -->
-                                </div>
-                            </div>
-
-                            <!-- Class 12 Monthly -->
-                            <div class="mb-6">
-                                <h5 class="text-lg font-semibold text-purple-600 mb-4 flex items-center">
-                                    <span class="bg-purple-100 px-3 py-1 rounded-full mr-3">Kelas 12</span>
-                                    Tahun Ajaran 2024/2025
-                                </h5>
-                                <div id="class12MonthlyPayments" class="space-y-4">
-                                    <!-- Monthly payments for class 12 will be inserted here -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Semester Payments -->
-                    <div id="semesterPayments" class="payment-category hidden">
-                        <div id="allSemesterPayments" class="space-y-6">
-                            <!-- Semester payments will be inserted here -->
-                        </div>
-                    </div>
-
-                    <!-- Yearly Payments -->
-                    <div id="yearlyPayments" class="payment-category hidden">
-                        <div id="allYearlyPayments" class="space-y-6">
-                            <!-- Yearly payments will be inserted here -->
-                        </div>
-                    </div>
-
-                    <!-- One-time Payments -->
-                    <div id="onetimePayments" class="payment-category hidden">
-                        <div id="allOnetimePayments" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            <!-- One-time payments will be inserted here -->
-                        </div>
-                    </div>
+            <!-- Pricing Changes Notification -->
+            <div id="pricingChanges" class="hidden bg-white rounded-xl shadow-lg p-6 mb-6">
+                <h4 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <span class="bg-orange-100 text-orange-800 p-2 rounded-lg mr-3">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                        </svg>
+                    </span>
+                    Perubahan Tarif Terbaru
+                </h4>
+                <div id="pricingChangesList" class="space-y-3">
+                    <!-- Pricing changes will be inserted here -->
                 </div>
             </div>
 
@@ -206,6 +159,14 @@
                         <div class="text-sm text-gray-600">Total Tunggakan</div>
                     </div>
                 </div>
+                
+                <!-- Current Pricing Display - Hidden -->
+                <div class="mt-6 pt-6 border-t hidden">
+                    <h5 class="text-lg font-semibold text-gray-700 mb-3">Tarif Saat Ini (Per Kelas)</h5>
+                    <div id="currentPricing" class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                        <!-- Current pricing will be inserted here -->
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -222,29 +183,41 @@
     </main>
 
     <script>
-        // Payment components configuration (Updated - removed specified components)
+        // Payment components configuration (Enhanced with new components from pricing format)
         const paymentComponents = {
             // Monthly payments
-            spp: { name: 'SPP', amount: 175000, type: 'monthly', description: 'Sumbangan Pembinaan Pendidikan' },
-            tabungan: { name: 'Tabungan', amount: 50000, type: 'monthly_class10', description: 'Tabungan Siswa (Khusus Kelas 10)' },
+            spp: { name: 'SPP', defaultAmount: 175000, type: 'monthly', description: 'Sumbangan Pembinaan Pendidikan' },
+            tabungan: { name: 'Tabungan', defaultAmount: 50000, type: 'monthly_class10', description: 'Tabungan Siswa (Khusus Kelas 10)' },
             
-            // Semester payments (removed praktikum)
-            lks: { name: 'Buku LKS', amount: 150000, type: 'semester', description: 'Lembar Kerja Siswa' },
-            ulangan: { name: 'Ulangan Harian', amount: 100000, type: 'semester', description: 'Biaya Ulangan Harian' },
-            ujian: { name: 'Ujian Semester', amount: 125000, type: 'semester', description: 'Biaya Ujian Tengah & Akhir Semester' },
+            // Semester payments
+            lks: { name: 'Buku LKS', defaultAmount: 120000, type: 'semester', description: 'Lembar Kerja Siswa' },
+            ulangan: { name: 'UHB (Ulangan Harian)', defaultAmount: 100000, type: 'semester', description: 'Ulangan Harian Bersama' },
+            ujian: { name: 'PAS (Ujian Semester)', defaultAmount: 100000, type: 'semester', description: 'Penilaian Akhir Semester' },
+            ujian_akhir: { name: 'Ujian Akhir', defaultAmount: 125000, type: 'onetime', description: 'Ujian Akhir Sekolah' },
             
-            // Yearly payments (removed seragam, kegiatan, asuransi, komputer, olahraga)
-            infaq: { name: 'Infaq Kenaikan Kelas', amount: 150000, type: 'yearly', description: 'Infaq Kenaikan Kelas' },
+            // Yearly payments
+            infaq: { name: 'Infaq Kenaikan Kelas', defaultAmount: 150000, type: 'yearly', description: 'Infaq Kenaikan Kelas' },
             
-            // One-time payments (removed kartu_pelajar, perpustakaan, wisuda, sertifikat)
-            siswa_baru: { name: 'Siswa Baru', amount: 1250000, type: 'onetime', description: 'Biaya Pendaftaran Siswa Baru' },
-            perpisahan: { name: 'Perpisahan', amount: 1000000, type: 'onetime', description: 'Biaya Perpisahan Kelas XII' },
-            study_tour: { name: 'Study Tour', amount: 500000, type: 'onetime', description: 'Tambahan Study Tour' },
-            buku_kenangan: { name: 'Buku Kenangan', amount: 50000, type: 'onetime', description: 'Buku Kenangan Sekolah' }
+            // One-time payments - New students
+            siswa_baru_putra: { name: 'Siswa Baru (Putra)', defaultAmount: 1200000, type: 'onetime', description: 'Biaya Pendaftaran Siswa Baru Putra' },
+            siswa_baru_putri: { name: 'Siswa Baru (Putri)', defaultAmount: 1350000, type: 'onetime', description: 'Biaya Pendaftaran Siswa Baru Putri' },
+            siswa_pindahan_putra: { name: 'Siswa Pindahan (Putra)', defaultAmount: 1200000, type: 'onetime', description: 'Biaya Siswa Pindahan Putra' },
+            siswa_pindahan_putri: { name: 'Siswa Pindahan (Putri)', defaultAmount: 1350000, type: 'onetime', description: 'Biaya Siswa Pindahan Putri' },
+            
+            // Other one-time payments
+            perpisahan: { name: 'Perpisahan', defaultAmount: 1000000, type: 'onetime', description: 'Biaya Perpisahan Kelas XII' },
+            study_tour: { name: 'Studi Tour', defaultAmount: 300000, type: 'onetime', description: 'Biaya Studi Tour' },
+            buku_kenangan: { name: 'Buku Kenangan', defaultAmount: 50000, type: 'onetime', description: 'Buku Kenangan Sekolah' },
+            
+            // Legacy component for backward compatibility
+            siswa_baru: { name: 'Siswa Baru', defaultAmount: 1250000, type: 'onetime', description: 'Biaya Pendaftaran Siswa Baru (Umum)' }
         };
 
-        // Payment amounts from Google Sheets (will be populated from spreadsheet)
+        // Dynamic payment amounts from Google Sheets (Enhanced for class-specific pricing)
         let paymentAmounts = {};
+        
+        // Pricing history for tracking changes
+        let pricingHistory = {};
 
         // Google Sheets Configuration
         const GOOGLE_SHEETS_CONFIG = {
@@ -311,7 +284,7 @@
             }
         }
 
-        // Function to initialize payment structure (Updated with amounts)
+        // Function to initialize payment structure (Updated with new components)
         function initializePaymentStructure() {
             return {
                 // Monthly payments - store {paid: boolean, amount: number}
@@ -341,80 +314,289 @@
                     class11: [{paid: false, amount: 0}, {paid: false, amount: 0}], 
                     class12: [{paid: false, amount: 0}, {paid: false, amount: 0}] 
                 },
+                ujian_akhir: [{paid: false, amount: 0}],
                 // Yearly payments
                 infaq: { 
                     class10: [{paid: false, amount: 0}], 
                     class11: [{paid: false, amount: 0}], 
                     class12: [{paid: false, amount: 0}] 
                 },
-                // One-time payments
-                siswa_baru: [{paid: false, amount: 0}],
+                // One-time payments - New students
+                siswa_baru_putra: [{paid: false, amount: 0}],
+                siswa_baru_putri: [{paid: false, amount: 0}],
+                siswa_pindahan_putra: [{paid: false, amount: 0}],
+                siswa_pindahan_putri: [{paid: false, amount: 0}],
+                
+                // Other one-time payments
                 perpisahan: [{paid: false, amount: 0}],
                 study_tour: [{paid: false, amount: 0}],
-                buku_kenangan: [{paid: false, amount: 0}]
+                buku_kenangan: [{paid: false, amount: 0}],
+                
+                // Legacy component for backward compatibility
+                siswa_baru: [{paid: false, amount: 0}]
             };
         }
 
-        // Function to parse payment amounts from Google Sheets (Flexible positioning)
+        // Function to parse payment amounts from Google Sheets (Enhanced for dedicated pricing blocks)
         function parsePaymentAmounts(rows) {
             const headers = rows[0];
             
-            // Look for amount columns with flexible positioning and naming
-            headers.forEach((header, index) => {
-                if (!header) return;
+            // Look for dedicated pricing blocks with "TARIF KELAS" format
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                if (!row[0]) continue;
                 
-                const headerLower = header.toString().toLowerCase().trim();
-                const normalizedHeader = headerLower.replace(/[^a-z0-9]/g, '');
+                const firstCell = row[0].toString().trim();
                 
-                // Check for amount/nominal/biaya keywords
-                if (headerLower.includes('amount') || headerLower.includes('nominal') || headerLower.includes('biaya') || headerLower.includes('tarif') || headerLower.includes('harga')) {
-                    // Extract component name from header with flexible matching
-                    let componentName = '';
+                // Check if this is a pricing block header
+                if (firstCell.toLowerCase().includes('tarif') && firstCell.toLowerCase().includes('kelas')) {
+                    // Look for class specification in the next rows or same row
+                    let classType = null;
+                    let pricingData = '';
                     
-                    // Component detection with various naming patterns
-                    const componentPatterns = {
-                        'spp': ['spp'],
-                        'tabungan': ['tabungan', 'saving'],
-                        'lks': ['lks', 'lembarkerja'],
-                        'ulangan': ['ulangan', 'ulhar', 'quiz'],
-                        'ujian': ['ujian', 'exam', 'test'],
-                        'infaq': ['infaq', 'donasi'],
-                        'siswa_baru': ['siswabaru', 'newstudent', 'pendaftaran'],
-                        'perpisahan': ['perpisahan', 'farewell'],
-                        'study_tour': ['studytour', 'tour', 'wisata'],
-                        'buku_kenangan': ['bukukenangan', 'yearbook', 'kenangan']
-                    };
-                    
-                    // Find matching component
-                    Object.keys(componentPatterns).forEach(key => {
-                        componentPatterns[key].forEach(pattern => {
-                            if (normalizedHeader.includes(pattern)) {
-                                componentName = key;
+                    // Check current row for class info
+                    for (let j = 1; j < row.length; j++) {
+                        if (row[j]) {
+                            const cellContent = row[j].toString().trim();
+                            if (cellContent.toLowerCase().includes('kelas')) {
+                                // Extract class number
+                                const classMatch = cellContent.match(/kelas\s*(\d+)/i);
+                                if (classMatch) {
+                                    classType = `class${classMatch[1]}`;
+                                }
+                                pricingData = cellContent;
+                                break;
                             }
-                        });
-                    });
+                        }
+                    }
                     
-                    if (componentName && rows.length > 1) {
-                        // Get amount from first data row that has a valid amount
-                        for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
-                            const amountValue = rows[rowIndex][index];
-                            if (amountValue) {
-                                const cleanValue = amountValue.toString().replace(/[^\d]/g, '');
-                                const amount = parseFloat(cleanValue);
-                                if (!isNaN(amount) && amount > 0) {
-                                    paymentAmounts[componentName] = amount;
-                                    break; // Use first valid amount found
+                    // If no class found in current row, check next row
+                    if (!classType && i + 1 < rows.length) {
+                        const nextRow = rows[i + 1];
+                        for (let j = 0; j < nextRow.length; j++) {
+                            if (nextRow[j]) {
+                                const cellContent = nextRow[j].toString().trim();
+                                if (cellContent.toLowerCase().includes('kelas')) {
+                                    const classMatch = cellContent.match(/kelas\s*(\d+)/i);
+                                    if (classMatch) {
+                                        classType = `class${classMatch[1]}`;
+                                    }
+                                    pricingData = cellContent;
+                                    break;
                                 }
                             }
                         }
                     }
+                    
+                    // Parse the pricing data if we found a class
+                    if (classType && pricingData) {
+                        parsePricingBlock(pricingData, classType);
+                    }
                 }
-            });
+            }
+            
+            // Fallback: Look for traditional header-based pricing
+            if (Object.keys(paymentAmounts).length === 0) {
+                headers.forEach((header, index) => {
+                    if (!header) return;
+                    
+                    const headerLower = header.toString().toLowerCase().trim();
+                    
+                    // Check for amount/nominal/biaya keywords
+                    if (headerLower.includes('amount') || headerLower.includes('nominal') || 
+                        headerLower.includes('biaya') || headerLower.includes('tarif') || 
+                        headerLower.includes('harga')) {
+                        
+                        const componentInfo = detectComponentFromHeaderWithClass(header);
+                        
+                        if (componentInfo && rows.length > 1) {
+                            // Get amount from first data row that has a valid amount
+                            for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
+                                const amountValue = rows[rowIndex][index];
+                                if (amountValue) {
+                                    const cleanValue = amountValue.toString().replace(/[^\d]/g, '');
+                                    const amount = parseFloat(cleanValue);
+                                    if (!isNaN(amount) && amount > 0) {
+                                        const priceKey = componentInfo.classType ? 
+                                            `${componentInfo.component}_${componentInfo.classType}` : 
+                                            componentInfo.component;
+                                        paymentAmounts[priceKey] = amount;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
         }
 
-        // Function to get payment amount (from sheets or default)
-        function getPaymentAmount(componentKey) {
-            return paymentAmounts[componentKey] || paymentComponents[componentKey]?.amount || 0;
+        // Function to parse individual pricing blocks
+        function parsePricingBlock(pricingData, classType) {
+            // Component mapping for Indonesian terms
+            const componentMappings = {
+                'siswa baru putra': 'siswa_baru_putra',
+                'siswa baru putri': 'siswa_baru_putri',
+                'spp': 'spp',
+                'tabungan': 'tabungan',
+                'lks': 'lks',
+                'uhb': 'ulangan',
+                'ulangan harian': 'ulangan',
+                'pas': 'ujian',
+                'ujian semester': 'ujian',
+                'infaq kenaikan kelas': 'infaq',
+                'infaq': 'infaq',
+                'perpisahan': 'perpisahan',
+                'studi tour': 'study_tour',
+                'study tour': 'study_tour',
+                'buku kenangan': 'buku_kenangan',
+                'ujian akhir': 'ujian_akhir'
+            };
+            
+            // Split the pricing data into lines
+            const lines = pricingData.split(/[\n\r]+/);
+            
+            for (const line of lines) {
+                const trimmedLine = line.trim();
+                if (!trimmedLine) continue;
+                
+                // Look for pattern: "Component Name: Rp Amount"
+                const match = trimmedLine.match(/^(.+?):\s*Rp\s*([\d.,]+)/i);
+                if (match) {
+                    const componentName = match[1].trim().toLowerCase();
+                    const amountStr = match[2].replace(/[.,]/g, '');
+                    const amount = parseFloat(amountStr);
+                    
+                    if (!isNaN(amount) && amount > 0) {
+                        // Find matching component
+                        let mappedComponent = null;
+                        for (const [key, value] of Object.entries(componentMappings)) {
+                            if (componentName.includes(key)) {
+                                mappedComponent = value;
+                                break;
+                            }
+                        }
+                        
+                        if (mappedComponent) {
+                            const priceKey = `${mappedComponent}_${classType}`;
+                            const oldAmount = paymentAmounts[priceKey];
+                            paymentAmounts[priceKey] = amount;
+                            
+                            // Track pricing history
+                            if (!pricingHistory[priceKey]) {
+                                pricingHistory[priceKey] = [];
+                            }
+                            
+                            if (oldAmount && oldAmount !== amount) {
+                                pricingHistory[priceKey].push({
+                                    oldAmount: oldAmount,
+                                    newAmount: amount,
+                                    changeDate: new Date().toLocaleDateString('id-ID'),
+                                    changeType: amount > oldAmount ? 'naik' : 'turun'
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Function to detect component from header (Enhanced with class detection)
+        function detectComponentFromHeader(header) {
+            const componentInfo = detectComponentFromHeaderWithClass(header);
+            return componentInfo ? componentInfo.component : null;
+        }
+
+        // Function to detect component and class from header
+        function detectComponentFromHeaderWithClass(header) {
+            const headerLower = header.toString().toLowerCase().trim();
+            const normalizedHeader = headerLower.replace(/[^a-z0-9]/g, '');
+            
+            // Component detection with various naming patterns
+            const componentPatterns = {
+                'spp': ['spp'],
+                'tabungan': ['tabungan', 'saving'],
+                'lks': ['lks', 'lembarkerja', 'lembar_kerja'],
+                'ulangan': ['ulangan', 'ulhar', 'quiz'],
+                'ujian': ['ujian', 'exam', 'test'],
+                'ujian_akhir': ['ujianakhir', 'ujian_akhir', 'finalexam', 'akhir'],
+                'infaq': ['infaq', 'donasi'],
+                'siswa_baru': ['siswabaru', 'newstudent', 'pendaftaran', 'siswa_baru'],
+                'perpisahan': ['perpisahan', 'farewell'],
+                'study_tour': ['studytour', 'tour', 'wisata', 'study_tour'],
+                'buku_kenangan': ['bukukenangan', 'yearbook', 'kenangan', 'buku_kenangan']
+            };
+            
+            // Class detection patterns
+            const classPatterns = {
+                'class10': ['10', 'x', 'sepuluh'],
+                'class11': ['11', 'xi', 'sebelas'],
+                'class12': ['12', 'xii', 'duabelas']
+            };
+            
+            let foundComponent = null;
+            let foundClass = null;
+            
+            // Find matching component
+            for (const [key, patterns] of Object.entries(componentPatterns)) {
+                for (const pattern of patterns) {
+                    if (normalizedHeader.includes(pattern)) {
+                        foundComponent = key;
+                        break;
+                    }
+                }
+                if (foundComponent) break;
+            }
+            
+            // Find matching class
+            for (const [key, patterns] of Object.entries(classPatterns)) {
+                for (const pattern of patterns) {
+                    if (normalizedHeader.includes(pattern)) {
+                        foundClass = key;
+                        break;
+                    }
+                }
+                if (foundClass) break;
+            }
+            
+            return foundComponent ? {
+                component: foundComponent,
+                classType: foundClass
+            } : null;
+        }
+
+        // Function to get payment amount with dynamic pricing support (Enhanced for class-specific pricing)
+        function getPaymentAmount(componentKey, classType = null, period = null) {
+            // Priority order for finding the right price:
+            // 1. Class + Period specific (e.g., spp_class10_juli)
+            // 2. Class specific (e.g., spp_class10)
+            // 3. Component general (e.g., spp)
+            // 4. Default from component config
+            
+            const keys = [];
+            
+            if (classType && period) {
+                keys.push(`${componentKey}_${classType}_${period}`);
+            }
+            if (classType) {
+                keys.push(`${componentKey}_${classType}`);
+            }
+            keys.push(componentKey);
+            
+            // Try each key in priority order
+            for (const key of keys) {
+                if (paymentAmounts[key] && paymentAmounts[key] > 0) {
+                    return paymentAmounts[key];
+                }
+            }
+            
+            // Fallback to default
+            return paymentComponents[componentKey]?.defaultAmount || 0;
+        }
+
+        // Function to get pricing change information
+        function getPricingChanges(componentKey) {
+            return pricingHistory[componentKey] || [];
         }
 
         // Function to parse payment data from spreadsheet row
@@ -492,6 +674,35 @@
                 'sem2': 1, 'semester2': 1, 'genap': 1
             };
             
+            // Check for ujian_akhir first (priority matching)
+            if (normalizedHeader.includes('ujian') && normalizedHeader.includes('akhir')) {
+                const finalAmount = paidAmount === null ? getPaymentAmount('ujian_akhir') : paidAmount;
+                student.payments.ujian_akhir[0] = {
+                    paid: isPaid,
+                    amount: isPaid ? finalAmount : 0
+                };
+                return; // Exit early to avoid double processing
+            }
+            
+            // Check for gender-specific siswa baru first (priority matching)
+            if (normalizedHeader.includes('siswa') && normalizedHeader.includes('baru')) {
+                if (normalizedHeader.includes('putra') || normalizedHeader.includes('laki')) {
+                    const finalAmount = paidAmount === null ? getPaymentAmount('siswa_baru_putra') : paidAmount;
+                    student.payments.siswa_baru_putra[0] = {
+                        paid: isPaid,
+                        amount: isPaid ? finalAmount : 0
+                    };
+                    return; // Exit early to avoid double processing
+                } else if (normalizedHeader.includes('putri') || normalizedHeader.includes('perempuan')) {
+                    const finalAmount = paidAmount === null ? getPaymentAmount('siswa_baru_putri') : paidAmount;
+                    student.payments.siswa_baru_putri[0] = {
+                        paid: isPaid,
+                        amount: isPaid ? finalAmount : 0
+                    };
+                    return; // Exit early to avoid double processing
+                }
+            }
+            
             // Try to parse the header intelligently
             const parts = header.split(/[_\s-]+/);
             let component = '';
@@ -507,6 +718,7 @@
                 else if (partLower.includes('tabungan')) component = 'tabungan';
                 else if (partLower.includes('lks')) component = 'lks';
                 else if (partLower.includes('ulangan')) component = 'ulangan';
+                else if (partLower.includes('ujian') && partLower.includes('akhir')) component = 'ujian_akhir';
                 else if (partLower.includes('ujian')) component = 'ujian';
                 else if (partLower.includes('infaq')) component = 'infaq';
                 else if (partLower.includes('siswa') || partLower.includes('baru') || partLower.includes('pendaftaran')) component = 'siswa_baru';
@@ -542,19 +754,19 @@
                         if (period !== '') {
                             const index = parseInt(period);
                             if (index >= 0 && index < student.payments[component][classKey].length) {
-                                // Set payment data with amount
-                                const finalAmount = paidAmount === null ? getPaymentAmount(component) : paidAmount;
+                                // Set payment data with amount (use class-specific pricing)
+                                const finalAmount = paidAmount === null ? getPaymentAmount(component, classKey) : paidAmount;
                                 student.payments[component][classKey][index] = {
                                     paid: isPaid,
-                                    amount: finalAmount
+                                    amount: isPaid ? finalAmount : 0
                                 };
                             }
                         } else if (student.payments[component][classKey].length === 1) {
                             // For yearly payments
-                            const finalAmount = paidAmount === null ? getPaymentAmount(component) : paidAmount;
+                            const finalAmount = paidAmount === null ? getPaymentAmount(component, classKey) : paidAmount;
                             student.payments[component][classKey][0] = {
                                 paid: isPaid,
-                                amount: finalAmount
+                                amount: isPaid ? finalAmount : 0
                             };
                         }
                     }
@@ -563,13 +775,16 @@
                     const finalAmount = paidAmount === null ? getPaymentAmount(component) : paidAmount;
                     student.payments[component][0] = {
                         paid: isPaid,
-                        amount: finalAmount
+                        amount: isPaid ? finalAmount : 0
                     };
                 }
             }
             
             // Enhanced fallback: more flexible header matching for one-time payments
             const flexibleMappings = {
+                'ujian_akhir': ['ujianakhir', 'ujian_akhir', 'finalexam', 'akhir', 'ujianfinal'],
+                'siswa_baru_putra': ['siswabaru', 'siswabaruputra', 'siswabarulaki', 'pendaftaranputra', 'daftarputra'],
+                'siswa_baru_putri': ['siswabaruputri', 'siswabaruputri', 'siswabaruperempuan', 'pendaftaranputri', 'daftarputri'],
                 'siswa_baru': ['siswa', 'baru', 'pendaftaran', 'daftar', 'masuk'],
                 'perpisahan': ['perpisahan', 'farewell', 'pisah'],
                 'study_tour': ['study', 'tour', 'wisata', 'karyawisata'],
@@ -583,7 +798,7 @@
                             const finalAmount = paidAmount === null ? getPaymentAmount(componentKey) : paidAmount;
                             student.payments[componentKey][0] = {
                                 paid: isPaid,
-                                amount: finalAmount
+                                amount: isPaid ? finalAmount : 0
                             };
                         }
                     }
@@ -591,68 +806,109 @@
             });
         }
 
-        // Function to load sample data as fallback (Updated with amounts)
+        // Function to load sample data as fallback (Updated with new pricing format)
         function loadSampleData() {
+            // Set sample class-specific pricing with new format rates
+            paymentAmounts = {
+                // Class 10 pricing
+                'spp_class10': 125000,
+                'tabungan_class10': 50000,
+                'lks_class10': 120000,
+                'ulangan_class10': 100000,
+                'ujian_class10': 100000,
+                'ujian_akhir_class10': 125000,
+                'infaq_class10': 150000,
+                'siswa_baru_putra_class10': 1200000,
+                'siswa_baru_putri_class10': 1350000,
+                'perpisahan_class10': 1000000,
+                'study_tour_class10': 300000,
+                'buku_kenangan_class10': 50000,
+                
+                // Class 11 pricing
+                'spp_class11': 175000,
+                'lks_class11': 120000,
+                'ulangan_class11': 100000,
+                'ujian_class11': 100000,
+                'ujian_akhir_class11': 125000,
+                'infaq_class11': 150000,
+
+                'perpisahan_class11': 1000000,
+                'study_tour_class11': 300000,
+                'buku_kenangan_class11': 50000,
+                
+                // Class 12 pricing
+                'spp_class12': 175000,
+                'lks_class12': 120000,
+                'ulangan_class12': 100000,
+                'ujian_class12': 100000,
+                'ujian_akhir_class12': 125000,
+                'infaq_class12': 150000,
+
+                'perpisahan_class12': 1000000,
+                'study_tour_class12': 300000,
+                'buku_kenangan_class12': 50000
+            };
+            
             studentsData = {
-                '1234567890': {
-                    name: 'Ahmad Rizki Pratama',
-                    currentClass: 'XII IPA 1',
-                    nisn: '1234567890',
+                '0086045210': {
+                    name: 'Abdul Malik',
+                    currentClass: 'X IPA 1',
+                    nisn: '0086045210',
                     payments: {
                         spp: {
                             class10: [
-                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 175000}, 
-                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 175000},
-                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 175000},
-                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 175000}
-                            ],
-                            class11: [
-                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 175000}, 
-                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 175000},
-                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 175000},
-                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: false, amount: 0}
-                            ],
-                            class12: [
-                                {paid: true, amount: 175000}, {paid: true, amount: 175000}, {paid: true, amount: 100000}, 
-                                {paid: true, amount: 175000}, {paid: false, amount: 0}, {paid: false, amount: 0},
+                                {paid: true, amount: 125000}, {paid: false, amount: 0}, {paid: false, amount: 0}, 
+                                {paid: false, amount: 0}, {paid: false, amount: 0}, {paid: false, amount: 0},
                                 {paid: false, amount: 0}, {paid: false, amount: 0}, {paid: false, amount: 0},
                                 {paid: false, amount: 0}, {paid: false, amount: 0}, {paid: false, amount: 0}
-                            ]
+                            ],
+                            class11: new Array(12).fill().map(() => ({paid: false, amount: 0})),
+                            class12: new Array(12).fill().map(() => ({paid: false, amount: 0}))
                         },
                         tabungan: {
                             class10: [
-                                {paid: true, amount: 50000}, {paid: true, amount: 50000}, {paid: true, amount: 50000}, 
-                                {paid: true, amount: 50000}, {paid: true, amount: 50000}, {paid: true, amount: 50000},
-                                {paid: true, amount: 50000}, {paid: true, amount: 50000}, {paid: true, amount: 50000},
-                                {paid: true, amount: 50000}, {paid: true, amount: 50000}, {paid: true, amount: 50000}
+                                {paid: true, amount: 50000}, {paid: false, amount: 0}, {paid: false, amount: 0}, 
+                                {paid: false, amount: 0}, {paid: false, amount: 0}, {paid: false, amount: 0},
+                                {paid: false, amount: 0}, {paid: false, amount: 0}, {paid: false, amount: 0},
+                                {paid: false, amount: 0}, {paid: false, amount: 0}, {paid: false, amount: 0}
                             ],
                             class11: new Array(12).fill().map(() => ({paid: false, amount: 0})),
                             class12: new Array(12).fill().map(() => ({paid: false, amount: 0}))
                         },
                         lks: { 
-                            class10: [{paid: true, amount: 150000}, {paid: true, amount: 150000}], 
-                            class11: [{paid: true, amount: 150000}, {paid: true, amount: 150000}], 
-                            class12: [{paid: true, amount: 150000}, {paid: false, amount: 0}] 
+                            class10: [{paid: false, amount: 0}, {paid: false, amount: 0}], 
+                            class11: [{paid: false, amount: 0}, {paid: false, amount: 0}], 
+                            class12: [{paid: false, amount: 0}, {paid: false, amount: 0}] 
                         },
                         ulangan: { 
-                            class10: [{paid: true, amount: 100000}, {paid: true, amount: 100000}], 
-                            class11: [{paid: true, amount: 100000}, {paid: true, amount: 100000}], 
-                            class12: [{paid: true, amount: 100000}, {paid: false, amount: 0}] 
+                            class10: [{paid: false, amount: 0}, {paid: false, amount: 0}], 
+                            class11: [{paid: false, amount: 0}, {paid: false, amount: 0}], 
+                            class12: [{paid: false, amount: 0}, {paid: false, amount: 0}] 
                         },
                         ujian: { 
-                            class10: [{paid: true, amount: 125000}, {paid: true, amount: 125000}], 
-                            class11: [{paid: true, amount: 125000}, {paid: true, amount: 125000}], 
-                            class12: [{paid: true, amount: 125000}, {paid: false, amount: 0}] 
+                            class10: [{paid: false, amount: 0}, {paid: false, amount: 0}], 
+                            class11: [{paid: false, amount: 0}, {paid: false, amount: 0}], 
+                            class12: [{paid: false, amount: 0}, {paid: false, amount: 0}] 
                         },
+                        ujian_akhir: [{paid: false, amount: 0}],
                         infaq: { 
-                            class10: [{paid: true, amount: 150000}], 
-                            class11: [{paid: true, amount: 150000}], 
+                            class10: [{paid: false, amount: 0}], 
+                            class11: [{paid: false, amount: 0}], 
                             class12: [{paid: false, amount: 0}] 
                         },
-                        siswa_baru: [{paid: true, amount: 1250000}],
+                        // New student payments (gender-specific)
+                        siswa_baru_putra: [{paid: true, amount: 750000}],  // Male new student - partial payment
+                        siswa_baru_putri: [{paid: false, amount: 0}],
+                        siswa_pindahan_putra: [{paid: false, amount: 0}],
+                        siswa_pindahan_putri: [{paid: false, amount: 0}],
+                        
+                        // Other payments
                         perpisahan: [{paid: false, amount: 0}],
-                        study_tour: [{paid: true, amount: 500000}],
-                        buku_kenangan: [{paid: false, amount: 0}]
+                        study_tour: [{paid: false, amount: 0}],
+                        buku_kenangan: [{paid: false, amount: 0}],
+                        
+                        // Legacy for backward compatibility
+                        siswa_baru: [{paid: true, amount: 750000}]
                     }
                 }
             };
@@ -731,9 +987,11 @@
         }
 
         function displayPaymentStatus(student) {
-            const currentMonth = 9; // April (0-based index)
+            const currentMonth = 0; // Juli (0-based index) - start of academic year 2025/2026
             displayCurrentMonthStatus(student, currentMonth);
-            displayAllPayments(student);
+            displayCompletePaymentHistory(student);
+            displayPricingChanges();
+            displayCurrentPricing();
             displaySummary(student.payments);
             document.getElementById('paymentStatus').classList.remove('hidden');
         }
@@ -747,13 +1005,14 @@
             const tabunganPayment = currentClass === 'class10' ? student.payments.tabungan[currentClass][currentMonth] : null;
             const monthName = months[currentMonth];
             
-            // SPP Card with actual amount paid
+            // SPP Card with class-specific pricing
+            const sppTargetAmount = getPaymentAmount('spp', currentClass);
             let currentMonthCards = `
                 <div class="p-4 rounded-lg ${sppPayment.paid ? 'bg-green-50 border-2 border-green-200' : 'bg-red-50 border-2 border-red-200'}">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h5 class="font-semibold ${sppPayment.paid ? 'text-green-800' : 'text-red-800'}">${monthName} 2024</h5>
-                            <p class="text-sm ${sppPayment.paid ? 'text-green-600' : 'text-red-600'}">SPP Bulanan</p>
+                            <h5 class="font-semibold ${sppPayment.paid ? 'text-green-800' : 'text-red-800'}">${monthName} 2025</h5>
+                            <p class="text-sm ${sppPayment.paid ? 'text-green-600' : 'text-red-600'}">SPP Bulanan (${currentClass.replace('class', 'Kelas ')})</p>
                         </div>
                         <div class="text-right">
                             <div class="text-lg font-bold ${sppPayment.paid ? 'text-green-600' : 'text-red-600'}">
@@ -762,25 +1021,23 @@
                             <div class="text-sm text-gray-600">
                                 ${sppPayment.paid ? 
                                     `Dibayar: Rp ${sppPayment.amount.toLocaleString('id-ID')}` : 
-                                    `Target: Rp ${getPaymentAmount('spp').toLocaleString('id-ID')}`
+                                    `Target: Rp ${sppTargetAmount.toLocaleString('id-ID')}`
                                 }
                             </div>
-                            ${sppPayment.paid && sppPayment.amount < getPaymentAmount('spp') ? 
-                                `<div class="text-xs text-orange-600">Kurang: Rp ${(getPaymentAmount('spp') - sppPayment.amount).toLocaleString('id-ID')}</div>` : 
-                                ''
-                            }
+
                         </div>
                     </div>
                 </div>`;
             
             // Tabungan Card (only for class 10)
-            if (tabunganPayment !== null) {
+            if (currentClass === 'class10' && tabunganPayment !== null) {
+                const tabunganTargetAmount = getPaymentAmount('tabungan', currentClass);
                 currentMonthCards += `
                 <div class="p-4 rounded-lg ${tabunganPayment.paid ? 'bg-green-50 border-2 border-green-200' : 'bg-red-50 border-2 border-red-200'}">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h5 class="font-semibold ${tabunganPayment.paid ? 'text-green-800' : 'text-red-800'}">${monthName} 2024</h5>
-                            <p class="text-sm ${tabunganPayment.paid ? 'text-green-600' : 'text-red-600'}">Tabungan Siswa</p>
+                            <h5 class="font-semibold ${tabunganPayment.paid ? 'text-green-800' : 'text-red-800'}">${monthName} 2025</h5>
+                            <p class="text-sm ${tabunganPayment.paid ? 'text-green-600' : 'text-red-600'}">Tabungan Siswa (Khusus Kelas 10)</p>
                         </div>
                         <div class="text-right">
                             <div class="text-lg font-bold ${tabunganPayment.paid ? 'text-green-600' : 'text-red-600'}">
@@ -789,7 +1046,7 @@
                             <div class="text-sm text-gray-600">
                                 ${tabunganPayment.paid ? 
                                     `Dibayar: Rp ${tabunganPayment.amount.toLocaleString('id-ID')}` : 
-                                    `Target: Rp ${getPaymentAmount('tabungan').toLocaleString('id-ID')}`
+                                    `Target: Rp ${tabunganTargetAmount.toLocaleString('id-ID')}`
                                 }
                             </div>
                         </div>
@@ -802,6 +1059,12 @@
                         <h5 class="font-semibold text-blue-800 mb-2">Informasi Pembayaran</h5>
                         <p class="text-sm text-blue-600">Pembayaran dapat dilakukan melalui:</p>
                         <p class="text-xs text-blue-500 mt-1">Bank BNI • ATM • Mobile Banking • Teller</p>
+                        <div class="mt-2 text-xs text-blue-400">
+                            Tarif Tahun Ajaran 2025/2026: Kelas 10 SPP (Rp ${getPaymentAmount('spp', 'class10').toLocaleString('id-ID')}), 
+                            Kelas 11 SPP (Rp ${getPaymentAmount('spp', 'class11').toLocaleString('id-ID')}), 
+                            Kelas 12 SPP (Rp ${getPaymentAmount('spp', 'class12').toLocaleString('id-ID')})
+                            <br>Tabungan hanya untuk Kelas 10: Rp ${getPaymentAmount('tabungan', 'class10').toLocaleString('id-ID')}
+                        </div>
                     </div>
                 </div>`;
             }
@@ -809,252 +1072,470 @@
             container.innerHTML = currentMonthCards;
         }
 
-        function displayAllPayments(student) {
-            displayMonthlyPayments(student);
-            displaySemesterPayments(student);
-            displayYearlyPayments(student);
-            displayOnetimePayments(student);
-        }
-
-        function displayMonthlyPayments(student) {
-            displayMonthlyPaymentType(student, 'spp', 'class10MonthlyPayments', 'class10');
-            displayMonthlyPaymentType(student, 'spp', 'class11MonthlyPayments', 'class11');
-            displayMonthlyPaymentType(student, 'spp', 'class12MonthlyPayments', 'class12');
-            displayMonthlyPaymentType(student, 'tabungan', 'class10MonthlyPayments', 'class10', true);
-        }
-
-        function displayMonthlyPaymentType(student, paymentType, containerId, classType, append = false) {
-            const container = document.getElementById(containerId);
-            const payments = student.payments[paymentType][classType];
-            const component = paymentComponents[paymentType];
+        // Function to display complete payment history
+        function displayCompletePaymentHistory(student) {
+            const container = document.getElementById('completePaymentHistory');
+            const currentClass = student.currentClass.includes('XII') ? 'class12' : 
+                               student.currentClass.includes('XI') ? 'class11' : 'class10';
             
-            if (!append) container.innerHTML = '';
+            let historyHTML = '';
             
-            if (paymentType === 'tabungan' && classType !== 'class10') return;
-            
-            const paymentDiv = document.createElement('div');
-            paymentDiv.className = 'mb-4';
-            
-            let paymentHTML = `
-                <h6 class="font-medium text-gray-700 mb-3 flex items-center">
-                    <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
-                    ${component.name} - ${component.description}
-                </h6>
-                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+            // Create tabs for different payment categories
+            historyHTML += `
+                <div class="mb-6">
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <button onclick="showPaymentCategory('monthly')" class="payment-tab-btn bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                            Pembayaran Bulanan
+                        </button>
+                        <button onclick="showPaymentCategory('semester')" class="payment-tab-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
+                            Pembayaran Semester
+                        </button>
+                        <button onclick="showPaymentCategory('yearly')" class="payment-tab-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
+                            Pembayaran Tahunan
+                        </button>
+                        <button onclick="showPaymentCategory('onetime')" class="payment-tab-btn bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
+                            Pembayaran Sekali
+                        </button>
+                    </div>
+                </div>
             `;
             
-            payments.forEach((payment, index) => {
-                const targetAmount = getPaymentAmount(paymentType);
-                const isPartial = payment.paid && payment.amount > 0 && payment.amount < targetAmount;
+            // Monthly Payments Section
+            historyHTML += `
+                <div id="monthly-payments" class="payment-category">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            `;
+            
+            // SPP for all classes
+            ['class10', 'class11', 'class12'].forEach((classType, classIndex) => {
+                const className = ['Kelas 10', 'Kelas 11', 'Kelas 12'][classIndex];
+                const classColor = ['green', 'yellow', 'red'][classIndex];
                 
-                paymentHTML += `
-                    <div class="p-2 rounded text-center text-xs font-medium ${
-                        payment.paid 
-                            ? (isPartial ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' : 'bg-green-100 text-green-800 border border-green-200')
-                            : 'bg-red-100 text-red-800 border border-red-200'
-                    }">
-                        <div class="font-semibold">${months[index]}</div>
-                        <div class="text-xs mt-1">${payment.paid ? (isPartial ? '◐' : '✓') : '✗'}</div>
-                        <div class="text-xs text-gray-600">
-                            ${payment.paid ? 
-                                `Rp ${(payment.amount / 1000)}k` : 
-                                `Rp ${(targetAmount / 1000)}k`
-                            }
-                        </div>
-                        ${isPartial ? 
-                            `<div class="text-xs text-orange-600">Kurang ${((targetAmount - payment.amount) / 1000)}k</div>` : 
-                            ''
-                        }
-                    </div>
-                `;
-            });
-            
-            paymentHTML += '</div>';
-            paymentDiv.innerHTML = paymentHTML;
-            container.appendChild(paymentDiv);
-        }
-
-        function displaySemesterPayments(student) {
-            const container = document.getElementById('allSemesterPayments');
-            container.innerHTML = '';
-            
-            const semesterComponents = ['lks', 'ulangan', 'ujian']; // Removed praktikum
-            const classes = ['class10', 'class11', 'class12'];
-            const classNames = ['Kelas 10 (2022/2023)', 'Kelas 11 (2023/2024)', 'Kelas 12 (2024/2025)'];
-            const classColors = ['blue', 'green', 'purple'];
-            
-            classes.forEach((classType, classIndex) => {
-                const classDiv = document.createElement('div');
-                classDiv.className = 'mb-6';
-                
-                let classHTML = `
-                    <h5 class="text-lg font-semibold text-${classColors[classIndex]}-600 mb-4 flex items-center">
-                        <span class="bg-${classColors[classIndex]}-100 px-3 py-1 rounded-full mr-3">${classNames[classIndex]}</span>
-                    </h5>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                historyHTML += `
+                    <div class="bg-${classColor}-50 border border-${classColor}-200 rounded-lg p-4">
+                        <h5 class="font-bold text-${classColor}-800 mb-3 flex items-center">
+                            <span class="w-3 h-3 bg-${classColor}-500 rounded-full mr-2"></span>
+                            SPP ${className}
+                        </h5>
+                        <div class="space-y-2">
                 `;
                 
-                semesterComponents.forEach(componentKey => {
-                    const component = paymentComponents[componentKey];
-                    const payments = student.payments[componentKey][classType];
-                    
-                    classHTML += `
-                        <div class="p-4 border rounded-lg">
-                            <h6 class="font-medium text-gray-700 mb-2">${component.name}</h6>
-                            <p class="text-sm text-gray-600 mb-3">${component.description}</p>
-                            <div class="flex gap-2">
-                    `;
-                    
-                    payments.forEach((payment, semIndex) => {
-                        const targetAmount = getPaymentAmount(componentKey);
-                        const isPartial = payment.paid && payment.amount > 0 && payment.amount < targetAmount;
+                if (student.payments.spp && student.payments.spp[classType]) {
+                    student.payments.spp[classType].forEach((payment, monthIndex) => {
+                        const monthName = months[monthIndex];
+                        const targetAmount = getPaymentAmount('spp', classType);
+                        const isCurrentClass = classType === currentClass;
                         
-                        classHTML += `
-                            <div class="flex-1 p-2 rounded text-center text-sm ${
-                                payment.paid 
-                                    ? (isPartial ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' : 'bg-green-100 text-green-800 border border-green-200')
-                                    : 'bg-red-100 text-red-800 border border-red-200'
-                            }">
-                                <div class="font-medium">${semesters[semIndex]}</div>
-                                <div class="text-xs mt-1">${payment.paid ? (isPartial ? '◐ Cicil' : '✓ Lunas') : '✗ Belum'}</div>
-                                <div class="text-xs text-gray-600">
-                                    ${payment.paid ? 
-                                        `Rp ${(payment.amount / 1000)}k` : 
-                                        `Rp ${(targetAmount / 1000)}k`
-                                    }
+                        historyHTML += `
+                            <div class="flex justify-between items-center p-2 ${payment.paid ? 'bg-green-100' : 'bg-red-100'} rounded text-sm ${!isCurrentClass ? 'opacity-60' : ''}">
+                                <span class="font-medium">${monthName}</span>
+                                <div class="text-right">
+                                    <div class="${payment.paid ? 'text-green-700' : 'text-red-700'} font-semibold">
+                                        ${payment.paid ? '✓ LUNAS' : '✗ BELUM'}
+                                    </div>
+                                    <div class="text-xs text-gray-600">
+                                        ${payment.paid ? 
+                                            `Rp ${payment.amount.toLocaleString('id-ID')}` : 
+                                            `Rp ${targetAmount.toLocaleString('id-ID')}`
+                                        }
+                                    </div>
+
                                 </div>
-                                ${isPartial ? 
-                                    `<div class="text-xs text-orange-600">Kurang ${((targetAmount - payment.amount) / 1000)}k</div>` : 
-                                    ''
-                                }
                             </div>
                         `;
                     });
-                    
-                    classHTML += '</div></div>';
-                });
+                } else {
+                    historyHTML += `<div class="text-gray-500 text-sm italic">Belum ada data pembayaran</div>`;
+                }
                 
-                classHTML += '</div>';
-                classDiv.innerHTML = classHTML;
-                container.appendChild(classDiv);
-            });
-        }
-
-        function displayYearlyPayments(student) {
-            const container = document.getElementById('allYearlyPayments');
-            container.innerHTML = '';
-            
-            const yearlyComponents = ['infaq']; // Only infaq remains
-            const classes = ['class10', 'class11', 'class12'];
-            const classNames = ['Kelas 10 (2022/2023)', 'Kelas 11 (2023/2024)', 'Kelas 12 (2024/2025)'];
-            const classColors = ['blue', 'green', 'purple'];
-            
-            classes.forEach((classType, classIndex) => {
-                const classDiv = document.createElement('div');
-                classDiv.className = 'mb-6';
-                
-                let classHTML = `
-                    <h5 class="text-lg font-semibold text-${classColors[classIndex]}-600 mb-4 flex items-center">
-                        <span class="bg-${classColors[classIndex]}-100 px-3 py-1 rounded-full mr-3">${classNames[classIndex]}</span>
-                    </h5>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                historyHTML += `
+                        </div>
+                    </div>
                 `;
-                
-                yearlyComponents.forEach(componentKey => {
-                    const component = paymentComponents[componentKey];
-                    const payment = student.payments[componentKey][classType][0];
-                    const targetAmount = getPaymentAmount(componentKey);
-                    const isPartial = payment.paid && payment.amount > 0 && payment.amount < targetAmount;
+            });
+            
+            historyHTML += `
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h5 class="font-bold text-blue-800 mb-3 flex items-center">
+                            <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                            Tabungan Siswa (Khusus Kelas 10)
+                        </h5>
+                        <div class="space-y-2">
+            `;
+            
+            if (student.payments.tabungan && student.payments.tabungan.class10) {
+                student.payments.tabungan.class10.forEach((payment, monthIndex) => {
+                    const monthName = months[monthIndex];
+                    const targetAmount = getPaymentAmount('tabungan', 'class10');
+                    const isCurrentClass = currentClass === 'class10';
                     
-                    classHTML += `
-                        <div class="p-4 border rounded-lg ${
-                            payment.paid 
-                                ? (isPartial ? 'bg-yellow-50 border-yellow-200' : 'bg-green-50 border-green-200')
-                                : 'bg-red-50 border-red-200'
-                        }">
-                            <h6 class="font-medium ${payment.paid ? (isPartial ? 'text-yellow-800' : 'text-green-800') : 'text-red-800'} mb-2">${component.name}</h6>
-                            <p class="text-sm text-gray-600 mb-3">${component.description}</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-lg font-bold ${payment.paid ? (isPartial ? 'text-yellow-600' : 'text-green-600') : 'text-red-600'}">
-                                    ${payment.paid ? (isPartial ? '◐ CICILAN' : '✓ LUNAS') : '✗ BELUM BAYAR'}
-                                </span>
-                                <div class="text-right">
-                                    <span class="text-sm text-gray-600">
-                                        ${payment.paid ? 
-                                            `Dibayar: Rp ${payment.amount.toLocaleString('id-ID')}` : 
-                                            `Target: Rp ${targetAmount.toLocaleString('id-ID')}`
-                                        }
-                                    </span>
-                                    ${isPartial ? 
-                                        `<div class="text-xs text-orange-600">Kurang: Rp ${(targetAmount - payment.amount).toLocaleString('id-ID')}</div>` : 
-                                        ''
+                    historyHTML += `
+                        <div class="flex justify-between items-center p-2 ${payment.paid ? 'bg-green-100' : 'bg-red-100'} rounded text-sm ${!isCurrentClass ? 'opacity-60' : ''}">
+                            <span class="font-medium">${monthName}</span>
+                            <div class="text-right">
+                                <div class="${payment.paid ? 'text-green-700' : 'text-red-700'} font-semibold">
+                                    ${payment.paid ? '✓ LUNAS' : '✗ BELUM'}
+                                </div>
+                                <div class="text-xs text-gray-600">
+                                    ${payment.paid ? 
+                                        `Rp ${payment.amount.toLocaleString('id-ID')}` : 
+                                        `Rp ${targetAmount.toLocaleString('id-ID')}`
                                     }
                                 </div>
                             </div>
                         </div>
                     `;
                 });
-                
-                classHTML += '</div>';
-                classDiv.innerHTML = classHTML;
-                container.appendChild(classDiv);
-            });
-        }
-
-        function displayOnetimePayments(student) {
-            const container = document.getElementById('allOnetimePayments');
-            container.innerHTML = '';
+            } else {
+                historyHTML += `<div class="text-gray-500 text-sm italic">Belum ada data pembayaran</div>`;
+            }
             
-            const onetimeComponents = ['siswa_baru', 'perpisahan', 'study_tour', 'buku_kenangan']; // Reduced list
+            if (currentClass !== 'class10') {
+                historyHTML += `
+                    <div class="mt-3 p-2 bg-gray-100 rounded text-center">
+                        <p class="text-xs text-gray-600 italic">Tabungan hanya berlaku untuk siswa Kelas 10</p>
+                    </div>
+                `;
+            }
             
-            onetimeComponents.forEach(componentKey => {
-                const component = paymentComponents[componentKey];
-                const payment = student.payments[componentKey][0];
-                const targetAmount = getPaymentAmount(componentKey);
-                const isPartial = payment.paid && payment.amount > 0 && payment.amount < targetAmount;
+            historyHTML += `
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Semester Payments Section
+            historyHTML += `
+                <div id="semester-payments" class="payment-category hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            `;
+            
+            const semesterComponents = ['lks', 'ulangan', 'ujian'];
+            const semesterNames = ['Buku LKS', 'UHB (Ulangan)', 'PAS (Ujian)'];
+            
+            semesterComponents.forEach((componentKey, compIndex) => {
+                historyHTML += `
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                        <h5 class="font-bold text-purple-800 mb-3">${semesterNames[compIndex]}</h5>
+                        <div class="space-y-3">
+                `;
                 
-                const paymentDiv = document.createElement('div');
-                paymentDiv.className = `p-4 border rounded-lg ${
-                    payment.paid 
-                        ? (isPartial ? 'bg-yellow-50 border-yellow-200' : 'bg-green-50 border-green-200')
-                        : 'bg-red-50 border-red-200'
-                }`;
+                ['class10', 'class11', 'class12'].forEach((classType, classIndex) => {
+                    const className = ['Kelas 10', 'Kelas 11', 'Kelas 12'][classIndex];
+                    const isCurrentClass = classType === currentClass;
+                    
+                    historyHTML += `
+                        <div class="border-l-4 border-purple-300 pl-3 ${!isCurrentClass ? 'opacity-60' : ''}">
+                            <div class="font-medium text-purple-700 text-sm mb-2">${className}</div>
+                    `;
+                    
+                    if (student.payments[componentKey] && student.payments[componentKey][classType]) {
+                        student.payments[componentKey][classType].forEach((payment, semIndex) => {
+                            const semesterName = semesters[semIndex];
+                            const targetAmount = getPaymentAmount(componentKey, classType);
+                            
+                            historyHTML += `
+                                <div class="flex justify-between items-center p-2 ${payment.paid ? 'bg-green-100' : 'bg-red-100'} rounded text-xs mb-1">
+                                    <span>${semesterName}</span>
+                                    <div class="text-right">
+                                        <div class="${payment.paid ? 'text-green-700' : 'text-red-700'} font-semibold">
+                                            ${payment.paid ? '✓' : '✗'}
+                                        </div>
+                                        <div class="text-xs text-gray-600">
+                                            Rp ${payment.paid ? payment.amount.toLocaleString('id-ID') : targetAmount.toLocaleString('id-ID')}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        historyHTML += `<div class="text-gray-500 text-xs italic">Belum ada data</div>`;
+                    }
+                    
+                    historyHTML += `</div>`;
+                });
                 
-                paymentDiv.innerHTML = `
-                    <h6 class="font-medium ${payment.paid ? (isPartial ? 'text-yellow-800' : 'text-green-800') : 'text-red-800'} mb-2">${component.name}</h6>
-                    <p class="text-sm text-gray-600 mb-3">${component.description}</p>
-                    <div class="flex justify-between items-center">
-                        <span class="text-lg font-bold ${payment.paid ? (isPartial ? 'text-yellow-600' : 'text-green-600') : 'text-red-600'}">
-                            ${payment.paid ? (isPartial ? '◐ CICILAN' : '✓ LUNAS') : '✗ BELUM BAYAR'}
-                        </span>
-                        <div class="text-right">
-                            <span class="text-sm text-gray-600">
-                                ${payment.paid ? 
-                                    `Dibayar: Rp ${payment.amount.toLocaleString('id-ID')}` : 
-                                    `Target: Rp ${targetAmount.toLocaleString('id-ID')}`
-                                }
-                            </span>
-                            ${isPartial ? 
-                                `<div class="text-xs text-orange-600">Kurang: Rp ${(targetAmount - payment.amount).toLocaleString('id-ID')}</div>` : 
-                                ''
-                            }
+                historyHTML += `
                         </div>
                     </div>
                 `;
-                
-                container.appendChild(paymentDiv);
             });
+            
+            historyHTML += `
+                    </div>
+                </div>
+            `;
+            
+            // Yearly Payments Section
+            historyHTML += `
+                <div id="yearly-payments" class="payment-category hidden">
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                        <h5 class="font-bold text-orange-800 mb-3">Infaq Kenaikan Kelas</h5>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            `;
+            
+            ['class10', 'class11', 'class12'].forEach((classType, classIndex) => {
+                const className = ['Kelas 10', 'Kelas 11', 'Kelas 12'][classIndex];
+                const isCurrentClass = classType === currentClass;
+                
+                historyHTML += `
+                    <div class="border border-orange-300 rounded p-3 ${!isCurrentClass ? 'opacity-60' : ''}">
+                        <div class="font-medium text-orange-700 mb-2">${className}</div>
+                `;
+                
+                if (student.payments.infaq && student.payments.infaq[classType]) {
+                    const payment = student.payments.infaq[classType][0];
+                    const targetAmount = getPaymentAmount('infaq', classType);
+                    
+                    historyHTML += `
+                        <div class="flex justify-between items-center p-2 ${payment.paid ? 'bg-green-100' : 'bg-red-100'} rounded text-sm">
+                            <span>Tahun Ajaran</span>
+                            <div class="text-right">
+                                <div class="${payment.paid ? 'text-green-700' : 'text-red-700'} font-semibold">
+                                    ${payment.paid ? '✓ LUNAS' : '✗ BELUM'}
+                                </div>
+                                <div class="text-xs text-gray-600">
+                                    Rp ${payment.paid ? payment.amount.toLocaleString('id-ID') : targetAmount.toLocaleString('id-ID')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    historyHTML += `<div class="text-gray-500 text-sm italic">Belum ada data</div>`;
+                }
+                
+                historyHTML += `</div>`;
+            });
+            
+            historyHTML += `
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // One-time Payments Section
+            historyHTML += `
+                <div id="onetime-payments" class="payment-category hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            `;
+            
+            const onetimeComponents = [
+                'siswa_baru_putra', 'siswa_baru_putri', 'ujian_akhir', 'perpisahan', 'study_tour', 'buku_kenangan'
+            ];
+            
+            // Filter components based on student gender (inferred from name or data)
+            const studentName = student.name.toLowerCase();
+            const isMale = !studentName.includes('siti') && !studentName.includes('aisyah') && 
+                          !studentName.includes('fatimah') && !studentName.includes('khadijah') &&
+                          !studentName.includes('dewi') && !studentName.includes('putri') &&
+                          !studentName.includes('sarah') && !studentName.includes('maya') &&
+                          (studentName.includes('abdul') || studentName.includes('muhammad') || 
+                           studentName.includes('ahmad') || studentName.includes('malik'));
+            
+            const relevantComponents = onetimeComponents.filter(componentKey => {
+                // Show gender-specific components based on student gender
+                if (componentKey.includes('putra') && !isMale) return false;
+                if (componentKey.includes('putri') && isMale) return false;
+                
+                // Show components that have actual payment data
+                if (student.payments[componentKey] && student.payments[componentKey][0].paid) return true;
+                
+                // For unpaid gender-specific components, only show the relevant gender
+                if (componentKey.includes('putra') || componentKey.includes('putri')) {
+                    return (componentKey.includes('putra') && isMale) || (componentKey.includes('putri') && !isMale);
+                }
+                
+                return true; // Show all other components
+            });
+            
+            relevantComponents.forEach(componentKey => {
+                const component = paymentComponents[componentKey];
+                if (!component) return;
+                
+                historyHTML += `
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                        <h5 class="font-bold text-indigo-800 mb-2">${component.name}</h5>
+                        <p class="text-xs text-indigo-600 mb-3">${component.description}</p>
+                `;
+                
+                if (student.payments[componentKey]) {
+                    const payment = student.payments[componentKey][0];
+                    const targetAmount = getPaymentAmount(componentKey);
+                    
+                    const isPartialPayment = payment.paid && payment.amount < targetAmount;
+                    const remainingAmount = targetAmount - payment.amount;
+                    
+                    historyHTML += `
+                        <div class="flex justify-between items-center p-3 ${payment.paid ? (isPartialPayment ? 'bg-yellow-100 border-2 border-yellow-300' : 'bg-green-100') : 'bg-red-100'} rounded">
+                            <span class="font-medium">Status</span>
+                            <div class="text-right">
+                                <div class="${payment.paid ? (isPartialPayment ? 'text-yellow-700' : 'text-green-700') : 'text-red-700'} font-semibold">
+                                    ${payment.paid ? (isPartialPayment ? '⚠️ CICILAN' : '✓ LUNAS') : '✗ BELUM BAYAR'}
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    ${payment.paid ? 
+                                        (isPartialPayment ? 
+                                            `Dibayar: Rp ${payment.amount.toLocaleString('id-ID')} | Sisa: Rp ${remainingAmount.toLocaleString('id-ID')}` :
+                                            `Rp ${payment.amount.toLocaleString('id-ID')}`
+                                        ) : 
+                                        `Rp ${targetAmount.toLocaleString('id-ID')}`
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    historyHTML += `<div class="text-gray-500 text-sm italic">Belum ada data pembayaran</div>`;
+                }
+                
+                historyHTML += `</div>`;
+            });
+            
+            historyHTML += `
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = historyHTML;
         }
 
+        // Function to show payment category
         function showPaymentCategory(category) {
-            document.querySelectorAll('.payment-category').forEach(el => el.classList.add('hidden'));
-            document.getElementById(category + 'Payments').classList.remove('hidden');
-            
-            document.querySelectorAll('[id$="Tab"]').forEach(tab => {
-                tab.className = 'px-4 py-2 font-medium text-gray-600 hover:text-blue-600 rounded-t-lg';
+            // Hide all categories
+            document.querySelectorAll('.payment-category').forEach(el => {
+                el.classList.add('hidden');
             });
             
-            document.getElementById(category + 'Tab').className = 'px-4 py-2 font-medium text-blue-600 border-b-2 border-blue-600 bg-blue-50 rounded-t-lg';
+            // Show selected category
+            document.getElementById(`${category}-payments`).classList.remove('hidden');
+            
+            // Update tab buttons
+            document.querySelectorAll('.payment-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            
+            event.target.classList.remove('bg-gray-200', 'text-gray-700');
+            event.target.classList.add('bg-blue-600', 'text-white');
+        }
+
+        // Function to display pricing changes notification
+        function displayPricingChanges() {
+            const container = document.getElementById('pricingChangesList');
+            const pricingChangesDiv = document.getElementById('pricingChanges');
+            
+            let hasChanges = false;
+            let changesHTML = '';
+            
+            Object.keys(pricingHistory).forEach(componentKey => {
+                const changes = pricingHistory[componentKey];
+                if (changes.length > 0) {
+                    hasChanges = true;
+                    const latestChange = changes[changes.length - 1];
+                    
+                    // Parse component key for display
+                    const keyParts = componentKey.split('_');
+                    const baseComponent = keyParts[0];
+                    const classType = keyParts[1] || '';
+                    const component = paymentComponents[baseComponent];
+                    
+                    const displayName = classType ? 
+                        `${component.name} (${classType.replace('class', 'Kelas ')})` : 
+                        component.name;
+                    
+                    changesHTML += `
+                        <div class="flex items-center justify-between p-3 ${latestChange.changeType === 'naik' ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200'} rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="text-2xl">
+                                    ${latestChange.changeType === 'naik' ? '📈' : '📉'}
+                                </div>
+                                <div>
+                                    <h6 class="font-semibold ${latestChange.changeType === 'naik' ? 'text-red-800' : 'text-green-800'}">${displayName}</h6>
+                                    <p class="text-sm text-gray-600">${component.description}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-sm ${latestChange.changeType === 'naik' ? 'text-red-600' : 'text-green-600'} font-semibold">
+                                    ${latestChange.changeType === 'naik' ? 'NAIK' : 'TURUN'}
+                                </div>
+                                <div class="text-xs text-gray-500">
+                                    Rp ${latestChange.oldAmount.toLocaleString('id-ID')} → Rp ${latestChange.newAmount.toLocaleString('id-ID')}
+                                </div>
+                                <div class="text-xs text-gray-400">${latestChange.changeDate}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            if (hasChanges) {
+                container.innerHTML = changesHTML;
+                pricingChangesDiv.classList.remove('hidden');
+            } else {
+                pricingChangesDiv.classList.add('hidden');
+            }
+        }
+
+        // Function to display current pricing (Enhanced for class-specific pricing)
+        function displayCurrentPricing() {
+            const container = document.getElementById('currentPricing');
+            let pricingHTML = '';
+            
+            // Display class-specific pricing
+            const classes = ['class10', 'class11', 'class12'];
+            const classNames = ['Kelas 10', 'Kelas 11', 'Kelas 12'];
+            const classColors = ['green', 'yellow', 'red'];
+            
+            Object.keys(paymentComponents).forEach(componentKey => {
+                const component = paymentComponents[componentKey];
+                
+                if (component.type === 'monthly' || component.type === 'semester' || component.type === 'yearly') {
+                    classes.forEach((classType, index) => {
+                        const currentAmount = getPaymentAmount(componentKey, classType);
+                        const defaultAmount = component.defaultAmount;
+                        const hasChanged = currentAmount !== defaultAmount;
+                        
+                        pricingHTML += `
+                            <div class="p-2 ${hasChanged ? 'bg-yellow-50 border border-yellow-200' : 'bg-gray-50 border border-gray-200'} rounded">
+                                <div class="font-medium text-gray-700 text-xs">${component.name}</div>
+                                <div class="text-xs text-${classColors[index]}-600 font-medium">${classNames[index]}</div>
+                                <div class="text-sm font-semibold ${hasChanged ? 'text-yellow-700' : 'text-gray-600'}">
+                                    Rp ${currentAmount.toLocaleString('id-ID')}
+                                </div>
+                                ${hasChanged ? `
+                                    <div class="text-xs text-yellow-600">
+                                        ${currentAmount > defaultAmount ? '↗️' : '↘️'} 
+                                        ${currentAmount > defaultAmount ? 'Naik' : 'Turun'}
+                                    </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    });
+                } else {
+                    // One-time payments
+                    const currentAmount = getPaymentAmount(componentKey);
+                    const defaultAmount = component.defaultAmount;
+                    const hasChanged = currentAmount !== defaultAmount;
+                    
+                    pricingHTML += `
+                        <div class="p-2 ${hasChanged ? 'bg-yellow-50 border border-yellow-200' : 'bg-gray-50 border border-gray-200'} rounded">
+                            <div class="font-medium text-gray-700 text-xs">${component.name}</div>
+                            <div class="text-sm font-semibold ${hasChanged ? 'text-yellow-700' : 'text-gray-600'}">
+                                Rp ${currentAmount.toLocaleString('id-ID')}
+                            </div>
+                            ${hasChanged ? `
+                                <div class="text-xs text-yellow-600">
+                                    ${currentAmount > defaultAmount ? '↗️' : '↘️'} 
+                                    ${currentAmount > defaultAmount ? 'Naik' : 'Turun'}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+            });
+            
+            container.innerHTML = pricingHTML;
         }
 
         function displaySummary(payments) {
@@ -1071,7 +1552,7 @@
                             payments[componentKey][classType].forEach(payment => {
                                 if (component.type === 'monthly_class10' && classType !== 'class10') return;
                                 
-                                const targetAmount = getPaymentAmount(componentKey);
+                                const targetAmount = getPaymentAmount(componentKey, classType);
                                 if (payment.paid) {
                                     totalPaid++;
                                     // Add remaining amount if it's a partial payment
@@ -1089,7 +1570,7 @@
                     ['class10', 'class11', 'class12'].forEach(classType => {
                         if (payments[componentKey] && payments[componentKey][classType]) {
                             payments[componentKey][classType].forEach(payment => {
-                                const targetAmount = getPaymentAmount(componentKey);
+                                const targetAmount = getPaymentAmount(componentKey, classType);
                                 if (payment.paid) {
                                     totalPaid++;
                                     if (payment.amount < targetAmount) {
@@ -1106,7 +1587,7 @@
                     ['class10', 'class11', 'class12'].forEach(classType => {
                         if (payments[componentKey] && payments[componentKey][classType]) {
                             const payment = payments[componentKey][classType][0];
-                            const targetAmount = getPaymentAmount(componentKey);
+                            const targetAmount = getPaymentAmount(componentKey, classType);
                             if (payment.paid) {
                                 totalPaid++;
                                 if (payment.amount < targetAmount) {
@@ -1148,6 +1629,8 @@
         async function refreshData() {
             isDataLoaded = false;
             studentsData = {};
+            paymentAmounts = {};
+            pricingHistory = {};
             await fetchStudentData();
             
             const successDiv = document.createElement('div');
@@ -1179,5 +1662,5 @@
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97bba91df44e99a9',t:'MTc1NzMwNTMwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97bdc6afc5f09ccb',t:'MTc1NzMyNzQ4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
