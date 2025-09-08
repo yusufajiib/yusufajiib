@@ -260,7 +260,7 @@
             </div>
             
             <!-- Current Month Status -->
-            <div class="mb-6 pb-6 border-b">
+            <div class="mb-6 pb-6 border-b hidden" id="currentMonthSection">
                 <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
                     <div class="text-center">
                         <div class="text-sm text-gray-600 mb-3 font-medium">📅 Status Pembayaran Bulan Ini</div>
@@ -272,7 +272,7 @@
             </div>
 
             <!-- Payment Summary -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 hidden" id="paymentSummarySection">
                 <div class="summary-card-1 text-white p-6 rounded-xl relative z-10">
                     <div class="flex items-center justify-between relative z-10">
                         <div>
@@ -303,7 +303,7 @@
             </div>
 
             <!-- Component Breakdown -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 hidden" id="componentBreakdownSection">
                 <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
                     <div class="text-center">
                         <div class="text-2xl mb-2">📚</div>
@@ -335,7 +335,7 @@
             </div>
 
             <!-- Year Tabs -->
-            <div class="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-1 mb-6 payment-section p-1 rounded-lg" id="yearTabs">
+            <div class="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-1 mb-6 payment-section p-1 rounded-lg hidden" id="yearTabs">
                 <button onclick="showYear(10)" id="tab10" class="flex-1 py-3 px-4 rounded-md font-semibold transition-all duration-300 tab-active text-white text-sm sm:text-base">
                     Kelas 10 (2024/2025)
                 </button>
@@ -1639,6 +1639,12 @@
             // Show student info section
             document.getElementById('studentInfo').classList.remove('hidden');
             
+            // Show all payment information sections
+            document.getElementById('currentMonthSection').classList.remove('hidden');
+            document.getElementById('paymentSummarySection').classList.remove('hidden');
+            document.getElementById('componentBreakdownSection').classList.remove('hidden');
+            document.getElementById('yearTabs').classList.remove('hidden');
+            
             // Calculate current class based on entry year
             const currentClass = calculateCurrentClass(student.entryYear);
             
@@ -2285,5 +2291,5 @@
         // Initialize the application when page loads
         window.addEventListener('load', initializeApp);
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97c1fab2578dfd96',t:'MTc1NzM3MTU1OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97c20b34e58244c3',t:'MTc1NzM3MjIzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
