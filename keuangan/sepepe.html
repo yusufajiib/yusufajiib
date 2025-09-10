@@ -241,15 +241,50 @@
         </div>
 
         <!-- Student Info Section -->
-        <div id="studentInfo" class="hidden student-info-card rounded-xl card-shadow p-8 mb-8">
-            <div class="flex items-center space-x-6 mb-6 pb-6 border-b">
+        <div id="studentInfo" class="hidden student-info-card rounded-xl card-shadow p-4 md:p-8 mb-8">
+            <!-- Mobile Layout -->
+            <div class="md:hidden mb-6 pb-6 border-b">
+                <div class="flex items-center space-x-4 mb-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
+                        <span id="studentInitialMobile">A</span>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg font-bold text-gray-800 break-words leading-tight" id="studentNameMobile">Nama Siswa</h3>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 gap-2 text-sm text-gray-600">
+                    <div class="flex justify-between">
+                        <span class="font-medium">NISN:</span> 
+                        <span id="displayNisnMobile" class="font-mono">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium">Kelas:</span> 
+                        <span id="studentClassMobile">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium">Jurusan:</span> 
+                        <span id="studentMajorMobile">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium">Jenis Kelamin:</span> 
+                        <span id="studentGenderMobile">-</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="font-medium">Tahun Masuk:</span> 
+                        <span id="entryYearMobile">-</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Desktop Layout -->
+            <div class="hidden md:flex items-center space-x-6 mb-6 pb-6 border-b">
                 <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold">
                     <span id="studentInitial">A</span>
                 </div>
                 <div class="flex-1 text-right">
-                    <h3 class="text-2xl font-bold text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis" id="studentName">Nama Siswa</h3>
+                    <h3 class="text-2xl font-bold text-gray-800 break-words" id="studentName">Nama Siswa</h3>
                     <div class="grid grid-cols-2 gap-4 mt-2 text-sm text-gray-600 text-right">
-                        <p><span class="font-medium">NISN:</span> <span id="displayNisn">-</span></p>
+                        <p><span class="font-medium">NISN:</span> <span id="displayNisn" class="font-mono">-</span></p>
                         <p><span class="font-medium">Kelas:</span> <span id="studentClass">-</span></p>
                         <p><span class="font-medium">Jurusan:</span> <span id="studentMajor">-</span></p>
                         <p><span class="font-medium">Jenis Kelamin:</span> <span id="studentGender">-</span></p>
@@ -1321,14 +1356,28 @@
             // Calculate current class based on entry year
             const currentClass = calculateCurrentClass(student.entryYear);
             
-            // Fill student details
-            document.getElementById('studentName').textContent = student.name || 'Nama tidak tersedia';
+            // Fill student details for both desktop and mobile
+            const studentName = student.name || 'Nama tidak tersedia';
+            const studentGender = student.gender === 'laki-laki' ? 'Laki-laki' : student.gender === 'perempuan' ? 'Perempuan' : (student.gender || '-');
+            const studentInitial = (student.name || 'A').charAt(0);
+            
+            // Desktop elements
+            document.getElementById('studentName').textContent = studentName;
             document.getElementById('displayNisn').textContent = nisn;
             document.getElementById('studentClass').textContent = currentClass;
             document.getElementById('studentMajor').textContent = student.major || '-';
-            document.getElementById('studentGender').textContent = student.gender === 'laki-laki' ? 'Laki-laki' : student.gender === 'perempuan' ? 'Perempuan' : (student.gender || '-');
+            document.getElementById('studentGender').textContent = studentGender;
             document.getElementById('entryYear').textContent = student.entryYear || '-';
-            document.getElementById('studentInitial').textContent = (student.name || 'A').charAt(0);
+            document.getElementById('studentInitial').textContent = studentInitial;
+            
+            // Mobile elements
+            document.getElementById('studentNameMobile').textContent = studentName;
+            document.getElementById('displayNisnMobile').textContent = nisn;
+            document.getElementById('studentClassMobile').textContent = currentClass;
+            document.getElementById('studentMajorMobile').textContent = student.major || '-';
+            document.getElementById('studentGenderMobile').textContent = studentGender;
+            document.getElementById('entryYearMobile').textContent = student.entryYear || '-';
+            document.getElementById('studentInitialMobile').textContent = studentInitial;
 
             // Update tab years based on entry year
             updateTabYears(student.entryYear);
@@ -1914,5 +1963,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ce3c41a7a3ef69',t:'MTc1NzUwMDA3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97d144c6908b5f5f',t:'MTc1NzUzMTg3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
