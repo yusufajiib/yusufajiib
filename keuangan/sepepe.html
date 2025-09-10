@@ -337,33 +337,68 @@
             </div>
 
             <!-- Component Breakdown -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 hidden" id="componentBreakdownSection">
-                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
-                    <div class="text-center">
-                        <div class="text-2xl mb-2">📚</div>
-                        <div class="text-xs text-blue-600 mb-1">Total Biaya Bulanan</div>
-                        <div class="text-lg font-bold text-blue-800" id="totalSpp">Rp 0</div>
+            <div class="mb-8 hidden" id="componentBreakdownSection">
+                <!-- Mobile Layout (2x2 grid) -->
+                <div class="grid grid-cols-2 gap-3 md:hidden">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-3 border border-blue-200">
+                        <div class="text-center">
+                            <div class="text-xl mb-1">📚</div>
+                            <div class="text-xs text-blue-600 mb-1 leading-tight">Total Biaya Bulanan</div>
+                            <div class="text-sm font-bold text-blue-800 break-words" id="totalSppMobile">Rp 0</div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-3 border border-green-200">
+                        <div class="text-center">
+                            <div class="text-xl mb-1">📖</div>
+                            <div class="text-xs text-green-600 mb-1 leading-tight">Total Semester</div>
+                            <div class="text-sm font-bold text-green-800 break-words" id="totalSemesterMobile">Rp 0</div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-3 border border-purple-200">
+                        <div class="text-center">
+                            <div class="text-xl mb-1">🎓</div>
+                            <div class="text-xs text-purple-600 mb-1 leading-tight">Total Sekali Bayar</div>
+                            <div class="text-sm font-bold text-purple-800 break-words" id="totalOneTimeMobile">Rp 0</div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-3 border border-orange-200">
+                        <div class="text-center">
+                            <div class="text-xl mb-1">🗓️</div>
+                            <div class="text-xs text-orange-600 mb-1 leading-tight">Total Biaya Tahunan</div>
+                            <div class="text-sm font-bold text-orange-800 break-words" id="totalOthersMobile">Rp 0</div>
+                        </div>
                     </div>
                 </div>
-                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
-                    <div class="text-center">
-                        <div class="text-2xl mb-2">📖</div>
-                        <div class="text-xs text-green-600 mb-1">Total Semester</div>
-                        <div class="text-lg font-bold text-green-800" id="totalSemester">Rp 0</div>
+                
+                <!-- Desktop Layout (1x4 grid) -->
+                <div class="hidden md:grid grid-cols-4 gap-4">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-4 border border-blue-200">
+                        <div class="text-center">
+                            <div class="text-2xl mb-2">📚</div>
+                            <div class="text-xs text-blue-600 mb-1">Total Biaya Bulanan</div>
+                            <div class="text-lg font-bold text-blue-800" id="totalSpp">Rp 0</div>
+                        </div>
                     </div>
-                </div>
-                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
-                    <div class="text-center">
-                        <div class="text-2xl mb-2">🎓</div>
-                        <div class="text-xs text-purple-600 mb-1">Total Sekali Bayar</div>
-                        <div class="text-lg font-bold text-purple-800" id="totalOneTime">Rp 0</div>
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+                        <div class="text-center">
+                            <div class="text-2xl mb-2">📖</div>
+                            <div class="text-xs text-green-600 mb-1">Total Semester</div>
+                            <div class="text-lg font-bold text-green-800" id="totalSemester">Rp 0</div>
+                        </div>
                     </div>
-                </div>
-                <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
-                    <div class="text-center">
-                        <div class="text-2xl mb-2">🗓️</div>
-                        <div class="text-xs text-orange-600 mb-1">Total Biaya Tahunan</div>
-                        <div class="text-lg font-bold text-orange-800" id="totalOthers">Rp 0</div>
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-4 border border-purple-200">
+                        <div class="text-center">
+                            <div class="text-2xl mb-2">🎓</div>
+                            <div class="text-xs text-purple-600 mb-1">Total Sekali Bayar</div>
+                            <div class="text-lg font-bold text-purple-800" id="totalOneTime">Rp 0</div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-lg p-4 border border-orange-200">
+                        <div class="text-center">
+                            <div class="text-2xl mb-2">🗓️</div>
+                            <div class="text-xs text-orange-600 mb-1">Total Biaya Tahunan</div>
+                            <div class="text-lg font-bold text-orange-800" id="totalOthers">Rp 0</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1443,11 +1478,17 @@
             document.getElementById('totalUnpaid').textContent = totalUnpaid > 0 ? formatCurrency(totalUnpaid) : 'Rp 0';
             document.getElementById('totalOverall').textContent = totalOverall > 0 ? formatCurrency(totalOverall) : 'Rp 0';
             
-            // Component breakdown - show only if has value
+            // Component breakdown - show only if has value (Desktop)
             document.getElementById('totalSpp').textContent = totalSpp > 0 ? formatCurrency(totalSpp) : 'Rp 0';
             document.getElementById('totalSemester').textContent = totalSemester > 0 ? formatCurrency(totalSemester) : 'Rp 0';
             document.getElementById('totalOneTime').textContent = totalOneTime > 0 ? formatCurrency(totalOneTime) : 'Rp 0';
             document.getElementById('totalOthers').textContent = totalOthers > 0 ? formatCurrency(totalOthers) : 'Rp 0';
+            
+            // Component breakdown - Mobile elements
+            document.getElementById('totalSppMobile').textContent = totalSpp > 0 ? formatCurrency(totalSpp) : 'Rp 0';
+            document.getElementById('totalSemesterMobile').textContent = totalSemester > 0 ? formatCurrency(totalSemester) : 'Rp 0';
+            document.getElementById('totalOneTimeMobile').textContent = totalOneTime > 0 ? formatCurrency(totalOneTime) : 'Rp 0';
+            document.getElementById('totalOthersMobile').textContent = totalOthers > 0 ? formatCurrency(totalOthers) : 'Rp 0';
         }
 
         // Update current month status
@@ -1963,5 +2004,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97d144c6908b5f5f',t:'MTc1NzUzMTg3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97d1519da01944b9',t:'MTc1NzUzMjQwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
