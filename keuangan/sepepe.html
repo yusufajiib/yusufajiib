@@ -1548,7 +1548,7 @@
             if (actualOverpayment > 0) {
                 paidText += `\n(Kelebihan: +${formatCurrency(actualOverpayment)})`;
             }
-            document.getElementById('totalPaid').innerHTML = paidText.replace('\n', '<br><small class="text-green-200">') + (actualOverpayment > 0 ? '</small>' : '');
+            document.getElementById('totalPaid').innerHTML = paidText.replace('\n', '<br><small class="text-green-200 text-xs md:text-sm">') + (actualOverpayment > 0 ? '</small>' : '');
             
             document.getElementById('totalUnpaid').textContent = totalUnpaid > 0 ? formatCurrency(totalUnpaid) : 'Rp 0';
             
@@ -1557,7 +1557,7 @@
             if (actualOverpayment > 0) {
                 overallText += `\n(Kelebihan Bayar: +${formatCurrency(actualOverpayment)})`;
             }
-            document.getElementById('totalOverall').innerHTML = overallText.replace('\n', '<br><small class="text-blue-200">') + (actualOverpayment > 0 ? '</small>' : '');
+            document.getElementById('totalOverall').innerHTML = overallText.replace('\n', '<br><small class="text-blue-200 text-xs md:text-sm">') + (actualOverpayment > 0 ? '</small>' : '');
             
             // Component breakdown - show only if has value (Desktop)
             document.getElementById('totalSpp').textContent = totalSpp > 0 ? formatCurrency(totalSpp) : 'Rp 0';
@@ -2089,5 +2089,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97d1b6ec33f24097',t:'MTc1NzUzNjU1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97d1fbb5d7cd3104',t:'MTc1NzUzOTM3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
