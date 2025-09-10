@@ -122,6 +122,7 @@
         .status-paid { background: linear-gradient(135deg, #10b981, #059669); }
         .status-unpaid { background: linear-gradient(135deg, #ef4444, #dc2626); }
         .status-partial { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .status-overpaid { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
         .tab-active {
             background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
             box-shadow: 0 4px 15px rgba(59,130,246,0.3);
@@ -455,6 +456,7 @@
                                 <p>• Siswi Baru Putri: Rp 1.350.000</p>
                                 <p>• Study Tour: Rp 500.000</p>
                                 <p>• Perpisahan: Rp 1.000.000</p>
+                                <p>• Ujian Akhir: Rp 500.000</p>
                             </div>
                         </div>
                         
@@ -568,15 +570,31 @@
             }
         }
 
-        // Load sample data for testing
+        // Load sample data for testing - FIXED with grade-specific columns
         function loadSampleData() {
             sheetsData = [
-                // Header row
-                ['NISN', 'Nama', 'Kelas', 'Jurusan', 'Tahun_Masuk', 'Jenis_Kelamin', 'SPP_Juli_10', 'SPP_Agustus_10', 'Tabungan_Juli_10', 'LKS_Sem1_10', 'UHB_Sem1_10', 'PAS_Sem1_10', 'Infaq_Naik_Kelas_10', 'Siswa_Baru_Putra', 'Siswi_Baru_Putri'],
-                // Sample student data
-                ['1234567890', 'Ahmad Fauzi', '10', 'IPA', '2024', 'laki-laki', '125000', '125000', '50000', '150000', '100000', '120000', '150000', '1200000', '0'],
-                ['1234567891', 'Siti Aminah', '10', 'IPS', '2024', 'perempuan', '125000', '0', '50000', '150000', '0', '0', '0', '0', '1350000'],
-                ['1234567892', 'Budi Santoso', '11', 'IPA', '2023', 'laki-laki', '175000', '175000', '0', '150000', '100000', '120000', '150000', '1200000', '0']
+                // Header row - GRADE-SPECIFIC columns
+                ['NISN', 'Nama', 'Kelas', 'Jurusan', 'Tahun_Masuk', 'Jenis_Kelamin', 
+                 'SPP_10_Juli', 'SPP_10_Agustus', 'Tabungan_10_Juli', 'LKS_10_Sem1', 'UHB_10_Sem1', 'PAS_10_Sem1', 'Infaq_Naik_Kelas_10', 
+                 'SPP_11_Juli', 'SPP_11_Agustus', 'LKS_11_Sem1', 'UHB_11_Sem1', 'PAS_11_Sem1', 'Infaq_Naik_Kelas_11',
+                 'SPP_12_Juli', 'SPP_12_Agustus', 'LKS_12_Sem1', 'UHB_12_Sem1', 'PAS_12_Sem1',
+                 'Siswa_Baru_Putra', 'Siswi_Baru_Putri', 'Study_Tour', 'Perpisahan', 'Buku_Kenangan', 'Ujian_Akhir'],
+                // Sample student data - payments isolated by grade
+                ['1234567890', 'Ahmad Fauzi', '10', 'IPA', '2024', 'laki-laki', 
+                 '150000', '125000', '50000', '150000', '100000', '120000', '150000', // Grade 10 payments (SPP Juli overpaid)
+                 '0', '0', '0', '0', '0', '0', // Grade 11 payments (not paid yet)
+                 '0', '0', '0', '0', '0', // Grade 12 payments (not paid yet)
+                 '1200000', '0', '0', '0', '0', '0'], // One-time payments
+                ['1234567891', 'Siti Aminah', '10', 'IPS', '2024', 'perempuan', 
+                 '125000', '0', '50000', '150000', '0', '0', '0', // Grade 10 payments
+                 '0', '0', '0', '0', '0', '0', // Grade 11 payments (not paid yet)
+                 '0', '0', '0', '0', '0', // Grade 12 payments (not paid yet)
+                 '0', '1350000', '0', '0', '0', '0'], // One-time payments
+                ['1234567892', 'Budi Santoso', '11', 'IPA', '2023', 'laki-laki', 
+                 '125000', '125000', '50000', '150000', '100000', '120000', '150000', // Grade 10 payments (completed)
+                 '175000', '175000', '150000', '100000', '120000', '150000', // Grade 11 payments (current)
+                 '0', '0', '0', '0', '0', // Grade 12 payments (not paid yet)
+                 '1200000', '0', '0', '0', '0', '0'] // One-time payments
             ];
         }
 
@@ -684,7 +702,7 @@
                 'Perpisahan': 1000000,
                 'Study Tour': 500000,
                 'Buku Kenangan': 50000,
-                'Ujian Akhir': 50000
+                'Ujian Akhir': 500000
             },
             // Monthly payments
             monthly: {
@@ -707,7 +725,7 @@
             }
         };
 
-        // Parse student data from sheets row
+        // Parse student data from sheets row - FIXED with grade isolation
         function parseStudentData(headers, row) {
             const student = {
                 name: '',
@@ -748,7 +766,7 @@
                 }
             });
 
-            // Parse payment data for each grade and payment type
+            // Parse payment data for each grade and payment type - GRADE ISOLATION FIXED
             [10, 11, 12].forEach(grade => {
                 const gradePayments = {};
                 
@@ -791,7 +809,7 @@
                     }
                 });
                 
-                // Monthly payments
+                // Monthly payments - MUST be grade-specific
                 Object.keys(FEE_STRUCTURE.monthly).forEach(feeType => {
                     // Tabungan only for grade 10
                     if (feeType === 'Tabungan' && grade !== 10) return;
@@ -813,7 +831,8 @@
                             expectedAmount = FEE_STRUCTURE.monthly[feeType];
                         }
                         
-                        const paymentStatus = checkPaymentStatus(headers, row, `${feeType}_${month}`, grade, expectedAmount);
+                        // CRITICAL: Pass the specific grade to ensure payment isolation
+                        const paymentStatus = checkPaymentStatus(headers, row, `${feeType}_${grade}_${month}`, grade, expectedAmount);
                         
                         gradePayments[monthKey] = {
                             paid: paymentStatus.paid,
@@ -829,12 +848,14 @@
                     });
                 });
                 
-                // Semester payments (2 times per year)
+                // Semester payments (2 times per year) - MUST be grade-specific
                 Object.keys(FEE_STRUCTURE.semester).forEach(feeType => {
                     ['Semester 1', 'Semester 2'].forEach(semester => {
                         const semesterKey = `${feeType} ${semester}`;
                         const expectedAmount = FEE_STRUCTURE.semester[feeType];
-                        const paymentStatus = checkPaymentStatus(headers, row, `${feeType}_${semester}`, grade, expectedAmount);
+                        
+                        // CRITICAL: Pass the specific grade to ensure payment isolation
+                        const paymentStatus = checkPaymentStatus(headers, row, `${feeType}_${grade}_${semester}`, grade, expectedAmount);
                         
                         gradePayments[semesterKey] = {
                             paid: paymentStatus.paid,
@@ -850,11 +871,13 @@
                     });
                 });
                 
-                // Yearly payments (only for grades 10 and 11, not grade 12)
+                // Yearly payments (only for grades 10 and 11, not grade 12) - MUST be grade-specific
                 if (grade === 10 || grade === 11) {
                     Object.keys(FEE_STRUCTURE.yearly).forEach(feeType => {
                         const expectedAmount = FEE_STRUCTURE.yearly[feeType];
-                        const paymentStatus = checkPaymentStatus(headers, row, feeType, grade, expectedAmount);
+                        
+                        // CRITICAL: Pass the specific grade to ensure payment isolation
+                        const paymentStatus = checkPaymentStatus(headers, row, `${feeType}_${grade}`, grade, expectedAmount);
                         
                         gradePayments[feeType] = {
                             paid: paymentStatus.paid,
@@ -876,9 +899,9 @@
             return student;
         }
         
-        // Helper function to check payment status with installment support
+        // Helper function to check payment status with installment support - FIXED for grade isolation
         function checkPaymentStatus(headers, row, feeType, grade, expectedAmount) {
-            // Create comprehensive list of possible column name patterns
+            // Create comprehensive list of possible column name patterns - GRADE-SPECIFIC FIRST
             const feeTypeClean = feeType.replace(/\s+/g, '').toLowerCase();
             const feeTypeUnderscore = feeType.replace(/\s+/g, '_').toLowerCase();
             
@@ -892,7 +915,7 @@
                     const semesterNum = semesterMatch[1].replace(/\D/g, ''); // Extract just the number
                     const baseType = feeType.replace(semesterMatch[1], '').trim().replace(/\s+/g, '').toLowerCase();
                     
-                    // Exact patterns matching your Google Sheets headers
+                    // Exact patterns matching your Google Sheets headers - GRADE-SPECIFIC
                     if (baseType.includes('ulangan') && baseType.includes('harian')) {
                         // UHB patterns: uhb_10_sem1, uhb_10_sem2, etc.
                         possibleColumnNames.push(`uhb_${grade}_sem${semesterNum}`);
@@ -950,11 +973,10 @@
             // Remove duplicates
             feeVariations = [...new Set(feeVariations)];
             
-            // Add general patterns for non-semester payments
+            // Add general patterns for non-semester payments - GRADE-SPECIFIC FIRST
             if (!feeType.includes('Semester')) {
                 feeVariations.forEach(feeVar => {
-                    // Direct patterns
-                    possibleColumnNames.push(feeVar);
+                    // GRADE-SPECIFIC patterns first (highest priority)
                     possibleColumnNames.push(`${feeVar}_${grade}`);
                     possibleColumnNames.push(`${feeVar}_kelas_${grade}`);
                     possibleColumnNames.push(`kelas_${grade}_${feeVar}`);
@@ -971,7 +993,7 @@
                         possibleColumnNames.push(`infaq_kenaikan_${grade}`);
                     }
                     
-                    // With month patterns for monthly payments
+                    // With month patterns for monthly payments - GRADE MUST BE INCLUDED
                     if (feeType.includes('Juli') || feeType.includes('Agustus') || feeType.includes('September') || 
                         feeType.includes('Oktober') || feeType.includes('November') || feeType.includes('Desember') ||
                         feeType.includes('Januari') || feeType.includes('Februari') || feeType.includes('Maret') ||
@@ -1000,6 +1022,7 @@
                             
                             const shortMonth = monthAbbr[month] || month;
                             
+                            // GRADE-SPECIFIC monthly patterns (highest priority)
                             possibleColumnNames.push(`${baseType}_${grade}_${shortMonth}`);
                             possibleColumnNames.push(`${baseType}_${shortMonth}_${grade}`);
                             possibleColumnNames.push(`${baseType}_${month}_${grade}`);
@@ -1007,9 +1030,21 @@
                             possibleColumnNames.push(`${month}_${baseType}_${grade}`);
                             possibleColumnNames.push(`${grade}_${baseType}_${month}`);
                             possibleColumnNames.push(`${baseType}${month}${grade}`);
+                            possibleColumnNames.push(`${grade}${baseType}${shortMonth}`);
+                            possibleColumnNames.push(`${shortMonth}${baseType}${grade}`);
+                            
+                            // Only add non-grade-specific patterns as fallback (lower priority)
                             possibleColumnNames.push(`${baseType}_${month}`);
                             possibleColumnNames.push(`${month}_${baseType}`);
                         }
+                    }
+                    
+                    // Direct patterns (lowest priority for monthly/semester payments)
+                    if (!feeType.includes('Juli') && !feeType.includes('Agustus') && !feeType.includes('September') && 
+                        !feeType.includes('Oktober') && !feeType.includes('November') && !feeType.includes('Desember') &&
+                        !feeType.includes('Januari') && !feeType.includes('Februari') && !feeType.includes('Maret') &&
+                        !feeType.includes('April') && !feeType.includes('Mei') && !feeType.includes('Juni')) {
+                        possibleColumnNames.push(feeVar);
                     }
                 });
             }
@@ -1106,17 +1141,31 @@
             const numericValue = parseFloat(cellValue.replace(/[^\d.-]/g, ''));
             if (!isNaN(numericValue) && numericValue > 0) {
                 const remaining = Math.max(0, expectedAmount - numericValue);
-                const isPaid = remaining === 0;
+                const isPaid = numericValue >= expectedAmount;
+                const isOverpaid = numericValue > expectedAmount;
+                
+                let status, note;
+                if (isOverpaid) {
+                    status = 'overpaid';
+                    note = `Lebih Bayar (${formatCurrency(numericValue - expectedAmount)})`;
+                } else if (isPaid) {
+                    status = 'paid';
+                    note = 'Lunas';
+                } else {
+                    status = 'installment';
+                    note = 'Cicilan';
+                }
                 
                 return {
                     paid: isPaid,
                     amount: numericValue,
                     remaining: remaining,
-                    status: isPaid ? 'paid' : 'installment',
+                    overpaid: isOverpaid ? numericValue - expectedAmount : 0,
+                    status: status,
                     installments: [{
                         amount: numericValue,
                         date: paymentDate,
-                        note: isPaid ? 'Lunas' : 'Cicilan'
+                        note: note
                     }],
                     date: paymentDate
                 };
@@ -1145,13 +1194,26 @@
                 
                 if (installments.length > 0) {
                     const remaining = Math.max(0, expectedAmount - totalPaid);
-                    const isPaid = remaining === 0;
+                    const isPaid = totalPaid >= expectedAmount;
+                    const isOverpaid = totalPaid > expectedAmount;
+                    
+                    let status;
+                    if (isOverpaid) {
+                        status = 'overpaid';
+                        // Add overpayment note to last installment
+                        installments[installments.length - 1].note += ` - Lebih Bayar (${formatCurrency(totalPaid - expectedAmount)})`;
+                    } else if (isPaid) {
+                        status = 'paid';
+                    } else {
+                        status = 'installment';
+                    }
                     
                     return {
                         paid: isPaid,
                         amount: totalPaid,
                         remaining: remaining,
-                        status: isPaid ? 'paid' : 'installment',
+                        overpaid: isOverpaid ? totalPaid - expectedAmount : 0,
+                        status: status,
                         installments: installments,
                         date: paymentDate
                     };
@@ -1163,6 +1225,7 @@
                 paid: false,
                 amount: 0,
                 remaining: expectedAmount,
+                overpaid: 0,
                 status: 'unpaid',
                 installments: [],
                 date: null
@@ -1431,6 +1494,7 @@
         function calculateTotals(student) {
             let totalPaid = 0;
             let totalUnpaid = 0;
+            let totalOverpaid = 0;
             
             // Component totals
             let totalSpp = 0;
@@ -1444,6 +1508,8 @@
                     totalPaid += payment.paidAmount || 0;
                     // Add the remaining amount to unpaid
                     totalUnpaid += payment.remaining || 0;
+                    // Track overpayments
+                    totalOverpaid += payment.overpaid || 0;
                     
                     // Calculate component totals (expected amounts) based on fee type
                     const expectedAmount = payment.amount || 0;
@@ -1471,12 +1537,27 @@
                 });
             });
 
+            // Calculate standard total fees based on gender
+            const standardTotal = totalSpp + totalSemester + totalOneTime + totalOthers;
+            const actualOverpayment = Math.max(0, totalPaid - standardTotal);
+            
             const totalOverall = totalPaid + totalUnpaid;
 
-            // Display totals, hide if zero
-            document.getElementById('totalPaid').textContent = totalPaid > 0 ? formatCurrency(totalPaid) : 'Rp 0';
+            // Display totals with overpayment information
+            let paidText = totalPaid > 0 ? formatCurrency(totalPaid) : 'Rp 0';
+            if (actualOverpayment > 0) {
+                paidText += `\n(Kelebihan: +${formatCurrency(actualOverpayment)})`;
+            }
+            document.getElementById('totalPaid').innerHTML = paidText.replace('\n', '<br><small class="text-green-200">') + (actualOverpayment > 0 ? '</small>' : '');
+            
             document.getElementById('totalUnpaid').textContent = totalUnpaid > 0 ? formatCurrency(totalUnpaid) : 'Rp 0';
-            document.getElementById('totalOverall').textContent = totalOverall > 0 ? formatCurrency(totalOverall) : 'Rp 0';
+            
+            // Show overpayment info in the overall total if there's overpayment
+            let overallText = totalOverall > 0 ? formatCurrency(totalOverall) : 'Rp 0';
+            if (actualOverpayment > 0) {
+                overallText += `\n(Kelebihan Bayar: +${formatCurrency(actualOverpayment)})`;
+            }
+            document.getElementById('totalOverall').innerHTML = overallText.replace('\n', '<br><small class="text-blue-200">') + (actualOverpayment > 0 ? '</small>' : '');
             
             // Component breakdown - show only if has value (Desktop)
             document.getElementById('totalSpp').textContent = totalSpp > 0 ? formatCurrency(totalSpp) : 'Rp 0';
@@ -1768,7 +1849,10 @@
         function generateTableRow(payment, rowNumber) {
             let statusBadge, statusText;
             
-            if (payment.status === 'paid') {
+            if (payment.status === 'overpaid') {
+                statusBadge = 'bg-purple-100 text-purple-800';
+                statusText = '💰 Lebih Bayar';
+            } else if (payment.status === 'paid') {
                 statusBadge = 'bg-green-100 text-green-800';
                 statusText = '✅ Lunas';
             } else if (payment.status === 'installment') {
@@ -1897,6 +1981,7 @@
                 };
 
                 const statusMap = {
+                    'overpaid': 'Lebih Bayar',
                     'paid': 'Lunas',
                     'installment': 'Cicilan',
                     'unpaid': 'Belum Bayar'
@@ -2004,5 +2089,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97d1600ed528fdc2',t:'MTc1NzUzMjk5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97d1b6ec33f24097',t:'MTc1NzUzNjU1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
