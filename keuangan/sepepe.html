@@ -1116,8 +1116,9 @@
             
             const cellValue = row[paymentColumnIndex].toString().trim();
             
-            // Find corresponding date column
-            const paymentDate = findPaymentDate(headers, row, feeType, grade, matchedColumnName);
+            // Find corresponding date columns (multiple date columns for installments)
+            const paymentDates = findAllPaymentDates(headers, row, feeType, grade, matchedColumnName);
+            const latestPaymentDate = getLatestDate(paymentDates);
             
             // Check for full payment indicators
             if (cellValue.toLowerCase() === 'lunas' || 
@@ -1130,10 +1131,10 @@
                     status: 'paid',
                     installments: [{
                         amount: expectedAmount,
-                        date: paymentDate,
+                        date: latestPaymentDate,
                         note: 'Lunas'
                     }],
-                    date: paymentDate
+                    date: latestPaymentDate
                 };
             }
             
@@ -1164,10 +1165,10 @@
                     status: status,
                     installments: [{
                         amount: numericValue,
-                        date: paymentDate,
+                        date: latestPaymentDate,
                         note: note
                     }],
-                    date: paymentDate
+                    date: latestPaymentDate
                 };
             }
             
@@ -1184,9 +1185,11 @@
                     
                     if (!isNaN(amount) && amount > 0) {
                         totalPaid += amount;
+                        // Use specific date for each installment if available, otherwise use latest
+                        const installmentDate = paymentDates[index] || latestPaymentDate;
                         installments.push({
                             amount: amount,
-                            date: paymentDate,
+                            date: installmentDate,
                             note: `Cicilan ${index + 1}`
                         });
                     }
@@ -1208,6 +1211,14 @@
                         status = 'installment';
                     }
                     
+                    // Sort installments by date (latest first) to show most recent payment date
+                    installments.sort((a, b) => {
+                        if (!a.date && !b.date) return 0;
+                        if (!a.date) return 1;
+                        if (!b.date) return -1;
+                        return new Date(b.date) - new Date(a.date);
+                    });
+                    
                     return {
                         paid: isPaid,
                         amount: totalPaid,
@@ -1215,7 +1226,7 @@
                         overpaid: isOverpaid ? totalPaid - expectedAmount : 0,
                         status: status,
                         installments: installments,
-                        date: paymentDate
+                        date: latestPaymentDate // Use the latest payment date
                     };
                 }
             }
@@ -1232,12 +1243,14 @@
             };
         }
 
-        // Helper function to find payment date from Google Sheets
-        function findPaymentDate(headers, row, feeType, grade, paymentColumnName) {
-            // Create date column patterns based on your Google Sheets structure
+        // Helper function to find all payment dates from Google Sheets (for installments)
+        function findAllPaymentDates(headers, row, feeType, grade, paymentColumnName) {
+            const dates = [];
+            
+            // Create EXACT date column patterns based on your Google Sheets headers
             const dateColumnPatterns = [];
             
-            // Handle semester payments
+            // Handle semester payments - EXACT patterns from your Google Sheets (WORKING CORRECTLY)
             if (feeType.includes('Semester')) {
                 const semesterMatch = feeType.match(/(Semester\s*[12])/);
                 if (semesterMatch) {
@@ -1245,15 +1258,18 @@
                     const baseType = feeType.replace(semesterMatch[1], '').trim().replace(/\s+/g, '').toLowerCase();
                     
                     if (baseType.includes('ulangan') && baseType.includes('harian')) {
+                        // UHB patterns: tgl_uhb_10_sem1, tgl_uhb_10_sem2, etc.
                         dateColumnPatterns.push(`tgl_uhb_${grade}_sem${semesterNum}`);
                     } else if (baseType.includes('ulangan') && baseType.includes('semester')) {
+                        // PAS patterns: tgl_pas_10_sem1, tgl_pas_10_sem2, etc.
                         dateColumnPatterns.push(`tgl_pas_${grade}_sem${semesterNum}`);
                     } else if (baseType.includes('lks') || baseType.includes('buku')) {
+                        // LKS patterns: tgl_lks_10_sem1, tgl_lks_10_sem2, etc.
                         dateColumnPatterns.push(`tgl_lks_${grade}_sem${semesterNum}`);
                     }
                 }
             }
-            // Handle monthly payments
+            // Handle monthly payments - FIXED to match working semester pattern
             else if (feeType.includes('Juli') || feeType.includes('Agustus') || feeType.includes('September') || 
                      feeType.includes('Oktober') || feeType.includes('November') || feeType.includes('Desember') ||
                      feeType.includes('Januari') || feeType.includes('Februari') || feeType.includes('Maret') ||
@@ -1264,57 +1280,251 @@
                     const month = monthMatch[1].toLowerCase();
                     const baseType = feeType.replace(monthMatch[1], '').trim().replace(/\s+/g, '').toLowerCase();
                     
-                    // Month abbreviations for Google Sheets
+                    // EXACT month abbreviations from your Google Sheets
                     const monthAbbr = {
-                        'juli': 'jul',
-                        'agustus': 'agu',
-                        'september': 'sep',
-                        'oktober': 'okt',
-                        'november': 'nov',
-                        'desember': 'des',
-                        'januari': 'jan',
-                        'februari': 'feb',
-                        'maret': 'mar',
-                        'april': 'apr',
-                        'mei': 'mei',
-                        'juni': 'jun'
+                        'juli': 'jul', 'agustus': 'agu', 'september': 'sep', 'oktober': 'okt',
+                        'november': 'nov', 'desember': 'des', 'januari': 'jan', 'februari': 'feb',
+                        'maret': 'mar', 'april': 'apr', 'mei': 'mei', 'juni': 'jun'
                     };
                     
                     const shortMonth = monthAbbr[month] || month;
                     
                     if (baseType === 'spp') {
+                        // MULTIPLE PATTERNS - try all possible variations like the working semester payments
                         dateColumnPatterns.push(`tgl_spp_${grade}_${shortMonth}`);
+                        dateColumnPatterns.push(`Tgl_SPP_${grade}_${shortMonth}`);
+                        dateColumnPatterns.push(`TGL_SPP_${grade}_${shortMonth.toUpperCase()}`);
+                        dateColumnPatterns.push(`tgl_SPP_${grade}_${shortMonth}`);
+                        dateColumnPatterns.push(`Tgl_spp_${grade}_${shortMonth}`);
+                        // Additional patterns based on actual Google Sheets structure
+                        dateColumnPatterns.push(`tgl_spp_${shortMonth}_${grade}`);
+                        dateColumnPatterns.push(`Tgl_SPP_${shortMonth}_${grade}`);
+                        dateColumnPatterns.push(`tgl_${grade}_spp_${shortMonth}`);
+                        dateColumnPatterns.push(`Tgl_${grade}_SPP_${shortMonth}`);
                     } else if (baseType === 'tabungan') {
+                        // MULTIPLE PATTERNS - try all possible variations like the working semester payments
                         dateColumnPatterns.push(`tgl_tabungan_${grade}_${shortMonth}`);
+                        dateColumnPatterns.push(`Tgl_Tabungan_${grade}_${shortMonth}`);
+                        dateColumnPatterns.push(`TGL_TABUNGAN_${grade}_${shortMonth.toUpperCase()}`);
+                        dateColumnPatterns.push(`tgl_TABUNGAN_${grade}_${shortMonth}`);
+                        dateColumnPatterns.push(`Tgl_tabungan_${grade}_${shortMonth}`);
+                        // Additional patterns based on actual Google Sheets structure
+                        dateColumnPatterns.push(`tgl_tabungan_${shortMonth}_${grade}`);
+                        dateColumnPatterns.push(`Tgl_Tabungan_${shortMonth}_${grade}`);
+                        dateColumnPatterns.push(`tgl_${grade}_tabungan_${shortMonth}`);
+                        dateColumnPatterns.push(`Tgl_${grade}_Tabungan_${shortMonth}`);
                     }
                 }
             }
-            // Handle one-time and yearly payments
+            // Handle one-time and yearly payments - EXACT patterns from your Google Sheets
             else {
-                const feeTypeClean = feeType.replace(/\s+/g, '_').toLowerCase();
-                
                 if (feeType.includes('Siswa Baru Putra')) {
+                    // EXACT: tgl_siswa_baru_putra
                     dateColumnPatterns.push('tgl_siswa_baru_putra');
+                    dateColumnPatterns.push('Tgl_Siswa_Baru_Putra');
+                    dateColumnPatterns.push('TGL_SISWA_BARU_PUTRA');
                 } else if (feeType.includes('Siswi Baru Putri')) {
+                    // EXACT: tgl_siswi_baru_putri
                     dateColumnPatterns.push('tgl_siswi_baru_putri');
+                    dateColumnPatterns.push('Tgl_Siswi_Baru_Putri');
+                    dateColumnPatterns.push('TGL_SISWI_BARU_PUTRI');
                 } else if (feeType.includes('Ujian Akhir')) {
+                    // EXACT: tgl_ujian_akhir
                     dateColumnPatterns.push('tgl_ujian_akhir');
+                    dateColumnPatterns.push('Tgl_Ujian_Akhir');
+                    dateColumnPatterns.push('TGL_UJIAN_AKHIR');
                 } else if (feeType.includes('Perpisahan')) {
+                    // EXACT: tgl_perpisahan
                     dateColumnPatterns.push('tgl_perpisahan');
+                    dateColumnPatterns.push('Tgl_Perpisahan');
+                    dateColumnPatterns.push('TGL_PERPISAHAN');
                 } else if (feeType.includes('Buku Kenangan')) {
+                    // EXACT: tgl_buku_kenangan
                     dateColumnPatterns.push('tgl_buku_kenangan');
+                    dateColumnPatterns.push('Tgl_Buku_Kenangan');
+                    dateColumnPatterns.push('TGL_BUKU_KENANGAN');
                 } else if (feeType.includes('Study Tour')) {
+                    // EXACT: tgl_study_tour
                     dateColumnPatterns.push('tgl_study_tour');
+                    dateColumnPatterns.push('Tgl_Study_Tour');
+                    dateColumnPatterns.push('TGL_STUDY_TOUR');
                 } else if (feeType.includes('Infaq Kenaikan')) {
+                    // EXACT: tgl_infaq_naik_kelas_10, tgl_infaq_naik_kelas_11
                     dateColumnPatterns.push(`tgl_infaq_naik_kelas_${grade}`);
+                    dateColumnPatterns.push(`Tgl_Infaq_Naik_Kelas_${grade}`);
+                    dateColumnPatterns.push(`TGL_INFAQ_NAIK_KELAS_${grade}`);
                 }
             }
             
-            // Find the best matching date column
+            // Find all matching date columns and collect their values with enhanced matching
+            dateColumnPatterns.forEach(pattern => {
+                headers.forEach((header, index) => {
+                    const headerOriginal = header;
+                    const headerLower = header.toLowerCase();
+                    const patternLower = pattern.toLowerCase();
+                    
+                    let isMatch = false;
+                    
+                    // EXACT match (case insensitive) - highest priority
+                    if (headerLower === patternLower) {
+                        isMatch = true;
+                    }
+                    // EXACT match (case sensitive) - second priority
+                    else if (headerOriginal === pattern) {
+                        isMatch = true;
+                    }
+                    // Contains match - third priority
+                    else if (headerLower.includes(patternLower) || patternLower.includes(headerLower)) {
+                        isMatch = true;
+                    }
+                    
+                    if (isMatch && row[index]) {
+                        const dateValue = row[index].toString().trim();
+                        if (dateValue && dateValue !== '' && dateValue !== '-' && dateValue !== '0') {
+                            const parsedDate = parseDate(dateValue);
+                            if (parsedDate) {
+                                dates.push(parsedDate);
+                                console.log(`📅 Found date for ${feeType}: "${dateValue}" -> ${parsedDate} from column "${headerOriginal}"`);
+                            }
+                        }
+                    }
+                });
+            });
+            
+            // Remove duplicates and sort by date (newest first)
+            const uniqueDates = [...new Set(dates)];
+            uniqueDates.sort((a, b) => new Date(b) - new Date(a));
+            
+            return uniqueDates;
+        }
+
+        // Helper function to get the latest date from an array of dates
+        function getLatestDate(dates) {
+            if (!dates || dates.length === 0) return null;
+            
+            // Sort dates and return the latest (most recent)
+            const sortedDates = dates.sort((a, b) => new Date(b) - new Date(a));
+            return sortedDates[0];
+        }
+
+        // Helper function to find payment date from Google Sheets (legacy function for compatibility)
+        function findPaymentDate(headers, row, feeType, grade, paymentColumnName) {
+            // Create EXACT date column patterns based on your Google Sheets headers
+            const dateColumnPatterns = [];
+            
+            // Handle semester payments - EXACT patterns (WORKING CORRECTLY)
+            if (feeType.includes('Semester')) {
+                const semesterMatch = feeType.match(/(Semester\s*[12])/);
+                if (semesterMatch) {
+                    const semesterNum = semesterMatch[1].replace(/\D/g, '');
+                    const baseType = feeType.replace(semesterMatch[1], '').trim().replace(/\s+/g, '').toLowerCase();
+                    
+                    if (baseType.includes('ulangan') && baseType.includes('harian')) {
+                        // EXACT: tgl_uhb_10_sem1, tgl_uhb_10_sem2, etc.
+                        dateColumnPatterns.push(`tgl_uhb_${grade}_sem${semesterNum}`);
+                    } else if (baseType.includes('ulangan') && baseType.includes('semester')) {
+                        // EXACT: tgl_pas_10_sem1, tgl_pas_10_sem2, etc.
+                        dateColumnPatterns.push(`tgl_pas_${grade}_sem${semesterNum}`);
+                    } else if (baseType.includes('lks') || baseType.includes('buku')) {
+                        // EXACT: tgl_lks_10_sem1, tgl_lks_10_sem2, etc.
+                        dateColumnPatterns.push(`tgl_lks_${grade}_sem${semesterNum}`);
+                    }
+                }
+            }
+            // Handle monthly payments - FIXED to match working semester pattern
+            else if (feeType.includes('Juli') || feeType.includes('Agustus') || feeType.includes('September') || 
+                     feeType.includes('Oktober') || feeType.includes('November') || feeType.includes('Desember') ||
+                     feeType.includes('Januari') || feeType.includes('Februari') || feeType.includes('Maret') ||
+                     feeType.includes('April') || feeType.includes('Mei') || feeType.includes('Juni')) {
+                
+                const monthMatch = feeType.match(/(Juli|Agustus|September|Oktober|November|Desember|Januari|Februari|Maret|April|Mei|Juni)/);
+                if (monthMatch) {
+                    const month = monthMatch[1].toLowerCase();
+                    const baseType = feeType.replace(monthMatch[1], '').trim().replace(/\s+/g, '').toLowerCase();
+                    
+                    // EXACT month abbreviations from your Google Sheets
+                    const monthAbbr = {
+                        'juli': 'jul', 'agustus': 'agu', 'september': 'sep', 'oktober': 'okt',
+                        'november': 'nov', 'desember': 'des', 'januari': 'jan', 'februari': 'feb',
+                        'maret': 'mar', 'april': 'apr', 'mei': 'mei', 'juni': 'jun'
+                    };
+                    
+                    const shortMonth = monthAbbr[month] || month;
+                    
+                    if (baseType === 'spp') {
+                        // MULTIPLE PATTERNS - try all possible variations like the working semester payments
+                        dateColumnPatterns.push(`tgl_spp_${grade}_${shortMonth}`);
+                        dateColumnPatterns.push(`Tgl_SPP_${grade}_${shortMonth}`);
+                        dateColumnPatterns.push(`TGL_SPP_${grade}_${shortMonth.toUpperCase()}`);
+                        dateColumnPatterns.push(`tgl_SPP_${grade}_${shortMonth}`);
+                        dateColumnPatterns.push(`Tgl_spp_${grade}_${shortMonth}`);
+                        // Additional patterns based on actual Google Sheets structure
+                        dateColumnPatterns.push(`tgl_spp_${shortMonth}_${grade}`);
+                        dateColumnPatterns.push(`Tgl_SPP_${shortMonth}_${grade}`);
+                        dateColumnPatterns.push(`tgl_${grade}_spp_${shortMonth}`);
+                        dateColumnPatterns.push(`Tgl_${grade}_SPP_${shortMonth}`);
+                        console.log(`🔍 Looking for SPP date patterns:`, dateColumnPatterns.slice(-9));
+                    } else if (baseType === 'tabungan') {
+                        // MULTIPLE PATTERNS - try all possible variations like the working semester payments
+                        dateColumnPatterns.push(`tgl_tabungan_${grade}_${shortMonth}`);
+                        dateColumnPatterns.push(`Tgl_Tabungan_${grade}_${shortMonth}`);
+                        dateColumnPatterns.push(`TGL_TABUNGAN_${grade}_${shortMonth.toUpperCase()}`);
+                        dateColumnPatterns.push(`tgl_TABUNGAN_${grade}_${shortMonth}`);
+                        dateColumnPatterns.push(`Tgl_tabungan_${grade}_${shortMonth}`);
+                        // Additional patterns based on actual Google Sheets structure
+                        dateColumnPatterns.push(`tgl_tabungan_${shortMonth}_${grade}`);
+                        dateColumnPatterns.push(`Tgl_Tabungan_${shortMonth}_${grade}`);
+                        dateColumnPatterns.push(`tgl_${grade}_tabungan_${shortMonth}`);
+                        dateColumnPatterns.push(`Tgl_${grade}_Tabungan_${shortMonth}`);
+                        console.log(`🔍 Looking for Tabungan date patterns:`, dateColumnPatterns.slice(-9));
+                    }
+                }
+            }
+            // Handle one-time and yearly payments - EXACT patterns
+            else {
+                if (feeType.includes('Siswa Baru Putra')) {
+                    dateColumnPatterns.push('tgl_siswa_baru_putra');
+                    dateColumnPatterns.push('Tgl_Siswa_Baru_Putra');
+                    dateColumnPatterns.push('TGL_SISWA_BARU_PUTRA');
+                } else if (feeType.includes('Siswi Baru Putri')) {
+                    dateColumnPatterns.push('tgl_siswi_baru_putri');
+                    dateColumnPatterns.push('Tgl_Siswi_Baru_Putri');
+                    dateColumnPatterns.push('TGL_SISWI_BARU_PUTRI');
+                } else if (feeType.includes('Ujian Akhir')) {
+                    dateColumnPatterns.push('tgl_ujian_akhir');
+                    dateColumnPatterns.push('Tgl_Ujian_Akhir');
+                    dateColumnPatterns.push('TGL_UJIAN_AKHIR');
+                } else if (feeType.includes('Perpisahan')) {
+                    dateColumnPatterns.push('tgl_perpisahan');
+                    dateColumnPatterns.push('Tgl_Perpisahan');
+                    dateColumnPatterns.push('TGL_PERPISAHAN');
+                } else if (feeType.includes('Buku Kenangan')) {
+                    dateColumnPatterns.push('tgl_buku_kenangan');
+                    dateColumnPatterns.push('Tgl_Buku_Kenangan');
+                    dateColumnPatterns.push('TGL_BUKU_KENANGAN');
+                } else if (feeType.includes('Study Tour')) {
+                    dateColumnPatterns.push('tgl_study_tour');
+                    dateColumnPatterns.push('Tgl_Study_Tour');
+                    dateColumnPatterns.push('TGL_STUDY_TOUR');
+                } else if (feeType.includes('Infaq Kenaikan')) {
+                    dateColumnPatterns.push(`tgl_infaq_naik_kelas_${grade}`);
+                    dateColumnPatterns.push(`Tgl_Infaq_Naik_Kelas_${grade}`);
+                    dateColumnPatterns.push(`TGL_INFAQ_NAIK_KELAS_${grade}`);
+                }
+            }
+            
+            // ENHANCED DEBUG: Show exactly what we're looking for vs what's available
+            console.log(`🔍 DEBUGGING DATE SEARCH for ${feeType}:`);
+            console.log(`📋 Available headers:`, headers);
+            console.log(`🎯 Looking for patterns:`, dateColumnPatterns);
+            
+            // Find the best matching date column with enhanced scoring
             let dateColumnIndex = -1;
             let bestMatchScore = 0;
+            let matchedHeader = '';
             
             headers.forEach((header, index) => {
+                const headerOriginal = header; // Keep original case
                 const headerLower = header.toLowerCase();
                 
                 dateColumnPatterns.forEach(pattern => {
@@ -1322,34 +1532,60 @@
                     
                     let score = 0;
                     
-                    // Exact match gets highest score
+                    // EXACT match gets highest score (case insensitive)
                     if (headerLower === patternLower) {
                         score = 100;
+                        console.log(`✅ EXACT MATCH: "${headerOriginal}" matches "${pattern}"`);
                     }
-                    // Contains match
+                    // Check if header exactly matches the pattern structure
+                    else if (headerOriginal === pattern) {
+                        score = 99;
+                        console.log(`✅ CASE SENSITIVE MATCH: "${headerOriginal}" matches "${pattern}"`);
+                    }
+                    // Contains match (header contains pattern)
                     else if (headerLower.includes(patternLower)) {
                         score = 80;
+                        console.log(`⚠️ PARTIAL MATCH: "${headerOriginal}" contains "${pattern}"`);
                     }
-                    // Reverse contains match
+                    // Reverse contains match (pattern contains header)
                     else if (patternLower.includes(headerLower)) {
                         score = 70;
+                        console.log(`⚠️ REVERSE MATCH: "${pattern}" contains "${headerOriginal}"`);
                     }
                     
                     if (score > bestMatchScore) {
                         bestMatchScore = score;
                         dateColumnIndex = index;
+                        matchedHeader = headerOriginal;
+                        console.log(`🎯 NEW BEST MATCH: "${matchedHeader}" with score ${score}`);
                     }
                 });
+            });
+            
+            console.log(`🔍 Final result for ${feeType}:`, {
+                matchedHeader: matchedHeader,
+                matchScore: bestMatchScore,
+                dateColumnIndex: dateColumnIndex
             });
             
             // Return the date if found and valid
             if (dateColumnIndex !== -1 && row[dateColumnIndex]) {
                 const dateValue = row[dateColumnIndex].toString().trim();
-                if (dateValue && dateValue !== '' && dateValue !== '-') {
+                console.log(`📅 Found date value for ${feeType}: "${dateValue}" in column "${matchedHeader}" (index: ${dateColumnIndex})`);
+                
+                if (dateValue && dateValue !== '' && dateValue !== '-' && dateValue !== '0') {
                     // Try to parse the date
                     const parsedDate = parseDate(dateValue);
+                    console.log(`✅ Parsed date for ${feeType}: ${parsedDate}`);
                     return parsedDate;
                 }
+            } else {
+                console.log(`❌ No date column found for ${feeType}`);
+                console.log(`📊 Available date-related headers:`, headers.filter(h => 
+                    h.toLowerCase().includes('tgl') || 
+                    h.toLowerCase().includes('tanggal') || 
+                    h.toLowerCase().includes('date')
+                ));
             }
             
             return null;
@@ -1357,42 +1593,52 @@
 
         // Helper function to parse various date formats
         function parseDate(dateString) {
-            if (!dateString || dateString === '' || dateString === '-') {
+            if (!dateString || dateString === '' || dateString === '-' || dateString === '0') {
                 return null;
             }
             
-            // Try different date formats
-            const formats = [
-                // ISO format
-                /^\d{4}-\d{2}-\d{2}$/,
-                // Indonesian format
-                /^\d{1,2}\/\d{1,2}\/\d{4}$/,
-                // European format
-                /^\d{1,2}-\d{1,2}-\d{4}$/,
-                // US format
-                /^\d{1,2}\/\d{1,2}\/\d{2,4}$/
-            ];
+            const cleanDateString = dateString.toString().trim();
             
-            const cleanDateString = dateString.trim();
-            
-            // Try to parse as Date object first
-            const parsedDate = new Date(cleanDateString);
-            if (!isNaN(parsedDate.getTime())) {
-                return parsedDate.toISOString().split('T')[0];
+            // Handle Excel serial date numbers (common issue)
+            if (/^\d+(\.\d+)?$/.test(cleanDateString)) {
+                const serialNumber = parseFloat(cleanDateString);
+                // Excel serial dates start from 1900-01-01 (serial 1)
+                // Valid range: 1 to 100000 (covers years 1900-2173)
+                if (serialNumber >= 1 && serialNumber < 100000) {
+                    // Excel incorrectly treats 1900 as a leap year, so we need to adjust
+                    // Excel epoch: January 1, 1900 is serial number 1
+                    // But we use December 30, 1899 as base to account for Excel's leap year bug
+                    const excelEpoch = new Date(1899, 11, 30); // December 30, 1899
+                    const date = new Date(excelEpoch.getTime() + Math.floor(serialNumber) * 24 * 60 * 60 * 1000);
+                    
+                    if (!isNaN(date.getTime()) && date.getFullYear() >= 1900 && date.getFullYear() <= 2100) {
+                        console.log(`Converted Excel serial ${serialNumber} to date: ${date.toISOString().split('T')[0]}`);
+                        return date.toISOString().split('T')[0];
+                    }
+                }
             }
             
             // Try manual parsing for Indonesian format (dd/mm/yyyy or d/m/yyyy)
             if (cleanDateString.includes('/')) {
                 const parts = cleanDateString.split('/');
                 if (parts.length === 3) {
-                    const day = parseInt(parts[0]);
-                    const month = parseInt(parts[1]);
-                    const year = parseInt(parts[2]);
+                    let day = parseInt(parts[0]);
+                    let month = parseInt(parts[1]);
+                    let year = parseInt(parts[2]);
                     
-                    // Validate ranges
-                    if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 1900) {
+                    // Handle 2-digit years
+                    if (year < 100) {
+                        year += year < 50 ? 2000 : 1900;
+                    }
+                    
+                    // Validate ranges and prevent invalid dates like 31/12/119999
+                    if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 1900 && year <= 2100) {
                         const date = new Date(year, month - 1, day);
-                        if (!isNaN(date.getTime())) {
+                        // Double-check that the created date matches input (prevents invalid dates)
+                        if (!isNaN(date.getTime()) && 
+                            date.getDate() === day && 
+                            date.getMonth() === month - 1 && 
+                            date.getFullYear() === year) {
                             return date.toISOString().split('T')[0];
                         }
                     }
@@ -1403,20 +1649,50 @@
             if (cleanDateString.includes('-') && !cleanDateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
                 const parts = cleanDateString.split('-');
                 if (parts.length === 3) {
-                    const day = parseInt(parts[0]);
-                    const month = parseInt(parts[1]);
-                    const year = parseInt(parts[2]);
+                    let day = parseInt(parts[0]);
+                    let month = parseInt(parts[1]);
+                    let year = parseInt(parts[2]);
                     
-                    // Validate ranges
-                    if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 1900) {
+                    // Handle 2-digit years
+                    if (year < 100) {
+                        year += year < 50 ? 2000 : 1900;
+                    }
+                    
+                    // Validate ranges and prevent invalid dates
+                    if (day >= 1 && day <= 31 && month >= 1 && month <= 12 && year >= 1900 && year <= 2100) {
                         const date = new Date(year, month - 1, day);
-                        if (!isNaN(date.getTime())) {
+                        // Double-check that the created date matches input
+                        if (!isNaN(date.getTime()) && 
+                            date.getDate() === day && 
+                            date.getMonth() === month - 1 && 
+                            date.getFullYear() === year) {
                             return date.toISOString().split('T')[0];
                         }
                     }
                 }
             }
             
+            // Try ISO format (yyyy-mm-dd)
+            if (cleanDateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                const date = new Date(cleanDateString);
+                if (!isNaN(date.getTime()) && date.getFullYear() >= 1900 && date.getFullYear() <= 2100) {
+                    return date.toISOString().split('T')[0];
+                }
+            }
+            
+            // Try parsing as standard Date object (last resort)
+            try {
+                const parsedDate = new Date(cleanDateString);
+                if (!isNaN(parsedDate.getTime()) && 
+                    parsedDate.getFullYear() >= 1900 && 
+                    parsedDate.getFullYear() <= 2100) {
+                    return parsedDate.toISOString().split('T')[0];
+                }
+            } catch (error) {
+                // Ignore parsing errors
+            }
+            
+            console.log(`Could not parse date: "${cleanDateString}"`);
             return null;
         }
 
@@ -1493,7 +1769,7 @@
         // Calculate payment totals
         function calculateTotals(student) {
             let totalPaid = 0;
-            let totalUnpaid = 0;
+            let totalExpected = 0;
             let totalOverpaid = 0;
             
             // Component totals
@@ -1506,8 +1782,6 @@
                 Object.entries(yearPayments).forEach(([feeType, payment]) => {
                     // Add the actual paid amount
                     totalPaid += payment.paidAmount || 0;
-                    // Add the remaining amount to unpaid
-                    totalUnpaid += payment.remaining || 0;
                     // Track overpayments
                     totalOverpaid += payment.overpaid || 0;
                     
@@ -1516,8 +1790,10 @@
                     
                     if (feeType.includes('SPP')) {
                         totalSpp += expectedAmount;
+                        totalExpected += expectedAmount;
                     } else if (feeType.includes('LKS') || feeType.includes('Ulangan')) {
                         totalSemester += expectedAmount;
+                        totalExpected += expectedAmount;
                     } else if (feeType.includes('Siswa Baru') || feeType.includes('Siswi Baru') || 
                               feeType.includes('Perpisahan') || feeType.includes('Study Tour') || 
                               feeType.includes('Buku Kenangan') || feeType.includes('Ujian Akhir')) {
@@ -1526,22 +1802,25 @@
                             (feeType.includes('Siswi Baru Putri') && student.gender === 'perempuan') ||
                             (!feeType.includes('Siswa Baru') && !feeType.includes('Siswi Baru'))) {
                             totalOneTime += expectedAmount;
+                            totalExpected += expectedAmount;
                         }
                     } else if (feeType.includes('Infaq')) {
                         // Yearly fees (Infaq Kenaikan Kelas only)
                         totalOthers += expectedAmount;
+                        totalExpected += expectedAmount;
                     } else if (feeType.includes('Tabungan')) {
                         // Tabungan is monthly, add to SPP category
                         totalSpp += expectedAmount;
+                        totalExpected += expectedAmount;
                     }
                 });
             });
 
-            // Calculate standard total fees based on gender
-            const standardTotal = totalSpp + totalSemester + totalOneTime + totalOthers;
-            const actualOverpayment = Math.max(0, totalPaid - standardTotal);
+            // Calculate unpaid amount correctly: expected - paid (but not less than 0)
+            const totalUnpaid = Math.max(0, totalExpected - totalPaid);
+            const actualOverpayment = Math.max(0, totalPaid - totalExpected);
             
-            const totalOverall = totalPaid + totalUnpaid;
+            const totalOverall = totalExpected;
 
             // Display totals with overpayment information
             let paidText = totalPaid > 0 ? formatCurrency(totalPaid) : 'Rp 0';
@@ -1870,6 +2149,37 @@
                 'oneTime': '🎯 Sekali Bayar'
             };
 
+            // Format payment date - show latest date for installments/multiple payments
+            let displayDate = '-';
+            let displayNote = '-';
+            
+            if (payment.installments && payment.installments.length > 0) {
+                // Sort installments by date (latest first) to show most recent payment
+                const sortedInstallments = payment.installments.sort((a, b) => {
+                    if (!a.date && !b.date) return 0;
+                    if (!a.date) return 1;
+                    if (!b.date) return -1;
+                    return new Date(b.date) - new Date(a.date);
+                });
+                
+                // Use the latest payment date
+                if (sortedInstallments[0].date) {
+                    displayDate = formatDateIndonesian(sortedInstallments[0].date);
+                }
+                
+                // Show note from the latest payment, or combine notes if multiple
+                if (payment.installments.length === 1) {
+                    displayNote = payment.installments[0].note;
+                } else {
+                    displayNote = `${payment.installments.length} Cicilan (Terakhir: ${sortedInstallments[0].note})`;
+                }
+            } else if (payment.date) {
+                displayDate = formatDateIndonesian(payment.date);
+                displayNote = payment.status === 'paid' ? 'Lunas' : 
+                             payment.status === 'overpaid' ? 'Lebih Bayar' :
+                             payment.status === 'installment' ? 'Cicilan' : '-';
+            }
+
             return `
                 <tr class="border-b border-gray-100 hover:bg-gray-50">
                     <td class="px-4 py-3 text-gray-700">${rowNumber}</td>
@@ -1881,8 +2191,8 @@
                     <td class="px-4 py-3 text-center">
                         <span class="px-2 py-1 rounded-full text-xs font-medium ${statusBadge}">${statusText}</span>
                     </td>
-                    <td class="px-4 py-3 text-gray-600">${payment.date || '-'}</td>
-                    <td class="px-4 py-3 text-gray-600">${payment.installments && payment.installments.length > 0 ? payment.installments[0].note : '-'}</td>
+                    <td class="px-4 py-3 text-gray-600 text-sm">${displayDate}</td>
+                    <td class="px-4 py-3 text-gray-600 text-sm">${displayNote}</td>
                 </tr>
             `;
         }
@@ -1920,6 +2230,24 @@
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
             }).format(amount || 0);
+        }
+
+        // Format date in Indonesian format
+        function formatDateIndonesian(dateString) {
+            if (!dateString) return '-';
+            
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString; // Return original if invalid
+                
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const year = date.getFullYear();
+                
+                return `${day}/${month}/${year}`;
+            } catch (error) {
+                return dateString; // Return original if error
+            }
         }
 
         // Download Excel functionality
@@ -2089,5 +2417,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97d1fbb5d7cd3104',t:'MTc1NzUzOTM3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97d4b4f903fbfe17',t:'MTc1NzU2NzkzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
