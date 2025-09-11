@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulir Hasil Karya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">FORMULIR HASIL KARYA</h1>
+            <p class="text-gray-600">Silakan isi data Anda dengan lengkap</p>
+        </div>
+
+        <form id="registrationForm" class="space-y-6">
+            <div>
+                <label for="nama" class="block text-sm font-medium text-gray-700 mb-2">
+                    Nama Lengkap
+                </label>
+                <input 
+                    type="text" 
+                    id="nama" 
+                    name="nama" 
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none"
+                    placeholder="Masukkan nama lengkap Anda"
+                >
+            </div>
+
+            <div>
+                <label for="kelas" class="block text-sm font-medium text-gray-700 mb-2">
+                    Kelas
+                </label>
+                <select 
+                    id="kelas" 
+                    name="kelas" 
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none bg-white"
+                >
+                    <option value="">Pilih kelas Anda</option>
+                    <option value="1">Kelas 1</option>
+                    <option value="2">Kelas 2</option>
+                    <option value="3">Kelas 3</option>
+                    <option value="4">Kelas 4</option>
+                    <option value="5">Kelas 5</option>
+                    <option value="6">Kelas 6</option>
+                    <option value="7">Kelas 7</option>
+                    <option value="8">Kelas 8</option>
+                    <option value="9">Kelas 9</option>
+                    <option value="10">Kelas 10</option>
+                    <option value="11">Kelas 11</option>
+                    <option value="12">Kelas 12</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="link" class="block text-sm font-medium text-gray-700 mb-2">
+                    Link Portfolio/Website
+                </label>
+                <input 
+                    type="url" 
+                    id="link" 
+                    name="link" 
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 outline-none"
+                    placeholder="https://contoh.com"
+                >
+            </div>
+
+            <button 
+                type="submit" 
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 transform hover:scale-105 active:scale-95"
+            >
+                Kirim Formulir
+            </button>
+        </form>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="hidden mt-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="font-medium">Formulir berhasil dikirim!</span>
+            </div>
+            <div id="submittedData" class="mt-3 text-sm"></div>
+        </div>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="hidden mt-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            <div class="flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="font-medium" id="errorText">Terjadi kesalahan</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Google Apps Script Web App URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyyCvLgAmjY12jtJQW6Emn8Zc8IzfnpW6oLE1q0gslaM8MjR1isLi5bww5xS1Caggcj/exec';
+        
+        // Now using real Google Apps Script
+        const USE_DEMO_MODE = false;
+
+        // Function to submit data using Google Apps Script
+        async function submitToGoogleSheets(nama, kelas, link) {
+            const currentDate = new Date().toLocaleString('id-ID');
+            
+            if (USE_DEMO_MODE) {
+                // Simulate API call for demo
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        console.log('Demo mode: Data would be sent to Google Sheets:', {
+                            nama, kelas, link, timestamp: currentDate
+                        });
+                        resolve({ success: true });
+                    }, 1500);
+                });
+            }
+            
+            const formData = new FormData();
+            formData.append('nama', nama);
+            formData.append('kelas', kelas);
+            formData.append('link', link);
+            formData.append('timestamp', currentDate);
+
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    return result;
+                } else {
+                    throw new Error(result.error || 'Unknown error occurred');
+                }
+            } catch (error) {
+                console.error('Error submitting to Google Apps Script:', error);
+                throw error;
+            }
+        }
+
+        // Show loading state
+        function showLoading() {
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Mengirim...
+            `;
+            submitBtn.disabled = true;
+        }
+
+        // Reset button state
+        function resetButton() {
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = 'Kirim Formulir';
+            submitBtn.disabled = false;
+        }
+
+        // Show error message
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            errorText.textContent = message;
+            errorMessage.classList.remove('hidden');
+            
+            // Hide error after 8 seconds
+            setTimeout(() => {
+                errorMessage.classList.add('hidden');
+            }, 8000);
+        }
+
+        // Show success message
+        function showSuccess(nama, kelas, link) {
+            const successMessage = document.getElementById('successMessage');
+            const submittedData = document.getElementById('submittedData');
+            
+            submittedData.innerHTML = `
+                <strong>Data berhasil disimpan:</strong><br>
+                • Nama: ${nama}<br>
+                • Kelas: ${kelas}<br>
+                • Link: <a href="${link}" target="_blank" class="text-blue-600 hover:underline">${link}</a><br>
+                • Waktu: ${new Date().toLocaleString('id-ID')}
+            `;
+            
+            successMessage.classList.remove('hidden');
+            
+            // Hide form temporarily
+            document.getElementById('registrationForm').style.display = 'none';
+            
+            // Reset after 8 seconds
+            setTimeout(() => {
+                document.getElementById('registrationForm').reset();
+                document.getElementById('registrationForm').style.display = 'block';
+                successMessage.classList.add('hidden');
+                resetButton();
+            }, 8000);
+        }
+
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Hide any previous messages
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+            
+            // Get form data
+            const nama = document.getElementById('nama').value.trim();
+            const kelas = document.getElementById('kelas').value;
+            const link = document.getElementById('link').value.trim();
+            
+            // Validate inputs
+            if (!nama || !kelas || !link) {
+                showError('Mohon lengkapi semua field yang diperlukan');
+                return;
+            }
+            
+            // Validate URL format
+            try {
+                new URL(link);
+            } catch {
+                showError('Mohon masukkan URL yang valid (contoh: https://contoh.com)');
+                return;
+            }
+            
+            // Show loading state
+            showLoading();
+            
+            try {
+                // Try to submit to Google Sheets
+                await submitToGoogleSheets(nama, kelas, link);
+                showSuccess(nama, kelas, link);
+                
+            } catch (error) {
+                resetButton();
+                console.error('Submission error:', error);
+                
+                // For demo purposes, show success anyway
+                // In production, you'd want to handle this properly
+                showError('Koneksi ke Google Sheets bermasalah. Pastikan sheet dapat diakses publik atau gunakan Google Forms.');
+                
+                // Uncomment this line to show success for demo:
+                // showSuccess(nama, kelas, link);
+            }
+        });
+
+        // Add input validation feedback
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '') {
+                    this.classList.add('border-red-300');
+                    this.classList.remove('border-gray-300');
+                } else {
+                    this.classList.remove('border-red-300');
+                    this.classList.add('border-gray-300');
+                }
+            });
+        });
+
+        // Instructions for setting up Google Apps Script
+        console.log(`
+        CARA SETUP GOOGLE APPS SCRIPT:
+        
+        1. Buka script.google.com
+        2. Buat project baru
+        3. Ganti code.gs dengan script berikut:
+        
+        function doPost(e) {
+          try {
+            const sheet = SpreadsheetApp.openById('17MDc804lNUm_XwUM6hPj6Ui8T-JVtpxJCLq4XovVs0A').getSheetByName('Sheet4');
+            
+            const nama = e.parameter.nama;
+            const kelas = e.parameter.kelas;
+            const link = e.parameter.link;
+            const timestamp = e.parameter.timestamp;
+            
+            sheet.appendRow([nama, kelas, link, timestamp]);
+            
+            return ContentService
+              .createTextOutput(JSON.stringify({success: true, message: 'Data berhasil disimpan'}))
+              .setMimeType(ContentService.MimeType.JSON);
+              
+          } catch (error) {
+            return ContentService
+              .createTextOutput(JSON.stringify({success: false, error: error.toString()}))
+              .setMimeType(ContentService.MimeType.JSON);
+          }
+        }
+        
+        4. Klik "Deploy" > "New deployment"
+        5. Pilih type "Web app"
+        6. Execute as: "Me"
+        7. Who has access: "Anyone"
+        8. Klik "Deploy"
+        9. Copy URL dan ganti GOOGLE_SCRIPT_URL di atas
+        10. Ubah USE_DEMO_MODE menjadi false
+        
+        SAAT INI DALAM MODE DEMO - formulir akan berfungsi tapi tidak menyimpan ke Google Sheets
+        `);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97d423cb249c3f63',t:'MTc1NzU2MTk4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
