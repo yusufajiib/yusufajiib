@@ -41,15 +41,21 @@
             
             <!-- Question Type Selector -->
             <div class="mt-6 mb-4">
-                <div class="inline-flex bg-white rounded-lg p-1 shadow-lg">
-                    <button id="multipleBtn" class="px-4 py-2 rounded-md font-medium transition-all bg-blue-600 text-white text-sm">
+                <div class="inline-flex bg-white rounded-lg p-1 shadow-lg flex-wrap gap-1">
+                    <button id="multipleBtn" class="px-3 py-2 rounded-md font-medium transition-all bg-blue-600 text-white text-xs">
                         Pilihan Ganda
                     </button>
-                    <button id="fillBtn" class="px-4 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-sm">
+                    <button id="fillBtn" class="px-3 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-xs">
                         Isian
                     </button>
-                    <button id="essayBtn" class="px-4 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-sm">
+                    <button id="essayBtn" class="px-3 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-xs">
                         Essay
+                    </button>
+                    <button id="remedialBtn" class="px-3 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-xs">
+                        Remedial
+                    </button>
+                    <button id="pengayaanBtn" class="px-3 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-xs">
+                        Pengayaan
                     </button>
                 </div>
             </div>
@@ -487,6 +493,62 @@
             }
         ];
 
+        const remedialQuestions = [
+            {
+                question: "1. Perzinaan sesama jenis dinamakan dengan .....",
+                answer: "liwath",
+                type: "fill"
+            },
+            {
+                question: "2. Perbuatan mencuri selalu dilakukan secara .....",
+                answer: "sembunyi-sembunyi",
+                type: "fill"
+            },
+            {
+                question: "3. Pencurian yang nilai barang curiannya kurang dari 4 dinar dikenai hukuman.....",
+                answer: "ta'zir",
+                type: "fill"
+            },
+            {
+                question: "4. Bughat artinya adalah perbuatan.....",
+                answer: "memberontak",
+                type: "fill"
+            },
+            {
+                question: "5. Hukum meminum khamr dalam jumlah sedikit adalah .....",
+                answer: "haram",
+                type: "fill"
+            }
+        ];
+
+        const pengayaanQuestions = [
+            {
+                question: "1. Apa yang kamu ketahui tentang penyakit AIDS?",
+                answer: "AIDS (Acquired Immunodeficiency Syndrome) adalah penyakit yang disebabkan oleh virus HIV yang menyerang sistem kekebalan tubuh manusia. Penyakit ini dapat menular melalui hubungan seksual yang tidak aman, transfusi darah yang terinfeksi, penggunaan jarum suntik bersama, dan dari ibu ke anak. AIDS merupakan salah satu dampak negatif dari perilaku zina dan pergaulan bebas.",
+                type: "essay"
+            },
+            {
+                question: "2. Bagaimanakah had seorang pencuri jika ia melakukan pencurian berkali-kali?",
+                answer: "Jika seorang pencuri melakukan pencurian berulang kali, maka hukumannya adalah: pencurian pertama dipotong tangan kanan, pencurian kedua dipotong kaki kiri, pencurian ketiga dipotong tangan kiri, pencurian keempat dipotong kaki kanan. Jika masih mengulangi, maka dikenai hukuman ta'zir berupa penjara atau hukuman lain sesuai kebijakan hakim.",
+                type: "essay"
+            },
+            {
+                question: "3. Adakah perbedaan antara definisi zina menurut fiqih dan menurut KUHP? Jelaskan!",
+                answer: "Ya, ada perbedaan. Menurut fiqih, zina adalah hubungan kelamin antara laki-laki dan perempuan yang tidak terikat pernikahan yang sah menurut syariat Islam. Sedangkan menurut KUHP Indonesia, zina (overspel) hanya berlaku bagi orang yang sudah menikah yang melakukan hubungan kelamin dengan orang lain selain pasangannya. KUHP tidak mengatur hubungan seksual di luar nikah bagi yang belum menikah sebagai zina.",
+                type: "essay"
+            },
+            {
+                question: "4. Sebutkan dampak negatif dari minuman keras!",
+                answer: "Dampak negatif minuman keras antara lain: 1) Merusak kesehatan fisik (liver, jantung, otak), 2) Mengganggu fungsi akal dan pikiran, 3) Menyebabkan kecanduan, 4) Memicu tindak kekerasan dan kriminalitas, 5) Merusak hubungan keluarga dan sosial, 6) Menyebabkan kemiskinan karena pemborosan, 7) Menjauhkan dari ibadah dan ketakwaan, 8) Dapat menyebabkan kecelakaan lalu lintas.",
+                type: "essay"
+            },
+            {
+                question: "5. Mengapa terjadi perbedaan antara ulama tentang bilangan pukulan sanksi had terhadap pemabuk?",
+                answer: "Perbedaan pendapat ulama tentang jumlah pukulan bagi pemabuk terjadi karena: 1) Tidak ada nash yang tegas dari Al-Quran dan hadis shahih tentang jumlah pasti pukulannya, 2) Rasulullah SAW pernah memberikan hukuman dengan cara yang berbeda-beda, 3) Khalifah Umar bin Khattab menetapkan 80 kali cambukan berdasarkan qiyas dengan hukuman qadzaf, 4) Ada yang berpendapat 40 kali berdasarkan praktik awal masa Nabi dan Abu Bakar.",
+                type: "essay"
+            }
+        ];
+
         const essayQuestions = [
             {
                 question: "1. Jelaskan mengapa Allah \"tidak melarang\" melakukan zina, tetapi hanya larangan mendekati zina?",
@@ -540,23 +602,29 @@
             }
         ];
 
-        let currentQuestionType = 'multiple'; // 'multiple', 'fill', or 'essay'
+        let currentQuestionType = 'multiple'; // 'multiple', 'fill', 'essay', 'remedial', or 'pengayaan'
         let currentQuestion = 0;
         let userAnswers = new Array(multipleChoiceQuestions.length).fill(null);
         let fillAnswers = new Array(fillInQuestions.length).fill('');
         let essayAnswers = new Array(essayQuestions.length).fill('');
+        let remedialAnswers = new Array(remedialQuestions.length).fill('');
+        let pengayaanAnswers = new Array(pengayaanQuestions.length).fill('');
         let answered = false;
 
         function getCurrentQuestions() {
             if (currentQuestionType === 'multiple') return multipleChoiceQuestions;
             if (currentQuestionType === 'fill') return fillInQuestions;
-            return essayQuestions;
+            if (currentQuestionType === 'essay') return essayQuestions;
+            if (currentQuestionType === 'remedial') return remedialQuestions;
+            return pengayaanQuestions;
         }
 
         function getCurrentAnswers() {
             if (currentQuestionType === 'multiple') return userAnswers;
             if (currentQuestionType === 'fill') return fillAnswers;
-            return essayAnswers;
+            if (currentQuestionType === 'essay') return essayAnswers;
+            if (currentQuestionType === 'remedial') return remedialAnswers;
+            return pengayaanAnswers;
         }
 
         function updateProgress() {
@@ -612,7 +680,7 @@
                     </div>
                 `;
                 answered = answers[currentQuestion] && answers[currentQuestion].trim() !== '';
-            } else {
+            } else if (currentQuestionType === 'essay' || currentQuestionType === 'pengayaan') {
                 // Essay questions
                 container.innerHTML = `
                     <div class="mb-6">
@@ -629,6 +697,30 @@
                                 <div class="bg-green-50 border border-green-200 rounded-lg p-4">
                                     <h4 class="font-semibold text-green-800 mb-2">Jawaban yang Diharapkan:</h4>
                                     <p class="text-green-700 leading-relaxed">${question.answer}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                answered = answers[currentQuestion] && answers[currentQuestion].trim() !== '';
+            } else {
+                // Remedial questions (fill-in format)
+                container.innerHTML = `
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6 leading-relaxed">${question.question}</h2>
+                        <div class="space-y-4">
+                            <input 
+                                type="text" 
+                                id="fillAnswer" 
+                                class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none text-lg"
+                                placeholder="Isi jawaban di sini..."
+                                value="${answers[currentQuestion] || ''}"
+                                oninput="updateFillAnswer()"
+                            />
+                            <div id="answerFeedback" class="hidden">
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <h4 class="font-semibold text-green-800 mb-2">Jawaban yang Benar:</h4>
+                                    <p class="text-green-700 text-lg font-medium">${question.answer}</p>
                                 </div>
                             </div>
                         </div>
@@ -659,13 +751,21 @@
 
         function updateFillAnswer() {
             const textarea = document.getElementById('fillAnswer');
-            fillAnswers[currentQuestion] = textarea.value;
+            if (currentQuestionType === 'fill') {
+                fillAnswers[currentQuestion] = textarea.value;
+            } else if (currentQuestionType === 'remedial') {
+                remedialAnswers[currentQuestion] = textarea.value;
+            }
             updateButtons();
         }
 
         function updateEssayAnswer() {
             const textarea = document.getElementById('essayAnswer');
-            essayAnswers[currentQuestion] = textarea.value;
+            if (currentQuestionType === 'essay') {
+                essayAnswers[currentQuestion] = textarea.value;
+            } else if (currentQuestionType === 'pengayaan') {
+                pengayaanAnswers[currentQuestion] = textarea.value;
+            }
             updateButtons();
         }
 
@@ -695,7 +795,7 @@
                 if (!answers[currentQuestion] || answers[currentQuestion].trim() === '') return;
                 
                 answered = true;
-                const textarea = currentQuestionType === 'fill' 
+                const textarea = (currentQuestionType === 'fill' || currentQuestionType === 'remedial') 
                     ? document.getElementById('fillAnswer') 
                     : document.getElementById('essayAnswer');
                 const feedback = document.getElementById('answerFeedback');
@@ -803,7 +903,7 @@
                 title.textContent = 'Quiz Isian Selesai!';
                 message.textContent = 'Anda telah menyelesaikan semua soal isian. Bandingkan jawaban Anda dengan kunci jawaban yang tersedia.';
                 score.textContent = `Soal Dijawab: ${answeredQuestions}/${fillInQuestions.length}`;
-            } else {
+            } else if (currentQuestionType === 'essay') {
                 const answeredQuestions = essayAnswers.filter(answer => answer && answer.trim() !== '').length;
                 
                 icon.textContent = '📝';
@@ -811,6 +911,22 @@
                 title.textContent = 'Quiz Essay Selesai!';
                 message.textContent = 'Anda telah menyelesaikan semua soal essay. Periksa kembali jawaban Anda dengan kunci jawaban yang tersedia untuk evaluasi diri.';
                 score.textContent = `Soal Dijawab: ${answeredQuestions}/${essayQuestions.length}`;
+            } else if (currentQuestionType === 'remedial') {
+                const answeredQuestions = remedialAnswers.filter(answer => answer && answer.trim() !== '').length;
+                
+                icon.textContent = '🔄';
+                icon.className = 'w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-4xl bg-orange-100';
+                title.textContent = 'Quiz Remedial Selesai!';
+                message.textContent = 'Anda telah menyelesaikan soal remedial. Bandingkan jawaban Anda dengan kunci jawaban untuk memahami materi dengan lebih baik.';
+                score.textContent = `Soal Dijawab: ${answeredQuestions}/${remedialQuestions.length}`;
+            } else {
+                const answeredQuestions = pengayaanAnswers.filter(answer => answer && answer.trim() !== '').length;
+                
+                icon.textContent = '🌟';
+                icon.className = 'w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-4xl bg-yellow-100';
+                title.textContent = 'Quiz Pengayaan Selesai!';
+                message.textContent = 'Anda telah menyelesaikan soal pengayaan. Soal-soal ini dirancang untuk memperdalam pemahaman Anda tentang materi.';
+                score.textContent = `Soal Dijawab: ${answeredQuestions}/${pengayaanQuestions.length}`;
             }
             
             modal.classList.remove('hidden');
@@ -821,6 +937,8 @@
             userAnswers = new Array(multipleChoiceQuestions.length).fill(null);
             fillAnswers = new Array(fillInQuestions.length).fill('');
             essayAnswers = new Array(essayQuestions.length).fill('');
+            remedialAnswers = new Array(remedialQuestions.length).fill('');
+            pengayaanAnswers = new Array(pengayaanQuestions.length).fill('');
             answered = false;
             document.getElementById('resultsModal').classList.add('hidden');
             document.getElementById('nextBtn').textContent = 'Selanjutnya →';
@@ -836,21 +954,31 @@
             const multipleBtn = document.getElementById('multipleBtn');
             const fillBtn = document.getElementById('fillBtn');
             const essayBtn = document.getElementById('essayBtn');
+            const remedialBtn = document.getElementById('remedialBtn');
+            const pengayaanBtn = document.getElementById('pengayaanBtn');
             
             // Reset all buttons
-            multipleBtn.className = 'px-4 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-sm';
-            fillBtn.className = 'px-4 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-sm';
-            essayBtn.className = 'px-4 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-sm';
+            multipleBtn.className = 'px-3 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-xs';
+            fillBtn.className = 'px-3 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-xs';
+            essayBtn.className = 'px-3 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-xs';
+            remedialBtn.className = 'px-3 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-xs';
+            pengayaanBtn.className = 'px-3 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-xs';
             
             if (type === 'multiple') {
-                multipleBtn.className = 'px-4 py-2 rounded-md font-medium transition-all bg-blue-600 text-white text-sm';
+                multipleBtn.className = 'px-3 py-2 rounded-md font-medium transition-all bg-blue-600 text-white text-xs';
                 answered = userAnswers[currentQuestion] !== null;
             } else if (type === 'fill') {
-                fillBtn.className = 'px-4 py-2 rounded-md font-medium transition-all bg-blue-600 text-white text-sm';
+                fillBtn.className = 'px-3 py-2 rounded-md font-medium transition-all bg-blue-600 text-white text-xs';
                 answered = fillAnswers[currentQuestion] && fillAnswers[currentQuestion].trim() !== '';
-            } else {
-                essayBtn.className = 'px-4 py-2 rounded-md font-medium transition-all bg-blue-600 text-white text-sm';
+            } else if (type === 'essay') {
+                essayBtn.className = 'px-3 py-2 rounded-md font-medium transition-all bg-blue-600 text-white text-xs';
                 answered = essayAnswers[currentQuestion] && essayAnswers[currentQuestion].trim() !== '';
+            } else if (type === 'remedial') {
+                remedialBtn.className = 'px-3 py-2 rounded-md font-medium transition-all bg-blue-600 text-white text-xs';
+                answered = remedialAnswers[currentQuestion] && remedialAnswers[currentQuestion].trim() !== '';
+            } else {
+                pengayaanBtn.className = 'px-3 py-2 rounded-md font-medium transition-all bg-blue-600 text-white text-xs';
+                answered = pengayaanAnswers[currentQuestion] && pengayaanAnswers[currentQuestion].trim() !== '';
             }
             
             document.getElementById('nextBtn').textContent = 'Selanjutnya →';
@@ -865,9 +993,11 @@
         document.getElementById('multipleBtn').addEventListener('click', () => switchQuestionType('multiple'));
         document.getElementById('fillBtn').addEventListener('click', () => switchQuestionType('fill'));
         document.getElementById('essayBtn').addEventListener('click', () => switchQuestionType('essay'));
+        document.getElementById('remedialBtn').addEventListener('click', () => switchQuestionType('remedial'));
+        document.getElementById('pengayaanBtn').addEventListener('click', () => switchQuestionType('pengayaan'));
 
         // Initialize quiz
         displayQuestion();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97d4861320ebf8e6',t:'MTc1NzU2NjAxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97d48f6f3539f8e6',t:'MTc1NzU2NjM5NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
