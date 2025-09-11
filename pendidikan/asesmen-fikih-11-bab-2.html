@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Asesmen Sumatif BAB 2 - Hukum Islam</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .question-card {
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .option-button {
+            transition: all 0.2s ease;
+        }
+        .option-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .correct-answer {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        .wrong-answer {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Quiz Asesmen Sumatif</h1>
+            <p class="text-xl text-gray-600">BAB 2 - Hukum Islam tentang Zina, Qadzaf, dan Khamr</p>
+            
+            <!-- Question Type Selector -->
+            <div class="mt-6 mb-4">
+                <div class="inline-flex bg-white rounded-lg p-1 shadow-lg">
+                    <button id="multipleBtn" class="px-4 py-2 rounded-md font-medium transition-all bg-blue-600 text-white text-sm">
+                        Pilihan Ganda
+                    </button>
+                    <button id="fillBtn" class="px-4 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-sm">
+                        Isian
+                    </button>
+                    <button id="essayBtn" class="px-4 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-sm">
+                        Essay
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mt-4 bg-white rounded-full p-1 shadow-lg">
+                <div class="progress-bar bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full" id="progressBar"></div>
+            </div>
+            <p class="mt-2 text-sm text-gray-500" id="progressText">Soal 1 dari 15</p>
+        </div>
+
+        <!-- Quiz Container -->
+        <div class="question-card bg-white rounded-2xl p-8 mb-6" id="quizContainer">
+            <!-- Question will be inserted here -->
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between items-center">
+            <button id="prevBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                ← Sebelumnya
+            </button>
+            
+            <div class="flex space-x-3">
+                <button id="submitBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors hidden">
+                    Periksa Jawaban
+                </button>
+                <button id="nextBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    Selanjutnya →
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Modal -->
+        <div id="resultsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center">
+                <div class="mb-6">
+                    <div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-4xl" id="resultIcon">
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2" id="resultTitle"></h3>
+                    <p class="text-gray-600" id="resultMessage"></p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <p class="text-lg font-semibold text-gray-800" id="finalScore"></p>
+                </div>
+                <button id="restartBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                    Mulai Ulang Quiz
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const multipleChoiceQuestions = [
+            {
+                question: "1. Salah satu tindakan yang benar untuk mencegah terjadinya zina adalah....",
+                options: [
+                    "tidak mau berteman dengan lawan jenis",
+                    "tidak mau berbicara jika dengan teman sesama jenis kelamin", 
+                    "menjaga jarak dalam pergaulan dengan lawan jenis",
+                    "selalu memejamkan mata bila ada lawan jenis",
+                    "tidak menonton televisi"
+                ],
+                correct: 2
+            },
+            {
+                question: "2. Hukuman bagi pezina ghairu mukhsan diterangkan dalam al-Qur'an surah",
+                options: [
+                    "al-A'raf ayat 26",
+                    "Ali-'Imran ayat 158",
+                    "an-Nur ayat 31",
+                    "Ali-'Imran ayat 59",
+                    "an-Nur ayat 2"
+                ],
+                correct: 4
+            },
+            {
+                question: "3. Dalam hukum Islam, zina adalah hubungan kelamin....",
+                options: [
+                    "antara suami istri yang tidak memiliki surat nikah sah",
+                    "dalam kondisi terpaksa antara pasangan belum menikah",
+                    "antara pria dan wanita tanpa pernikahan yang sah dan tanpa syubhat",
+                    "yang dilakukan oleh pasangan beda agama dalam ikatan nikah",
+                    "tanpa sepengetahuan orang tua atau wali sahnya"
+                ],
+                correct: 2
+            },
+            {
+                question: "4. Hadis tentang dosa terbesar setelah syirik adalah....",
+                options: [
+                    "الْمُسْلِمُ أَخْوَ الْمُسْلِمِ لَا يَظْلِمُهُ",
+                    "لا يَدْخُلُ الْجَنَّةَ نَمَّام",
+                    "لا تَقْرَبُوا الصلاة وأنتم سكارى",
+                    "أفضل الجهاد كلمة حَى عِندَ سُلْطَانٍ",
+                    "ما من ذنبٍ بَعْدَ الشرك أعظمُ عِندَ اللهِ"
+                ],
+                correct: 4
+            },
+            {
+                question: "5. Larangan mendekati zina secara tegas terdapat dalam surah..",
+                options: [
+                    "al-Baqarah ayat 185",
+                    "an-Nisa ayat 15",
+                    "al-Maidah ayat 38",
+                    "an-Nur ayat 4",
+                    "al-Isra ayat 32"
+                ],
+                correct: 4
+            },
+            {
+                question: "6. Hukuman bagi pezina mukhsan menurut hadis adalah....",
+                options: [
+                    "didera 100 kali dan diasingkan setahun",
+                    "dibayar diyat karena sudah menikah",
+                    "dirajam dengan batu hingga mati",
+                    "disalib di hadapan masyarakat",
+                    "dipenjara selama tiga tahun"
+                ],
+                correct: 2
+            },
+            {
+                question: "7. Salah satu syarat sahnya kesaksian zina adalah.....",
+                options: [
+                    "empat saksi wanita muslimah yang adil",
+                    "dua saksi laki-laki yang bertakwa dan hafidz",
+                    "satu saksi dan satu pengakuan dari pelaku",
+                    "empat saksi laki-laki adil dan beragama Islam",
+                    "tiga saksi dan satu bukti video"
+                ],
+                correct: 3
+            },
+            {
+                question: "8. Arti dari hifzun nasl adalah",
+                options: [
+                    "hukuman",
+                    "menjaga keturunan",
+                    "menjaga nama baik",
+                    "menjaga pasangan",
+                    "menjadi saksi"
+                ],
+                correct: 1
+            },
+            {
+                question: "9. Hadis tentang seseorang yang mengaku zina di masa Rasulullah menyebutkan.",
+                options: [
+                    "pengakuan dua kali baru sah",
+                    "rajam langsung setelah satu pengakuan",
+                    "pengakuan empat kali kepada Nabi",
+                    "dibunuh secara rahasia oleh Nabi",
+                    "diberi maaf dan dinasihati"
+                ],
+                correct: 2
+            },
+            {
+                question: "10. Qadzaf secara bahasa adalah....",
+                options: [
+                    "memaksa",
+                    "mencari",
+                    "meminta",
+                    "menerima",
+                    "melempar"
+                ],
+                correct: 4
+            },
+            {
+                question: "11. Hukuman bagi pelaku qadzaf adalah",
+                options: [
+                    "dicambuk 40 kali dan dipenjara",
+                    "dihukum mati secara syar'i",
+                    "didera 80 kali dan kesaksiannya ditolak",
+                    "diberikan nasihat dan diminta bertobat",
+                    "denda emas satu dinar dan diyat"
+                ],
+                correct: 2
+            },
+            {
+                question: "12. Pelaku qadzaf menurut al-Qur'an termasuk orang yang",
+                options: [
+                    "zalim dan keras kepala",
+                    "fasik dan tidak diterima kesaksiannya",
+                    "musyrik dan harus bertobat",
+                    "lalai dari ibadah salat",
+                    "durhaka kepada kedua orang tua"
+                ],
+                correct: 1
+            },
+            {
+                question: "13. Syarat gugurnya had qadzaf adalah",
+                options: [
+                    "penuduh dipenjara selama setahun",
+                    "tertuduh telah meninggal dunia",
+                    "penuduh meminta maaf secara terbuka",
+                    "penuduh membawa empat orang saksi",
+                    "tertuduh mengaku telah berzina"
+                ],
+                correct: 3
+            },
+            {
+                question: "14. Hikmah pelarangan qadzaf adalah....",
+                options: [
+                    "agar masyarakat takut menuduh orang kaya",
+                    "mencegah kerusakan moral para pemuda",
+                    "menjaga kehormatan dan martabat umat Islam",
+                    "supaya masyarakat saling memaafkan",
+                    "memperbanyak syarat dalam bersaksi"
+                ],
+                correct: 2
+            },
+            {
+                question: "15. Khamr dalam bahasa Arab berarti....",
+                options: [
+                    "makanan yang dilarang dimakan",
+                    "minuman yang dibuat dari susu",
+                    "minuman yang memabukkan dan menghilangkan akal",
+                    "ramuan obat herbal zaman dahulu",
+                    "cairan yang digunakan untuk ritual"
+                ],
+                correct: 2
+            }
+        ];
+
+        const fillInQuestions = [
+            {
+                question: "1. Sebuah pencurian dianggap sebagai pencurian jika barang yang diambil milik....",
+                answer: "orang lain",
+                type: "fill"
+            },
+            {
+                question: "2. Dicambuk sebanyak delapan puluh kali merupakan had untuk ....",
+                answer: "qadzaf",
+                type: "fill"
+            },
+            {
+                question: "3. Nabi Muhammad saw. telah mengingatkan bahwa tidak ada dosa sesudah syirik di sisi Allah yang lebih besar daripada....",
+                answer: "zina",
+                type: "fill"
+            },
+            {
+                question: "4. Penggunaan kekerasan atau senjata tajam merupakan aksi yang dilakukan oleh ....",
+                answer: "perampok",
+                type: "fill"
+            },
+            {
+                question: "5. Salah satu tujuan pelarangan minuman keras adalah pemeliharaan terhadap ....",
+                answer: "akal",
+                type: "fill"
+            },
+            {
+                question: "6. Dalam al-Qur'an surah al-Maidah ayat 90 Allah menjelaskan bahwa khamr adalah termasuk perbuatan setan yang wajib ....",
+                answer: "dijauhi",
+                type: "fill"
+            },
+            {
+                question: "7. Jika seorang pencuri kambuh lagi penyakit mencurinya, padahal dia sudah pernah dipotong tangan kanannya, maka pencuri ini dikenai hukuman....",
+                answer: "potong kaki kiri",
+                type: "fill"
+            },
+            {
+                question: "8. Hukum menjauhi hal-hal yang mendekatkan kepada zina adalah ....",
+                answer: "wajib",
+                type: "fill"
+            },
+            {
+                question: "9. Perbuatan zina adalah perbuatan yang keji dan ....",
+                answer: "jalan yang buruk",
+                type: "fill"
+            },
+            {
+                question: "10. Nishab barang curian yang mewajibkan potong tangan adalah senilai ....",
+                answer: "seperempat dinar emas",
+                type: "fill"
+            }
+        ];
+
+        const essayQuestions = [
+            {
+                question: "1. Jelaskan mengapa Allah \"tidak melarang\" melakukan zina, tetapi hanya larangan mendekati zina?",
+                answer: "Allah melarang mendekati zina karena zina memiliki jalan dan sebab-sebab yang mengarah kepadanya. Dengan melarang mendekati zina, Allah menutup semua pintu dan jalan yang dapat mengarah kepada perbuatan zina tersebut. Ini merupakan bentuk kehati-hatian dan pencegahan yang lebih komprehensif daripada hanya melarang perbuatan zinanya saja.",
+                type: "essay"
+            },
+            {
+                question: "2. Siapakah yang dimaksud dengan pezina mukhsan? Apa hukuman had yang diberikan kepadanya?",
+                answer: "Pezina mukhsan adalah orang yang telah menikah secara sah (pernah menikah) kemudian melakukan zina. Hukuman had bagi pezina mukhsan adalah dirajam dengan batu hingga mati berdasarkan hadis Rasulullah SAW dan praktik yang dilakukan pada masa Nabi.",
+                type: "essay"
+            },
+            {
+                question: "3. Apa pengertian pencurian menurut istilah fikih?",
+                answer: "Pencurian menurut istilah fikih adalah mengambil harta orang lain secara diam-diam dari tempat penyimpanannya (hirz) tanpa seizin pemiliknya, dengan syarat-syarat tertentu yang menyebabkan pelakunya dikenai hukuman had potong tangan.",
+                type: "essay"
+            },
+            {
+                question: "4. Apakah semua pencuri wajib diberi hukuman potong tangan?",
+                answer: "Tidak, tidak semua pencuri wajib diberi hukuman potong tangan. Hukuman had potong tangan hanya berlaku jika memenuhi syarat-syarat tertentu seperti: barang yang dicuri mencapai nisab, diambil dari hirz (tempat penyimpanan), pencuri mukallaf, tidak ada syubhat, dan pemilik menuntut haknya.",
+                type: "essay"
+            },
+            {
+                question: "5. Apa hukuman had bagi perampok yang merampas harta tanpa membunuh pemiliknya?",
+                answer: "Hukuman had bagi perampok yang merampas harta tanpa membunuh adalah dipotong tangan kanan dan kaki kiri, atau diasingkan dari negeri tersebut, tergantung pada kondisi dan keputusan hakim berdasarkan Al-Quran surah Al-Maidah ayat 33.",
+                type: "essay"
+            },
+            {
+                question: "6. Apa hikmah dari dilarangnya meminum minuman keras?",
+                answer: "Hikmah dilarangnya minuman keras antara lain: menjaga akal sehat dari kerusakan, mencegah kerusakan kesehatan tubuh, menjaga harta dari pemborosan, mencegah permusuhan dan kebencian antar manusia, menjaga keluarga dari kehancuran, dan menjaga masyarakat dari kerusakan moral dan sosial.",
+                type: "essay"
+            },
+            {
+                question: "7. Terjemahkan hadis berikut ini! إِنَّ مِنْ أَشْرَاطِ السَّاعَةِ أَنْ يُرْفَعَ الْعِلْمُ وَيَظْهَرَ الْجَهْلُ وَيَفْشُوَ الزِّنَا وَيَظْهَرَ الْخَمْرُ",
+                answer: "Sesungguhnya di antara tanda-tanda hari kiamat adalah terangkatnya ilmu, tampaknya kebodohan, merajalelanya zina, dan tampaknya (konsumsi) khamr.",
+                type: "essay"
+            },
+            {
+                question: "8. Sebutkan syarat gugurnya had qadzaf!",
+                answer: "Syarat gugurnya had qadzaf adalah: 1) Penuduh membawa empat orang saksi yang adil dan memenuhi syarat, 2) Tertuduh mengaku telah melakukan zina, 3) Penuduh menarik kembali tuduhannya sebelum diputus hakim, 4) Tertuduh memaafkan penuduh (menurut sebagian ulama).",
+                type: "essay"
+            },
+            {
+                question: "9. Sebutkan pengertian qadzaf menurut istilah fikih!",
+                answer: "Qadzaf menurut istilah fikih adalah menuduh orang yang terpelihara kehormatannya (muhsan) dengan tuduhan zina atau li'an, tanpa dapat mendatangkan empat orang saksi yang adil sebagai bukti yang sah menurut syariat Islam.",
+                type: "essay"
+            },
+            {
+                question: "10. Sebutkan syarat-syarat sebuah pencurian yang menyebabkan pelakunya menerima hukuman had!",
+                answer: "Syarat-syarat pencurian yang menyebabkan hukuman had: 1) Barang yang dicuri mencapai nisab (seperempat dinar emas), 2) Diambil dari hirz (tempat penyimpanan yang terjaga), 3) Pencuri adalah mukallaf (baligh dan berakal), 4) Tidak ada syubhat (keraguan kepemilikan), 5) Bukan karena terpaksa atau darurat, 6) Pemilik menuntut haknya kepada penguasa.",
+                type: "essay"
+            }
+        ];
+
+        let currentQuestionType = 'multiple'; // 'multiple', 'fill', or 'essay'
+        let currentQuestion = 0;
+        let userAnswers = new Array(multipleChoiceQuestions.length).fill(null);
+        let fillAnswers = new Array(fillInQuestions.length).fill('');
+        let essayAnswers = new Array(essayQuestions.length).fill('');
+        let answered = false;
+
+        function getCurrentQuestions() {
+            if (currentQuestionType === 'multiple') return multipleChoiceQuestions;
+            if (currentQuestionType === 'fill') return fillInQuestions;
+            return essayQuestions;
+        }
+
+        function getCurrentAnswers() {
+            if (currentQuestionType === 'multiple') return userAnswers;
+            if (currentQuestionType === 'fill') return fillAnswers;
+            return essayAnswers;
+        }
+
+        function updateProgress() {
+            const questions = getCurrentQuestions();
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Soal ${currentQuestion + 1} dari ${questions.length}`;
+        }
+
+        function displayQuestion() {
+            const questions = getCurrentQuestions();
+            const answers = getCurrentAnswers();
+            const question = questions[currentQuestion];
+            const container = document.getElementById('quizContainer');
+            
+            if (currentQuestionType === 'multiple') {
+                container.innerHTML = `
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6 leading-relaxed">${question.question}</h2>
+                        <div class="space-y-3">
+                            ${question.options.map((option, index) => `
+                                <button class="option-button w-full text-left p-4 rounded-lg border-2 border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all ${answers[currentQuestion] === index ? 'border-blue-500 bg-blue-50' : ''}" 
+                                        onclick="selectAnswer(${index})" 
+                                        id="option-${index}">
+                                    <span class="font-medium text-gray-700">${String.fromCharCode(97 + index)}.</span>
+                                    <span class="ml-2 text-gray-800">${option}</span>
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                answered = answers[currentQuestion] !== null;
+            } else if (currentQuestionType === 'fill') {
+                container.innerHTML = `
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6 leading-relaxed">${question.question}</h2>
+                        <div class="space-y-4">
+                            <input 
+                                type="text" 
+                                id="fillAnswer" 
+                                class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none text-lg"
+                                placeholder="Isi jawaban di sini..."
+                                value="${answers[currentQuestion] || ''}"
+                                oninput="updateFillAnswer()"
+                            />
+                            <div id="answerFeedback" class="hidden">
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <h4 class="font-semibold text-green-800 mb-2">Jawaban yang Benar:</h4>
+                                    <p class="text-green-700 text-lg font-medium">${question.answer}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                answered = answers[currentQuestion] && answers[currentQuestion].trim() !== '';
+            } else {
+                // Essay questions
+                container.innerHTML = `
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6 leading-relaxed">${question.question}</h2>
+                        <div class="space-y-4">
+                            <textarea 
+                                id="essayAnswer" 
+                                class="w-full p-4 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none resize-none"
+                                rows="8"
+                                placeholder="Tuliskan jawaban essay Anda di sini dengan lengkap dan jelas..."
+                                oninput="updateEssayAnswer()"
+                            >${answers[currentQuestion] || ''}</textarea>
+                            <div id="answerFeedback" class="hidden">
+                                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <h4 class="font-semibold text-green-800 mb-2">Jawaban yang Diharapkan:</h4>
+                                    <p class="text-green-700 leading-relaxed">${question.answer}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                answered = answers[currentQuestion] && answers[currentQuestion].trim() !== '';
+            }
+            
+            updateButtons();
+            updateProgress();
+        }
+
+        function selectAnswer(index) {
+            if (answered && userAnswers[currentQuestion] !== null) return;
+            
+            userAnswers[currentQuestion] = index;
+            
+            // Update visual selection
+            document.querySelectorAll('.option-button').forEach((btn, i) => {
+                btn.classList.remove('border-blue-500', 'bg-blue-50');
+                if (i === index) {
+                    btn.classList.add('border-blue-500', 'bg-blue-50');
+                }
+            });
+            
+            updateButtons();
+        }
+
+        function updateFillAnswer() {
+            const textarea = document.getElementById('fillAnswer');
+            fillAnswers[currentQuestion] = textarea.value;
+            updateButtons();
+        }
+
+        function updateEssayAnswer() {
+            const textarea = document.getElementById('essayAnswer');
+            essayAnswers[currentQuestion] = textarea.value;
+            updateButtons();
+        }
+
+        function checkAnswer() {
+            const answers = getCurrentAnswers();
+            
+            if (currentQuestionType === 'multiple') {
+                if (answers[currentQuestion] === null) return;
+                
+                answered = true;
+                const questions = getCurrentQuestions();
+                const correctIndex = questions[currentQuestion].correct;
+                const userIndex = answers[currentQuestion];
+                
+                document.querySelectorAll('.option-button').forEach((btn, index) => {
+                    btn.style.pointerEvents = 'none';
+                    
+                    if (index === correctIndex) {
+                        btn.classList.remove('border-blue-500', 'bg-blue-50', 'hover:border-blue-300', 'hover:bg-blue-50');
+                        btn.classList.add('correct-answer');
+                    } else if (index === userIndex && index !== correctIndex) {
+                        btn.classList.remove('border-blue-500', 'bg-blue-50', 'hover:border-blue-300', 'hover:bg-blue-50');
+                        btn.classList.add('wrong-answer');
+                    }
+                });
+            } else {
+                if (!answers[currentQuestion] || answers[currentQuestion].trim() === '') return;
+                
+                answered = true;
+                const textarea = currentQuestionType === 'fill' 
+                    ? document.getElementById('fillAnswer') 
+                    : document.getElementById('essayAnswer');
+                const feedback = document.getElementById('answerFeedback');
+                
+                textarea.disabled = true;
+                textarea.classList.add('bg-gray-50');
+                feedback.classList.remove('hidden');
+            }
+            
+            updateButtons();
+        }
+
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            const questions = getCurrentQuestions();
+            const answers = getCurrentAnswers();
+            
+            prevBtn.disabled = currentQuestion === 0;
+            
+            const hasAnswer = currentQuestionType === 'multiple' 
+                ? answers[currentQuestion] !== null 
+                : answers[currentQuestion] && answers[currentQuestion].trim() !== '';
+            
+            if (hasAnswer && !answered) {
+                submitBtn.classList.remove('hidden');
+                nextBtn.classList.add('hidden');
+            } else if (answered) {
+                submitBtn.classList.add('hidden');
+                nextBtn.classList.remove('hidden');
+                nextBtn.disabled = false;
+                
+                if (currentQuestion === questions.length - 1) {
+                    nextBtn.textContent = 'Lihat Hasil';
+                }
+            } else {
+                submitBtn.classList.add('hidden');
+                nextBtn.classList.remove('hidden');
+                nextBtn.disabled = true;
+            }
+        }
+
+        function nextQuestion() {
+            const questions = getCurrentQuestions();
+            const answers = getCurrentAnswers();
+            
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                answered = currentQuestionType === 'multiple' 
+                    ? answers[currentQuestion] !== null 
+                    : answers[currentQuestion] && answers[currentQuestion].trim() !== '';
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            const answers = getCurrentAnswers();
+            
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                answered = currentQuestionType === 'multiple' 
+                    ? answers[currentQuestion] !== null 
+                    : answers[currentQuestion] && answers[currentQuestion].trim() !== '';
+                displayQuestion();
+            }
+        }
+
+        function showResults() {
+            const modal = document.getElementById('resultsModal');
+            const icon = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+            const message = document.getElementById('resultMessage');
+            const score = document.getElementById('finalScore');
+            
+            if (currentQuestionType === 'multiple') {
+                const correctAnswers = userAnswers.filter((answer, index) => answer === multipleChoiceQuestions[index].correct).length;
+                const percentage = Math.round((correctAnswers / multipleChoiceQuestions.length) * 100);
+                
+                if (percentage >= 80) {
+                    icon.textContent = '🎉';
+                    icon.className = 'w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-4xl bg-green-100';
+                    title.textContent = 'Excellent!';
+                    message.textContent = 'Pemahaman Anda tentang materi sangat baik!';
+                } else if (percentage >= 60) {
+                    icon.textContent = '👍';
+                    icon.className = 'w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-4xl bg-blue-100';
+                    title.textContent = 'Good Job!';
+                    message.textContent = 'Pemahaman Anda cukup baik, terus belajar!';
+                } else {
+                    icon.textContent = '📚';
+                    icon.className = 'w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-4xl bg-orange-100';
+                    title.textContent = 'Keep Learning!';
+                    message.textContent = 'Pelajari kembali materi untuk hasil yang lebih baik.';
+                }
+                
+                score.textContent = `Skor Anda: ${correctAnswers}/${multipleChoiceQuestions.length} (${percentage}%)`;
+            } else if (currentQuestionType === 'fill') {
+                const answeredQuestions = fillAnswers.filter(answer => answer && answer.trim() !== '').length;
+                
+                icon.textContent = '✍️';
+                icon.className = 'w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-4xl bg-blue-100';
+                title.textContent = 'Quiz Isian Selesai!';
+                message.textContent = 'Anda telah menyelesaikan semua soal isian. Bandingkan jawaban Anda dengan kunci jawaban yang tersedia.';
+                score.textContent = `Soal Dijawab: ${answeredQuestions}/${fillInQuestions.length}`;
+            } else {
+                const answeredQuestions = essayAnswers.filter(answer => answer && answer.trim() !== '').length;
+                
+                icon.textContent = '📝';
+                icon.className = 'w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-4xl bg-purple-100';
+                title.textContent = 'Quiz Essay Selesai!';
+                message.textContent = 'Anda telah menyelesaikan semua soal essay. Periksa kembali jawaban Anda dengan kunci jawaban yang tersedia untuk evaluasi diri.';
+                score.textContent = `Soal Dijawab: ${answeredQuestions}/${essayQuestions.length}`;
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            userAnswers = new Array(multipleChoiceQuestions.length).fill(null);
+            fillAnswers = new Array(fillInQuestions.length).fill('');
+            essayAnswers = new Array(essayQuestions.length).fill('');
+            answered = false;
+            document.getElementById('resultsModal').classList.add('hidden');
+            document.getElementById('nextBtn').textContent = 'Selanjutnya →';
+            displayQuestion();
+        }
+
+        function switchQuestionType(type) {
+            currentQuestionType = type;
+            currentQuestion = 0;
+            answered = false;
+            
+            // Update button styles
+            const multipleBtn = document.getElementById('multipleBtn');
+            const fillBtn = document.getElementById('fillBtn');
+            const essayBtn = document.getElementById('essayBtn');
+            
+            // Reset all buttons
+            multipleBtn.className = 'px-4 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-sm';
+            fillBtn.className = 'px-4 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-sm';
+            essayBtn.className = 'px-4 py-2 rounded-md font-medium transition-all text-gray-600 hover:text-blue-600 text-sm';
+            
+            if (type === 'multiple') {
+                multipleBtn.className = 'px-4 py-2 rounded-md font-medium transition-all bg-blue-600 text-white text-sm';
+                answered = userAnswers[currentQuestion] !== null;
+            } else if (type === 'fill') {
+                fillBtn.className = 'px-4 py-2 rounded-md font-medium transition-all bg-blue-600 text-white text-sm';
+                answered = fillAnswers[currentQuestion] && fillAnswers[currentQuestion].trim() !== '';
+            } else {
+                essayBtn.className = 'px-4 py-2 rounded-md font-medium transition-all bg-blue-600 text-white text-sm';
+                answered = essayAnswers[currentQuestion] && essayAnswers[currentQuestion].trim() !== '';
+            }
+            
+            document.getElementById('nextBtn').textContent = 'Selanjutnya →';
+            displayQuestion();
+        }
+
+        // Event Listeners
+        document.getElementById('prevBtn').addEventListener('click', prevQuestion);
+        document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+        document.getElementById('submitBtn').addEventListener('click', checkAnswer);
+        document.getElementById('restartBtn').addEventListener('click', restartQuiz);
+        document.getElementById('multipleBtn').addEventListener('click', () => switchQuestionType('multiple'));
+        document.getElementById('fillBtn').addEventListener('click', () => switchQuestionType('fill'));
+        document.getElementById('essayBtn').addEventListener('click', () => switchQuestionType('essay'));
+
+        // Initialize quiz
+        displayQuestion();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97d483071556f8e6',t:'MTc1NzU2NTg4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
