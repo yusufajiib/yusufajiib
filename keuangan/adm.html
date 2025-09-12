@@ -345,38 +345,10 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Payment Summary -->
+                                    <!-- Action Button -->
                                     <div>
-                                        <h4 class="font-semibold text-gray-800 mb-3">Ringkasan Pembayaran</h4>
-                                        <div class="space-y-3">
-                                            <div>
-                                                <div class="flex justify-between items-center mb-1">
-                                                    <span class="text-sm text-gray-600">SPP:</span>
-                                                    ${formatPaymentBadge(sppStatus.status, sppStatus)}
-                                                </div>
-                                                <div class="text-xs text-gray-500">
-                                                    Lunas: ${sppStatus.lunas} | Mencicil: ${sppStatus.mencicil} | Kelebihan: ${sppStatus.kelebihan} | Belum: ${sppStatus.unpaid}
-                                                </div>
-                                                <div class="text-xs text-gray-500">
-                                                    Total: Rp ${sppStatus.totalPaid.toLocaleString('id-ID')} / Rp ${sppStatus.totalStandard.toLocaleString('id-ID')}
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <div class="flex justify-between items-center mb-1">
-                                                    <span class="text-sm text-gray-600">Tabungan:</span>
-                                                    ${formatPaymentBadge(tabunganStatus.status, tabunganStatus)}
-                                                </div>
-                                                <div class="text-xs text-gray-500">
-                                                    Lunas: ${tabunganStatus.lunas} | Mencicil: ${tabunganStatus.mencicil} | Kelebihan: ${tabunganStatus.kelebihan} | Belum: ${tabunganStatus.unpaid}
-                                                </div>
-                                                <div class="text-xs text-gray-500">
-                                                    Total: Rp ${tabunganStatus.totalPaid.toLocaleString('id-ID')} / Rp ${tabunganStatus.totalStandard.toLocaleString('id-ID')}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
                                         <button onclick="showDetailModal('${student.NISN}')" 
-                                                class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                                                class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
                                             Lihat Detail Pembayaran
                                         </button>
                                     </div>
@@ -1426,5 +1398,5 @@
         // Initialize
         loadStudentData();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97dd757a21c1406d',t:'MTc1NzY1OTcwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97dd7b027671289f',t:'MTc1NzY1OTkzMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
