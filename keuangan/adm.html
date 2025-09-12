@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Administrasi Pembayaran Madrasah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        .payment-status-lunas { @apply bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-emerald-200; }
+        .payment-status-unpaid { @apply bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-rose-200; }
+        .payment-status-mencicil { @apply bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-amber-200; }
+        .payment-status-kelebihan { @apply bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-indigo-200; }
+        .student-card { transition: all 0.3s ease; }
+        .student-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">🏫 Sistem Administrasi Madrasah</h1>
+            <p class="text-gray-600">Manajemen Pembayaran Siswa</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <p class="mt-4 text-gray-600">Memuat data siswa...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <strong>Error:</strong> <span id="error-message"></span>
+        </div>
+
+        <!-- Search and Filter -->
+        <div id="controls" class="hidden mb-6 bg-white rounded-lg shadow-md p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Cari Siswa</label>
+                    <input type="text" id="searchInput" placeholder="Nama atau NISN..." 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Filter Jurusan</label>
+                    <select id="jurusanFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Semua Jurusan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Filter Tahun Masuk</label>
+                    <select id="tahunFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Semua Tahun</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button onclick="downloadExcel()" 
+                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span>Download Excel</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div id="stats" class="hidden grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <div class="text-3xl font-bold text-blue-600" id="totalSiswa">0</div>
+                <div class="text-gray-600">Total Siswa</div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <div class="text-3xl font-bold text-green-600" id="lunasSPP">0</div>
+                <div class="text-gray-600">SPP Lunas</div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <div class="text-3xl font-bold text-yellow-600" id="tunggakanSPP">0</div>
+                <div class="text-gray-600">SPP Mencicil</div>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <div class="text-2xl font-bold text-purple-600" id="totalTabungan">Rp 0</div>
+                <div class="text-gray-600">Tabungan Terkumpul</div>
+            </div>
+        </div>
+
+        <!-- Students List -->
+        <div id="studentsList" class="hidden space-y-6"></div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="hidden flex justify-center mt-8 space-x-2"></div>
+    </div>
+
+    <script>
+        const CONFIG = {
+            SHEET_ID: '17MDc804lNUm_XwUM6hPj6Ui8T-JVtpxJCLq4XovVs0A',
+            SHEET_NAME: 'Sheet7',
+            API_KEY: 'AIzaSyCAJWvsjw92iebZM54KZivepTpl_Q2gk70'
+        };
+
+        // Tarif standar untuk setiap jenis pembayaran
+        const TARIF_STANDAR = {
+            // Biaya masuk
+            siswa_baru_putra: 1200000,
+            siswi_baru_putri: 1350000,
+            
+            // Ujian dan kelulusan
+            ujian_akhir: 500000,
+            perpisahan: 1000000,
+            buku_kenangan: 50000,
+            study_tour: 300000,
+            
+            // Infaq naik kelas
+            infaq_naik_kelas_10: 150000,
+            infaq_naik_kelas_11: 150000,
+            
+            // LKS per semester
+            lks_10_sem1: 150000, lks_10_sem2: 150000,
+            lks_11_sem1: 150000, lks_11_sem2: 150000,
+            lks_12_sem1: 150000, lks_12_sem2: 150000,
+            
+            // UHB per semester
+            uhb_10_sem1: 100000, uhb_10_sem2: 100000,
+            uhb_11_sem1: 100000, uhb_11_sem2: 100000,
+            uhb_12_sem1: 100000, uhb_12_sem2: 100000,
+            
+            // PAS per semester
+            pas_10_sem1: 120000, pas_10_sem2: 120000,
+            pas_11_sem1: 120000, pas_11_sem2: 120000,
+            pas_12_sem1: 120000, pas_12_sem2: 120000,
+            
+            // SPP bulanan per kelas
+            spp_10_jul: 125000, spp_10_agu: 125000, spp_10_sep: 125000, spp_10_okt: 125000,
+            spp_10_nov: 125000, spp_10_des: 125000, spp_10_jan: 125000, spp_10_feb: 125000,
+            spp_10_mar: 125000, spp_10_apr: 125000, spp_10_mei: 125000, spp_10_jun: 125000,
+            
+            spp_11_jul: 175000, spp_11_agu: 175000, spp_11_sep: 175000, spp_11_okt: 175000,
+            spp_11_nov: 175000, spp_11_des: 175000, spp_11_jan: 175000, spp_11_feb: 175000,
+            spp_11_mar: 175000, spp_11_apr: 175000, spp_11_mei: 175000, spp_11_jun: 175000,
+            
+            spp_12_jul: 175000, spp_12_agu: 175000, spp_12_sep: 175000, spp_12_okt: 175000,
+            spp_12_nov: 175000, spp_12_des: 175000, spp_12_jan: 175000, spp_12_feb: 175000,
+            spp_12_mar: 175000, spp_12_apr: 175000, spp_12_mei: 175000, spp_12_jun: 175000,
+            
+            // Tabungan bulanan (standar minimum)
+            tabungan_10_jul: 50000, tabungan_10_agu: 50000, tabungan_10_sep: 50000, tabungan_10_okt: 50000,
+            tabungan_10_nov: 50000, tabungan_10_des: 50000, tabungan_10_jan: 50000, tabungan_10_feb: 50000,
+            tabungan_10_mar: 50000, tabungan_10_apr: 50000, tabungan_10_mei: 50000, tabungan_10_jun: 50000
+        };
+
+        let studentsData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        // Function to convert Google Drive link to direct image URL
+        function convertGoogleDriveLink(url) {
+            if (!url || url.trim() === '') return '';
+            
+            // Check if it's a Google Drive link
+            const driveRegex = /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/;
+            const match = url.match(driveRegex);
+            
+            if (match && match[1]) {
+                // Convert to direct image URL
+                return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+            }
+            
+            // Return original URL if it's not a Google Drive link
+            return url;
+        }
+
+        // Function to calculate current class based on entry year
+        function calculateCurrentClass(tahunMasuk) {
+            if (!tahunMasuk) return '-';
+            
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth() + 1; // 0-based month
+            
+            // Parse entry year (format: 2025/2026 or 2025)
+            let entryYear;
+            if (tahunMasuk.includes('/')) {
+                entryYear = parseInt(tahunMasuk.split('/')[0]);
+            } else {
+                entryYear = parseInt(tahunMasuk);
+            }
+            
+            if (isNaN(entryYear)) return '-';
+            
+            // Calculate years since entry
+            // Academic year starts in July (month 7)
+            let yearsSinceEntry;
+            if (currentMonth >= 7) {
+                // Current academic year
+                yearsSinceEntry = currentYear - entryYear;
+            } else {
+                // Previous academic year (before July)
+                yearsSinceEntry = currentYear - entryYear - 1;
+            }
+            
+            // Determine class level
+            if (yearsSinceEntry === 0) return '10';
+            else if (yearsSinceEntry === 1) return '11';
+            else if (yearsSinceEntry === 2) return '12';
+            else if (yearsSinceEntry < 0) return '10'; // Future entry
+            else return 'Lulus'; // Graduated
+        }
+
+        // Payment categories for better organization
+        const paymentCategories = {
+            'Biaya Masuk': ['siswa_baru_putra', 'siswi_baru_putri'],
+            'Ujian & Kelulusan': ['ujian_akhir', 'perpisahan', 'buku_kenangan'],
+            'Kegiatan': ['study_tour', 'infaq_naik_kelas_10', 'infaq_naik_kelas_11'],
+            'LKS': ['lks_10_sem1', 'lks_10_sem2', 'lks_11_sem1', 'lks_11_sem2', 'lks_12_sem1', 'lks_12_sem2'],
+            'UHB': ['uhb_10_sem1', 'uhb_10_sem2', 'uhb_11_sem1', 'uhb_11_sem2', 'uhb_12_sem1', 'uhb_12_sem2'],
+            'PAS': ['pas_10_sem1', 'pas_10_sem2', 'pas_11_sem1', 'pas_11_sem2', 'pas_12_sem1', 'pas_12_sem2']
+        };
+
+        async function loadStudentData() {
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${CONFIG.SHEET_NAME}?key=${CONFIG.API_KEY}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.values || data.values.length === 0) {
+                    throw new Error('Tidak ada data yang ditemukan di spreadsheet');
+                }
+
+                const headers = data.values[0];
+                const rows = data.values.slice(1);
+
+                studentsData = rows.map(row => {
+                    const student = {};
+                    headers.forEach((header, index) => {
+                        student[header] = row[index] || '';
+                    });
+                    return student;
+                });
+
+                filteredData = [...studentsData];
+                populateFilters();
+                updateStatistics();
+                displayStudents();
+                showElements();
+                
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        function populateFilters() {
+            const jurusanSet = new Set();
+            const tahunSet = new Set();
+
+            studentsData.forEach(student => {
+                if (student.JURUSAN) jurusanSet.add(student.JURUSAN);
+                if (student['TAHUN MASUK']) tahunSet.add(student['TAHUN MASUK']);
+            });
+
+            const jurusanFilter = document.getElementById('jurusanFilter');
+            const tahunFilter = document.getElementById('tahunFilter');
+
+            jurusanSet.forEach(jurusan => {
+                const option = document.createElement('option');
+                option.value = jurusan;
+                option.textContent = jurusan;
+                jurusanFilter.appendChild(option);
+            });
+
+            Array.from(tahunSet).sort().forEach(tahun => {
+                const option = document.createElement('option');
+                option.value = tahun;
+                option.textContent = tahun;
+                tahunFilter.appendChild(option);
+            });
+        }
+
+        function updateStatistics() {
+            const totalSiswa = filteredData.length;
+            let lunasSPP = 0;
+            let mencicilSPP = 0;
+            let kelebihanSPP = 0;
+            let totalTabunganTerkumpul = 0;
+
+            filteredData.forEach(student => {
+                const sppStatus = calculateSPPStatus(student);
+                const tabunganStatus = calculateTabunganStatus(student);
+                
+                if (sppStatus.status === 'lunas') lunasSPP++;
+                else if (sppStatus.status === 'mencicil') mencicilSPP++;
+                else if (sppStatus.status === 'kelebihan') kelebihanSPP++;
+                
+                totalTabunganTerkumpul += tabunganStatus.totalPaid;
+            });
+
+            document.getElementById('totalSiswa').textContent = totalSiswa;
+            document.getElementById('lunasSPP').textContent = lunasSPP;
+            document.getElementById('tunggakanSPP').textContent = mencicilSPP;
+            document.getElementById('totalTabungan').textContent = `Rp ${totalTabunganTerkumpul.toLocaleString('id-ID')}`;
+        }
+
+        function getPaymentStatus(amount, date, paymentKey) {
+            const standardAmount = TARIF_STANDAR[paymentKey] || 0;
+            const paidAmount = parseFloat(amount) || 0;
+            
+            if (paidAmount === 0) return 'unpaid';
+            
+            if (paidAmount === standardAmount) return 'lunas';
+            if (paidAmount < standardAmount) return 'mencicil';
+            if (paidAmount > standardAmount) return 'kelebihan';
+            
+            return 'unpaid';
+        }
+
+        function validatePaymentAmount(paymentKey, amount) {
+            const standardAmount = TARIF_STANDAR[paymentKey] || 0;
+            const paidAmount = parseFloat(amount) || 0;
+            
+            return {
+                standard: standardAmount,
+                paid: paidAmount,
+                difference: paidAmount - standardAmount,
+                status: getPaymentStatus(amount, null, paymentKey)
+            };
+        }
+
+        function formatPaymentBadge(status, validation = null) {
+            const badges = {
+                'lunas': `<span class="payment-status-lunas">✓ Lunas</span>`,
+                'unpaid': `<span class="payment-status-unpaid">✗ Belum Bayar</span>`,
+                'mencicil': `<span class="payment-status-mencicil">⚠ Mencicil</span>`,
+                'kelebihan': `<span class="payment-status-kelebihan">↗ Kelebihan</span>`
+            };
+            
+            let badge = badges[status] || badges['unpaid'];
+            
+            if (validation && (status === 'mencicil' || status === 'kelebihan')) {
+                const diff = Math.abs(validation.difference);
+                badge += ` <span class="text-xs text-gray-500">(${status === 'kelebihan' ? '+' : '-'}${diff.toLocaleString('id-ID')})</span>`;
+            }
+            
+            return badge;
+        }
+
+        function createStudentCard(student) {
+            const sppStatus = calculateSPPStatus(student);
+            const tabunganStatus = calculateTabunganStatus(student);
+            
+            return `
+                <div class="student-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex flex-col lg:flex-row lg:items-start lg:space-x-6">
+                            <!-- Student Info -->
+                            <div class="flex-shrink-0 mb-4 lg:mb-0">
+                                ${student.FOTO && student.FOTO.trim() !== '' ? 
+                                    `<img src="${convertGoogleDriveLink(student.FOTO)}" alt="Foto ${student.NAMA || 'Siswa'}" 
+                                         class="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                     <div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold" style="display: none;">
+                                         ${student.NAMA ? student.NAMA.charAt(0).toUpperCase() : '?'}
+                                     </div>` :
+                                    `<div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                                         ${student.NAMA ? student.NAMA.charAt(0).toUpperCase() : '?'}
+                                     </div>`
+                                }
+                            </div>
+                            
+                            <div class="flex-grow">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <!-- Basic Info -->
+                                    <div>
+                                        <h3 class="text-xl font-bold text-gray-800 mb-2">${student.NAMA || 'Nama tidak tersedia'}</h3>
+                                        <div class="space-y-1 text-sm text-gray-600">
+                                            <p><span class="font-medium">NISN:</span> ${student.NISN || '-'}</p>
+                                            <p><span class="font-medium">Jenis Kelamin:</span> ${student['JENIS KELAMIN'] || '-'}</p>
+                                            <p><span class="font-medium">Tahun Masuk:</span> ${student['TAHUN MASUK'] || '-'}</p>
+                                            <p><span class="font-medium">Kelas:</span> ${calculateCurrentClass(student['TAHUN MASUK'])}</p>
+                                            <p><span class="font-medium">Jurusan:</span> ${student.JURUSAN || '-'}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Payment Summary -->
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800 mb-3">Ringkasan Pembayaran</h4>
+                                        <div class="space-y-3">
+                                            <div>
+                                                <div class="flex justify-between items-center mb-1">
+                                                    <span class="text-sm text-gray-600">SPP:</span>
+                                                    ${formatPaymentBadge(sppStatus.status, sppStatus)}
+                                                </div>
+                                                <div class="text-xs text-gray-500">
+                                                    Lunas: ${sppStatus.lunas} | Mencicil: ${sppStatus.mencicil} | Kelebihan: ${sppStatus.kelebihan} | Belum: ${sppStatus.unpaid}
+                                                </div>
+                                                <div class="text-xs text-gray-500">
+                                                    Total: Rp ${sppStatus.totalPaid.toLocaleString('id-ID')} / Rp ${sppStatus.totalStandard.toLocaleString('id-ID')}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div class="flex justify-between items-center mb-1">
+                                                    <span class="text-sm text-gray-600">Tabungan:</span>
+                                                    ${formatPaymentBadge(tabunganStatus.status, tabunganStatus)}
+                                                </div>
+                                                <div class="text-xs text-gray-500">
+                                                    Lunas: ${tabunganStatus.lunas} | Mencicil: ${tabunganStatus.mencicil} | Kelebihan: ${tabunganStatus.kelebihan} | Belum: ${tabunganStatus.unpaid}
+                                                </div>
+                                                <div class="text-xs text-gray-500">
+                                                    Total: Rp ${tabunganStatus.totalPaid.toLocaleString('id-ID')} / Rp ${tabunganStatus.totalStandard.toLocaleString('id-ID')}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <button onclick="showDetailModal('${student.NISN}')" 
+                                                class="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                                            Lihat Detail Pembayaran
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function calculateSPPStatus(student) {
+            const sppKeys = Object.keys(student).filter(key => key.startsWith('spp_') && !key.startsWith('tgl_'));
+            const total = sppKeys.length;
+            
+            let lunas = 0, mencicil = 0, kelebihan = 0, unpaid = 0;
+            let totalStandard = 0, totalPaid = 0;
+            
+            sppKeys.forEach(key => {
+                const amount = student[key];
+                const validation = validatePaymentAmount(key, amount);
+                totalStandard += validation.standard;
+                totalPaid += validation.paid;
+                
+                switch(validation.status) {
+                    case 'lunas': lunas++; break;
+                    case 'mencicil': mencicil++; break;
+                    case 'kelebihan': kelebihan++; break;
+                    default: unpaid++; break;
+                }
+            });
+            
+            let overallStatus = 'unpaid';
+            if (lunas === total && total > 0) overallStatus = 'lunas';
+            else if (totalPaid > totalStandard) overallStatus = 'kelebihan';
+            else if (totalPaid > 0) overallStatus = 'mencicil';
+            
+            return { 
+                status: overallStatus, 
+                lunas, 
+                mencicil, 
+                kelebihan, 
+                unpaid, 
+                total,
+                totalStandard,
+                totalPaid,
+                difference: totalPaid - totalStandard
+            };
+        }
+
+        function calculateTabunganStatus(student) {
+            const tabunganKeys = Object.keys(student).filter(key => key.startsWith('tabungan_') && !key.startsWith('tgl_'));
+            const total = tabunganKeys.length;
+            
+            let lunas = 0, mencicil = 0, kelebihan = 0, unpaid = 0;
+            let totalStandard = 0, totalPaid = 0;
+            
+            tabunganKeys.forEach(key => {
+                const amount = student[key];
+                const validation = validatePaymentAmount(key, amount);
+                totalStandard += validation.standard;
+                totalPaid += validation.paid;
+                
+                switch(validation.status) {
+                    case 'lunas': lunas++; break;
+                    case 'mencicil': mencicil++; break;
+                    case 'kelebihan': kelebihan++; break;
+                    default: unpaid++; break;
+                }
+            });
+            
+            let overallStatus = 'unpaid';
+            if (lunas === total && total > 0) overallStatus = 'lunas';
+            else if (totalPaid > totalStandard) overallStatus = 'kelebihan';
+            else if (totalPaid > 0) overallStatus = 'mencicil';
+            
+            return { 
+                status: overallStatus, 
+                lunas, 
+                mencicil, 
+                kelebihan, 
+                unpaid, 
+                total,
+                totalStandard,
+                totalPaid,
+                difference: totalPaid - totalStandard
+            };
+        }
+
+        function showDetailModal(nisn) {
+            const student = studentsData.find(s => s.NISN === nisn);
+            if (!student) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-2xl font-bold text-gray-800">Detail Pembayaran - ${student.NAMA}</h2>
+                            <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        ${createDetailedPaymentView(student)}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function createDetailedPaymentView(student) {
+            let html = '<div class="space-y-6">';
+            
+            // SPP Payments
+            html += '<div><h3 class="text-lg font-semibold mb-3 text-blue-600">📚 Pembayaran SPP</h3>';
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">';
+            
+            const sppMonths = ['jul', 'agu', 'sep', 'okt', 'nov', 'des', 'jan', 'feb', 'mar', 'apr', 'mei', 'jun'];
+            const grades = ['10', '11', '12'];
+            
+            grades.forEach(grade => {
+                sppMonths.forEach(month => {
+                    const key = `spp_${grade}_${month}`;
+                    const dateKey = `tgl_${key}`;
+                    const amount = student[key];
+                    const date = student[dateKey];
+                    const validation = validatePaymentAmount(key, amount);
+                    const status = validation.status;
+                    
+                    const bgColor = {
+                        'lunas': 'bg-emerald-50 border-emerald-200',
+                        'mencicil': 'bg-amber-50 border-amber-200',
+                        'kelebihan': 'bg-indigo-50 border-indigo-200',
+                        'unpaid': 'bg-rose-50 border-rose-200'
+                    }[status] || 'bg-gray-50 border-gray-200';
+                    
+                    html += `
+                        <div class="border rounded p-3 ${bgColor}">
+                            <div class="font-medium text-sm">SPP Kelas ${grade} - ${month.toUpperCase()}</div>
+                            <div class="text-xs text-gray-600 mt-1">
+                                ${formatPaymentBadge(status, validation)}
+                                <br><span class="font-medium">Tarif:</span> Rp ${validation.standard.toLocaleString('id-ID')}
+                                ${validation.paid > 0 ? `<br><span class="font-medium">Dibayar:</span> Rp ${validation.paid.toLocaleString('id-ID')}` : ''}
+                                ${date ? `<br><span class="font-medium">Tanggal:</span> ${date}` : ''}
+                                ${validation.difference !== 0 ? `<br><span class="font-medium ${validation.difference > 0 ? 'text-blue-600' : 'text-red-600'}">Selisih:</span> ${validation.difference > 0 ? '+' : ''}Rp ${validation.difference.toLocaleString('id-ID')}` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+            html += '</div></div>';
+
+            // Tabungan
+            html += '<div><h3 class="text-lg font-semibold mb-3 text-green-600">💰 Tabungan</h3>';
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">';
+            
+            sppMonths.forEach(month => {
+                const key = `tabungan_10_${month}`;
+                const dateKey = `tgl_${key}`;
+                const amount = student[key];
+                const date = student[dateKey];
+                const validation = validatePaymentAmount(key, amount);
+                const status = validation.status;
+                
+                const bgColor = {
+                    'lunas': 'bg-emerald-50 border-emerald-200',
+                    'mencicil': 'bg-amber-50 border-amber-200',
+                    'kelebihan': 'bg-indigo-50 border-indigo-200',
+                    'unpaid': 'bg-rose-50 border-rose-200'
+                }[status] || 'bg-gray-50 border-gray-200';
+                
+                html += `
+                    <div class="border rounded p-3 ${bgColor}">
+                        <div class="font-medium text-sm">Tabungan ${month.toUpperCase()}</div>
+                        <div class="text-xs text-gray-600 mt-1">
+                            ${formatPaymentBadge(status, validation)}
+                            <br><span class="font-medium">Target:</span> Rp ${validation.standard.toLocaleString('id-ID')}
+                            ${validation.paid > 0 ? `<br><span class="font-medium">Dibayar:</span> Rp ${validation.paid.toLocaleString('id-ID')}` : ''}
+                            ${date ? `<br><span class="font-medium">Tanggal:</span> ${date}` : ''}
+                            ${validation.difference !== 0 ? `<br><span class="font-medium ${validation.difference > 0 ? 'text-blue-600' : 'text-red-600'}">Selisih:</span> ${validation.difference > 0 ? '+' : ''}Rp ${validation.difference.toLocaleString('id-ID')}` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div></div>';
+
+            // LKS Payments
+            html += '<div><h3 class="text-lg font-semibold mb-3 text-orange-600">📖 Pembayaran LKS</h3>';
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">';
+            
+            const lksPayments = [
+                { key: 'lks_10_sem1', label: 'LKS Kelas 10 Semester 1' },
+                { key: 'lks_10_sem2', label: 'LKS Kelas 10 Semester 2' },
+                { key: 'lks_11_sem1', label: 'LKS Kelas 11 Semester 1' },
+                { key: 'lks_11_sem2', label: 'LKS Kelas 11 Semester 2' },
+                { key: 'lks_12_sem1', label: 'LKS Kelas 12 Semester 1' },
+                { key: 'lks_12_sem2', label: 'LKS Kelas 12 Semester 2' }
+            ];
+            
+            lksPayments.forEach(payment => {
+                const amount = student[payment.key];
+                const date = student[`tgl_${payment.key}`];
+                const validation = validatePaymentAmount(payment.key, amount);
+                const status = validation.status;
+                
+                const bgColor = {
+                    'lunas': 'bg-emerald-50 border-emerald-200',
+                    'mencicil': 'bg-amber-50 border-amber-200',
+                    'kelebihan': 'bg-indigo-50 border-indigo-200',
+                    'unpaid': 'bg-rose-50 border-rose-200'
+                }[status] || 'bg-gray-50 border-gray-200';
+                
+                html += `
+                    <div class="border rounded p-3 ${bgColor}">
+                        <div class="font-medium text-sm">${payment.label}</div>
+                        <div class="text-xs text-gray-600 mt-1">
+                            ${formatPaymentBadge(status, validation)}
+                            <br><span class="font-medium">Tarif:</span> Rp ${validation.standard.toLocaleString('id-ID')}
+                            ${validation.paid > 0 ? `<br><span class="font-medium">Dibayar:</span> Rp ${validation.paid.toLocaleString('id-ID')}` : ''}
+                            ${date ? `<br><span class="font-medium">Tanggal:</span> ${date}` : ''}
+                            ${validation.difference !== 0 ? `<br><span class="font-medium ${validation.difference > 0 ? 'text-blue-600' : 'text-red-600'}">Selisih:</span> ${validation.difference > 0 ? '+' : ''}Rp ${validation.difference.toLocaleString('id-ID')}` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div></div>';
+
+            // UHB Payments
+            html += '<div><h3 class="text-lg font-semibold mb-3 text-indigo-600">📝 Pembayaran UHB</h3>';
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">';
+            
+            const uhbPayments = [
+                { key: 'uhb_10_sem1', label: 'UHB Kelas 10 Semester 1' },
+                { key: 'uhb_10_sem2', label: 'UHB Kelas 10 Semester 2' },
+                { key: 'uhb_11_sem1', label: 'UHB Kelas 11 Semester 1' },
+                { key: 'uhb_11_sem2', label: 'UHB Kelas 11 Semester 2' },
+                { key: 'uhb_12_sem1', label: 'UHB Kelas 12 Semester 1' },
+                { key: 'uhb_12_sem2', label: 'UHB Kelas 12 Semester 2' }
+            ];
+            
+            uhbPayments.forEach(payment => {
+                const amount = student[payment.key];
+                const date = student[`tgl_${payment.key}`];
+                const validation = validatePaymentAmount(payment.key, amount);
+                const status = validation.status;
+                
+                const bgColor = {
+                    'lunas': 'bg-emerald-50 border-emerald-200',
+                    'mencicil': 'bg-amber-50 border-amber-200',
+                    'kelebihan': 'bg-indigo-50 border-indigo-200',
+                    'unpaid': 'bg-rose-50 border-rose-200'
+                }[status] || 'bg-gray-50 border-gray-200';
+                
+                html += `
+                    <div class="border rounded p-3 ${bgColor}">
+                        <div class="font-medium text-sm">${payment.label}</div>
+                        <div class="text-xs text-gray-600 mt-1">
+                            ${formatPaymentBadge(status, validation)}
+                            <br><span class="font-medium">Tarif:</span> Rp ${validation.standard.toLocaleString('id-ID')}
+                            ${validation.paid > 0 ? `<br><span class="font-medium">Dibayar:</span> Rp ${validation.paid.toLocaleString('id-ID')}` : ''}
+                            ${date ? `<br><span class="font-medium">Tanggal:</span> ${date}` : ''}
+                            ${validation.difference !== 0 ? `<br><span class="font-medium ${validation.difference > 0 ? 'text-blue-600' : 'text-red-600'}">Selisih:</span> ${validation.difference > 0 ? '+' : ''}Rp ${validation.difference.toLocaleString('id-ID')}` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div></div>';
+
+            // PAS Payments
+            html += '<div><h3 class="text-lg font-semibold mb-3 text-teal-600">📋 Pembayaran PAS</h3>';
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">';
+            
+            const pasPayments = [
+                { key: 'pas_10_sem1', label: 'PAS Kelas 10 Semester 1' },
+                { key: 'pas_10_sem2', label: 'PAS Kelas 10 Semester 2' },
+                { key: 'pas_11_sem1', label: 'PAS Kelas 11 Semester 1' },
+                { key: 'pas_11_sem2', label: 'PAS Kelas 11 Semester 2' },
+                { key: 'pas_12_sem1', label: 'PAS Kelas 12 Semester 1' },
+                { key: 'pas_12_sem2', label: 'PAS Kelas 12 Semester 2' }
+            ];
+            
+            pasPayments.forEach(payment => {
+                const amount = student[payment.key];
+                const date = student[`tgl_${payment.key}`];
+                const validation = validatePaymentAmount(payment.key, amount);
+                const status = validation.status;
+                
+                const bgColor = {
+                    'lunas': 'bg-emerald-50 border-emerald-200',
+                    'mencicil': 'bg-amber-50 border-amber-200',
+                    'kelebihan': 'bg-indigo-50 border-indigo-200',
+                    'unpaid': 'bg-rose-50 border-rose-200'
+                }[status] || 'bg-gray-50 border-gray-200';
+                
+                html += `
+                    <div class="border rounded p-3 ${bgColor}">
+                        <div class="font-medium text-sm">${payment.label}</div>
+                        <div class="text-xs text-gray-600 mt-1">
+                            ${formatPaymentBadge(status, validation)}
+                            <br><span class="font-medium">Tarif:</span> Rp ${validation.standard.toLocaleString('id-ID')}
+                            ${validation.paid > 0 ? `<br><span class="font-medium">Dibayar:</span> Rp ${validation.paid.toLocaleString('id-ID')}` : ''}
+                            ${date ? `<br><span class="font-medium">Tanggal:</span> ${date}` : ''}
+                            ${validation.difference !== 0 ? `<br><span class="font-medium ${validation.difference > 0 ? 'text-blue-600' : 'text-red-600'}">Selisih:</span> ${validation.difference > 0 ? '+' : ''}Rp ${validation.difference.toLocaleString('id-ID')}` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div></div>';
+
+            // Other payments - Filter berdasarkan jenis kelamin
+            const jenisKelamin = student['JENIS KELAMIN'] || '';
+            const otherPayments = [
+                { key: 'ujian_akhir', label: 'Ujian Akhir' },
+                { key: 'perpisahan', label: 'Perpisahan' },
+                { key: 'buku_kenangan', label: 'Buku Kenangan' },
+                { key: 'study_tour', label: 'Study Tour' },
+                { key: 'infaq_naik_kelas_10', label: 'Infaq Naik Kelas 10' },
+                { key: 'infaq_naik_kelas_11', label: 'Infaq Naik Kelas 11' }
+            ];
+
+            // Tambahkan pembayaran siswa baru sesuai jenis kelamin
+            if (jenisKelamin.toLowerCase().includes('laki') || jenisKelamin.toLowerCase().includes('putra') || jenisKelamin.toLowerCase() === 'l') {
+                otherPayments.unshift({ key: 'siswa_baru_putra', label: 'Siswa Baru Putra' });
+            } else if (jenisKelamin.toLowerCase().includes('perempuan') || jenisKelamin.toLowerCase().includes('putri') || jenisKelamin.toLowerCase() === 'p') {
+                otherPayments.unshift({ key: 'siswi_baru_putri', label: 'Siswi Baru Putri' });
+            }
+
+            html += '<div><h3 class="text-lg font-semibold mb-3 text-purple-600">🎓 Pembayaran Lainnya</h3>';
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-3">';
+            
+            otherPayments.forEach(payment => {
+                const amount = student[payment.key];
+                const date = student[`tgl_${payment.key}`];
+                const validation = validatePaymentAmount(payment.key, amount);
+                const status = validation.status;
+                
+                // Skip jika tidak ada tarif standar untuk pembayaran ini
+                if (validation.standard === 0) return;
+                
+                const bgColor = {
+                    'lunas': 'bg-emerald-50 border-emerald-200',
+                    'mencicil': 'bg-amber-50 border-amber-200',
+                    'kelebihan': 'bg-indigo-50 border-indigo-200',
+                    'unpaid': 'bg-rose-50 border-rose-200'
+                }[status] || 'bg-gray-50 border-gray-200';
+                
+                html += `
+                    <div class="border rounded p-3 ${bgColor}">
+                        <div class="font-medium text-sm">${payment.label}</div>
+                        <div class="text-xs text-gray-600 mt-1">
+                            ${formatPaymentBadge(status, validation)}
+                            <br><span class="font-medium">Tarif:</span> Rp ${validation.standard.toLocaleString('id-ID')}
+                            ${validation.paid > 0 ? `<br><span class="font-medium">Dibayar:</span> Rp ${validation.paid.toLocaleString('id-ID')}` : ''}
+                            ${date ? `<br><span class="font-medium">Tanggal:</span> ${date}` : ''}
+                            ${validation.difference !== 0 ? `<br><span class="font-medium ${validation.difference > 0 ? 'text-blue-600' : 'text-red-600'}">Selisih:</span> ${validation.difference > 0 ? '+' : ''}Rp ${validation.difference.toLocaleString('id-ID')}` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div></div>';
+            
+            html += '</div>';
+            return html;
+        }
+
+        function displayStudents() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const studentsToShow = filteredData.slice(startIndex, endIndex);
+
+            const studentsList = document.getElementById('studentsList');
+            studentsList.innerHTML = studentsToShow.map(student => createStudentCard(student)).join('');
+
+            updatePagination();
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.classList.add('hidden');
+                return;
+            }
+            
+            pagination.classList.remove('hidden');
+            pagination.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.className = `px-3 py-2 rounded ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`;
+                button.onclick = () => {
+                    currentPage = i;
+                    displayStudents();
+                };
+                pagination.appendChild(button);
+            }
+        }
+
+        function filterStudents() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const jurusanFilter = document.getElementById('jurusanFilter').value;
+            const tahunFilter = document.getElementById('tahunFilter').value;
+
+            filteredData = studentsData.filter(student => {
+                const matchesSearch = !searchTerm || 
+                    student.NAMA?.toLowerCase().includes(searchTerm) || 
+                    student.NISN?.toLowerCase().includes(searchTerm);
+                
+                const matchesJurusan = !jurusanFilter || student.JURUSAN === jurusanFilter;
+                const matchesTahun = !tahunFilter || student['TAHUN MASUK'] === tahunFilter;
+
+                return matchesSearch && matchesJurusan && matchesTahun;
+            });
+
+            currentPage = 1;
+            updateStatistics();
+            displayStudents();
+        }
+
+        function showElements() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('controls').classList.remove('hidden');
+            document.getElementById('stats').classList.remove('hidden');
+            document.getElementById('studentsList').classList.remove('hidden');
+        }
+
+        function showError(message) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error-message').textContent = message;
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterStudents);
+        document.getElementById('jurusanFilter').addEventListener('change', filterStudents);
+        document.getElementById('tahunFilter').addEventListener('change', filterStudents);
+
+        // Excel Download Function
+        function downloadExcel() {
+            if (!studentsData || studentsData.length === 0) {
+                alert('Tidak ada data untuk diunduh');
+                return;
+            }
+
+            // Prepare data for Excel
+            const excelData = [];
+            
+            studentsData.forEach(student => {
+                const baseInfo = {
+                    'NAMA': student.NAMA || '',
+                    'NISN': student.NISN || '',
+                    'JENIS KELAMIN': student['JENIS KELAMIN'] || '',
+                    'TAHUN MASUK': student['TAHUN MASUK'] || '',
+                    'KELAS SAAT INI': calculateCurrentClass(student['TAHUN MASUK']),
+                    'JURUSAN': student.JURUSAN || ''
+                };
+
+                // SPP Payments
+                const sppMonths = ['jul', 'agu', 'sep', 'okt', 'nov', 'des', 'jan', 'feb', 'mar', 'apr', 'mei', 'jun'];
+                const grades = ['10', '11', '12'];
+                
+                grades.forEach(grade => {
+                    sppMonths.forEach(month => {
+                        const key = `spp_${grade}_${month}`;
+                        const dateKey = `tgl_${key}`;
+                        const amount = student[key] || '';
+                        const date = student[dateKey] || '';
+                        const validation = validatePaymentAmount(key, amount);
+                        
+                        baseInfo[`SPP ${grade} ${month.toUpperCase()} - Jumlah`] = amount ? `Rp ${parseFloat(amount).toLocaleString('id-ID')}` : '';
+                        baseInfo[`SPP ${grade} ${month.toUpperCase()} - Tanggal`] = date;
+                        baseInfo[`SPP ${grade} ${month.toUpperCase()} - Status`] = getStatusText(validation.status);
+                        baseInfo[`SPP ${grade} ${month.toUpperCase()} - Tarif Standar`] = `Rp ${validation.standard.toLocaleString('id-ID')}`;
+                    });
+                });
+
+                // Tabungan
+                sppMonths.forEach(month => {
+                    const key = `tabungan_10_${month}`;
+                    const dateKey = `tgl_${key}`;
+                    const amount = student[key] || '';
+                    const date = student[dateKey] || '';
+                    const validation = validatePaymentAmount(key, amount);
+                    
+                    baseInfo[`Tabungan ${month.toUpperCase()} - Jumlah`] = amount ? `Rp ${parseFloat(amount).toLocaleString('id-ID')}` : '';
+                    baseInfo[`Tabungan ${month.toUpperCase()} - Tanggal`] = date;
+                    baseInfo[`Tabungan ${month.toUpperCase()} - Status`] = getStatusText(validation.status);
+                    baseInfo[`Tabungan ${month.toUpperCase()} - Target`] = `Rp ${validation.standard.toLocaleString('id-ID')}`;
+                });
+
+                // LKS Payments
+                const lksPayments = [
+                    { key: 'lks_10_sem1', label: 'LKS 10 Sem 1' },
+                    { key: 'lks_10_sem2', label: 'LKS 10 Sem 2' },
+                    { key: 'lks_11_sem1', label: 'LKS 11 Sem 1' },
+                    { key: 'lks_11_sem2', label: 'LKS 11 Sem 2' },
+                    { key: 'lks_12_sem1', label: 'LKS 12 Sem 1' },
+                    { key: 'lks_12_sem2', label: 'LKS 12 Sem 2' }
+                ];
+                
+                lksPayments.forEach(payment => {
+                    const amount = student[payment.key] || '';
+                    const date = student[`tgl_${payment.key}`] || '';
+                    const validation = validatePaymentAmount(payment.key, amount);
+                    
+                    baseInfo[`${payment.label} - Jumlah`] = amount ? `Rp ${parseFloat(amount).toLocaleString('id-ID')}` : '';
+                    baseInfo[`${payment.label} - Tanggal`] = date;
+                    baseInfo[`${payment.label} - Status`] = getStatusText(validation.status);
+                    baseInfo[`${payment.label} - Tarif`] = `Rp ${validation.standard.toLocaleString('id-ID')}`;
+                });
+
+                // UHB Payments
+                const uhbPayments = [
+                    { key: 'uhb_10_sem1', label: 'UHB 10 Sem 1' },
+                    { key: 'uhb_10_sem2', label: 'UHB 10 Sem 2' },
+                    { key: 'uhb_11_sem1', label: 'UHB 11 Sem 1' },
+                    { key: 'uhb_11_sem2', label: 'UHB 11 Sem 2' },
+                    { key: 'uhb_12_sem1', label: 'UHB 12 Sem 1' },
+                    { key: 'uhb_12_sem2', label: 'UHB 12 Sem 2' }
+                ];
+                
+                uhbPayments.forEach(payment => {
+                    const amount = student[payment.key] || '';
+                    const date = student[`tgl_${payment.key}`] || '';
+                    const validation = validatePaymentAmount(payment.key, amount);
+                    
+                    baseInfo[`${payment.label} - Jumlah`] = amount ? `Rp ${parseFloat(amount).toLocaleString('id-ID')}` : '';
+                    baseInfo[`${payment.label} - Tanggal`] = date;
+                    baseInfo[`${payment.label} - Status`] = getStatusText(validation.status);
+                    baseInfo[`${payment.label} - Tarif`] = `Rp ${validation.standard.toLocaleString('id-ID')}`;
+                });
+
+                // PAS Payments
+                const pasPayments = [
+                    { key: 'pas_10_sem1', label: 'PAS 10 Sem 1' },
+                    { key: 'pas_10_sem2', label: 'PAS 10 Sem 2' },
+                    { key: 'pas_11_sem1', label: 'PAS 11 Sem 1' },
+                    { key: 'pas_11_sem2', label: 'PAS 11 Sem 2' },
+                    { key: 'pas_12_sem1', label: 'PAS 12 Sem 1' },
+                    { key: 'pas_12_sem2', label: 'PAS 12 Sem 2' }
+                ];
+                
+                pasPayments.forEach(payment => {
+                    const amount = student[payment.key] || '';
+                    const date = student[`tgl_${payment.key}`] || '';
+                    const validation = validatePaymentAmount(payment.key, amount);
+                    
+                    baseInfo[`${payment.label} - Jumlah`] = amount ? `Rp ${parseFloat(amount).toLocaleString('id-ID')}` : '';
+                    baseInfo[`${payment.label} - Tanggal`] = date;
+                    baseInfo[`${payment.label} - Status`] = getStatusText(validation.status);
+                    baseInfo[`${payment.label} - Tarif`] = `Rp ${validation.standard.toLocaleString('id-ID')}`;
+                });
+
+                // Other payments
+                const jenisKelamin = student['JENIS KELAMIN'] || '';
+                const otherPayments = [
+                    { key: 'ujian_akhir', label: 'Ujian Akhir' },
+                    { key: 'perpisahan', label: 'Perpisahan' },
+                    { key: 'buku_kenangan', label: 'Buku Kenangan' },
+                    { key: 'study_tour', label: 'Study Tour' },
+                    { key: 'infaq_naik_kelas_10', label: 'Infaq Naik Kelas 10' },
+                    { key: 'infaq_naik_kelas_11', label: 'Infaq Naik Kelas 11' }
+                ];
+
+                // Add gender-specific payments
+                if (jenisKelamin.toLowerCase().includes('laki') || jenisKelamin.toLowerCase().includes('putra') || jenisKelamin.toLowerCase() === 'l') {
+                    otherPayments.unshift({ key: 'siswa_baru_putra', label: 'Siswa Baru Putra' });
+                } else if (jenisKelamin.toLowerCase().includes('perempuan') || jenisKelamin.toLowerCase().includes('putri') || jenisKelamin.toLowerCase() === 'p') {
+                    otherPayments.unshift({ key: 'siswi_baru_putri', label: 'Siswi Baru Putri' });
+                }
+
+                otherPayments.forEach(payment => {
+                    const amount = student[payment.key] || '';
+                    const date = student[`tgl_${payment.key}`] || '';
+                    const validation = validatePaymentAmount(payment.key, amount);
+                    
+                    if (validation.standard > 0) {
+                        baseInfo[`${payment.label} - Jumlah`] = amount ? `Rp ${parseFloat(amount).toLocaleString('id-ID')}` : '';
+                        baseInfo[`${payment.label} - Tanggal`] = date;
+                        baseInfo[`${payment.label} - Status`] = getStatusText(validation.status);
+                        baseInfo[`${payment.label} - Tarif`] = `Rp ${validation.standard.toLocaleString('id-ID')}`;
+                    }
+                });
+
+                excelData.push(baseInfo);
+            });
+
+            // Create workbook and worksheet
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(excelData);
+
+            // Auto-size columns
+            const colWidths = [];
+            const headers = Object.keys(excelData[0] || {});
+            headers.forEach((header, index) => {
+                let maxWidth = header.length;
+                excelData.forEach(row => {
+                    const cellValue = String(row[header] || '');
+                    maxWidth = Math.max(maxWidth, cellValue.length);
+                });
+                colWidths[index] = { wch: Math.min(maxWidth + 2, 50) };
+            });
+            ws['!cols'] = colWidths;
+
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Data Pembayaran Siswa');
+
+            // Generate filename with current date
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const filename = `Data_Pembayaran_Madrasah_${dateStr}.xlsx`;
+
+            // Download file
+            XLSX.writeFile(wb, filename);
+        }
+
+        function getStatusText(status) {
+            const statusMap = {
+                'lunas': 'Lunas',
+                'unpaid': 'Belum Bayar',
+                'mencicil': 'Mencicil',
+                'kelebihan': 'Kelebihan'
+            };
+            return statusMap[status] || 'Belum Bayar';
+        }
+
+        // Initialize
+        loadStudentData();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97dd60ac863fa5d8',t:'MTc1NzY1ODg1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
