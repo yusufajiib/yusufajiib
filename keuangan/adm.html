@@ -930,6 +930,9 @@
                 return;
             }
 
+            const wb = XLSX.utils.book_new();
+
+            // Sheet 1: Detail Pembayaran
             const paymentData = [];
 
             // Student basic info
@@ -937,6 +940,79 @@
                 'Kategori': 'INFORMASI SISWA',
                 'Jenis Pembayaran': 'Nama Lengkap',
                 'Periode': student.NAMA || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'NISN',
+                'Periode': student.NISN || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Jenis Kelamin',
+                'Periode': student['JENIS KELAMIN'] || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Tahun Masuk',
+                'Periode': student['TAHUN MASUK'] || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Kelas Saat Ini',
+                'Periode': calculateCurrentClass(student['TAHUN MASUK']),
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Jurusan',
+                'Periode': student.JURUSAN || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            // Add separator
+            paymentData.push({
+                'Kategori': '',
+                'Jenis Pembayaran': '',
+                'Periode': '',
                 'Tarif Standar': '',
                 'Jumlah Dibayar': '',
                 'Tanggal Pembayaran': '',
@@ -969,17 +1045,150 @@
                 });
             });
 
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet(paymentData);
-
-            const colWidths = [
-                { wch: 15 }, { wch: 20 }, { wch: 25 }, { wch: 15 },
-                { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 20 }
+            const ws1 = XLSX.utils.json_to_sheet(paymentData);
+            const colWidths1 = [
+                { wch: 15 }, { wch: 25 }, { wch: 20 }, { wch: 15 },
+                { wch: 15 }, { wch: 18 }, { wch: 12 }, { wch: 15 }, { wch: 20 }
             ];
-            ws['!cols'] = colWidths;
+            ws1['!cols'] = colWidths1;
+            XLSX.utils.book_append_sheet(wb, ws1, 'Detail Pembayaran');
 
-            XLSX.utils.book_append_sheet(wb, ws, 'Detail Pembayaran');
+            // Sheet 2: History Transaksi
+            const transactions = getStudentTransactions(student.NISN);
+            const transactionData = [];
 
+            if (transactions && transactions.length > 0) {
+                // Add header info
+                transactionData.push({
+                    'No': '',
+                    'Nama Siswa': student.NAMA || '-',
+                    'NISN': student.NISN || '-',
+                    'Tanggal': '',
+                    'Jenis Pembayaran': '',
+                    'Jumlah': '',
+                    'Keterangan': 'RIWAYAT TRANSAKSI'
+                });
+
+                transactionData.push({
+                    'No': '',
+                    'Nama Siswa': '',
+                    'NISN': '',
+                    'Tanggal': '',
+                    'Jenis Pembayaran': '',
+                    'Jumlah': '',
+                    'Keterangan': ''
+                });
+
+                // Add transaction data
+                transactions.forEach((transaction, index) => {
+                    const nama = transaction.NAMA || '';
+                    const tanggal = transaction.TANGGAL || '';
+                    const jenis = transaction.JENIS || '';
+                    const jumlah = transaction.JUMLAH || '';
+                    const keterangan = transaction.KETERANGAN || '';
+                    
+                    // Format amount
+                    let formattedAmount = jumlah;
+                    if (jumlah && !isNaN(parseFloat(jumlah.toString().replace(/[^\d.-]/g, '')))) {
+                        const numAmount = parseFloat(jumlah.toString().replace(/[^\d.-]/g, ''));
+                        formattedAmount = 'Rp ' + numAmount.toLocaleString('id-ID');
+                    }
+
+                    transactionData.push({
+                        'No': index + 1,
+                        'Nama Siswa': nama,
+                        'NISN': student.NISN || '-',
+                        'Tanggal': tanggal,
+                        'Jenis Pembayaran': jenis,
+                        'Jumlah': formattedAmount,
+                        'Keterangan': keterangan
+                    });
+                });
+
+                // Add summary
+                transactionData.push({
+                    'No': '',
+                    'Nama Siswa': '',
+                    'NISN': '',
+                    'Tanggal': '',
+                    'Jenis Pembayaran': '',
+                    'Jumlah': '',
+                    'Keterangan': ''
+                });
+
+                transactionData.push({
+                    'No': '',
+                    'Nama Siswa': 'TOTAL TRANSAKSI:',
+                    'NISN': transactions.length + ' transaksi',
+                    'Tanggal': '',
+                    'Jenis Pembayaran': '',
+                    'Jumlah': '',
+                    'Keterangan': ''
+                });
+
+                // Calculate total amount
+                let totalAmount = 0;
+                transactions.forEach(transaction => {
+                    const jumlah = transaction.JUMLAH || '';
+                    if (jumlah && !isNaN(parseFloat(jumlah.toString().replace(/[^\d.-]/g, '')))) {
+                        totalAmount += parseFloat(jumlah.toString().replace(/[^\d.-]/g, ''));
+                    }
+                });
+
+                if (totalAmount > 0) {
+                    transactionData.push({
+                        'No': '',
+                        'Nama Siswa': 'TOTAL PEMBAYARAN:',
+                        'NISN': 'Rp ' + totalAmount.toLocaleString('id-ID'),
+                        'Tanggal': '',
+                        'Jenis Pembayaran': '',
+                        'Jumlah': '',
+                        'Keterangan': ''
+                    });
+                }
+
+            } else {
+                // No transactions found
+                transactionData.push({
+                    'No': '',
+                    'Nama Siswa': student.NAMA || '-',
+                    'NISN': student.NISN || '-',
+                    'Tanggal': '',
+                    'Jenis Pembayaran': '',
+                    'Jumlah': '',
+                    'Keterangan': 'RIWAYAT TRANSAKSI'
+                });
+
+                transactionData.push({
+                    'No': '',
+                    'Nama Siswa': '',
+                    'NISN': '',
+                    'Tanggal': '',
+                    'Jenis Pembayaran': '',
+                    'Jumlah': '',
+                    'Keterangan': ''
+                });
+
+                transactionData.push({
+                    'No': '',
+                    'Nama Siswa': 'Tidak ada riwayat transaksi',
+                    'NISN': 'yang ditemukan untuk siswa ini',
+                    'Tanggal': '',
+                    'Jenis Pembayaran': '',
+                    'Jumlah': '',
+                    'Keterangan': ''
+                });
+            }
+
+            const ws2 = XLSX.utils.json_to_sheet(transactionData);
+            const colWidths2 = [
+                { wch: 5 }, { wch: 25 }, { wch: 15 }, { wch: 15 },
+                { wch: 20 }, { wch: 15 }, { wch: 30 }
+            ];
+            ws2['!cols'] = colWidths2;
+            XLSX.utils.book_append_sheet(wb, ws2, 'Riwayat Transaksi');
+
+            // Generate filename and download
             const now = new Date();
             const dateStr = now.toISOString().split('T')[0];
             const studentName = (student.NAMA || 'Siswa').replace(/[^a-zA-Z0-9]/g, '_');
@@ -996,5 +1205,5 @@
         // Initialize
         loadStudentData();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ddac17359f3dc9',t:'MTc1NzY2MTk0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ddb50d22cb8942',t:'MTc1NzY2MjMwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
