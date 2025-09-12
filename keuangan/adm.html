@@ -1021,20 +1021,47 @@
                 'Keterangan': ''
             });
 
-            // Add all payment details
+            // Add all payment details - filter based on gender for new student payments
+            const jenisKelamin = student['JENIS KELAMIN'] || '';
+            const isMale = jenisKelamin.toLowerCase().includes('laki') || jenisKelamin.toLowerCase().includes('putra') || jenisKelamin.toLowerCase() === 'l';
+            const isFemale = jenisKelamin.toLowerCase().includes('perempuan') || jenisKelamin.toLowerCase().includes('putri') || jenisKelamin.toLowerCase() === 'p';
+
             Object.keys(TARIF_STANDAR).forEach(key => {
+                // Skip gender-specific payments that don't match student's gender
+                if (key === 'siswa_baru_putra' && !isMale) return;
+                if (key === 'siswi_baru_putri' && !isFemale) return;
+                
                 const amount = student[key] || '';
                 const date = student[`tgl_${key}`] || '';
                 const validation = validatePaymentAmount(key, amount);
+                
+                // Skip if no standard tariff (shouldn't happen after gender filtering)
+                if (validation.standard === 0) return;
                 
                 let selisih = '';
                 if (validation.difference !== 0) {
                     selisih = (validation.difference > 0 ? '+' : '') + 'Rp ' + validation.difference.toLocaleString('id-ID');
                 }
 
+                // Better category mapping
+                let kategori = 'LAINNYA';
+                if (key.includes('spp')) kategori = 'SPP';
+                else if (key.includes('tabungan')) kategori = 'TABUNGAN';
+                else if (key.includes('lks')) kategori = 'LKS';
+                else if (key.includes('uhb')) kategori = 'UHB';
+                else if (key.includes('pas')) kategori = 'PAS';
+                else if (key.includes('siswa_baru') || key.includes('siswi_baru')) kategori = 'SISWA BARU';
+                else if (key.includes('ujian')) kategori = 'UJIAN';
+                else if (key.includes('infaq')) kategori = 'INFAQ';
+
+                // Better label formatting
+                let jenisLabel = key.replace(/_/g, ' ').toUpperCase();
+                if (key === 'siswa_baru_putra') jenisLabel = 'SISWA BARU PUTRA';
+                else if (key === 'siswi_baru_putri') jenisLabel = 'SISWI BARU PUTRI';
+
                 paymentData.push({
-                    'Kategori': key.includes('spp') ? 'SPP' : key.includes('tabungan') ? 'TABUNGAN' : key.includes('lks') ? 'LKS' : key.includes('uhb') ? 'UHB' : key.includes('pas') ? 'PAS' : 'LAINNYA',
-                    'Jenis Pembayaran': key.replace(/_/g, ' ').toUpperCase(),
+                    'Kategori': kategori,
+                    'Jenis Pembayaran': jenisLabel,
                     'Periode': '',
                     'Tarif Standar': 'Rp ' + validation.standard.toLocaleString('id-ID'),
                     'Jumlah Dibayar': amount ? 'Rp ' + parseFloat(amount).toLocaleString('id-ID') : '',
@@ -1205,5 +1232,5 @@
         // Initialize
         loadStudentData();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ddbdd765e7ce2b',t:'MTc1NzY2MjY2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ddcd33472a8356',t:'MTc1NzY2MzI5Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
