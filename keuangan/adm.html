@@ -66,25 +66,7 @@
             </div>
         </div>
 
-        <!-- Statistics -->
-        <div id="stats" class="hidden grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-                <div class="text-3xl font-bold text-blue-600" id="totalSiswa">0</div>
-                <div class="text-gray-600">Total Siswa</div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-                <div class="text-3xl font-bold text-green-600" id="lunasSPP">0</div>
-                <div class="text-gray-600">SPP Lunas</div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-                <div class="text-3xl font-bold text-yellow-600" id="tunggakanSPP">0</div>
-                <div class="text-gray-600">SPP Mencicil</div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-                <div class="text-2xl font-bold text-purple-600" id="totalTabungan">Rp 0</div>
-                <div class="text-gray-600">Tabungan Terkumpul</div>
-            </div>
-        </div>
+
 
         <!-- Students List -->
         <div id="studentsList" class="hidden space-y-6"></div>
@@ -246,7 +228,6 @@
 
                 filteredData = [...studentsData];
                 populateFilters();
-                updateStatistics();
                 displayStudents();
                 showElements();
                 
@@ -282,29 +263,7 @@
             });
         }
 
-        function updateStatistics() {
-            const totalSiswa = filteredData.length;
-            let lunasSPP = 0;
-            let mencicilSPP = 0;
-            let kelebihanSPP = 0;
-            let totalTabunganTerkumpul = 0;
 
-            filteredData.forEach(student => {
-                const sppStatus = calculateSPPStatus(student);
-                const tabunganStatus = calculateTabunganStatus(student);
-                
-                if (sppStatus.status === 'lunas') lunasSPP++;
-                else if (sppStatus.status === 'mencicil') mencicilSPP++;
-                else if (sppStatus.status === 'kelebihan') kelebihanSPP++;
-                
-                totalTabunganTerkumpul += tabunganStatus.totalPaid;
-            });
-
-            document.getElementById('totalSiswa').textContent = totalSiswa;
-            document.getElementById('lunasSPP').textContent = lunasSPP;
-            document.getElementById('tunggakanSPP').textContent = mencicilSPP;
-            document.getElementById('totalTabungan').textContent = `Rp ${totalTabunganTerkumpul.toLocaleString('id-ID')}`;
-        }
 
         function getPaymentStatus(amount, date, paymentKey) {
             const standardAmount = TARIF_STANDAR[paymentKey] || 0;
@@ -518,11 +477,20 @@
                     <div class="p-6 border-b">
                         <div class="flex justify-between items-center">
                             <h2 class="text-2xl font-bold text-gray-800">Detail Pembayaran - ${student.NAMA}</h2>
-                            <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                </svg>
-                            </button>
+                            <div class="flex items-center space-x-3">
+                                <button onclick="downloadStudentExcel('${student.NISN}')" 
+                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <span>Download Excel</span>
+                                </button>
+                                <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="p-6">
@@ -840,14 +808,12 @@
             });
 
             currentPage = 1;
-            updateStatistics();
             displayStudents();
         }
 
         function showElements() {
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('controls').classList.remove('hidden');
-            document.getElementById('stats').classList.remove('hidden');
             document.getElementById('studentsList').classList.remove('hidden');
         }
 
@@ -1051,8 +1017,414 @@
             return statusMap[status] || 'Belum Bayar';
         }
 
+        // Download Excel for individual student
+        function downloadStudentExcel(nisn) {
+            const student = studentsData.find(s => s.NISN === nisn);
+            if (!student) {
+                alert('Data siswa tidak ditemukan');
+                return;
+            }
+
+            // Prepare detailed payment data for the student
+            const paymentData = [];
+
+            // Student basic info
+            const basicInfo = {
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': '',
+                'Periode': '',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            };
+
+            // Add student info rows
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Nama Lengkap',
+                'Periode': student.NAMA || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'NISN',
+                'Periode': student.NISN || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Jenis Kelamin',
+                'Periode': student['JENIS KELAMIN'] || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Tahun Masuk',
+                'Periode': student['TAHUN MASUK'] || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Kelas Saat Ini',
+                'Periode': calculateCurrentClass(student['TAHUN MASUK']),
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Jurusan',
+                'Periode': student.JURUSAN || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            // Add empty row
+            paymentData.push({
+                'Kategori': '',
+                'Jenis Pembayaran': '',
+                'Periode': '',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            // SPP Payments
+            const sppMonths = ['jul', 'agu', 'sep', 'okt', 'nov', 'des', 'jan', 'feb', 'mar', 'apr', 'mei', 'jun'];
+            const grades = ['10', '11', '12'];
+            
+            grades.forEach(grade => {
+                sppMonths.forEach(month => {
+                    const key = `spp_${grade}_${month}`;
+                    const dateKey = `tgl_${key}`;
+                    const amount = student[key] || '';
+                    const date = student[dateKey] || '';
+                    const validation = validatePaymentAmount(key, amount);
+                    
+                    let selisih = '';
+                    if (validation.difference !== 0) {
+                        selisih = (validation.difference > 0 ? '+' : '') + 'Rp ' + validation.difference.toLocaleString('id-ID');
+                    }
+
+                    paymentData.push({
+                        'Kategori': 'SPP',
+                        'Jenis Pembayaran': 'SPP',
+                        'Periode': `Kelas ${grade} - ${month.toUpperCase()}`,
+                        'Tarif Standar': 'Rp ' + validation.standard.toLocaleString('id-ID'),
+                        'Jumlah Dibayar': amount ? 'Rp ' + parseFloat(amount).toLocaleString('id-ID') : '',
+                        'Tanggal Pembayaran': date,
+                        'Status': getStatusText(validation.status),
+                        'Selisih': selisih,
+                        'Keterangan': validation.status === 'mencicil' ? 'Kurang bayar' : validation.status === 'kelebihan' ? 'Lebih bayar' : ''
+                    });
+                });
+            });
+
+            // Add empty row
+            paymentData.push({
+                'Kategori': '',
+                'Jenis Pembayaran': '',
+                'Periode': '',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            // Tabungan
+            sppMonths.forEach(month => {
+                const key = `tabungan_10_${month}`;
+                const dateKey = `tgl_${key}`;
+                const amount = student[key] || '';
+                const date = student[dateKey] || '';
+                const validation = validatePaymentAmount(key, amount);
+                
+                let selisih = '';
+                if (validation.difference !== 0) {
+                    selisih = (validation.difference > 0 ? '+' : '') + 'Rp ' + validation.difference.toLocaleString('id-ID');
+                }
+
+                paymentData.push({
+                    'Kategori': 'TABUNGAN',
+                    'Jenis Pembayaran': 'Tabungan',
+                    'Periode': month.toUpperCase(),
+                    'Tarif Standar': 'Rp ' + validation.standard.toLocaleString('id-ID'),
+                    'Jumlah Dibayar': amount ? 'Rp ' + parseFloat(amount).toLocaleString('id-ID') : '',
+                    'Tanggal Pembayaran': date,
+                    'Status': getStatusText(validation.status),
+                    'Selisih': selisih,
+                    'Keterangan': validation.status === 'mencicil' ? 'Kurang dari target' : validation.status === 'kelebihan' ? 'Lebih dari target' : ''
+                });
+            });
+
+            // Add empty row
+            paymentData.push({
+                'Kategori': '',
+                'Jenis Pembayaran': '',
+                'Periode': '',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            // LKS Payments
+            const lksPayments = [
+                { key: 'lks_10_sem1', label: 'LKS', periode: 'Kelas 10 Semester 1' },
+                { key: 'lks_10_sem2', label: 'LKS', periode: 'Kelas 10 Semester 2' },
+                { key: 'lks_11_sem1', label: 'LKS', periode: 'Kelas 11 Semester 1' },
+                { key: 'lks_11_sem2', label: 'LKS', periode: 'Kelas 11 Semester 2' },
+                { key: 'lks_12_sem1', label: 'LKS', periode: 'Kelas 12 Semester 1' },
+                { key: 'lks_12_sem2', label: 'LKS', periode: 'Kelas 12 Semester 2' }
+            ];
+            
+            lksPayments.forEach(payment => {
+                const amount = student[payment.key] || '';
+                const date = student[`tgl_${payment.key}`] || '';
+                const validation = validatePaymentAmount(payment.key, amount);
+                
+                let selisih = '';
+                if (validation.difference !== 0) {
+                    selisih = (validation.difference > 0 ? '+' : '') + 'Rp ' + validation.difference.toLocaleString('id-ID');
+                }
+
+                paymentData.push({
+                    'Kategori': 'LKS',
+                    'Jenis Pembayaran': payment.label,
+                    'Periode': payment.periode,
+                    'Tarif Standar': 'Rp ' + validation.standard.toLocaleString('id-ID'),
+                    'Jumlah Dibayar': amount ? 'Rp ' + parseFloat(amount).toLocaleString('id-ID') : '',
+                    'Tanggal Pembayaran': date,
+                    'Status': getStatusText(validation.status),
+                    'Selisih': selisih,
+                    'Keterangan': validation.status === 'mencicil' ? 'Kurang bayar' : validation.status === 'kelebihan' ? 'Lebih bayar' : ''
+                });
+            });
+
+            // Add empty row
+            paymentData.push({
+                'Kategori': '',
+                'Jenis Pembayaran': '',
+                'Periode': '',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            // UHB Payments
+            const uhbPayments = [
+                { key: 'uhb_10_sem1', label: 'UHB', periode: 'Kelas 10 Semester 1' },
+                { key: 'uhb_10_sem2', label: 'UHB', periode: 'Kelas 10 Semester 2' },
+                { key: 'uhb_11_sem1', label: 'UHB', periode: 'Kelas 11 Semester 1' },
+                { key: 'uhb_11_sem2', label: 'UHB', periode: 'Kelas 11 Semester 2' },
+                { key: 'uhb_12_sem1', label: 'UHB', periode: 'Kelas 12 Semester 1' },
+                { key: 'uhb_12_sem2', label: 'UHB', periode: 'Kelas 12 Semester 2' }
+            ];
+            
+            uhbPayments.forEach(payment => {
+                const amount = student[payment.key] || '';
+                const date = student[`tgl_${payment.key}`] || '';
+                const validation = validatePaymentAmount(payment.key, amount);
+                
+                let selisih = '';
+                if (validation.difference !== 0) {
+                    selisih = (validation.difference > 0 ? '+' : '') + 'Rp ' + validation.difference.toLocaleString('id-ID');
+                }
+
+                paymentData.push({
+                    'Kategori': 'UHB',
+                    'Jenis Pembayaran': payment.label,
+                    'Periode': payment.periode,
+                    'Tarif Standar': 'Rp ' + validation.standard.toLocaleString('id-ID'),
+                    'Jumlah Dibayar': amount ? 'Rp ' + parseFloat(amount).toLocaleString('id-ID') : '',
+                    'Tanggal Pembayaran': date,
+                    'Status': getStatusText(validation.status),
+                    'Selisih': selisih,
+                    'Keterangan': validation.status === 'mencicil' ? 'Kurang bayar' : validation.status === 'kelebihan' ? 'Lebih bayar' : ''
+                });
+            });
+
+            // Add empty row
+            paymentData.push({
+                'Kategori': '',
+                'Jenis Pembayaran': '',
+                'Periode': '',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            // PAS Payments
+            const pasPayments = [
+                { key: 'pas_10_sem1', label: 'PAS', periode: 'Kelas 10 Semester 1' },
+                { key: 'pas_10_sem2', label: 'PAS', periode: 'Kelas 10 Semester 2' },
+                { key: 'pas_11_sem1', label: 'PAS', periode: 'Kelas 11 Semester 1' },
+                { key: 'pas_11_sem2', label: 'PAS', periode: 'Kelas 11 Semester 2' },
+                { key: 'pas_12_sem1', label: 'PAS', periode: 'Kelas 12 Semester 1' },
+                { key: 'pas_12_sem2', label: 'PAS', periode: 'Kelas 12 Semester 2' }
+            ];
+            
+            pasPayments.forEach(payment => {
+                const amount = student[payment.key] || '';
+                const date = student[`tgl_${payment.key}`] || '';
+                const validation = validatePaymentAmount(payment.key, amount);
+                
+                let selisih = '';
+                if (validation.difference !== 0) {
+                    selisih = (validation.difference > 0 ? '+' : '') + 'Rp ' + validation.difference.toLocaleString('id-ID');
+                }
+
+                paymentData.push({
+                    'Kategori': 'PAS',
+                    'Jenis Pembayaran': payment.label,
+                    'Periode': payment.periode,
+                    'Tarif Standar': 'Rp ' + validation.standard.toLocaleString('id-ID'),
+                    'Jumlah Dibayar': amount ? 'Rp ' + parseFloat(amount).toLocaleString('id-ID') : '',
+                    'Tanggal Pembayaran': date,
+                    'Status': getStatusText(validation.status),
+                    'Selisih': selisih,
+                    'Keterangan': validation.status === 'mencicil' ? 'Kurang bayar' : validation.status === 'kelebihan' ? 'Lebih bayar' : ''
+                });
+            });
+
+            // Add empty row
+            paymentData.push({
+                'Kategori': '',
+                'Jenis Pembayaran': '',
+                'Periode': '',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            // Other payments
+            const jenisKelamin = student['JENIS KELAMIN'] || '';
+            const otherPayments = [
+                { key: 'ujian_akhir', label: 'Ujian Akhir', periode: 'Kelas 12' },
+                { key: 'perpisahan', label: 'Perpisahan', periode: 'Kelas 12' },
+                { key: 'buku_kenangan', label: 'Buku Kenangan', periode: 'Kelas 12' },
+                { key: 'study_tour', label: 'Study Tour', periode: 'Sekolah' },
+                { key: 'infaq_naik_kelas_10', label: 'Infaq Naik Kelas', periode: 'Kelas 10' },
+                { key: 'infaq_naik_kelas_11', label: 'Infaq Naik Kelas', periode: 'Kelas 11' }
+            ];
+
+            // Add gender-specific payments
+            if (jenisKelamin.toLowerCase().includes('laki') || jenisKelamin.toLowerCase().includes('putra') || jenisKelamin.toLowerCase() === 'l') {
+                otherPayments.unshift({ key: 'siswa_baru_putra', label: 'Siswa Baru Putra', periode: 'Pendaftaran' });
+            } else if (jenisKelamin.toLowerCase().includes('perempuan') || jenisKelamin.toLowerCase().includes('putri') || jenisKelamin.toLowerCase() === 'p') {
+                otherPayments.unshift({ key: 'siswi_baru_putri', label: 'Siswi Baru Putri', periode: 'Pendaftaran' });
+            }
+
+            otherPayments.forEach(payment => {
+                const amount = student[payment.key] || '';
+                const date = student[`tgl_${payment.key}`] || '';
+                const validation = validatePaymentAmount(payment.key, amount);
+                
+                // Skip if no standard tariff
+                if (validation.standard === 0) return;
+                
+                let selisih = '';
+                if (validation.difference !== 0) {
+                    selisih = (validation.difference > 0 ? '+' : '') + 'Rp ' + validation.difference.toLocaleString('id-ID');
+                }
+
+                paymentData.push({
+                    'Kategori': 'LAINNYA',
+                    'Jenis Pembayaran': payment.label,
+                    'Periode': payment.periode,
+                    'Tarif Standar': 'Rp ' + validation.standard.toLocaleString('id-ID'),
+                    'Jumlah Dibayar': amount ? 'Rp ' + parseFloat(amount).toLocaleString('id-ID') : '',
+                    'Tanggal Pembayaran': date,
+                    'Status': getStatusText(validation.status),
+                    'Selisih': selisih,
+                    'Keterangan': validation.status === 'mencicil' ? 'Kurang bayar' : validation.status === 'kelebihan' ? 'Lebih bayar' : ''
+                });
+            });
+
+            // Create workbook and worksheet
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(paymentData);
+
+            // Auto-size columns
+            const colWidths = [
+                { wch: 15 }, // Kategori
+                { wch: 20 }, // Jenis Pembayaran
+                { wch: 25 }, // Periode
+                { wch: 15 }, // Tarif Standar
+                { wch: 15 }, // Jumlah Dibayar
+                { wch: 15 }, // Tanggal Pembayaran
+                { wch: 12 }, // Status
+                { wch: 15 }, // Selisih
+                { wch: 20 }  // Keterangan
+            ];
+            ws['!cols'] = colWidths;
+
+            // Add worksheet to workbook
+            XLSX.utils.book_append_sheet(wb, ws, 'Detail Pembayaran');
+
+            // Generate filename
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const studentName = (student.NAMA || 'Siswa').replace(/[^a-zA-Z0-9]/g, '_');
+            const filename = `Detail_Pembayaran_${studentName}_${student.NISN || 'Unknown'}_${dateStr}.xlsx`;
+
+            // Download file
+            XLSX.writeFile(wb, filename);
+        }
+
         // Initialize
         loadStudentData();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97dd60ac863fa5d8',t:'MTc1NzY1ODg1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97dd757a21c1406d',t:'MTc1NzY1OTcwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
