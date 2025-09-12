@@ -81,13 +81,13 @@
             API_KEY: 'AIzaSyCAJWvsjw92iebZM54KZivepTpl_Q2gk70'
         };
 
-        // Transaction sheet column mapping (A, B, C, D, E)
-        const TRANSACTION_COLUMNS = {
-            COLUMN_A: 'A',  // Usually NISN or Student ID
-            COLUMN_B: 'B',  // Usually Date or Student Name
-            COLUMN_C: 'C',  // Usually Date or Payment Type
-            COLUMN_D: 'D',  // Usually Description or Payment Details
-            COLUMN_E: 'E'   // Usually Amount or Notes
+        // Transaction sheet column headers
+        const TRANSACTION_HEADERS = {
+            NAMA: 'NAMA',           // Student name for matching
+            TANGGAL: 'TANGGAL',     // Transaction date
+            JENIS: 'JENIS',         // Payment type
+            JUMLAH: 'JUMLAH',       // Payment amount
+            KETERANGAN: 'KETERANGAN' // Additional notes
         };
 
         // Tarif standar untuk setiap jenis pembayaran
@@ -390,23 +390,22 @@
         function getStudentTransactions(nisn) {
             if (!transactionData || transactionData.length === 0) return [];
             
-            // Filter transactions for this student
-            // Check both column A and B for NISN match
+            // Get student name for matching
+            const student = studentsData.find(s => s.NISN === nisn);
+            const studentName = student ? student.NAMA : '';
+            
+            // Filter transactions for this student by matching NAMA column
             return transactionData.filter(transaction => {
-                const headers = Object.keys(transaction);
-                const columnA = transaction[headers[0]] || '';  // First column (A)
-                const columnB = transaction[headers[1]] || '';  // Second column (B)
+                const transactionName = (transaction.NAMA || '').toString().trim();
+                const matchByName = studentName && transactionName.toLowerCase().includes(studentName.toLowerCase());
                 
-                // Match NISN in either column A or B
-                return columnA.toString().trim() === nisn.toString().trim() || 
-                       columnB.toString().trim() === nisn.toString().trim();
+                return matchByName;
             }).sort((a, b) => {
-                // Sort by date - try to find date in columns B or C
-                const headers = Object.keys(a);
-                const dateA = a[headers[1]] || a[headers[2]] || '';  // Column B or C
-                const dateB = b[headers[1]] || b[headers[2]] || '';  // Column B or C
+                // Sort by TANGGAL column (newest first)
+                const dateA = a.TANGGAL || '';
+                const dateB = b.TANGGAL || '';
                 
-                // Try to parse dates, fallback to string comparison
+                // Try to parse dates
                 const parsedDateA = new Date(dateA);
                 const parsedDateB = new Date(dateB);
                 
@@ -443,50 +442,55 @@
             `;
             
             transactions.forEach((transaction, index) => {
-                const headers = Object.keys(transaction);
-                
-                // Map columns A, B, C, D, E
-                const columnA = transaction[headers[0]] || '';  // Usually NISN
-                const columnB = transaction[headers[1]] || '';  // Usually Date or Name
-                const columnC = transaction[headers[2]] || '';  // Usually Date or Payment Type
-                const columnD = transaction[headers[3]] || '';  // Usually Description
-                const columnE = transaction[headers[4]] || '';  // Usually Amount
-                
-                // Determine which column contains what based on content
-                let date = columnB;
-                let description = columnD || columnC;
-                let amount = columnE;
-                
-                // If columnC looks more like a date, use it
-                if (columnC && (columnC.includes('/') || columnC.includes('-') || !isNaN(Date.parse(columnC)))) {
-                    date = columnC;
-                    description = columnD || columnB;
-                }
+                const nama = transaction.NAMA || '';
+                const tanggal = transaction.TANGGAL || '';
+                const jenis = transaction.JENIS || '';
+                const jumlah = transaction.JUMLAH || '';
+                const keterangan = transaction.KETERANGAN || '';
                 
                 // Format amount
-                let formattedAmount = amount;
-                if (amount && !isNaN(parseFloat(amount.toString().replace(/[^\d.-]/g, '')))) {
-                    const numAmount = parseFloat(amount.toString().replace(/[^\d.-]/g, ''));
+                let formattedAmount = jumlah;
+                if (jumlah && !isNaN(parseFloat(jumlah.toString().replace(/[^\d.-]/g, '')))) {
+                    const numAmount = parseFloat(jumlah.toString().replace(/[^\d.-]/g, ''));
                     formattedAmount = 'Rp ' + numAmount.toLocaleString('id-ID');
                 }
+                
+                // Get payment type color
+                const getPaymentTypeColor = (jenis) => {
+                    const jenisLower = jenis.toLowerCase();
+                    if (jenisLower.includes('spp')) return 'bg-blue-100 text-blue-800';
+                    if (jenisLower.includes('tabungan')) return 'bg-green-100 text-green-800';
+                    if (jenisLower.includes('lks')) return 'bg-orange-100 text-orange-800';
+                    if (jenisLower.includes('uhb')) return 'bg-purple-100 text-purple-800';
+                    if (jenisLower.includes('pas')) return 'bg-teal-100 text-teal-800';
+                    if (jenisLower.includes('ujian')) return 'bg-red-100 text-red-800';
+                    if (jenisLower.includes('infaq')) return 'bg-yellow-100 text-yellow-800';
+                    return 'bg-gray-100 text-gray-800';
+                };
                 
                 html += `
                     <div class="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
                         <div class="flex justify-between items-start">
                             <div class="flex-grow">
-                                <div class="font-medium text-gray-800 mb-1">
-                                    ${description || 'Transaksi Pembayaran'}
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="font-medium text-gray-800">
+                                        ${jenis || 'Pembayaran'}
+                                    </div>
+                                    ${jenis ? `<span class="px-2 py-1 rounded-full text-xs font-medium ${getPaymentTypeColor(jenis)}">${jenis}</span>` : ''}
                                 </div>
                                 <div class="text-sm text-gray-500 space-y-1">
                                     <div class="inline-flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                         </svg>
-                                        <span>${date || 'Tanggal tidak tersedia'}</span>
+                                        <span>${tanggal || 'Tanggal tidak tersedia'}</span>
                                     </div>
-                                    ${columnA !== nisn && columnA ? `
-                                        <div class="text-xs text-gray-400">
-                                            ID: ${columnA}
+                                    ${keterangan ? `
+                                        <div class="inline-flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                                            </svg>
+                                            <span class="text-gray-600">${keterangan}</span>
                                         </div>
                                     ` : ''}
                                 </div>
@@ -992,5 +996,5 @@
         // Initialize
         loadStudentData();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97dd93f3b5d3a3da',t:'MTc1NzY2MDk1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ddac17359f3dc9',t:'MTc1NzY2MTk0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
