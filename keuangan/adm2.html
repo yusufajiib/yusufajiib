@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Administrasi Pembayaran Madrasah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        .payment-status-lunas { @apply bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-emerald-200; }
+        .payment-status-unpaid { @apply bg-rose-100 text-rose-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-rose-200; }
+        .payment-status-mencicil { @apply bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-amber-200; }
+        .payment-status-kelebihan { @apply bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-indigo-200; }
+        .student-card { transition: all 0.3s ease; }
+        .student-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <!-- School Logo - Mobile positioned above title -->
+            <div class="mb-4">
+                <div class="w-20 h-20 mx-auto bg-gradient-to-br from-blue-600 to-indigo-700 rounded-full flex items-center justify-center shadow-lg">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+                    </svg>
+                </div>
+            </div>
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">MA NU HASYIM ASY'ARI 1 KUDUS</h1>
+            <p class="text-gray-600">Jl. Mayor H. Basuno No. 17 Sunggingan Kudus 59317</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <p class="mt-4 text-gray-600">Memuat data siswa...</p>
+        </div>
+
+
+
+        <!-- Error State -->
+        <div id="error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <strong>Error:</strong> <span id="error-message"></span>
+        </div>
+
+        <!-- Statistics -->
+        <div id="statistics" class="hidden mb-6 bg-white rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-semibold mb-6 text-gray-800">📊 Statistik Pembayaran Per Kelas</h3>
+            
+            <!-- Total Active Students -->
+            <div class="mb-6">
+                <h4 class="text-md font-medium mb-3 text-gray-700">👥 Total Siswa Aktif</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-blue-600" id="totalActiveAll">0</div>
+                        <div class="text-sm text-blue-700 font-medium">Semua Kelas</div>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-blue-600" id="totalActive10">0</div>
+                        <div class="text-sm text-blue-700 font-medium">Kelas 10</div>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-blue-600" id="totalActive11">0</div>
+                        <div class="text-sm text-blue-700 font-medium">Kelas 11</div>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-blue-600" id="totalActive12">0</div>
+                        <div class="text-sm text-blue-700 font-medium">Kelas 12</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SPP & Tabungan -->
+            <div class="mb-6">
+                <h4 class="text-md font-medium mb-3 text-gray-700">💰 Belum Bayar SPP & Tabungan</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-red-600" id="unpaidSppTabunganAll">0</div>
+                        <div class="text-sm text-red-700 font-medium">Semua Kelas</div>
+                    </div>
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-red-600" id="unpaidSppTabungan10">0</div>
+                        <div class="text-sm text-red-700 font-medium">Kelas 10</div>
+                    </div>
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-red-600" id="unpaidSppTabungan11">0</div>
+                        <div class="text-sm text-red-700 font-medium">Kelas 11</div>
+                    </div>
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-red-600" id="unpaidSppTabungan12">0</div>
+                        <div class="text-sm text-red-700 font-medium">Kelas 12</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LKS -->
+            <div class="mb-6">
+                <h4 class="text-md font-medium mb-3 text-gray-700">📖 Belum Bayar LKS</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-orange-600" id="unpaidLksAll">0</div>
+                        <div class="text-sm text-orange-700 font-medium">Semua Kelas</div>
+                    </div>
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-orange-600" id="unpaidLks10">0</div>
+                        <div class="text-sm text-orange-700 font-medium">Kelas 10</div>
+                    </div>
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-orange-600" id="unpaidLks11">0</div>
+                        <div class="text-sm text-orange-700 font-medium">Kelas 11</div>
+                    </div>
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-orange-600" id="unpaidLks12">0</div>
+                        <div class="text-sm text-orange-700 font-medium">Kelas 12</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UHB -->
+            <div class="mb-6">
+                <h4 class="text-md font-medium mb-3 text-gray-700">📝 Belum Bayar UHB</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-purple-600" id="unpaidUhbAll">0</div>
+                        <div class="text-sm text-purple-700 font-medium">Semua Kelas</div>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-purple-600" id="unpaidUhb10">0</div>
+                        <div class="text-sm text-purple-700 font-medium">Kelas 10</div>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-purple-600" id="unpaidUhb11">0</div>
+                        <div class="text-sm text-purple-700 font-medium">Kelas 11</div>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-purple-600" id="unpaidUhb12">0</div>
+                        <div class="text-sm text-purple-700 font-medium">Kelas 12</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAS -->
+            <div class="mb-6">
+                <h4 class="text-md font-medium mb-3 text-gray-700">📋 Belum Bayar PAS</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-teal-600" id="unpaidPasAll">0</div>
+                        <div class="text-sm text-teal-700 font-medium">Semua Kelas</div>
+                    </div>
+                    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-teal-600" id="unpaidPas10">0</div>
+                        <div class="text-sm text-teal-700 font-medium">Kelas 10</div>
+                    </div>
+                    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-teal-600" id="unpaidPas11">0</div>
+                        <div class="text-sm text-teal-700 font-medium">Kelas 11</div>
+                    </div>
+                    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-teal-600" id="unpaidPas12">0</div>
+                        <div class="text-sm text-teal-700 font-medium">Kelas 12</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other Payments -->
+            <div class="mb-0">
+                <h4 class="text-md font-medium mb-3 text-gray-700">🎓 Belum Bayar Pembayaran Lainnya</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-indigo-600" id="unpaidOthersAll">0</div>
+                        <div class="text-sm text-indigo-700 font-medium">Semua Kelas</div>
+                    </div>
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-indigo-600" id="unpaidOthers10">0</div>
+                        <div class="text-sm text-indigo-700 font-medium">Kelas 10</div>
+                    </div>
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-indigo-600" id="unpaidOthers11">0</div>
+                        <div class="text-sm text-indigo-700 font-medium">Kelas 11</div>
+                    </div>
+                    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-center">
+                        <div class="text-xl font-bold text-indigo-600" id="unpaidOthers12">0</div>
+                        <div class="text-sm text-indigo-700 font-medium">Kelas 12</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter -->
+        <div id="controls" class="hidden mb-6 bg-white rounded-lg shadow-md p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Cari Siswa</label>
+                    <input type="text" id="searchInput" placeholder="Nama atau NISN..." 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Filter Jurusan</label>
+                    <select id="jurusanFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Semua Jurusan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Filter Tahun Masuk</label>
+                    <select id="tahunFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Semua Tahun</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Filter Status</label>
+                    <select id="statusFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Semua Status</option>
+                        <option value="aktif">Aktif</option>
+                        <option value="tidak aktif">Tidak Aktif</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button onclick="downloadExcel()" 
+                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span>Download Excel</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Students List -->
+        <div id="studentsList" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="hidden flex justify-center mt-8 space-x-2"></div>
+    </div>
+
+    <script>
+        const CONFIG = {
+            SHEET_ID: '1Tx851-uRMDGikxGql_HE77gCJWTl1KPUHE_Mt0R27_c',
+            SHEET_NAME: 'Sheet7',
+            TRANSACTION_SHEET: 'Transaksi',
+            API_KEY: 'AIzaSyCAJWvsjw92iebZM54KZivepTpl_Q2gk70'
+        };
+
+        // Transaction sheet column headers
+        const TRANSACTION_HEADERS = {
+            NAMA: 'NAMA',           // Student name for matching
+            TANGGAL: 'TANGGAL',     // Transaction date
+            JENIS: 'JENIS',         // Payment type
+            JUMLAH: 'JUMLAH',       // Payment amount
+            KETERANGAN: 'KETERANGAN' // Additional notes
+        };
+
+        // Tarif standar untuk setiap jenis pembayaran
+        const TARIF_STANDAR = {
+            siswa_baru_putra: 1200000,
+            siswi_baru_putri: 1350000,
+            ujian_akhir: 500000,
+            perpisahan: 1000000,
+            buku_kenangan: 50000,
+            study_tour: 300000,
+            infaq_naik_kelas_10: 150000,
+            infaq_naik_kelas_11: 150000,
+            lks_10_sem1: 150000, lks_10_sem2: 150000,
+            lks_11_sem1: 150000, lks_11_sem2: 150000,
+            lks_12_sem1: 150000, lks_12_sem2: 150000,
+            uhb_10_sem1: 100000, uhb_10_sem2: 100000,
+            uhb_11_sem1: 100000, uhb_11_sem2: 100000,
+            uhb_12_sem1: 100000, uhb_12_sem2: 100000,
+            pas_10_sem1: 120000, pas_10_sem2: 120000,
+            pas_11_sem1: 120000, pas_11_sem2: 120000,
+            pas_12_sem1: 120000, pas_12_sem2: 120000,
+            spp_10_jul: 125000, spp_10_agu: 125000, spp_10_sep: 125000, spp_10_okt: 125000,
+            spp_10_nov: 125000, spp_10_des: 125000, spp_10_jan: 125000, spp_10_feb: 125000,
+            spp_10_mar: 125000, spp_10_apr: 125000, spp_10_mei: 125000, spp_10_jun: 125000,
+            spp_11_jul: 175000, spp_11_agu: 175000, spp_11_sep: 175000, spp_11_okt: 175000,
+            spp_11_nov: 175000, spp_11_des: 175000, spp_11_jan: 175000, spp_11_feb: 175000,
+            spp_11_mar: 175000, spp_11_apr: 175000, spp_11_mei: 175000, spp_11_jun: 175000,
+            spp_12_jul: 175000, spp_12_agu: 175000, spp_12_sep: 175000, spp_12_okt: 175000,
+            spp_12_nov: 175000, spp_12_des: 175000, spp_12_jan: 175000, spp_12_feb: 175000,
+            spp_12_mar: 175000, spp_12_apr: 175000, spp_12_mei: 175000, spp_12_jun: 175000,
+            tabungan_10_jul: 50000, tabungan_10_agu: 50000, tabungan_10_sep: 50000, tabungan_10_okt: 50000,
+            tabungan_10_nov: 50000, tabungan_10_des: 50000, tabungan_10_jan: 50000, tabungan_10_feb: 50000,
+            tabungan_10_mar: 50000, tabungan_10_apr: 50000, tabungan_10_mei: 50000, tabungan_10_jun: 50000
+        };
+
+        let studentsData = [];
+        let transactionData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        // Function to convert Google Drive link to direct image URL
+        function convertGoogleDriveLink(url) {
+            if (!url || url.trim() === '') return '';
+            
+            // Multiple patterns for Google Drive links
+            const patterns = [
+                /drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/,
+                /drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/,
+                /docs\.google\.com\/.*\/d\/([a-zA-Z0-9_-]+)/
+            ];
+            
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match && match[1]) {
+                    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+                }
+            }
+            
+            // If already a direct Google Drive image URL, return as is
+            if (url.includes('drive.google.com/uc?export=view')) {
+                return url;
+            }
+            
+            // Return original URL if it's not a Google Drive link
+            return url;
+        }
+
+        // Global variable to store detected status column
+        let statusColumnName = 'AKTIF';
+
+        // Function to detect status column from headers
+        function detectStatusColumn(headers) {
+            const statusKeywords = [
+                'AKTIF', 'STATUS', 'ACTIVE', 'STATUS_SISWA', 'STATUS SISWA',
+                'KEAKTIFAN', 'KONDISI', 'STATE', 'AKTIF_SISWA', 'SISWA_AKTIF'
+            ];
+            
+            // First, try exact matches (case insensitive)
+            for (const keyword of statusKeywords) {
+                const found = headers.find(header => 
+                    header.toUpperCase().trim() === keyword.toUpperCase()
+                );
+                if (found) {
+                    console.log(`✅ Status column detected: "${found}"`);
+                    return found;
+                }
+            }
+            
+            // Then try partial matches
+            for (const keyword of statusKeywords) {
+                const found = headers.find(header => 
+                    header.toUpperCase().includes(keyword.toUpperCase())
+                );
+                if (found) {
+                    console.log(`✅ Status column detected (partial match): "${found}"`);
+                    return found;
+                }
+            }
+            
+            console.warn('⚠️ No status column detected, using default: "AKTIF"');
+            return 'AKTIF'; // Default fallback
+        }
+
+        // Function to get student status using detected column
+        function getStudentStatus(student) {
+            return student[statusColumnName] || '';
+        }
+
+        // Function to create status badge
+        function createStatusBadge(status) {
+            const statusText = (status || '').toString().trim();
+            
+            if (statusText === '1' || statusText.toLowerCase() === 'aktif' || statusText.toLowerCase() === 'true' || statusText.toLowerCase() === 'ya') {
+                return `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Aktif
+                </span>`;
+            } else if (statusText === '0' || statusText.toLowerCase() === 'tidak aktif' || statusText.toLowerCase() === 'false' || statusText.toLowerCase() === 'tidak' || statusText.toLowerCase() === 'nonaktif') {
+                return `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-700 border border-rose-200">
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                    </svg>
+                    Tidak Aktif
+                </span>`;
+            } else {
+                return `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    Status Tidak Diketahui
+                </span>`;
+            }
+        }
+
+        // Function to create student photo element
+        function createStudentPhoto(student) {
+            const initial = student.NAMA ? student.NAMA.charAt(0).toUpperCase() : '?';
+            const photoUrl = convertGoogleDriveLink(student.FOTO);
+            
+            if (!photoUrl) {
+                return `<div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">${initial}</div>`;
+            }
+            
+            return `
+                <div class="relative w-20 h-20">
+                    <img src="${photoUrl}" 
+                         alt="Foto ${student.NAMA || 'Siswa'}" 
+                         class="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                         onload="this.style.display='block'; this.nextElementSibling.style.display='none';"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                         style="display: none;">
+                    <div class="w-20 h-20 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">${initial}</div>
+                </div>
+            `;
+        }
+
+        // Function to calculate current class based on entry year
+        function calculateCurrentClass(tahunMasuk) {
+            if (!tahunMasuk) return '-';
+            
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth() + 1;
+            
+            let entryYear;
+            if (tahunMasuk.includes('/')) {
+                entryYear = parseInt(tahunMasuk.split('/')[0]);
+            } else {
+                entryYear = parseInt(tahunMasuk);
+            }
+            
+            if (isNaN(entryYear)) return '-';
+            
+            let yearsSinceEntry;
+            if (currentMonth >= 7) {
+                yearsSinceEntry = currentYear - entryYear;
+            } else {
+                yearsSinceEntry = currentYear - entryYear - 1;
+            }
+            
+            if (yearsSinceEntry === 0) return '10';
+            else if (yearsSinceEntry === 1) return '11';
+            else if (yearsSinceEntry === 2) return '12';
+            else if (yearsSinceEntry < 0) return '10';
+            else return 'Lulus';
+        }
+
+        async function loadTransactionData() {
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${CONFIG.TRANSACTION_SHEET}?key=${CONFIG.API_KEY}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    console.warn('Transaction data not available');
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                if (!data.values || data.values.length === 0) {
+                    console.warn('No transaction data found');
+                    return;
+                }
+
+                const headers = data.values[0];
+                const rows = data.values.slice(1);
+
+                transactionData = rows.map(row => {
+                    const transaction = {};
+                    headers.forEach((header, index) => {
+                        transaction[header] = row[index] || '';
+                    });
+                    return transaction;
+                });
+                
+            } catch (error) {
+                console.warn('Failed to load transaction data:', error.message);
+            }
+        }
+
+        async function loadStudentData() {
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${CONFIG.SHEET_NAME}?key=${CONFIG.API_KEY}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.values || data.values.length === 0) {
+                    throw new Error('Tidak ada data yang ditemukan di spreadsheet');
+                }
+
+                const headers = data.values[0];
+                const rows = data.values.slice(1);
+
+                // Detect status column from headers
+                statusColumnName = detectStatusColumn(headers);
+
+                studentsData = rows.map(row => {
+                    const student = {};
+                    headers.forEach((header, index) => {
+                        student[header] = row[index] || '';
+                    });
+                    return student;
+                });
+
+                // Load transaction data
+                await loadTransactionData();
+
+                filteredData = [...studentsData];
+                populateFilters();
+                displayStudents();
+                showElements();
+                
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        function populateFilters() {
+            const jurusanSet = new Set();
+            const tahunSet = new Set();
+
+            studentsData.forEach(student => {
+                if (student.JURUSAN) jurusanSet.add(student.JURUSAN);
+                if (student['TAHUN MASUK']) tahunSet.add(student['TAHUN MASUK']);
+            });
+
+            const jurusanFilter = document.getElementById('jurusanFilter');
+            const tahunFilter = document.getElementById('tahunFilter');
+
+            jurusanSet.forEach(jurusan => {
+                const option = document.createElement('option');
+                option.value = jurusan;
+                option.textContent = jurusan;
+                jurusanFilter.appendChild(option);
+            });
+
+            Array.from(tahunSet).sort().forEach(tahun => {
+                const option = document.createElement('option');
+                option.value = tahun;
+                option.textContent = tahun;
+                tahunFilter.appendChild(option);
+            });
+        }
+
+        function getPaymentStatus(amount, paymentKey) {
+            const standardAmount = TARIF_STANDAR[paymentKey] || 0;
+            const paidAmount = parseFloat(amount) || 0;
+            
+            if (paidAmount === 0) return 'unpaid';
+            if (paidAmount === standardAmount) return 'lunas';
+            if (paidAmount < standardAmount) return 'mencicil';
+            if (paidAmount > standardAmount) return 'kelebihan';
+            return 'unpaid';
+        }
+
+        function validatePaymentAmount(paymentKey, amount) {
+            const standardAmount = TARIF_STANDAR[paymentKey] || 0;
+            const paidAmount = parseFloat(amount) || 0;
+            
+            return {
+                standard: standardAmount,
+                paid: paidAmount,
+                difference: paidAmount - standardAmount,
+                status: getPaymentStatus(amount, paymentKey)
+            };
+        }
+
+        function formatPaymentBadge(status, validation = null) {
+            const badges = {
+                'lunas': `<span class="payment-status-lunas">✓ Lunas</span>`,
+                'unpaid': `<span class="payment-status-unpaid">✗ Belum Bayar</span>`,
+                'mencicil': `<span class="payment-status-mencicil">⚠ Mencicil</span>`,
+                'kelebihan': `<span class="payment-status-kelebihan">↗ Kelebihan</span>`
+            };
+            
+            let badge = badges[status] || badges['unpaid'];
+            
+            if (validation && (status === 'mencicil' || status === 'kelebihan')) {
+                const diff = Math.abs(validation.difference);
+                badge += ` <span class="text-xs text-gray-500">(${status === 'kelebihan' ? '+' : '-'}${diff.toLocaleString('id-ID')})</span>`;
+            }
+            
+            return badge;
+        }
+
+        function createStudentCard(student) {
+            return `
+                <div class="student-card bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
+                    <div class="p-6 flex-grow">
+                        <!-- Student Photo -->
+                        <div class="flex justify-center mb-4">
+                            ${createStudentPhoto(student)}
+                        </div>
+                        
+                        <!-- Student Info -->
+                        <div class="text-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800 mb-3 leading-tight">${student.NAMA || 'Nama tidak tersedia'}</h3>
+                            
+                            <div class="space-y-2 text-sm text-gray-600">
+                                <p><span class="font-medium">NISN:</span> ${student.NISN || '-'}</p>
+                                <p><span class="font-medium">Jenis Kelamin:</span> ${student['JENIS KELAMIN'] || '-'}</p>
+                                <p><span class="font-medium">Tahun Masuk:</span> ${student['TAHUN MASUK'] || '-'}</p>
+                                <p><span class="font-medium">Kelas:</span> ${calculateCurrentClass(student['TAHUN MASUK'])}</p>
+                                <p><span class="font-medium">Jurusan:</span> ${student.JURUSAN || '-'}</p>
+                                <p><span class="font-medium">Status:</span> ${createStatusBadge(getStudentStatus(student))}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Button -->
+                    <div class="p-6 pt-0">
+                        <button onclick="showDetailModal('${student.NISN}')" 
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                            Lihat Detail Pembayaran
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getStudentTransactions(nisn) {
+            if (!transactionData || transactionData.length === 0) return [];
+            
+            // Get student name for matching
+            const student = studentsData.find(s => s.NISN === nisn);
+            const studentName = student ? student.NAMA : '';
+            
+            // Filter transactions for this student by matching NAMA column
+            return transactionData.filter(transaction => {
+                const transactionName = (transaction.NAMA || '').toString().trim();
+                const matchByName = studentName && transactionName.toLowerCase().includes(studentName.toLowerCase());
+                
+                return matchByName;
+            }).sort((a, b) => {
+                // Sort by TANGGAL column (newest first)
+                const dateA = a.TANGGAL || '';
+                const dateB = b.TANGGAL || '';
+                
+                // Try to parse dates
+                const parsedDateA = new Date(dateA);
+                const parsedDateB = new Date(dateB);
+                
+                if (!isNaN(parsedDateA) && !isNaN(parsedDateB)) {
+                    return parsedDateB - parsedDateA;  // Newest first
+                }
+                
+                return dateB.localeCompare(dateA);  // String comparison fallback
+            });
+        }
+
+        function createTransactionHistory(nisn) {
+            const transactions = getStudentTransactions(nisn);
+            
+            if (!transactions || transactions.length === 0) {
+                return `
+                    <div class="bg-gray-50 rounded-lg p-4 sm:p-6 text-center">
+                        <div class="text-gray-400 mb-2">
+                            <svg class="w-8 h-8 sm:w-12 sm:h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-gray-500 font-medium text-sm sm:text-base">Tidak ada riwayat transaksi</p>
+                        <p class="text-gray-400 text-xs sm:text-sm mt-1">Belum ada transaksi yang tercatat untuk siswa ini</p>
+                    </div>
+                `;
+            }
+
+            let html = `
+                <div class="mb-3 sm:mb-4 text-xs sm:text-sm text-gray-600 px-1">
+                    <span class="font-medium">${transactions.length}</span> transaksi ditemukan
+                </div>
+                <div class="space-y-2 sm:space-y-3">
+            `;
+            
+            transactions.forEach((transaction, index) => {
+                const nama = transaction.NAMA || '';
+                const tanggal = transaction.TANGGAL || '';
+                const jenis = transaction.JENIS || '';
+                const jumlah = transaction.JUMLAH || '';
+                const keterangan = transaction.KETERANGAN || '';
+                
+                // Format amount
+                let formattedAmount = jumlah;
+                if (jumlah && !isNaN(parseFloat(jumlah.toString().replace(/[^\d.-]/g, '')))) {
+                    const numAmount = parseFloat(jumlah.toString().replace(/[^\d.-]/g, ''));
+                    formattedAmount = 'Rp ' + numAmount.toLocaleString('id-ID');
+                }
+                
+                // Get payment type color
+                const getPaymentTypeColor = (jenis) => {
+                    const jenisLower = jenis.toLowerCase();
+                    if (jenisLower.includes('spp')) return 'bg-blue-100 text-blue-800';
+                    if (jenisLower.includes('tabungan')) return 'bg-green-100 text-green-800';
+                    if (jenisLower.includes('lks')) return 'bg-orange-100 text-orange-800';
+                    if (jenisLower.includes('uhb')) return 'bg-purple-100 text-purple-800';
+                    if (jenisLower.includes('pas')) return 'bg-teal-100 text-teal-800';
+                    if (jenisLower.includes('ujian')) return 'bg-red-100 text-red-800';
+                    if (jenisLower.includes('infaq')) return 'bg-yellow-100 text-yellow-800';
+                    return 'bg-gray-100 text-gray-800';
+                };
+                
+                html += `
+                    <div class="bg-white border rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow">
+                        <!-- Mobile Layout -->
+                        <div class="block sm:hidden">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex-grow pr-2">
+                                    <div class="font-medium text-gray-800 text-sm leading-tight">
+                                        ${jenis || 'Pembayaran'}
+                                    </div>
+                                    ${jenis ? `<div class="mt-1"><span class="px-2 py-1 rounded-full text-xs font-medium ${getPaymentTypeColor(jenis)}">${jenis}</span></div>` : ''}
+                                </div>
+                                <div class="text-right flex-shrink-0">
+                                    <div class="font-semibold text-green-600 text-sm">
+                                        ${formattedAmount || '-'}
+                                    </div>
+                                    <div class="text-xs text-gray-400 mt-1">
+                                        #${index + 1}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-500 space-y-1">
+                                <div class="flex items-center">
+                                    <svg class="w-3 h-3 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <span class="truncate">${tanggal || 'Tanggal tidak tersedia'}</span>
+                                </div>
+                                ${keterangan ? `
+                                    <div class="flex items-start">
+                                        <svg class="w-3 h-3 mr-1 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                                        </svg>
+                                        <span class="text-gray-600 break-words">${keterangan}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <!-- Desktop Layout -->
+                        <div class="hidden sm:flex justify-between items-start">
+                            <div class="flex-grow">
+                                <div class="flex items-center gap-2 mb-2 flex-wrap">
+                                    <div class="font-medium text-gray-800">
+                                        ${jenis || 'Pembayaran'}
+                                    </div>
+                                    ${jenis ? `<span class="px-2 py-1 rounded-full text-xs font-medium ${getPaymentTypeColor(jenis)}">${jenis}</span>` : ''}
+                                </div>
+                                <div class="text-sm text-gray-500 space-y-1">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <span>${tanggal || 'Tanggal tidak tersedia'}</span>
+                                    </div>
+                                    ${keterangan ? `
+                                        <div class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                                            </svg>
+                                            <span class="text-gray-600">${keterangan}</span>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                            <div class="text-right ml-4">
+                                <div class="font-semibold text-green-600">
+                                    ${formattedAmount || '-'}
+                                </div>
+                                <div class="text-xs text-gray-400 mt-1">
+                                    #${index + 1}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        function showDetailModal(nisn) {
+            const student = studentsData.find(s => s.NISN === nisn);
+            if (!student) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+                    <div class="p-6 border-b">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-2xl font-bold text-gray-800">Detail Pembayaran - ${student.NAMA}</h2>
+                            <div class="flex items-center space-x-3">
+                                <button onclick="downloadStudentExcel('${student.NISN}')" 
+                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <span>Download Excel</span>
+                                </button>
+                                <button onclick="this.closest('.fixed').remove()" class="text-gray-500 hover:text-gray-700">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <!-- Tab Navigation -->
+                        <div class="flex border-b mb-6">
+                            <button onclick="showTab('payment-details', this)" 
+                                    class="tab-button px-6 py-3 font-medium text-blue-600 border-b-2 border-blue-600">
+                                Detail Pembayaran
+                            </button>
+                            <button onclick="showTab('transaction-history', this)" 
+                                    class="tab-button px-6 py-3 font-medium text-gray-500 hover:text-gray-700">
+                                Riwayat Transaksi
+                            </button>
+                        </div>
+                        
+                        <!-- Tab Content -->
+                        <div id="payment-details" class="tab-content">
+                            ${createDetailedPaymentView(student)}
+                        </div>
+                        
+                        <div id="transaction-history" class="tab-content hidden">
+                            <h3 class="text-lg font-semibold mb-4 text-gray-800">📋 Riwayat Transaksi</h3>
+                            ${createTransactionHistory(student.NISN)}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function showTab(tabId, buttonElement) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active state from all tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+                button.classList.add('text-gray-500');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            // Add active state to clicked button
+            buttonElement.classList.remove('text-gray-500');
+            buttonElement.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+        }
+
+        function createDetailedPaymentView(student) {
+            let html = '<div class="space-y-6">';
+            
+            // SPP Payments
+            html += '<div><h3 class="text-lg font-semibold mb-3 text-blue-600">📚 Pembayaran SPP</h3>';
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">';
+            
+            const sppMonths = ['jul', 'agu', 'sep', 'okt', 'nov', 'des', 'jan', 'feb', 'mar', 'apr', 'mei', 'jun'];
+            const grades = ['10', '11', '12'];
+            
+            grades.forEach(grade => {
+                sppMonths.forEach(month => {
+                    const key = `spp_${grade}_${month}`;
+                    const dateKey = `tgl_${key}`;
+                    const amount = student[key];
+                    const date = student[dateKey];
+                    const validation = validatePaymentAmount(key, amount);
+                    const status = validation.status;
+                    
+                    const bgColor = {
+                        'lunas': 'bg-emerald-50 border-emerald-200',
+                        'mencicil': 'bg-amber-50 border-amber-200',
+                        'kelebihan': 'bg-indigo-50 border-indigo-200',
+                        'unpaid': 'bg-rose-50 border-rose-200'
+                    }[status] || 'bg-gray-50 border-gray-200';
+                    
+                    html += `
+                        <div class="border rounded p-3 ${bgColor}">
+                            <div class="font-medium text-sm">SPP Kelas ${grade} - ${month.toUpperCase()}</div>
+                            <div class="text-xs text-gray-600 mt-1">
+                                ${formatPaymentBadge(status, validation)}
+                                <br><span class="font-medium">Tarif:</span> Rp ${validation.standard.toLocaleString('id-ID')}
+                                ${validation.paid > 0 ? `<br><span class="font-medium">Dibayar:</span> Rp ${validation.paid.toLocaleString('id-ID')}` : ''}
+                                ${date ? `<br><span class="font-medium">Tanggal:</span> ${date}` : ''}
+                                ${validation.difference !== 0 ? `<br><span class="font-medium ${validation.difference > 0 ? 'text-blue-600' : 'text-red-600'}">Selisih:</span> ${validation.difference > 0 ? '+' : ''}Rp ${validation.difference.toLocaleString('id-ID')}` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+            html += '</div></div>';
+
+            // Tabungan
+            html += '<div><h3 class="text-lg font-semibold mb-3 text-green-600">💰 Tabungan</h3>';
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">';
+            
+            sppMonths.forEach(month => {
+                const key = `tabungan_10_${month}`;
+                const dateKey = `tgl_${key}`;
+                const amount = student[key];
+                const date = student[dateKey];
+                const validation = validatePaymentAmount(key, amount);
+                const status = validation.status;
+                
+                const bgColor = {
+                    'lunas': 'bg-emerald-50 border-emerald-200',
+                    'mencicil': 'bg-amber-50 border-amber-200',
+                    'kelebihan': 'bg-indigo-50 border-indigo-200',
+                    'unpaid': 'bg-rose-50 border-rose-200'
+                }[status] || 'bg-gray-50 border-gray-200';
+                
+                html += `
+                    <div class="border rounded p-3 ${bgColor}">
+                        <div class="font-medium text-sm">Tabungan ${month.toUpperCase()}</div>
+                        <div class="text-xs text-gray-600 mt-1">
+                            ${formatPaymentBadge(status, validation)}
+                            <br><span class="font-medium">Target:</span> Rp ${validation.standard.toLocaleString('id-ID')}
+                            ${validation.paid > 0 ? `<br><span class="font-medium">Dibayar:</span> Rp ${validation.paid.toLocaleString('id-ID')}` : ''}
+                            ${date ? `<br><span class="font-medium">Tanggal:</span> ${date}` : ''}
+                            ${validation.difference !== 0 ? `<br><span class="font-medium ${validation.difference > 0 ? 'text-blue-600' : 'text-red-600'}">Selisih:</span> ${validation.difference > 0 ? '+' : ''}Rp ${validation.difference.toLocaleString('id-ID')}` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div></div>';
+
+            // LKS, UHB, PAS, dan pembayaran lainnya dengan struktur yang sama
+            const paymentSections = [
+                {
+                    title: '📖 Pembayaran LKS',
+                    color: 'orange-600',
+                    payments: [
+                        { key: 'lks_10_sem1', label: 'LKS Kelas 10 Semester 1' },
+                        { key: 'lks_10_sem2', label: 'LKS Kelas 10 Semester 2' },
+                        { key: 'lks_11_sem1', label: 'LKS Kelas 11 Semester 1' },
+                        { key: 'lks_11_sem2', label: 'LKS Kelas 11 Semester 2' },
+                        { key: 'lks_12_sem1', label: 'LKS Kelas 12 Semester 1' },
+                        { key: 'lks_12_sem2', label: 'LKS Kelas 12 Semester 2' }
+                    ]
+                },
+                {
+                    title: '📝 Pembayaran UHB',
+                    color: 'indigo-600',
+                    payments: [
+                        { key: 'uhb_10_sem1', label: 'UHB Kelas 10 Semester 1' },
+                        { key: 'uhb_10_sem2', label: 'UHB Kelas 10 Semester 2' },
+                        { key: 'uhb_11_sem1', label: 'UHB Kelas 11 Semester 1' },
+                        { key: 'uhb_11_sem2', label: 'UHB Kelas 11 Semester 2' },
+                        { key: 'uhb_12_sem1', label: 'UHB Kelas 12 Semester 1' },
+                        { key: 'uhb_12_sem2', label: 'UHB Kelas 12 Semester 2' }
+                    ]
+                },
+                {
+                    title: '📋 Pembayaran PAS',
+                    color: 'teal-600',
+                    payments: [
+                        { key: 'pas_10_sem1', label: 'PAS Kelas 10 Semester 1' },
+                        { key: 'pas_10_sem2', label: 'PAS Kelas 10 Semester 2' },
+                        { key: 'pas_11_sem1', label: 'PAS Kelas 11 Semester 1' },
+                        { key: 'pas_11_sem2', label: 'PAS Kelas 11 Semester 2' },
+                        { key: 'pas_12_sem1', label: 'PAS Kelas 12 Semester 1' },
+                        { key: 'pas_12_sem2', label: 'PAS Kelas 12 Semester 2' }
+                    ]
+                }
+            ];
+
+            paymentSections.forEach(section => {
+                html += `<div><h3 class="text-lg font-semibold mb-3 text-${section.color}">${section.title}</h3>`;
+                html += '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">';
+                
+                section.payments.forEach(payment => {
+                    const amount = student[payment.key];
+                    const date = student[`tgl_${payment.key}`];
+                    const validation = validatePaymentAmount(payment.key, amount);
+                    const status = validation.status;
+                    
+                    const bgColor = {
+                        'lunas': 'bg-emerald-50 border-emerald-200',
+                        'mencicil': 'bg-amber-50 border-amber-200',
+                        'kelebihan': 'bg-indigo-50 border-indigo-200',
+                        'unpaid': 'bg-rose-50 border-rose-200'
+                    }[status] || 'bg-gray-50 border-gray-200';
+                    
+                    html += `
+                        <div class="border rounded p-3 ${bgColor}">
+                            <div class="font-medium text-sm">${payment.label}</div>
+                            <div class="text-xs text-gray-600 mt-1">
+                                ${formatPaymentBadge(status, validation)}
+                                <br><span class="font-medium">Tarif:</span> Rp ${validation.standard.toLocaleString('id-ID')}
+                                ${validation.paid > 0 ? `<br><span class="font-medium">Dibayar:</span> Rp ${validation.paid.toLocaleString('id-ID')}` : ''}
+                                ${date ? `<br><span class="font-medium">Tanggal:</span> ${date}` : ''}
+                                ${validation.difference !== 0 ? `<br><span class="font-medium ${validation.difference > 0 ? 'text-blue-600' : 'text-red-600'}">Selisih:</span> ${validation.difference > 0 ? '+' : ''}Rp ${validation.difference.toLocaleString('id-ID')}` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div></div>';
+            });
+
+            // Other payments
+            const jenisKelamin = student['JENIS KELAMIN'] || '';
+            const otherPayments = [
+                { key: 'ujian_akhir', label: 'Ujian Akhir' },
+                { key: 'perpisahan', label: 'Perpisahan' },
+                { key: 'buku_kenangan', label: 'Buku Kenangan' },
+                { key: 'study_tour', label: 'Study Tour' },
+                { key: 'infaq_naik_kelas_10', label: 'Infaq Naik Kelas 10' },
+                { key: 'infaq_naik_kelas_11', label: 'Infaq Naik Kelas 11' }
+            ];
+
+            if (jenisKelamin.toLowerCase().includes('laki') || jenisKelamin.toLowerCase().includes('putra') || jenisKelamin.toLowerCase() === 'l') {
+                otherPayments.unshift({ key: 'siswa_baru_putra', label: 'Siswa Baru Putra' });
+            } else if (jenisKelamin.toLowerCase().includes('perempuan') || jenisKelamin.toLowerCase().includes('putri') || jenisKelamin.toLowerCase() === 'p') {
+                otherPayments.unshift({ key: 'siswi_baru_putri', label: 'Siswi Baru Putri' });
+            }
+
+            html += '<div><h3 class="text-lg font-semibold mb-3 text-purple-600">🎓 Pembayaran Lainnya</h3>';
+            html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-3">';
+            
+            otherPayments.forEach(payment => {
+                const amount = student[payment.key];
+                const date = student[`tgl_${payment.key}`];
+                const validation = validatePaymentAmount(payment.key, amount);
+                const status = validation.status;
+                
+                if (validation.standard === 0) return;
+                
+                const bgColor = {
+                    'lunas': 'bg-emerald-50 border-emerald-200',
+                    'mencicil': 'bg-amber-50 border-amber-200',
+                    'kelebihan': 'bg-indigo-50 border-indigo-200',
+                    'unpaid': 'bg-rose-50 border-rose-200'
+                }[status] || 'bg-gray-50 border-gray-200';
+                
+                html += `
+                    <div class="border rounded p-3 ${bgColor}">
+                        <div class="font-medium text-sm">${payment.label}</div>
+                        <div class="text-xs text-gray-600 mt-1">
+                            ${formatPaymentBadge(status, validation)}
+                            <br><span class="font-medium">Tarif:</span> Rp ${validation.standard.toLocaleString('id-ID')}
+                            ${validation.paid > 0 ? `<br><span class="font-medium">Dibayar:</span> Rp ${validation.paid.toLocaleString('id-ID')}` : ''}
+                            ${date ? `<br><span class="font-medium">Tanggal:</span> ${date}` : ''}
+                            ${validation.difference !== 0 ? `<br><span class="font-medium ${validation.difference > 0 ? 'text-blue-600' : 'text-red-600'}">Selisih:</span> ${validation.difference > 0 ? '+' : ''}Rp ${validation.difference.toLocaleString('id-ID')}` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div></div>';
+            
+            html += '</div>';
+            return html;
+        }
+
+        function displayStudents() {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const studentsToShow = filteredData.slice(startIndex, endIndex);
+
+            const studentsList = document.getElementById('studentsList');
+            studentsList.innerHTML = studentsToShow.map(student => createStudentCard(student)).join('');
+
+            updatePagination();
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.classList.add('hidden');
+                return;
+            }
+            
+            pagination.classList.remove('hidden');
+            pagination.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.className = `px-3 py-2 rounded ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`;
+                button.onclick = () => {
+                    currentPage = i;
+                    displayStudents();
+                };
+                pagination.appendChild(button);
+            }
+        }
+
+        function filterStudents() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const jurusanFilter = document.getElementById('jurusanFilter').value;
+            const tahunFilter = document.getElementById('tahunFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            filteredData = studentsData.filter(student => {
+                const matchesSearch = !searchTerm || 
+                    student.NAMA?.toLowerCase().includes(searchTerm) || 
+                    student.NISN?.toLowerCase().includes(searchTerm);
+                
+                const matchesJurusan = !jurusanFilter || student.JURUSAN === jurusanFilter;
+                const matchesTahun = !tahunFilter || student['TAHUN MASUK'] === tahunFilter;
+                
+                // Status filter logic
+                let matchesStatus = true;
+                if (statusFilter) {
+                    const studentStatus = getStudentStatus(student).toString().trim();
+                    if (statusFilter === 'aktif') {
+                        matchesStatus = studentStatus === '1' || studentStatus.toLowerCase() === 'aktif' || studentStatus.toLowerCase() === 'true' || studentStatus.toLowerCase() === 'ya';
+                    } else if (statusFilter === 'tidak aktif') {
+                        matchesStatus = studentStatus === '0' || studentStatus.toLowerCase() === 'tidak aktif' || studentStatus.toLowerCase() === 'false' || studentStatus.toLowerCase() === 'tidak' || studentStatus.toLowerCase() === 'nonaktif' || studentStatus === '';
+                    }
+                }
+
+                return matchesSearch && matchesJurusan && matchesTahun && matchesStatus;
+            });
+
+            currentPage = 1;
+            displayStudents();
+        }
+
+        function calculateStatistics() {
+            // Initialize counters for each class and total
+            const stats = {
+                totalActive: { all: 0, '10': 0, '11': 0, '12': 0 },
+                unpaidSppTabungan: { all: 0, '10': 0, '11': 0, '12': 0 },
+                unpaidLks: { all: 0, '10': 0, '11': 0, '12': 0 },
+                unpaidUhb: { all: 0, '10': 0, '11': 0, '12': 0 },
+                unpaidPas: { all: 0, '10': 0, '11': 0, '12': 0 },
+                unpaidOthers: { all: 0, '10': 0, '11': 0, '12': 0 }
+            };
+
+            studentsData.forEach(student => {
+                // Check if student is active
+                const studentStatus = getStudentStatus(student).toString().trim();
+                const isActive = studentStatus === '1' || studentStatus.toLowerCase() === 'aktif' || 
+                               studentStatus.toLowerCase() === 'true' || studentStatus.toLowerCase() === 'ya';
+                
+                if (!isActive) return; // Skip inactive students
+
+                // Get student's current class
+                const currentClass = calculateCurrentClass(student['TAHUN MASUK']);
+                
+                // Count active students
+                stats.totalActive.all++;
+                if (currentClass === '10' || currentClass === '11' || currentClass === '12') {
+                    stats.totalActive[currentClass]++;
+                }
+
+                // Check SPP & Tabungan payments
+                let hasSppTabunganUnpaid = false;
+                const sppMonths = ['jul', 'agu', 'sep', 'okt', 'nov', 'des', 'jan', 'feb', 'mar', 'apr', 'mei', 'jun'];
+                const grades = ['10', '11', '12'];
+                
+                // Check SPP for all grades
+                for (const grade of grades) {
+                    for (const month of sppMonths) {
+                        const key = `spp_${grade}_${month}`;
+                        const amount = student[key];
+                        const validation = validatePaymentAmount(key, amount);
+                        if (validation.status === 'unpaid') {
+                            hasSppTabunganUnpaid = true;
+                            break;
+                        }
+                    }
+                    if (hasSppTabunganUnpaid) break;
+                }
+                
+                // Check Tabungan if SPP is not unpaid
+                if (!hasSppTabunganUnpaid) {
+                    for (const month of sppMonths) {
+                        const key = `tabungan_10_${month}`;
+                        const amount = student[key];
+                        const validation = validatePaymentAmount(key, amount);
+                        if (validation.status === 'unpaid') {
+                            hasSppTabunganUnpaid = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (hasSppTabunganUnpaid) {
+                    stats.unpaidSppTabungan.all++;
+                    if (currentClass === '10' || currentClass === '11' || currentClass === '12') {
+                        stats.unpaidSppTabungan[currentClass]++;
+                    }
+                }
+
+                // Check LKS payments
+                let hasLksUnpaid = false;
+                const lksPayments = ['lks_10_sem1', 'lks_10_sem2', 'lks_11_sem1', 'lks_11_sem2', 'lks_12_sem1', 'lks_12_sem2'];
+                for (const key of lksPayments) {
+                    const amount = student[key];
+                    const validation = validatePaymentAmount(key, amount);
+                    if (validation.status === 'unpaid') {
+                        hasLksUnpaid = true;
+                        break;
+                    }
+                }
+                if (hasLksUnpaid) {
+                    stats.unpaidLks.all++;
+                    if (currentClass === '10' || currentClass === '11' || currentClass === '12') {
+                        stats.unpaidLks[currentClass]++;
+                    }
+                }
+
+                // Check UHB payments
+                let hasUhbUnpaid = false;
+                const uhbPayments = ['uhb_10_sem1', 'uhb_10_sem2', 'uhb_11_sem1', 'uhb_11_sem2', 'uhb_12_sem1', 'uhb_12_sem2'];
+                for (const key of uhbPayments) {
+                    const amount = student[key];
+                    const validation = validatePaymentAmount(key, amount);
+                    if (validation.status === 'unpaid') {
+                        hasUhbUnpaid = true;
+                        break;
+                    }
+                }
+                if (hasUhbUnpaid) {
+                    stats.unpaidUhb.all++;
+                    if (currentClass === '10' || currentClass === '11' || currentClass === '12') {
+                        stats.unpaidUhb[currentClass]++;
+                    }
+                }
+
+                // Check PAS payments
+                let hasPasUnpaid = false;
+                const pasPayments = ['pas_10_sem1', 'pas_10_sem2', 'pas_11_sem1', 'pas_11_sem2', 'pas_12_sem1', 'pas_12_sem2'];
+                for (const key of pasPayments) {
+                    const amount = student[key];
+                    const validation = validatePaymentAmount(key, amount);
+                    if (validation.status === 'unpaid') {
+                        hasPasUnpaid = true;
+                        break;
+                    }
+                }
+                if (hasPasUnpaid) {
+                    stats.unpaidPas.all++;
+                    if (currentClass === '10' || currentClass === '11' || currentClass === '12') {
+                        stats.unpaidPas[currentClass]++;
+                    }
+                }
+
+                // Check other payments
+                let hasOthersUnpaid = false;
+                const jenisKelamin = student['JENIS KELAMIN'] || '';
+                const isMale = jenisKelamin.toLowerCase().includes('laki') || jenisKelamin.toLowerCase().includes('putra') || jenisKelamin.toLowerCase() === 'l';
+                const isFemale = jenisKelamin.toLowerCase().includes('perempuan') || jenisKelamin.toLowerCase().includes('putri') || jenisKelamin.toLowerCase() === 'p';
+                
+                const otherPayments = [
+                    'ujian_akhir', 'perpisahan', 'buku_kenangan', 'study_tour', 
+                    'infaq_naik_kelas_10', 'infaq_naik_kelas_11'
+                ];
+                
+                if (isMale) otherPayments.push('siswa_baru_putra');
+                if (isFemale) otherPayments.push('siswi_baru_putri');
+                
+                for (const key of otherPayments) {
+                    const amount = student[key];
+                    const validation = validatePaymentAmount(key, amount);
+                    if (validation.standard > 0 && validation.status === 'unpaid') {
+                        hasOthersUnpaid = true;
+                        break;
+                    }
+                }
+                if (hasOthersUnpaid) {
+                    stats.unpaidOthers.all++;
+                    if (currentClass === '10' || currentClass === '11' || currentClass === '12') {
+                        stats.unpaidOthers[currentClass]++;
+                    }
+                }
+            });
+
+            // Update statistics display
+            // Total Active Students
+            document.getElementById('totalActiveAll').textContent = stats.totalActive.all;
+            document.getElementById('totalActive10').textContent = stats.totalActive['10'];
+            document.getElementById('totalActive11').textContent = stats.totalActive['11'];
+            document.getElementById('totalActive12').textContent = stats.totalActive['12'];
+
+            // SPP & Tabungan
+            document.getElementById('unpaidSppTabunganAll').textContent = stats.unpaidSppTabungan.all;
+            document.getElementById('unpaidSppTabungan10').textContent = stats.unpaidSppTabungan['10'];
+            document.getElementById('unpaidSppTabungan11').textContent = stats.unpaidSppTabungan['11'];
+            document.getElementById('unpaidSppTabungan12').textContent = stats.unpaidSppTabungan['12'];
+
+            // LKS
+            document.getElementById('unpaidLksAll').textContent = stats.unpaidLks.all;
+            document.getElementById('unpaidLks10').textContent = stats.unpaidLks['10'];
+            document.getElementById('unpaidLks11').textContent = stats.unpaidLks['11'];
+            document.getElementById('unpaidLks12').textContent = stats.unpaidLks['12'];
+
+            // UHB
+            document.getElementById('unpaidUhbAll').textContent = stats.unpaidUhb.all;
+            document.getElementById('unpaidUhb10').textContent = stats.unpaidUhb['10'];
+            document.getElementById('unpaidUhb11').textContent = stats.unpaidUhb['11'];
+            document.getElementById('unpaidUhb12').textContent = stats.unpaidUhb['12'];
+
+            // PAS
+            document.getElementById('unpaidPasAll').textContent = stats.unpaidPas.all;
+            document.getElementById('unpaidPas10').textContent = stats.unpaidPas['10'];
+            document.getElementById('unpaidPas11').textContent = stats.unpaidPas['11'];
+            document.getElementById('unpaidPas12').textContent = stats.unpaidPas['12'];
+
+            // Others
+            document.getElementById('unpaidOthersAll').textContent = stats.unpaidOthers.all;
+            document.getElementById('unpaidOthers10').textContent = stats.unpaidOthers['10'];
+            document.getElementById('unpaidOthers11').textContent = stats.unpaidOthers['11'];
+            document.getElementById('unpaidOthers12').textContent = stats.unpaidOthers['12'];
+        }
+
+        function showElements() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('statistics').classList.remove('hidden');
+            document.getElementById('controls').classList.remove('hidden');
+            document.getElementById('studentsList').classList.remove('hidden');
+            
+            // Calculate and display statistics
+            calculateStatistics();
+        }
+
+        function showError(message) {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('error-message').textContent = message;
+        }
+
+        function getStatusText(status) {
+            // For payment status
+            if (typeof status === 'string' && ['lunas', 'unpaid', 'mencicil', 'kelebihan'].includes(status)) {
+                const statusMap = {
+                    'lunas': 'Lunas',
+                    'unpaid': 'Belum Bayar',
+                    'mencicil': 'Mencicil',
+                    'kelebihan': 'Kelebihan'
+                };
+                return statusMap[status] || 'Belum Bayar';
+            }
+            
+            // For student active status
+            const statusText = (status || '').toString().trim();
+            if (statusText === '1' || statusText.toLowerCase() === 'aktif' || statusText.toLowerCase() === 'true' || statusText.toLowerCase() === 'ya') {
+                return 'Aktif';
+            } else if (statusText === '0' || statusText.toLowerCase() === 'tidak aktif' || statusText.toLowerCase() === 'false' || statusText.toLowerCase() === 'tidak' || statusText.toLowerCase() === 'nonaktif') {
+                return 'Tidak Aktif';
+            } else {
+                return 'Status Tidak Diketahui';
+            }
+        }
+
+        // Excel Download Functions
+        function downloadExcel() {
+            if (!studentsData || studentsData.length === 0) {
+                alert('Tidak ada data untuk diunduh');
+                return;
+            }
+
+            const excelData = studentsData.map(student => {
+                const baseInfo = {
+                    'NAMA': student.NAMA || '',
+                    'NISN': student.NISN || '',
+                    'JENIS KELAMIN': student['JENIS KELAMIN'] || '',
+                    'TAHUN MASUK': student['TAHUN MASUK'] || '',
+                    'KELAS SAAT INI': calculateCurrentClass(student['TAHUN MASUK']),
+                    'JURUSAN': student.JURUSAN || '',
+                    'STATUS': getStatusText(getStudentStatus(student))
+                };
+
+                // Add all payment data
+                Object.keys(TARIF_STANDAR).forEach(key => {
+                    const amount = student[key] || '';
+                    const date = student[`tgl_${key}`] || '';
+                    const validation = validatePaymentAmount(key, amount);
+                    
+                    baseInfo[`${key.toUpperCase()} - Jumlah`] = amount ? `Rp ${parseFloat(amount).toLocaleString('id-ID')}` : '';
+                    baseInfo[`${key.toUpperCase()} - Tanggal`] = date;
+                    baseInfo[`${key.toUpperCase()} - Status`] = getStatusText(validation.status);
+                    baseInfo[`${key.toUpperCase()} - Tarif`] = `Rp ${validation.standard.toLocaleString('id-ID')}`;
+                });
+
+                return baseInfo;
+            });
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(excelData);
+
+            const colWidths = [];
+            const headers = Object.keys(excelData[0] || {});
+            headers.forEach((header, index) => {
+                let maxWidth = header.length;
+                excelData.forEach(row => {
+                    const cellValue = String(row[header] || '');
+                    maxWidth = Math.max(maxWidth, cellValue.length);
+                });
+                colWidths[index] = { wch: Math.min(maxWidth + 2, 50) };
+            });
+            ws['!cols'] = colWidths;
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Data Pembayaran Siswa');
+
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const filename = `Data_Pembayaran_Madrasah_${dateStr}.xlsx`;
+
+            XLSX.writeFile(wb, filename);
+        }
+
+        function downloadStudentExcel(nisn) {
+            const student = studentsData.find(s => s.NISN === nisn);
+            if (!student) {
+                alert('Data siswa tidak ditemukan');
+                return;
+            }
+
+            const wb = XLSX.utils.book_new();
+
+            // Sheet 1: Detail Pembayaran
+            const paymentData = [];
+
+            // Student basic info
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Nama Lengkap',
+                'Periode': student.NAMA || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'NISN',
+                'Periode': student.NISN || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Jenis Kelamin',
+                'Periode': student['JENIS KELAMIN'] || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Tahun Masuk',
+                'Periode': student['TAHUN MASUK'] || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Kelas Saat Ini',
+                'Periode': calculateCurrentClass(student['TAHUN MASUK']),
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Jurusan',
+                'Periode': student.JURUSAN || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Status Siswa',
+                'Periode': getStatusText(getStudentStatus(student)),
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            // Add separator
+            paymentData.push({
+                'Kategori': '',
+                'Jenis Pembayaran': '',
+                'Periode': '',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            // Add all payment details - filter based on gender for new student payments
+            const jenisKelamin = student['JENIS KELAMIN'] || '';
+            const isMale = jenisKelamin.toLowerCase().includes('laki') || jenisKelamin.toLowerCase().includes('putra') || jenisKelamin.toLowerCase() === 'l';
+            const isFemale = jenisKelamin.toLowerCase().includes('perempuan') || jenisKelamin.toLowerCase().includes('putri') || jenisKelamin.toLowerCase() === 'p';
+
+            Object.keys(TARIF_STANDAR).forEach(key => {
+                // Skip gender-specific payments that don't match student's gender
+                if (key === 'siswa_baru_putra' && !isMale) return;
+                if (key === 'siswi_baru_putri' && !isFemale) return;
+                
+                const amount = student[key] || '';
+                const date = student[`tgl_${key}`] || '';
+                const validation = validatePaymentAmount(key, amount);
+                
+                // Skip if no standard tariff (shouldn't happen after gender filtering)
+                if (validation.standard === 0) return;
+                
+                let selisih = '';
+                if (validation.difference !== 0) {
+                    selisih = (validation.difference > 0 ? '+' : '') + 'Rp ' + validation.difference.toLocaleString('id-ID');
+                }
+
+                // Better category mapping
+                let kategori = 'LAINNYA';
+                if (key.includes('spp')) kategori = 'SPP';
+                else if (key.includes('tabungan')) kategori = 'TABUNGAN';
+                else if (key.includes('lks')) kategori = 'LKS';
+                else if (key.includes('uhb')) kategori = 'UHB';
+                else if (key.includes('pas')) kategori = 'PAS';
+                else if (key.includes('siswa_baru') || key.includes('siswi_baru')) kategori = 'SISWA BARU';
+                else if (key.includes('ujian')) kategori = 'UJIAN';
+                else if (key.includes('infaq')) kategori = 'INFAQ';
+
+                // Better label formatting
+                let jenisLabel = key.replace(/_/g, ' ').toUpperCase();
+                if (key === 'siswa_baru_putra') jenisLabel = 'SISWA BARU PUTRA';
+                else if (key === 'siswi_baru_putri') jenisLabel = 'SISWI BARU PUTRI';
+
+                paymentData.push({
+                    'Kategori': kategori,
+                    'Jenis Pembayaran': jenisLabel,
+                    'Periode': '',
+                    'Tarif Standar': 'Rp ' + validation.standard.toLocaleString('id-ID'),
+                    'Jumlah Dibayar': amount ? 'Rp ' + parseFloat(amount).toLocaleString('id-ID') : '',
+                    'Tanggal Pembayaran': date,
+                    'Status': getStatusText(validation.status),
+                    'Selisih': selisih,
+                    'Keterangan': validation.status === 'mencicil' ? 'Kurang bayar' : validation.status === 'kelebihan' ? 'Lebih bayar' : ''
+                });
+            });
+
+            const ws1 = XLSX.utils.json_to_sheet(paymentData);
+            const colWidths1 = [
+                { wch: 15 }, { wch: 25 }, { wch: 20 }, { wch: 15 },
+                { wch: 15 }, { wch: 18 }, { wch: 12 }, { wch: 15 }, { wch: 20 }
+            ];
+            ws1['!cols'] = colWidths1;
+            XLSX.utils.book_append_sheet(wb, ws1, 'Detail Pembayaran');
+
+            // Sheet 2: History Transaksi
+            const transactions = getStudentTransactions(student.NISN);
+            const transactionData = [];
+
+            if (transactions && transactions.length > 0) {
+                // Add header info
+                transactionData.push({
+                    'No': '',
+                    'Nama Siswa': student.NAMA || '-',
+                    'NISN': student.NISN || '-',
+                    'Tanggal': '',
+                    'Jenis Pembayaran': '',
+                    'Jumlah': '',
+                    'Keterangan': 'RIWAYAT TRANSAKSI'
+                });
+
+                transactionData.push({
+                    'No': '',
+                    'Nama Siswa': '',
+                    'NISN': '',
+                    'Tanggal': '',
+                    'Jenis Pembayaran': '',
+                    'Jumlah': '',
+                    'Keterangan': ''
+                });
+
+                // Add transaction data
+                transactions.forEach((transaction, index) => {
+                    const nama = transaction.NAMA || '';
+                    const tanggal = transaction.TANGGAL || '';
+                    const jenis = transaction.JENIS || '';
+                    const jumlah = transaction.JUMLAH || '';
+                    const keterangan = transaction.KETERANGAN || '';
+                    
+                    // Format amount
+                    let formattedAmount = jumlah;
+                    if (jumlah && !isNaN(parseFloat(jumlah.toString().replace(/[^\d.-]/g, '')))) {
+                        const numAmount = parseFloat(jumlah.toString().replace(/[^\d.-]/g, ''));
+                        formattedAmount = 'Rp ' + numAmount.toLocaleString('id-ID');
+                    }
+
+                    transactionData.push({
+                        'No': index + 1,
+                        'Nama Siswa': nama,
+                        'NISN': student.NISN || '-',
+                        'Tanggal': tanggal,
+                        'Jenis Pembayaran': jenis,
+                        'Jumlah': formattedAmount,
+                        'Keterangan': keterangan
+                    });
+                });
+
+                // Add summary
+                transactionData.push({
+                    'No': '',
+                    'Nama Siswa': '',
+                    'NISN': '',
+                    'Tanggal': '',
+                    'Jenis Pembayaran': '',
+                    'Jumlah': '',
+                    'Keterangan': ''
+                });
+
+                transactionData.push({
+                    'No': '',
+                    'Nama Siswa': 'TOTAL TRANSAKSI:',
+                    'NISN': transactions.length + ' transaksi',
+                    'Tanggal': '',
+                    'Jenis Pembayaran': '',
+                    'Jumlah': '',
+                    'Keterangan': ''
+                });
+
+                // Calculate total amount
+                let totalAmount = 0;
+                transactions.forEach(transaction => {
+                    const jumlah = transaction.JUMLAH || '';
+                    if (jumlah && !isNaN(parseFloat(jumlah.toString().replace(/[^\d.-]/g, '')))) {
+                        totalAmount += parseFloat(jumlah.toString().replace(/[^\d.-]/g, ''));
+                    }
+                });
+
+                if (totalAmount > 0) {
+                    transactionData.push({
+                        'No': '',
+                        'Nama Siswa': 'TOTAL PEMBAYARAN:',
+                        'NISN': 'Rp ' + totalAmount.toLocaleString('id-ID'),
+                        'Tanggal': '',
+                        'Jenis Pembayaran': '',
+                        'Jumlah': '',
+                        'Keterangan': ''
+                    });
+                }
+
+            } else {
+                // No transactions found
+                transactionData.push({
+                    'No': '',
+                    'Nama Siswa': student.NAMA || '-',
+                    'NISN': student.NISN || '-',
+                    'Tanggal': '',
+                    'Jenis Pembayaran': '',
+                    'Jumlah': '',
+                    'Keterangan': 'RIWAYAT TRANSAKSI'
+                });
+
+                transactionData.push({
+                    'No': '',
+                    'Nama Siswa': '',
+                    'NISN': '',
+                    'Tanggal': '',
+                    'Jenis Pembayaran': '',
+                    'Jumlah': '',
+                    'Keterangan': ''
+                });
+
+                transactionData.push({
+                    'No': '',
+                    'Nama Siswa': 'Tidak ada riwayat transaksi',
+                    'NISN': 'yang ditemukan untuk siswa ini',
+                    'Tanggal': '',
+                    'Jenis Pembayaran': '',
+                    'Jumlah': '',
+                    'Keterangan': ''
+                });
+            }
+
+            const ws2 = XLSX.utils.json_to_sheet(transactionData);
+            const colWidths2 = [
+                { wch: 5 }, { wch: 25 }, { wch: 15 }, { wch: 15 },
+                { wch: 20 }, { wch: 15 }, { wch: 30 }
+            ];
+            ws2['!cols'] = colWidths2;
+            XLSX.utils.book_append_sheet(wb, ws2, 'Riwayat Transaksi');
+
+            // Generate filename and download
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            const studentName = (student.NAMA || 'Siswa').replace(/[^a-zA-Z0-9]/g, '_');
+            const filename = `Detail_Pembayaran_${studentName}_${student.NISN || 'Unknown'}_${dateStr}.xlsx`;
+
+            XLSX.writeFile(wb, filename);
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterStudents);
+        document.getElementById('jurusanFilter').addEventListener('change', filterStudents);
+        document.getElementById('tahunFilter').addEventListener('change', filterStudents);
+        document.getElementById('statusFilter').addEventListener('change', filterStudents);
+
+        // Initialize
+        loadStudentData();
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97edeb0e76a9a3cf',t:'MTc1NzgzMjI5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
