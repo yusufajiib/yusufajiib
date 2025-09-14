@@ -95,6 +95,149 @@
             </div>
         </div>
 
+        <!-- Payment Statistics -->
+        <div id="paymentStats" class="hidden mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2-2V7a2 2 0 012-2h2a2 2 0 002 2v2a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 00-2 2h-2a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2h-2a2 2 0 00-2-2V9a2 2 0 012-2h2"></path>
+                    </svg>
+                    Statistik Pembayaran
+                </h2>
+                
+                <!-- Main Statistics Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <!-- Total Students -->
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-100 text-sm font-medium">Total Siswa</p>
+                                <p class="text-2xl font-bold" id="totalStudents">0</p>
+                                <p class="text-blue-100 text-xs mt-1">Semua siswa terdaftar</p>
+                            </div>
+                            <div class="bg-blue-400 bg-opacity-30 rounded-full p-3">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Students -->
+                    <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg p-4 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-emerald-100 text-sm font-medium">Siswa Aktif</p>
+                                <p class="text-2xl font-bold" id="activeStudents">0</p>
+                                <p class="text-emerald-100 text-xs mt-1">Status aktif</p>
+                            </div>
+                            <div class="bg-emerald-400 bg-opacity-30 rounded-full p-3">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 100% Payment -->
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-4 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-purple-100 text-sm font-medium">Lunas 100%</p>
+                                <p class="text-2xl font-bold" id="payment100">0</p>
+                                <p class="text-purple-100 text-xs mt-1">Pembayaran lengkap</p>
+                            </div>
+                            <div class="bg-purple-400 bg-opacity-30 rounded-full p-3">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Average Payment -->
+                    <div class="bg-gradient-to-r from-amber-500 to-amber-600 rounded-lg p-4 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-amber-100 text-sm font-medium">Rata-rata</p>
+                                <p class="text-2xl font-bold" id="averagePayment">0%</p>
+                                <p class="text-amber-100 text-xs mt-1">Persentase pembayaran</p>
+                            </div>
+                            <div class="bg-amber-400 bg-opacity-30 rounded-full p-3">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Distribution -->
+                <div class="border-t pt-6">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Distribusi Pembayaran</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                        <!-- 75% Payment -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
+                            <div class="text-2xl font-bold text-blue-600" id="payment75">0</div>
+                            <div class="text-xs text-blue-600 font-medium">75-99%</div>
+                            <div class="text-xs text-gray-500 mt-1">Hampir lunas</div>
+                        </div>
+
+                        <!-- 50% Payment -->
+                        <div class="bg-teal-50 border border-teal-200 rounded-lg p-3 text-center">
+                            <div class="text-2xl font-bold text-teal-600" id="payment50">0</div>
+                            <div class="text-xs text-teal-600 font-medium">50-74%</div>
+                            <div class="text-xs text-gray-500 mt-1">Setengah jalan</div>
+                        </div>
+
+                        <!-- 25% Payment -->
+                        <div class="bg-orange-50 border border-orange-200 rounded-lg p-3 text-center">
+                            <div class="text-2xl font-bold text-orange-600" id="payment25">0</div>
+                            <div class="text-xs text-orange-600 font-medium">25-49%</div>
+                            <div class="text-xs text-gray-500 mt-1">Perlu perhatian</div>
+                        </div>
+
+                        <!-- 1-24% Payment -->
+                        <div class="bg-red-50 border border-red-200 rounded-lg p-3 text-center">
+                            <div class="text-2xl font-bold text-red-600" id="payment1">0</div>
+                            <div class="text-xs text-red-600 font-medium">1-24%</div>
+                            <div class="text-xs text-gray-500 mt-1">Baru mulai</div>
+                        </div>
+
+                        <!-- 0% Payment -->
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
+                            <div class="text-2xl font-bold text-gray-600" id="payment0">0</div>
+                            <div class="text-xs text-gray-600 font-medium">0%</div>
+                            <div class="text-xs text-gray-500 mt-1">Belum bayar</div>
+                        </div>
+
+                        <!-- Inactive Students -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+                            <div class="text-2xl font-bold text-slate-600" id="inactiveStudents">0</div>
+                            <div class="text-xs text-slate-600 font-medium">Tidak Aktif</div>
+                            <div class="text-xs text-gray-500 mt-1">Status nonaktif</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="border-t pt-6 mt-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-700">Progress Pembayaran Keseluruhan</span>
+                        <span class="text-sm font-bold text-gray-900" id="overallProgress">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-500" id="progressBar" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-500 mt-1">
+                        <span>0%</span>
+                        <span>50%</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Students List -->
         <div id="studentsList" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
@@ -378,6 +521,7 @@
 
                 filteredData = [...studentsData];
                 populateFilters();
+                updatePaymentStatistics();
                 displayStudents();
                 showElements();
                 
@@ -1200,14 +1344,94 @@
             });
 
             currentPage = 1;
+            // Note: Statistics always show all students, not filtered data
             displayStudents();
         }
 
 
 
+        function calculatePaymentStatistics() {
+            const stats = {
+                total: studentsData.length,
+                active: 0,
+                inactive: 0,
+                payment100: 0,
+                payment75: 0,
+                payment50: 0,
+                payment25: 0,
+                payment1: 0,
+                payment0: 0,
+                totalPercentage: 0
+            };
+
+            studentsData.forEach(student => {
+                const studentStatus = getStudentStatus(student).toString().trim();
+                const isActive = studentStatus === '1' || studentStatus.toLowerCase() === 'aktif' || 
+                               studentStatus.toLowerCase() === 'true' || studentStatus.toLowerCase() === 'ya';
+                
+                if (isActive) {
+                    stats.active++;
+                } else {
+                    stats.inactive++;
+                }
+
+                // Calculate payment percentage for this student
+                const paymentInfo = calculatePaymentPercentage(student);
+                const percentage = paymentInfo.percentage;
+                
+                stats.totalPercentage += percentage;
+
+                // Categorize by payment percentage
+                if (percentage === 100) {
+                    stats.payment100++;
+                } else if (percentage >= 75) {
+                    stats.payment75++;
+                } else if (percentage >= 50) {
+                    stats.payment50++;
+                } else if (percentage >= 25) {
+                    stats.payment25++;
+                } else if (percentage >= 1) {
+                    stats.payment1++;
+                } else {
+                    stats.payment0++;
+                }
+            });
+
+            return stats;
+        }
+
+        function updatePaymentStatistics() {
+            const stats = calculatePaymentStatistics();
+            const averagePercentage = stats.total > 0 ? Math.round(stats.totalPercentage / stats.total) : 0;
+
+            // Update main statistics
+            document.getElementById('totalStudents').textContent = stats.total.toLocaleString('id-ID');
+            document.getElementById('activeStudents').textContent = stats.active.toLocaleString('id-ID');
+            document.getElementById('payment100').textContent = stats.payment100.toLocaleString('id-ID');
+            document.getElementById('averagePayment').textContent = averagePercentage + '%';
+
+            // Update distribution
+            document.getElementById('payment75').textContent = stats.payment75.toLocaleString('id-ID');
+            document.getElementById('payment50').textContent = stats.payment50.toLocaleString('id-ID');
+            document.getElementById('payment25').textContent = stats.payment25.toLocaleString('id-ID');
+            document.getElementById('payment1').textContent = stats.payment1.toLocaleString('id-ID');
+            document.getElementById('payment0').textContent = stats.payment0.toLocaleString('id-ID');
+            document.getElementById('inactiveStudents').textContent = stats.inactive.toLocaleString('id-ID');
+
+            // Update progress bar
+            document.getElementById('overallProgress').textContent = averagePercentage + '%';
+            document.getElementById('progressBar').style.width = averagePercentage + '%';
+
+            // Add animation to progress bar
+            setTimeout(() => {
+                document.getElementById('progressBar').style.width = averagePercentage + '%';
+            }, 100);
+        }
+
         function showElements() {
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('controls').classList.remove('hidden');
+            document.getElementById('paymentStats').classList.remove('hidden');
             document.getElementById('studentsList').classList.remove('hidden');
         }
 
@@ -1706,5 +1930,5 @@
         // Initialize
         loadStudentData();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97f36b8d567afdca',t:'MTc1Nzg4OTk4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97f377b15777ce3a',t:'MTc1Nzg5MDQ4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
