@@ -39,14 +39,18 @@
             <p class="mt-4 text-gray-600">Memuat data siswa...</p>
         </div>
 
+
+
         <!-- Error State -->
         <div id="error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
             <strong>Error:</strong> <span id="error-message"></span>
         </div>
 
+
+
         <!-- Search and Filter -->
         <div id="controls" class="hidden mb-6 bg-white rounded-lg shadow-md p-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Cari Siswa</label>
                     <input type="text" id="searchInput" placeholder="Nama atau NISN..." 
@@ -64,14 +68,29 @@
                         <option value="">Semua Tahun</option>
                     </select>
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Filter Status</label>
+                    <select id="statusFilter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Semua Status</option>
+                        <option value="aktif">Aktif</option>
+                        <option value="tidak aktif">Tidak Aktif</option>
+                    </select>
+                </div>
             </div>
-            <div class="flex justify-end">
+            <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
+                <button onclick="downloadFilteredExcel()" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
+                    </svg>
+                    <span>Download Sesuai Filter</span>
+                </button>
                 <button onclick="downloadExcel()" 
                         class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    <span>Download Excel</span>
+                    <span>Download Semua Data</span>
                 </button>
             </div>
         </div>
@@ -166,6 +185,75 @@
             return url;
         }
 
+        // Global variable to store detected status column
+        let statusColumnName = 'AKTIF';
+
+        // Function to detect status column from headers
+        function detectStatusColumn(headers) {
+            const statusKeywords = [
+                'AKTIF', 'STATUS', 'ACTIVE', 'STATUS_SISWA', 'STATUS SISWA',
+                'KEAKTIFAN', 'KONDISI', 'STATE', 'AKTIF_SISWA', 'SISWA_AKTIF'
+            ];
+            
+            // First, try exact matches (case insensitive)
+            for (const keyword of statusKeywords) {
+                const found = headers.find(header => 
+                    header.toUpperCase().trim() === keyword.toUpperCase()
+                );
+                if (found) {
+                    console.log(`✅ Status column detected: "${found}"`);
+                    return found;
+                }
+            }
+            
+            // Then try partial matches
+            for (const keyword of statusKeywords) {
+                const found = headers.find(header => 
+                    header.toUpperCase().includes(keyword.toUpperCase())
+                );
+                if (found) {
+                    console.log(`✅ Status column detected (partial match): "${found}"`);
+                    return found;
+                }
+            }
+            
+            console.warn('⚠️ No status column detected, using default: "AKTIF"');
+            return 'AKTIF'; // Default fallback
+        }
+
+        // Function to get student status using detected column
+        function getStudentStatus(student) {
+            return student[statusColumnName] || '';
+        }
+
+        // Function to create status badge
+        function createStatusBadge(status) {
+            const statusText = (status || '').toString().trim();
+            
+            if (statusText === '1' || statusText.toLowerCase() === 'aktif' || statusText.toLowerCase() === 'true' || statusText.toLowerCase() === 'ya') {
+                return `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Aktif
+                </span>`;
+            } else if (statusText === '0' || statusText.toLowerCase() === 'tidak aktif' || statusText.toLowerCase() === 'false' || statusText.toLowerCase() === 'tidak' || statusText.toLowerCase() === 'nonaktif') {
+                return `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-700 border border-rose-200">
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                    </svg>
+                    Tidak Aktif
+                </span>`;
+            } else {
+                return `<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                    </svg>
+                    Status Tidak Diketahui
+                </span>`;
+            }
+        }
+
         // Function to create student photo element
         function createStudentPhoto(student) {
             const initial = student.NAMA ? student.NAMA.charAt(0).toUpperCase() : '?';
@@ -215,7 +303,12 @@
             else if (yearsSinceEntry === 1) return '11';
             else if (yearsSinceEntry === 2) return '12';
             else if (yearsSinceEntry < 0) return '10';
-            else return 'Lulus';
+            else {
+                // Calculate graduation year (3 years after entry)
+                const graduationYear = entryYear + 3;
+                const graduationYearEnd = graduationYear + 1;
+                return `Lulus ${graduationYear}/${graduationYearEnd}`;
+            }
         }
 
         async function loadTransactionData() {
@@ -268,6 +361,9 @@
 
                 const headers = data.values[0];
                 const rows = data.values.slice(1);
+
+                // Detect status column from headers
+                statusColumnName = detectStatusColumn(headers);
 
                 studentsData = rows.map(row => {
                     const student = {};
@@ -358,6 +454,77 @@
             return badge;
         }
 
+        function calculatePaymentPercentage(student) {
+            const jenisKelamin = student['JENIS KELAMIN'] || '';
+            const isMale = jenisKelamin.toLowerCase().includes('laki') || jenisKelamin.toLowerCase().includes('putra') || jenisKelamin.toLowerCase() === 'l';
+            const isFemale = jenisKelamin.toLowerCase().includes('perempuan') || jenisKelamin.toLowerCase().includes('putri') || jenisKelamin.toLowerCase() === 'p';
+            
+            let totalStandard = 0;
+            let totalPaid = 0;
+            let applicablePayments = 0;
+            
+            Object.keys(TARIF_STANDAR).forEach(key => {
+                // Skip gender-specific payments that don't match student's gender
+                if (key === 'siswa_baru_putra' && !isMale) return;
+                if (key === 'siswi_baru_putri' && !isFemale) return;
+                
+                const standardAmount = TARIF_STANDAR[key];
+                const paidAmount = parseFloat(student[key]) || 0;
+                
+                if (standardAmount > 0) {
+                    totalStandard += standardAmount;
+                    totalPaid += Math.min(paidAmount, standardAmount); // Cap at standard amount to avoid over 100%
+                    applicablePayments++;
+                }
+            });
+            
+            if (totalStandard === 0) return { percentage: 0, totalStandard, totalPaid, applicablePayments };
+            
+            const percentage = Math.round((totalPaid / totalStandard) * 100);
+            return { percentage, totalStandard, totalPaid, applicablePayments };
+        }
+
+        function createPaymentPercentageBadge(student) {
+            const paymentInfo = calculatePaymentPercentage(student);
+            const percentage = paymentInfo.percentage;
+            
+            let badgeClass = '';
+            let icon = '';
+            let textColor = '';
+            
+            if (percentage >= 90) {
+                badgeClass = 'bg-emerald-100 border-emerald-300';
+                textColor = 'text-emerald-700';
+                icon = '🎉';
+            } else if (percentage >= 70) {
+                badgeClass = 'bg-blue-100 border-blue-300';
+                textColor = 'text-blue-700';
+                icon = '📈';
+            } else if (percentage >= 50) {
+                badgeClass = 'bg-amber-100 border-amber-300';
+                textColor = 'text-amber-700';
+                icon = '⚡';
+            } else if (percentage >= 25) {
+                badgeClass = 'bg-orange-100 border-orange-300';
+                textColor = 'text-orange-700';
+                icon = '📊';
+            } else {
+                badgeClass = 'bg-rose-100 border-rose-300';
+                textColor = 'text-rose-700';
+                icon = '📋';
+            }
+            
+            return `
+                <div class="inline-flex items-center px-2 py-1 rounded-md border ${badgeClass} ${textColor} text-xs font-medium mb-2">
+                    <span class="mr-1 text-xs">${icon}</span>
+                    <span class="font-bold">${percentage}%</span>
+                    <div class="ml-1 w-8 h-1 bg-white bg-opacity-50 rounded-full overflow-hidden">
+                        <div class="h-full bg-current rounded-full transition-all duration-300" style="width: ${percentage}%"></div>
+                    </div>
+                </div>
+            `;
+        }
+
         function createStudentCard(student) {
             return `
                 <div class="student-card bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
@@ -367,15 +534,22 @@
                             ${createStudentPhoto(student)}
                         </div>
                         
+                        <!-- Payment Percentage Badge -->
+                        <div class="flex justify-center mb-4">
+                            ${createPaymentPercentageBadge(student)}
+                        </div>
+                        
                         <!-- Student Info -->
                         <div class="text-center mb-4">
                             <h3 class="text-lg font-bold text-gray-800 mb-3 leading-tight">${student.NAMA || 'Nama tidak tersedia'}</h3>
+                            
                             <div class="space-y-2 text-sm text-gray-600">
                                 <p><span class="font-medium">NISN:</span> ${student.NISN || '-'}</p>
                                 <p><span class="font-medium">Jenis Kelamin:</span> ${student['JENIS KELAMIN'] || '-'}</p>
                                 <p><span class="font-medium">Tahun Masuk:</span> ${student['TAHUN MASUK'] || '-'}</p>
                                 <p><span class="font-medium">Kelas:</span> ${calculateCurrentClass(student['TAHUN MASUK'])}</p>
                                 <p><span class="font-medium">Jurusan:</span> ${student.JURUSAN || '-'}</p>
+                                <p><span class="font-medium">Status:</span> ${createStatusBadge(getStudentStatus(student))}</p>
                             </div>
                         </div>
                     </div>
@@ -854,22 +1028,154 @@
             pagination.classList.remove('hidden');
             pagination.innerHTML = '';
 
-            for (let i = 1; i <= totalPages; i++) {
+            // Create pagination container with responsive design
+            const paginationContainer = document.createElement('div');
+            paginationContainer.className = 'flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-2';
+
+            // Page info for mobile
+            const pageInfo = document.createElement('div');
+            pageInfo.className = 'text-sm text-gray-600 mb-2 sm:mb-0 sm:mr-4';
+            pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages} (${filteredData.length} siswa)`;
+            paginationContainer.appendChild(pageInfo);
+
+            // Pagination buttons container
+            const buttonsContainer = document.createElement('div');
+            buttonsContainer.className = 'flex items-center space-x-1';
+
+            // Previous button
+            if (currentPage > 1) {
+                const prevButton = document.createElement('button');
+                prevButton.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                `;
+                prevButton.className = 'px-2 py-2 rounded bg-white text-gray-700 hover:bg-gray-100 border';
+                prevButton.onclick = () => {
+                    currentPage--;
+                    displayStudents();
+                };
+                buttonsContainer.appendChild(prevButton);
+            }
+
+            // Calculate which pages to show
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
+
+            // Adjust for mobile - show fewer pages
+            if (window.innerWidth < 640) {
+                startPage = Math.max(1, currentPage - 1);
+                endPage = Math.min(totalPages, currentPage + 1);
+            }
+
+            // Show first page if not in range
+            if (startPage > 1) {
+                const firstButton = document.createElement('button');
+                firstButton.textContent = '1';
+                firstButton.className = 'px-3 py-2 rounded text-sm bg-white text-gray-700 hover:bg-gray-100 border';
+                firstButton.onclick = () => {
+                    currentPage = 1;
+                    displayStudents();
+                };
+                buttonsContainer.appendChild(firstButton);
+
+                if (startPage > 2) {
+                    const dots = document.createElement('span');
+                    dots.textContent = '...';
+                    dots.className = 'px-2 py-2 text-gray-500';
+                    buttonsContainer.appendChild(dots);
+                }
+            }
+
+            // Show page numbers
+            for (let i = startPage; i <= endPage; i++) {
                 const button = document.createElement('button');
                 button.textContent = i;
-                button.className = `px-3 py-2 rounded ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'}`;
+                button.className = `px-3 py-2 rounded text-sm border ${
+                    i === currentPage 
+                        ? 'bg-blue-600 text-white border-blue-600' 
+                        : 'bg-white text-gray-700 hover:bg-gray-100 border-gray-300'
+                }`;
                 button.onclick = () => {
                     currentPage = i;
                     displayStudents();
                 };
-                pagination.appendChild(button);
+                buttonsContainer.appendChild(button);
             }
+
+            // Show last page if not in range
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const dots = document.createElement('span');
+                    dots.textContent = '...';
+                    dots.className = 'px-2 py-2 text-gray-500';
+                    buttonsContainer.appendChild(dots);
+                }
+
+                const lastButton = document.createElement('button');
+                lastButton.textContent = totalPages;
+                lastButton.className = 'px-3 py-2 rounded text-sm bg-white text-gray-700 hover:bg-gray-100 border';
+                lastButton.onclick = () => {
+                    currentPage = totalPages;
+                    displayStudents();
+                };
+                buttonsContainer.appendChild(lastButton);
+            }
+
+            // Next button
+            if (currentPage < totalPages) {
+                const nextButton = document.createElement('button');
+                nextButton.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                `;
+                nextButton.className = 'px-2 py-2 rounded bg-white text-gray-700 hover:bg-gray-100 border';
+                nextButton.onclick = () => {
+                    currentPage++;
+                    displayStudents();
+                };
+                buttonsContainer.appendChild(nextButton);
+            }
+
+            paginationContainer.appendChild(buttonsContainer);
+
+            // Quick jump for desktop
+            if (totalPages > 10) {
+                const jumpContainer = document.createElement('div');
+                jumpContainer.className = 'hidden sm:flex items-center space-x-2 ml-4';
+                
+                const jumpLabel = document.createElement('span');
+                jumpLabel.textContent = 'Ke halaman:';
+                jumpLabel.className = 'text-sm text-gray-600';
+                jumpContainer.appendChild(jumpLabel);
+
+                const jumpInput = document.createElement('input');
+                jumpInput.type = 'number';
+                jumpInput.min = '1';
+                jumpInput.max = totalPages;
+                jumpInput.value = currentPage;
+                jumpInput.className = 'w-16 px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-blue-500';
+                jumpInput.onchange = (e) => {
+                    const page = parseInt(e.target.value);
+                    if (page >= 1 && page <= totalPages) {
+                        currentPage = page;
+                        displayStudents();
+                    }
+                };
+                jumpContainer.appendChild(jumpInput);
+
+                paginationContainer.appendChild(jumpContainer);
+            }
+
+            pagination.appendChild(paginationContainer);
         }
 
         function filterStudents() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const jurusanFilter = document.getElementById('jurusanFilter').value;
             const tahunFilter = document.getElementById('tahunFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
 
             filteredData = studentsData.filter(student => {
                 const matchesSearch = !searchTerm || 
@@ -878,13 +1184,26 @@
                 
                 const matchesJurusan = !jurusanFilter || student.JURUSAN === jurusanFilter;
                 const matchesTahun = !tahunFilter || student['TAHUN MASUK'] === tahunFilter;
+                
+                // Status filter logic
+                let matchesStatus = true;
+                if (statusFilter) {
+                    const studentStatus = getStudentStatus(student).toString().trim();
+                    if (statusFilter === 'aktif') {
+                        matchesStatus = studentStatus === '1' || studentStatus.toLowerCase() === 'aktif' || studentStatus.toLowerCase() === 'true' || studentStatus.toLowerCase() === 'ya';
+                    } else if (statusFilter === 'tidak aktif') {
+                        matchesStatus = studentStatus === '0' || studentStatus.toLowerCase() === 'tidak aktif' || studentStatus.toLowerCase() === 'false' || studentStatus.toLowerCase() === 'tidak' || studentStatus.toLowerCase() === 'nonaktif' || studentStatus === '';
+                    }
+                }
 
-                return matchesSearch && matchesJurusan && matchesTahun;
+                return matchesSearch && matchesJurusan && matchesTahun && matchesStatus;
             });
 
             currentPage = 1;
             displayStudents();
         }
+
+
 
         function showElements() {
             document.getElementById('loading').classList.add('hidden');
@@ -899,16 +1218,116 @@
         }
 
         function getStatusText(status) {
-            const statusMap = {
-                'lunas': 'Lunas',
-                'unpaid': 'Belum Bayar',
-                'mencicil': 'Mencicil',
-                'kelebihan': 'Kelebihan'
-            };
-            return statusMap[status] || 'Belum Bayar';
+            // For payment status
+            if (typeof status === 'string' && ['lunas', 'unpaid', 'mencicil', 'kelebihan'].includes(status)) {
+                const statusMap = {
+                    'lunas': 'Lunas',
+                    'unpaid': 'Belum Bayar',
+                    'mencicil': 'Mencicil',
+                    'kelebihan': 'Kelebihan'
+                };
+                return statusMap[status] || 'Belum Bayar';
+            }
+            
+            // For student active status
+            const statusText = (status || '').toString().trim();
+            if (statusText === '1' || statusText.toLowerCase() === 'aktif' || statusText.toLowerCase() === 'true' || statusText.toLowerCase() === 'ya') {
+                return 'Aktif';
+            } else if (statusText === '0' || statusText.toLowerCase() === 'tidak aktif' || statusText.toLowerCase() === 'false' || statusText.toLowerCase() === 'tidak' || statusText.toLowerCase() === 'nonaktif') {
+                return 'Tidak Aktif';
+            } else {
+                return 'Status Tidak Diketahui';
+            }
         }
 
         // Excel Download Functions
+        function downloadFilteredExcel() {
+            if (!filteredData || filteredData.length === 0) {
+                alert('Tidak ada data yang sesuai dengan filter untuk diunduh');
+                return;
+            }
+
+            // Get current filter values for filename
+            const searchTerm = document.getElementById('searchInput').value;
+            const jurusanFilter = document.getElementById('jurusanFilter').value;
+            const tahunFilter = document.getElementById('tahunFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const excelData = filteredData.map(student => {
+                const baseInfo = {
+                    'NAMA': student.NAMA || '',
+                    'NISN': student.NISN || '',
+                    'JENIS KELAMIN': student['JENIS KELAMIN'] || '',
+                    'TAHUN MASUK': student['TAHUN MASUK'] || '',
+                    'KELAS SAAT INI': calculateCurrentClass(student['TAHUN MASUK']),
+                    'JURUSAN': student.JURUSAN || '',
+                    'STATUS': getStatusText(getStudentStatus(student))
+                };
+
+                // Add all payment data
+                Object.keys(TARIF_STANDAR).forEach(key => {
+                    const amount = student[key] || '';
+                    const date = student[`tgl_${key}`] || '';
+                    const validation = validatePaymentAmount(key, amount);
+                    
+                    baseInfo[`${key.toUpperCase()} - Jumlah`] = amount ? `Rp ${parseFloat(amount).toLocaleString('id-ID')}` : '';
+                    baseInfo[`${key.toUpperCase()} - Tanggal`] = date;
+                    baseInfo[`${key.toUpperCase()} - Status`] = getStatusText(validation.status);
+                    baseInfo[`${key.toUpperCase()} - Tarif`] = `Rp ${validation.standard.toLocaleString('id-ID')}`;
+                });
+
+                return baseInfo;
+            });
+
+            const wb = XLSX.utils.book_new();
+            
+            // Add filter information sheet
+            const filterInfo = [
+                { 'Filter': 'Pencarian', 'Nilai': searchTerm || 'Semua' },
+                { 'Filter': 'Jurusan', 'Nilai': jurusanFilter || 'Semua' },
+                { 'Filter': 'Tahun Masuk', 'Nilai': tahunFilter || 'Semua' },
+                { 'Filter': 'Status', 'Nilai': statusFilter || 'Semua' },
+                { 'Filter': '', 'Nilai': '' },
+                { 'Filter': 'Total Data Ditemukan', 'Nilai': filteredData.length + ' siswa' },
+                { 'Filter': 'Tanggal Download', 'Nilai': new Date().toLocaleString('id-ID') }
+            ];
+
+            const wsFilter = XLSX.utils.json_to_sheet(filterInfo);
+            wsFilter['!cols'] = [{ wch: 20 }, { wch: 30 }];
+            XLSX.utils.book_append_sheet(wb, wsFilter, 'Info Filter');
+
+            // Add main data sheet
+            const ws = XLSX.utils.json_to_sheet(excelData);
+
+            const colWidths = [];
+            const headers = Object.keys(excelData[0] || {});
+            headers.forEach((header, index) => {
+                let maxWidth = header.length;
+                excelData.forEach(row => {
+                    const cellValue = String(row[header] || '');
+                    maxWidth = Math.max(maxWidth, cellValue.length);
+                });
+                colWidths[index] = { wch: Math.min(maxWidth + 2, 50) };
+            });
+            ws['!cols'] = colWidths;
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Data Pembayaran Siswa');
+
+            // Generate filename with filter info
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            let filterSuffix = '';
+            
+            if (jurusanFilter) filterSuffix += `_${jurusanFilter.replace(/[^a-zA-Z0-9]/g, '')}`;
+            if (tahunFilter) filterSuffix += `_${tahunFilter.replace(/[^a-zA-Z0-9]/g, '')}`;
+            if (statusFilter) filterSuffix += `_${statusFilter.replace(/[^a-zA-Z0-9]/g, '')}`;
+            if (searchTerm) filterSuffix += `_Pencarian`;
+            
+            const filename = `Data_Pembayaran_Filter${filterSuffix}_${dateStr}.xlsx`;
+
+            XLSX.writeFile(wb, filename);
+        }
+
         function downloadExcel() {
             if (!studentsData || studentsData.length === 0) {
                 alert('Tidak ada data untuk diunduh');
@@ -922,7 +1341,8 @@
                     'JENIS KELAMIN': student['JENIS KELAMIN'] || '',
                     'TAHUN MASUK': student['TAHUN MASUK'] || '',
                     'KELAS SAAT INI': calculateCurrentClass(student['TAHUN MASUK']),
-                    'JURUSAN': student.JURUSAN || ''
+                    'JURUSAN': student.JURUSAN || '',
+                    'STATUS': getStatusText(getStudentStatus(student))
                 };
 
                 // Add all payment data
@@ -1041,6 +1461,18 @@
                 'Kategori': 'INFORMASI SISWA',
                 'Jenis Pembayaran': 'Jurusan',
                 'Periode': student.JURUSAN || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Status Siswa',
+                'Periode': getStatusText(getStudentStatus(student)),
                 'Tarif Standar': '',
                 'Jumlah Dibayar': '',
                 'Tanggal Pembayaran': '',
@@ -1269,9 +1701,10 @@
         document.getElementById('searchInput').addEventListener('input', filterStudents);
         document.getElementById('jurusanFilter').addEventListener('change', filterStudents);
         document.getElementById('tahunFilter').addEventListener('change', filterStudents);
+        document.getElementById('statusFilter').addEventListener('change', filterStudents);
 
         // Initialize
         loadStudentData();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ed0227b5ddf8f8',t:'MTc1NzgyMjc1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97f36b8d567afdca',t:'MTc1Nzg4OTk4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
