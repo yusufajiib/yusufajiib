@@ -77,13 +77,20 @@
                     </select>
                 </div>
             </div>
-            <div class="flex justify-end">
+            <div class="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
+                <button onclick="downloadFilteredExcel()" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
+                    </svg>
+                    <span>Download Sesuai Filter</span>
+                </button>
                 <button onclick="downloadExcel()" 
                         class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    <span>Download Excel</span>
+                    <span>Download Semua Data</span>
                 </button>
             </div>
         </div>
@@ -1158,6 +1165,93 @@
         }
 
         // Excel Download Functions
+        function downloadFilteredExcel() {
+            if (!filteredData || filteredData.length === 0) {
+                alert('Tidak ada data yang sesuai dengan filter untuk diunduh');
+                return;
+            }
+
+            // Get current filter values for filename
+            const searchTerm = document.getElementById('searchInput').value;
+            const jurusanFilter = document.getElementById('jurusanFilter').value;
+            const tahunFilter = document.getElementById('tahunFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const excelData = filteredData.map(student => {
+                const baseInfo = {
+                    'NAMA': student.NAMA || '',
+                    'NISN': student.NISN || '',
+                    'JENIS KELAMIN': student['JENIS KELAMIN'] || '',
+                    'TAHUN MASUK': student['TAHUN MASUK'] || '',
+                    'KELAS SAAT INI': calculateCurrentClass(student['TAHUN MASUK']),
+                    'JURUSAN': student.JURUSAN || '',
+                    'STATUS': getStatusText(getStudentStatus(student))
+                };
+
+                // Add all payment data
+                Object.keys(TARIF_STANDAR).forEach(key => {
+                    const amount = student[key] || '';
+                    const date = student[`tgl_${key}`] || '';
+                    const validation = validatePaymentAmount(key, amount);
+                    
+                    baseInfo[`${key.toUpperCase()} - Jumlah`] = amount ? `Rp ${parseFloat(amount).toLocaleString('id-ID')}` : '';
+                    baseInfo[`${key.toUpperCase()} - Tanggal`] = date;
+                    baseInfo[`${key.toUpperCase()} - Status`] = getStatusText(validation.status);
+                    baseInfo[`${key.toUpperCase()} - Tarif`] = `Rp ${validation.standard.toLocaleString('id-ID')}`;
+                });
+
+                return baseInfo;
+            });
+
+            const wb = XLSX.utils.book_new();
+            
+            // Add filter information sheet
+            const filterInfo = [
+                { 'Filter': 'Pencarian', 'Nilai': searchTerm || 'Semua' },
+                { 'Filter': 'Jurusan', 'Nilai': jurusanFilter || 'Semua' },
+                { 'Filter': 'Tahun Masuk', 'Nilai': tahunFilter || 'Semua' },
+                { 'Filter': 'Status', 'Nilai': statusFilter || 'Semua' },
+                { 'Filter': '', 'Nilai': '' },
+                { 'Filter': 'Total Data Ditemukan', 'Nilai': filteredData.length + ' siswa' },
+                { 'Filter': 'Tanggal Download', 'Nilai': new Date().toLocaleString('id-ID') }
+            ];
+
+            const wsFilter = XLSX.utils.json_to_sheet(filterInfo);
+            wsFilter['!cols'] = [{ wch: 20 }, { wch: 30 }];
+            XLSX.utils.book_append_sheet(wb, wsFilter, 'Info Filter');
+
+            // Add main data sheet
+            const ws = XLSX.utils.json_to_sheet(excelData);
+
+            const colWidths = [];
+            const headers = Object.keys(excelData[0] || {});
+            headers.forEach((header, index) => {
+                let maxWidth = header.length;
+                excelData.forEach(row => {
+                    const cellValue = String(row[header] || '');
+                    maxWidth = Math.max(maxWidth, cellValue.length);
+                });
+                colWidths[index] = { wch: Math.min(maxWidth + 2, 50) };
+            });
+            ws['!cols'] = colWidths;
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Data Pembayaran Siswa');
+
+            // Generate filename with filter info
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+            let filterSuffix = '';
+            
+            if (jurusanFilter) filterSuffix += `_${jurusanFilter.replace(/[^a-zA-Z0-9]/g, '')}`;
+            if (tahunFilter) filterSuffix += `_${tahunFilter.replace(/[^a-zA-Z0-9]/g, '')}`;
+            if (statusFilter) filterSuffix += `_${statusFilter.replace(/[^a-zA-Z0-9]/g, '')}`;
+            if (searchTerm) filterSuffix += `_Pencarian`;
+            
+            const filename = `Data_Pembayaran_Filter${filterSuffix}_${dateStr}.xlsx`;
+
+            XLSX.writeFile(wb, filename);
+        }
+
         function downloadExcel() {
             if (!studentsData || studentsData.length === 0) {
                 alert('Tidak ada data untuk diunduh');
@@ -1536,5 +1630,5 @@
         // Initialize
         loadStudentData();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ee83bdb7d964ca',t:'MTc1NzgzODU0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97eed030e6a2d899',t:'MTc1Nzg0MTY3Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
