@@ -77,7 +77,7 @@
         </div>
 
         <!-- Students List -->
-        <div id="studentsList" class="hidden space-y-6"></div>
+        <div id="studentsList" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
 
         <!-- Pagination -->
         <div id="pagination" class="hidden flex justify-center mt-8 space-x-2"></div>
@@ -360,38 +360,32 @@
 
         function createStudentCard(student) {
             return `
-                <div class="student-card bg-white rounded-lg shadow-md overflow-hidden">
-                    <div class="p-6">
-                        <div class="flex flex-col lg:flex-row lg:items-start lg:space-x-6">
-                            <!-- Student Photo -->
-                            <div class="flex-shrink-0 mb-4 lg:mb-0 flex justify-center lg:justify-start">
-                                ${createStudentPhoto(student)}
-                            </div>
-                            
-                            <div class="flex-grow">
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                                    <!-- Basic Info -->
-                                    <div>
-                                        <h3 class="text-xl font-bold text-gray-800 mb-2">${student.NAMA || 'Nama tidak tersedia'}</h3>
-                                        <div class="space-y-1 text-sm text-gray-600">
-                                            <p><span class="font-medium">NISN:</span> ${student.NISN || '-'}</p>
-                                            <p><span class="font-medium">Jenis Kelamin:</span> ${student['JENIS KELAMIN'] || '-'}</p>
-                                            <p><span class="font-medium">Tahun Masuk:</span> ${student['TAHUN MASUK'] || '-'}</p>
-                                            <p><span class="font-medium">Kelas:</span> ${calculateCurrentClass(student['TAHUN MASUK'])}</p>
-                                            <p><span class="font-medium">Jurusan:</span> ${student.JURUSAN || '-'}</p>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Action Button -->
-                                    <div>
-                                        <button onclick="showDetailModal('${student.NISN}')" 
-                                                class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                                            Lihat Detail Pembayaran
-                                        </button>
-                                    </div>
-                                </div>
+                <div class="student-card bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
+                    <div class="p-6 flex-grow">
+                        <!-- Student Photo -->
+                        <div class="flex justify-center mb-4">
+                            ${createStudentPhoto(student)}
+                        </div>
+                        
+                        <!-- Student Info -->
+                        <div class="text-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800 mb-3 leading-tight">${student.NAMA || 'Nama tidak tersedia'}</h3>
+                            <div class="space-y-2 text-sm text-gray-600">
+                                <p><span class="font-medium">NISN:</span> ${student.NISN || '-'}</p>
+                                <p><span class="font-medium">Jenis Kelamin:</span> ${student['JENIS KELAMIN'] || '-'}</p>
+                                <p><span class="font-medium">Tahun Masuk:</span> ${student['TAHUN MASUK'] || '-'}</p>
+                                <p><span class="font-medium">Kelas:</span> ${calculateCurrentClass(student['TAHUN MASUK'])}</p>
+                                <p><span class="font-medium">Jurusan:</span> ${student.JURUSAN || '-'}</p>
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Action Button -->
+                    <div class="p-6 pt-0">
+                        <button onclick="showDetailModal('${student.NISN}')" 
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                            Lihat Detail Pembayaran
+                        </button>
                     </div>
                 </div>
             `;
@@ -1279,5 +1273,5 @@
         // Initialize
         loadStudentData();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ddfc0226b95f4e',t:'MTc1NzY2NTIxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97ed0227b5ddf8f8',t:'MTc1NzgyMjc1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
