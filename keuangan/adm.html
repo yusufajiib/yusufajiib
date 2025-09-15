@@ -215,7 +215,7 @@
                         <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
                             <div class="text-2xl font-bold text-slate-600" id="inactiveStudents">0</div>
                             <div class="text-xs text-slate-600 font-medium">Tidak Aktif</div>
-                            <div class="text-xs text-gray-500 mt-1">Status Alumni</div>
+                            <div class="text-xs text-gray-500 mt-1">Status nonaktif</div>
                         </div>
                     </div>
                 </div>
@@ -454,6 +454,93 @@
             }
         }
 
+        // Function to calculate age from birth date
+        function calculateAge(birthDate) {
+            if (!birthDate || birthDate.trim() === '') return null;
+            
+            try {
+                let parsedDate;
+                const dateStr = birthDate.toString().trim();
+                
+                // Try different date formats
+                const formats = [
+                    // DD/MM/YYYY or DD-MM-YYYY
+                    /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/,
+                    // YYYY/MM/DD or YYYY-MM-DD
+                    /^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/,
+                    // DD/MM/YY or DD-MM-YY
+                    /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2})$/
+                ];
+                
+                // Try DD/MM/YYYY format first (common in Indonesia)
+                const ddmmyyyy = dateStr.match(formats[0]);
+                if (ddmmyyyy) {
+                    const day = parseInt(ddmmyyyy[1]);
+                    const month = parseInt(ddmmyyyy[2]) - 1; // Month is 0-indexed
+                    const year = parseInt(ddmmyyyy[3]);
+                    parsedDate = new Date(year, month, day);
+                }
+                // Try YYYY/MM/DD format
+                else if (dateStr.match(formats[1])) {
+                    parsedDate = new Date(dateStr.replace(/[\/\-]/g, '-'));
+                }
+                // Try DD/MM/YY format
+                else if (dateStr.match(formats[2])) {
+                    const ddmmyy = dateStr.match(formats[2]);
+                    const day = parseInt(ddmmyy[1]);
+                    const month = parseInt(ddmmyy[2]) - 1;
+                    let year = parseInt(ddmmyy[3]);
+                    // Assume years 00-30 are 2000s, 31-99 are 1900s
+                    year = year <= 30 ? 2000 + year : 1900 + year;
+                    parsedDate = new Date(year, month, day);
+                }
+                // Try direct parsing as fallback
+                else {
+                    parsedDate = new Date(dateStr);
+                }
+                
+                // Check if date is valid
+                if (isNaN(parsedDate.getTime())) {
+                    return null;
+                }
+                
+                // Calculate age
+                const today = new Date();
+                let age = today.getFullYear() - parsedDate.getFullYear();
+                const monthDiff = today.getMonth() - parsedDate.getMonth();
+                
+                // Adjust age if birthday hasn't occurred this year
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < parsedDate.getDate())) {
+                    age--;
+                }
+                
+                // Validate reasonable age range (5-100 years)
+                if (age < 5 || age > 100) {
+                    return null;
+                }
+                
+                return age;
+            } catch (error) {
+                console.warn('Error parsing birth date:', birthDate, error);
+                return null;
+            }
+        }
+
+        // Function to format gender with age
+        function formatGenderWithAge(student) {
+            const gender = student['JENIS KELAMIN'] || '-';
+            const birthDate = student['lahir'] || student['LAHIR'] || '';
+            
+            let genderText = gender;
+            const age = calculateAge(birthDate);
+            
+            if (age !== null) {
+                genderText += ` (${age} tahun)`;
+            }
+            
+            return genderText;
+        }
+
         async function loadTransactionData() {
             try {
                 const url = `https://sheets.googleapis.com/v4/spreadsheets/${CONFIG.SHEET_ID}/values/${CONFIG.TRANSACTION_SHEET}?key=${CONFIG.API_KEY}`;
@@ -689,7 +776,7 @@
                             
                             <div class="space-y-2 text-sm text-gray-600">
                                 <p><span class="font-medium">NISN:</span> ${student.NISN || '-'}</p>
-                                <p><span class="font-medium">Jenis Kelamin:</span> ${student['JENIS KELAMIN'] || '-'}</p>
+                                <p><span class="font-medium">Jenis Kelamin:</span> ${formatGenderWithAge(student)}</p>
                                 <p><span class="font-medium">Tahun Masuk:</span> ${student['TAHUN MASUK'] || '-'}</p>
                                 <p><span class="font-medium">Kelas:</span> ${calculateCurrentClass(student['TAHUN MASUK'])}</p>
                                 <p><span class="font-medium">Jurusan:</span> ${student.JURUSAN || '-'}</p>
@@ -1481,7 +1568,9 @@
                 const baseInfo = {
                     'NAMA': student.NAMA || '',
                     'NISN': student.NISN || '',
-                    'JENIS KELAMIN': student['JENIS KELAMIN'] || '',
+                    'JENIS KELAMIN': formatGenderWithAge(student),
+                    'TANGGAL LAHIR': student['lahir'] || student['LAHIR'] || '',
+                    'USIA': calculateAge(student['lahir'] || student['LAHIR'] || '') || '',
                     'TAHUN MASUK': student['TAHUN MASUK'] || '',
                     'KELAS SAAT INI': calculateCurrentClass(student['TAHUN MASUK']),
                     'JURUSAN': student.JURUSAN || '',
@@ -1562,7 +1651,9 @@
                 const baseInfo = {
                     'NAMA': student.NAMA || '',
                     'NISN': student.NISN || '',
-                    'JENIS KELAMIN': student['JENIS KELAMIN'] || '',
+                    'JENIS KELAMIN': formatGenderWithAge(student),
+                    'TANGGAL LAHIR': student['lahir'] || student['LAHIR'] || '',
+                    'USIA': calculateAge(student['lahir'] || student['LAHIR'] || '') || '',
                     'TAHUN MASUK': student['TAHUN MASUK'] || '',
                     'KELAS SAAT INI': calculateCurrentClass(student['TAHUN MASUK']),
                     'JURUSAN': student.JURUSAN || '',
@@ -1648,7 +1739,32 @@
             paymentData.push({
                 'Kategori': 'INFORMASI SISWA',
                 'Jenis Pembayaran': 'Jenis Kelamin',
-                'Periode': student['JENIS KELAMIN'] || '-',
+                'Periode': formatGenderWithAge(student),
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Tanggal Lahir',
+                'Periode': student['lahir'] || student['LAHIR'] || '-',
+                'Tarif Standar': '',
+                'Jumlah Dibayar': '',
+                'Tanggal Pembayaran': '',
+                'Status': '',
+                'Selisih': '',
+                'Keterangan': ''
+            });
+
+            const studentAge = calculateAge(student['lahir'] || student['LAHIR'] || '');
+            paymentData.push({
+                'Kategori': 'INFORMASI SISWA',
+                'Jenis Pembayaran': 'Usia',
+                'Periode': studentAge ? studentAge + ' tahun' : '-',
                 'Tarif Standar': '',
                 'Jumlah Dibayar': '',
                 'Tanggal Pembayaran': '',
@@ -1930,5 +2046,5 @@
         // Initialize
         loadStudentData();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97f377b15777ce3a',t:'MTc1Nzg5MDQ4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97f5d5ae26b087c6',t:'MTc1NzkxNTMwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
