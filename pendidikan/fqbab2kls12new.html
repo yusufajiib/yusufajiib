@@ -37,6 +37,71 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        
+        .correct-answer {
+            animation: correctZoom 0.8s ease-in-out;
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            color: white !important;
+            border-color: #059669 !important;
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .wrong-answer {
+            animation: wrongShake 0.5s ease-in-out;
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+            color: white !important;
+            border-color: #dc2626 !important;
+        }
+        
+        .correct-text-answer {
+            animation: correctZoom 0.8s ease-in-out;
+            background: linear-gradient(135deg, #10b981, #059669) !important;
+            color: white !important;
+            border-color: #059669 !important;
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .wrong-text-answer {
+            animation: wrongShake 0.5s ease-in-out;
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+            color: white !important;
+            border-color: #dc2626 !important;
+        }
+        
+        @keyframes correctZoom {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1.05); }
+        }
+        
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+            20%, 40%, 60%, 80% { transform: translateX(8px); }
+        }
+        
+        .answer-reveal {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border-radius: 0.75rem;
+            animation: slideDown 0.6s ease-out;
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+        
+        @keyframes slideDown {
+            from { 
+                opacity: 0; 
+                transform: translateY(-20px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
@@ -808,6 +873,10 @@
                 }
                 userAnswer = parseInt(selected.value);
                 isCorrect = userAnswer === question.correct;
+                
+                // Show answer with zoom effect for multiple choice
+                showMultipleChoiceAnswer(userAnswer, question.correct);
+                
             } else if (question.type === "Isian") {
                 userAnswer = document.getElementById('fillAnswer').value.trim();
                 if (!userAnswer) {
@@ -815,6 +884,10 @@
                     return;
                 }
                 isCorrect = userAnswer.toLowerCase() === question.correct.toLowerCase();
+                
+                // Show answer with zoom effect for fill-in-the-blank
+                showTextAnswer(userAnswer, question.correct, isCorrect);
+                
             } else if (question.type === "Essay") {
                 userAnswer = document.getElementById('essayAnswer').value.trim();
                 const wordCount = userAnswer.split(/\s+/).filter(word => word.length > 0).length;
@@ -824,6 +897,9 @@
                 }
                 // For essay, we'll mark as correct if it has sufficient words (in real scenario, manual grading needed)
                 isCorrect = wordCount >= 50;
+                
+                // Show answer with zoom effect for essay
+                showEssayAnswer(userAnswer, question.correct, isCorrect);
             }
 
             answers.push({
@@ -837,7 +913,93 @@
                 score++;
             }
 
-            showFeedback(isCorrect, question.explanation);
+            // Disable submit button and show feedback after delay
+            document.getElementById('submitAnswer').disabled = true;
+            setTimeout(() => {
+                showFeedback(isCorrect, question.explanation);
+            }, 1500);
+        }
+
+        function showMultipleChoiceAnswer(userAnswer, correctAnswer) {
+            const labels = document.querySelectorAll('label');
+            
+            labels.forEach((label, index) => {
+                const input = label.querySelector('input');
+                input.disabled = true;
+                
+                if (index === correctAnswer) {
+                    label.classList.add('correct-answer');
+                } else if (index === userAnswer && userAnswer !== correctAnswer) {
+                    label.classList.add('wrong-answer');
+                }
+            });
+            
+            // Show correct answer explanation
+            const optionsContainer = document.getElementById('answerOptions');
+            const answerReveal = document.createElement('div');
+            answerReveal.className = 'answer-reveal';
+            answerReveal.innerHTML = `
+                <div class="flex items-center mb-2">
+                    <span class="text-2xl mr-2">✅</span>
+                    <strong>Jawaban Benar: ${String.fromCharCode(65 + correctAnswer)}</strong>
+                </div>
+                <p class="text-sm opacity-90">${quizData[currentQuestion].options[correctAnswer]}</p>
+            `;
+            optionsContainer.appendChild(answerReveal);
+        }
+
+        function showTextAnswer(userAnswer, correctAnswer, isCorrect) {
+            const inputElement = document.getElementById('fillAnswer') || document.getElementById('essayAnswer');
+            inputElement.disabled = true;
+            
+            if (isCorrect) {
+                inputElement.classList.add('correct-text-answer');
+            } else {
+                inputElement.classList.add('wrong-text-answer');
+            }
+            
+            // Show correct answer explanation
+            const optionsContainer = document.getElementById('answerOptions');
+            const answerReveal = document.createElement('div');
+            answerReveal.className = 'answer-reveal';
+            answerReveal.innerHTML = `
+                <div class="flex items-center mb-2">
+                    <span class="text-2xl mr-2">${isCorrect ? '✅' : '❌'}</span>
+                    <strong>${isCorrect ? 'Jawaban Anda Benar!' : 'Jawaban Benar:'}</strong>
+                </div>
+                ${!isCorrect ? `<p class="text-sm opacity-90 mb-2"><strong>Jawaban yang benar:</strong> ${correctAnswer}</p>` : ''}
+                <p class="text-sm opacity-90"><strong>Jawaban Anda:</strong> ${userAnswer}</p>
+            `;
+            optionsContainer.appendChild(answerReveal);
+        }
+
+        function showEssayAnswer(userAnswer, correctAnswer, isCorrect) {
+            const textareaElement = document.getElementById('essayAnswer');
+            textareaElement.disabled = true;
+            
+            if (isCorrect) {
+                textareaElement.classList.add('correct-text-answer');
+            } else {
+                textareaElement.classList.add('wrong-text-answer');
+            }
+            
+            // Show model answer for essay
+            const optionsContainer = document.getElementById('answerOptions');
+            const answerReveal = document.createElement('div');
+            answerReveal.className = 'answer-reveal';
+            answerReveal.innerHTML = `
+                <div class="flex items-center mb-3">
+                    <span class="text-2xl mr-2">📝</span>
+                    <strong>Contoh Jawaban yang Baik:</strong>
+                </div>
+                <div class="bg-white bg-opacity-20 p-3 rounded-lg text-sm">
+                    ${correctAnswer}
+                </div>
+                <div class="mt-3 text-sm opacity-90">
+                    <strong>Status:</strong> ${isCorrect ? '✅ Jawaban Anda memenuhi kriteria (minimal 50 kata)' : '❌ Jawaban Anda kurang memenuhi kriteria'}
+                </div>
+            `;
+            optionsContainer.appendChild(answerReveal);
         }
 
         function showFeedback(isCorrect, explanation) {
@@ -866,6 +1028,9 @@
         function nextQuestion() {
             document.getElementById('feedbackModal').classList.add('hidden');
             document.getElementById('questionCard').classList.remove('celebration', 'sad-shake', 'fade-in');
+            
+            // Reset submit button
+            document.getElementById('submitAnswer').disabled = false;
             
             currentQuestion++;
             
@@ -925,5 +1090,5 @@
             document.getElementById('chapterName').innerHTML = '<option value="">Pilih mata pelajaran terlebih dahulu</option>';
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97fd2f0484e7fd8d',t:'MTc1Nzk5MjM2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97fd6633e4b2fd1c',t:'MTc1Nzk5NDYyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
