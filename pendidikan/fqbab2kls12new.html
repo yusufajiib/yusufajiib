@@ -117,56 +117,16 @@
         <!-- Student Info Form -->
         <div id="studentForm" class="bg-white rounded-xl shadow-lg p-8 mb-8">
             <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">📝 Data Siswa</h2>
-            <div class="grid md:grid-cols-2 gap-4 mb-4">
+            <div class="mb-6 text-center">
+                <div class="bg-indigo-50 rounded-lg p-4 mb-4">
+                    <h3 class="text-lg font-semibold text-indigo-800 mb-2">📚 Quiz Fikih</h3>
+                    <p class="text-indigo-600">Kelas XII - Bab 2: Sumber Hukum Islam</p>
+                </div>
+            </div>
+            <div class="max-w-md mx-auto">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
                     <input type="text" id="studentName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Masukkan nama Anda">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Kelas</label>
-                    <select id="studentClass" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                        <option value="">Pilih Kelas</option>
-                        <option value="X IPA 1">X IPA 1</option>
-                        <option value="X IPA 2">X IPA 2</option>
-                        <option value="X IPS 1">X IPS 1</option>
-                        <option value="X IPS 2">X IPS 2</option>
-                        <option value="XI IPA 1">XI IPA 1</option>
-                        <option value="XI IPA 2">XI IPA 2</option>
-                        <option value="XI IPS 1">XI IPS 1</option>
-                        <option value="XI IPS 2">XI IPS 2</option>
-                        <option value="XII IPA 1">XII IPA 1</option>
-                        <option value="XII IPA 2">XII IPA 2</option>
-                        <option value="XII IPS 1">XII IPS 1</option>
-                        <option value="XII IPS 2">XII IPS 2</option>
-                    </select>
-                </div>
-            </div>
-            <div class="grid md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Mata Pelajaran</label>
-                    <select id="subjectName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" onchange="updateChapters()">
-                        <option value="">Pilih Mata Pelajaran</option>
-                        <option value="Fisika">Fisika</option>
-                        <option value="Kimia">Kimia</option>
-                        <option value="Biologi">Biologi</option>
-                        <option value="Matematika">Matematika</option>
-                        <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-                        <option value="Bahasa Inggris">Bahasa Inggris</option>
-                        <option value="Sejarah">Sejarah</option>
-                        <option value="Geografi">Geografi</option>
-                        <option value="Ekonomi">Ekonomi</option>
-                        <option value="Sosiologi">Sosiologi</option>
-                        <option value="Quran Hadist">Quran Hadist</option>
-                        <option value="Fikih">Fikih</option>
-                        <option value="Akidah Akhlaq">Akidah Akhlaq</option>
-                        <option value="Sejarah Kebudayaan Islam">Sejarah Kebudayaan Islam</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Bab Materi</label>
-                    <select id="chapterName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" disabled>
-                        <option value="">Pilih mata pelajaran terlebih dahulu</option>
-                    </select>
                 </div>
             </div>
             <button onclick="startQuiz()" class="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105">
@@ -696,123 +656,22 @@
         let answers = [];
         let studentData = {};
 
-        // Subject chapters data - simplified to just chapter numbers
-        const subjectChapters = {
-            "Fisika": [
-                "Bab 1", "Bab 2", "Bab 3", "Bab 4", "Bab 5",
-                "Bab 6", "Bab 7", "Bab 8", "Bab 9", "Bab 10",
-                "Bab 11", "Bab 12", "Bab 13", "Bab 14", "Bab 15",
-                "Bab 16", "Bab 17", "Bab 18", "Bab 19", "Bab 20"
-            ],
-            "Kimia": [
-                "Bab 1", "Bab 2", "Bab 3", "Bab 4", "Bab 5",
-                "Bab 6", "Bab 7", "Bab 8", "Bab 9", "Bab 10",
-                "Bab 11", "Bab 12", "Bab 13", "Bab 14", "Bab 15",
-                "Bab 16", "Bab 17", "Bab 18", "Bab 19", "Bab 20"
-            ],
-            "Biologi": [
-                "Bab 1", "Bab 2", "Bab 3", "Bab 4", "Bab 5",
-                "Bab 6", "Bab 7", "Bab 8", "Bab 9", "Bab 10",
-                "Bab 11", "Bab 12", "Bab 13", "Bab 14", "Bab 15",
-                "Bab 16", "Bab 17", "Bab 18", "Bab 19", "Bab 20"
-            ],
-            "Matematika": [
-                "Bab 1", "Bab 2", "Bab 3", "Bab 4", "Bab 5",
-                "Bab 6", "Bab 7", "Bab 8", "Bab 9", "Bab 10",
-                "Bab 11", "Bab 12", "Bab 13", "Bab 14", "Bab 15",
-                "Bab 16", "Bab 17", "Bab 18", "Bab 19", "Bab 20"
-            ],
-            "Bahasa Indonesia": [
-                "Bab 1", "Bab 2", "Bab 3", "Bab 4", "Bab 5",
-                "Bab 6", "Bab 7", "Bab 8", "Bab 9", "Bab 10",
-                "Bab 11", "Bab 12", "Bab 13", "Bab 14", "Bab 15",
-                "Bab 16", "Bab 17", "Bab 18", "Bab 19", "Bab 20"
-            ],
-            "Bahasa Inggris": [
-                "Bab 1", "Bab 2", "Bab 3", "Bab 4", "Bab 5",
-                "Bab 6", "Bab 7", "Bab 8", "Bab 9", "Bab 10",
-                "Bab 11", "Bab 12", "Bab 13", "Bab 14", "Bab 15",
-                "Bab 16", "Bab 17", "Bab 18", "Bab 19", "Bab 20"
-            ],
-            "Sejarah": [
-                "Bab 1", "Bab 2", "Bab 3", "Bab 4", "Bab 5",
-                "Bab 6", "Bab 7", "Bab 8", "Bab 9", "Bab 10",
-                "Bab 11", "Bab 12", "Bab 13", "Bab 14", "Bab 15",
-                "Bab 16", "Bab 17", "Bab 18", "Bab 19", "Bab 20"
-            ],
-            "Geografi": [
-                "Bab 1", "Bab 2", "Bab 3", "Bab 4", "Bab 5",
-                "Bab 6", "Bab 7", "Bab 8", "Bab 9", "Bab 10",
-                "Bab 11", "Bab 12", "Bab 13", "Bab 14", "Bab 15",
-                "Bab 16", "Bab 17", "Bab 18", "Bab 19", "Bab 20"
-            ],
-            "Ekonomi": [
-                "Bab 1", "Bab 2", "Bab 3", "Bab 4", "Bab 5",
-                "Bab 6", "Bab 7", "Bab 8", "Bab 9", "Bab 10",
-                "Bab 11", "Bab 12", "Bab 13", "Bab 14", "Bab 15",
-                "Bab 16", "Bab 17", "Bab 18", "Bab 19", "Bab 20"
-            ],
-            "Sosiologi": [
-                "Bab 1", "Bab 2", "Bab 3", "Bab 4", "Bab 5",
-                "Bab 6", "Bab 7", "Bab 8", "Bab 9", "Bab 10",
-                "Bab 11", "Bab 12", "Bab 13", "Bab 14", "Bab 15",
-                "Bab 16", "Bab 17", "Bab 18", "Bab 19", "Bab 20"
-            ],
-            "Quran Hadist": [
-                "Bab 1", "Bab 2", "Bab 3", "Bab 4", "Bab 5",
-                "Bab 6", "Bab 7", "Bab 8", "Bab 9", "Bab 10",
-                "Bab 11", "Bab 12", "Bab 13", "Bab 14", "Bab 15",
-                "Bab 16", "Bab 17", "Bab 18", "Bab 19", "Bab 20"
-            ],
-            "Fikih": [
-                "Bab 1 - Pengantar Ushul Fiqih", "Bab 2 - Sumber Hukum Islam", "Bab 3 - Al-Qur'an sebagai Sumber Hukum", "Bab 4 - As-Sunnah sebagai Sumber Hukum", "Bab 5 - Ijma' dan Qiyas",
-                "Bab 6 - Istihsan dan Istishab", "Bab 7 - Maslahah Mursalah", "Bab 8 - Urf dan Adat", "Bab 9 - Syar'u Man Qablana", "Bab 10 - Sadd az-Dzari'ah",
-                "Bab 11 - Hukum Taklifi", "Bab 12 - Hukum Wad'i", "Bab 13 - Mukallaf dan Syarat-syaratnya", "Bab 14 - Azimah dan Rukhsah", "Bab 15 - Ta'arud al-Adillah",
-                "Bab 16 - Tarjih", "Bab 17 - Naskh", "Bab 18 - Ijtihad dan Taqlid", "Bab 19 - Fatwa", "Bab 20 - Mazhab Fiqih"
-            ],
-            "Akidah Akhlaq": [
-                "Bab 1", "Bab 2", "Bab 3", "Bab 4", "Bab 5",
-                "Bab 6", "Bab 7", "Bab 8", "Bab 9", "Bab 10",
-                "Bab 11", "Bab 12", "Bab 13", "Bab 14", "Bab 15",
-                "Bab 16", "Bab 17", "Bab 18", "Bab 19", "Bab 20"
-            ],
-            "Sejarah Kebudayaan Islam": [
-                "Bab 1", "Bab 2", "Bab 3", "Bab 4", "Bab 5",
-                "Bab 6", "Bab 7", "Bab 8", "Bab 9", "Bab 10",
-                "Bab 11", "Bab 12", "Bab 13", "Bab 14", "Bab 15",
-                "Bab 16", "Bab 17", "Bab 18", "Bab 19", "Bab 20"
-            ]
-        };
 
-        function updateChapters() {
-            const subject = document.getElementById('subjectName').value;
-            const chapterSelect = document.getElementById('chapterName');
-            
-            chapterSelect.innerHTML = '<option value="">Pilih Bab</option>';
-            
-            if (subject && subjectChapters[subject]) {
-                chapterSelect.disabled = false;
-                subjectChapters[subject].forEach(chapter => {
-                    chapterSelect.innerHTML += `<option value="${chapter}">${chapter}</option>`;
-                });
-            } else {
-                chapterSelect.disabled = true;
-                chapterSelect.innerHTML = '<option value="">Pilih mata pelajaran terlebih dahulu</option>';
-            }
-        }
 
         function startQuiz() {
             const name = document.getElementById('studentName').value.trim();
-            const studentClass = document.getElementById('studentClass').value;
-            const subject = document.getElementById('subjectName').value;
-            const chapter = document.getElementById('chapterName').value;
 
-            if (!name || !studentClass || !subject || !chapter) {
-                alert('Mohon lengkapi semua data siswa terlebih dahulu!');
+            if (!name) {
+                alert('Mohon masukkan nama Anda terlebih dahulu!');
                 return;
             }
 
-            studentData = { name, class: studentClass, subject, chapter };
+            studentData = { 
+                name, 
+                class: 'XII', 
+                subject: 'Fikih', 
+                chapter: 'Bab 2: Sumber Hukum Islam' 
+            };
             
             document.getElementById('studentForm').classList.add('hidden');
             document.getElementById('quizContainer').classList.remove('hidden');
@@ -1083,12 +942,7 @@
             
             // Reset form
             document.getElementById('studentName').value = '';
-            document.getElementById('studentClass').value = '';
-            document.getElementById('subjectName').value = '';
-            document.getElementById('chapterName').value = '';
-            document.getElementById('chapterName').disabled = true;
-            document.getElementById('chapterName').innerHTML = '<option value="">Pilih mata pelajaran terlebih dahulu</option>';
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97fd788c8460fd64',t:'MTc1Nzk5NTM3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97fd7ebc26dc9cd8',t:'MTc1Nzk5NTYyNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
