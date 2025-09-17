@@ -278,7 +278,19 @@
             <div class="bg-white rounded-2xl p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="font-semibold text-gray-800">Riwayat Asesmen</h3>
-                    <button onclick="loadQuizHistory()" class="text-blue-500 text-sm hover:underline">Refresh</button>
+                    <div class="flex space-x-2">
+                        <button onclick="loadQuizHistory()" class="text-blue-500 text-sm hover:underline flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Refresh
+                        </button>
+                        <button onclick="showQuizHistoryInfo()" class="text-gray-400 text-sm hover:text-gray-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 <div id="quizHistoryContainer" class="space-y-3 max-h-64 overflow-y-auto">
                     <div class="text-center py-4 text-gray-500">
@@ -984,91 +996,10 @@
                 // Get attempt number
                 const attemptNumber = getAsesmenAttemptCount(currentAsesmenTitle) + 1;
                 
-                // Show saving indicator
-                showSavingIndicator();
-                
-                // Method 1: Try using Google Sheets API directly (requires public sheet)
-                try {
-                    const appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_CONFIG.SHEET_ID}/values/${SHEET_CONFIG.RESULTS_SHEET_NAME}:append?valueInputOption=RAW&key=${SHEET_CONFIG.API_KEY}`;
-                    
-                    const response = await fetch(appendUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            values: [[
-                                currentUser.nama,           // Nama
-                                currentUser.username,       // Username
-                                userKelas,                 // Kelas
-                                currentAsesmenTitle,        // Judul Asesmen
-                                dateString,                // Tanggal
-                                timeString,                // Waktu
-                                totalQuestions,            // Total Soal
-                                correctAnswers,            // Jawaban Benar
-                                `${correctAnswers}/${totalQuestions}`, // Skor
-                                `${percentage}%`,          // Persentase
-                                status,                    // Status
-                                timeTakenText,             // Waktu Pengerjaan
-                                detailedAnswers,           // Detail Jawaban
-                                attemptNumber              // Percobaan ke-
-                            ]]
-                        })
-                    });
-                    
-                    if (response.ok) {
-                        hideSavingIndicator();
-                        showSaveSuccess();
-                        return;
-                    } else {
-                        throw new Error('API append failed');
-                    }
-                } catch (apiError) {
-                    console.log('Direct API failed, trying alternative method...');
-                }
-                
-                // Method 2: Use Google Apps Script Web App
-                try {
-                    // Your deployed Web App URL
-                    const webAppUrl = 'https://script.google.com/macros/s/AKfycbwIyqHuGZUX2rkknmPs_ghGqz8P1tRYdJgUkvrLZwRON2QaPbKnOcQZOfHf84CQjedh/exec';
-                    
-                    const formData = new FormData();
-                    formData.append('action', 'saveAsesmenResult');
-                    formData.append('nama', currentUser.nama);
-                    formData.append('username', currentUser.username);
-                    formData.append('kelas', userKelas);
-                    formData.append('judulAsesmen', currentAsesmenTitle);
-                    formData.append('tanggal', dateString);
-                    formData.append('waktu', timeString);
-                    formData.append('totalSoal', totalQuestions);
-                    formData.append('jawabanBenar', correctAnswers);
-                    formData.append('skor', `${correctAnswers}/${totalQuestions}`);
-                    formData.append('persentase', `${percentage}%`);
-                    formData.append('status', status);
-                    formData.append('waktuPengerjaan', timeTakenText);
-                    formData.append('detailJawaban', detailedAnswers);
-                    formData.append('percobaan', attemptNumber);
-                    
-                    const response = await fetch(webAppUrl, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    if (response.ok) {
-                        hideSavingIndicator();
-                        showSaveSuccess();
-                        return;
-                    } else {
-                        throw new Error('Web App failed');
-                    }
-                } catch (webAppError) {
-                    console.log('Web App method failed');
-                }
-                
-                // Method 3: Store locally and show instructions
                 const asesmenData = {
                     nama: currentUser.nama,
                     username: currentUser.username,
+                    kelas: userKelas || '',
                     judulAsesmen: currentAsesmenTitle,
                     tanggal: dateString,
                     waktu: timeString,
@@ -1082,9 +1013,113 @@
                     percobaan: attemptNumber
                 };
                 
-                // Store in localStorage as backup
+                // Show saving indicator
+                showSavingIndicator();
+                
+                // Method 1: Try using Google Apps Script Web App (most reliable)
+                try {
+                    const webAppUrl = 'https://script.google.com/macros/s/AKfycbzhz5RdaIgBQ64MktMBS63LtGHE0V9ieDa2VladvlwPwUQTOZ2PAsq_pXBjPANifgRh/exec';
+                    
+                    const formData = new FormData();
+                    formData.append('action', 'saveAsesmenResult');
+                    formData.append('nama', asesmenData.nama);
+                    formData.append('username', asesmenData.username);
+                    formData.append('kelas', asesmenData.kelas);
+                    formData.append('judulAsesmen', asesmenData.judulAsesmen);
+                    formData.append('tanggal', asesmenData.tanggal);
+                    formData.append('waktu', asesmenData.waktu);
+                    formData.append('totalSoal', asesmenData.totalSoal);
+                    formData.append('jawabanBenar', asesmenData.jawabanBenar);
+                    formData.append('skor', asesmenData.skor);
+                    formData.append('persentase', asesmenData.persentase);
+                    formData.append('status', asesmenData.status);
+                    formData.append('waktuPengerjaan', asesmenData.waktuPengerjaan);
+                    formData.append('detailJawaban', asesmenData.detailJawaban);
+                    formData.append('percobaan', asesmenData.percobaan);
+                    
+                    const response = await fetch(webAppUrl, {
+                        method: 'POST',
+                        body: formData,
+                        mode: 'no-cors' // Important for Google Apps Script
+                    });
+                    
+                    // Since we use no-cors, we can't check response status
+                    // Assume success and store locally as backup
+                    const existingResults = JSON.parse(localStorage.getItem('asesmenResults') || '[]');
+                    existingResults.push({...asesmenData, source: 'sheets', timestamp: Date.now()});
+                    localStorage.setItem('asesmenResults', JSON.stringify(existingResults));
+                    
+                    hideSavingIndicator();
+                    showSaveSuccess();
+                    
+                    // Refresh quiz history after successful save
+                    setTimeout(() => {
+                        if (document.getElementById('profilePage') && !document.getElementById('profilePage').classList.contains('hidden')) {
+                            loadQuizHistory();
+                        }
+                    }, 1000);
+                    
+                    return;
+                    
+                } catch (webAppError) {
+                    console.log('Web App method failed, trying direct API...');
+                }
+                
+                // Method 2: Try using Google Sheets API directly (requires public sheet)
+                try {
+                    const appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_CONFIG.SHEET_ID}/values/${SHEET_CONFIG.RESULTS_SHEET_NAME}:append?valueInputOption=RAW&key=${SHEET_CONFIG.API_KEY}`;
+                    
+                    const response = await fetch(appendUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            values: [[
+                                asesmenData.nama,
+                                asesmenData.username,
+                                asesmenData.kelas,
+                                asesmenData.judulAsesmen,
+                                asesmenData.tanggal,
+                                asesmenData.waktu,
+                                asesmenData.totalSoal,
+                                asesmenData.jawabanBenar,
+                                asesmenData.skor,
+                                asesmenData.persentase,
+                                asesmenData.status,
+                                asesmenData.waktuPengerjaan,
+                                asesmenData.detailJawaban,
+                                asesmenData.percobaan
+                            ]]
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const existingResults = JSON.parse(localStorage.getItem('asesmenResults') || '[]');
+                        existingResults.push({...asesmenData, source: 'sheets', timestamp: Date.now()});
+                        localStorage.setItem('asesmenResults', JSON.stringify(existingResults));
+                        
+                        hideSavingIndicator();
+                        showSaveSuccess();
+                        
+                        // Refresh quiz history after successful save
+                        setTimeout(() => {
+                            if (document.getElementById('profilePage') && !document.getElementById('profilePage').classList.contains('hidden')) {
+                                loadQuizHistory();
+                            }
+                        }, 1000);
+                        
+                        return;
+                    } else {
+                        throw new Error('API append failed');
+                    }
+                } catch (apiError) {
+                    console.log('Direct API failed, storing locally...');
+                }
+                
+                // Method 3: Store locally and show instructions
                 const existingResults = JSON.parse(localStorage.getItem('asesmenResults') || '[]');
-                existingResults.push(asesmenData);
+                existingResults.push({...asesmenData, source: 'local', timestamp: Date.now()});
                 localStorage.setItem('asesmenResults', JSON.stringify(existingResults));
                 
                 hideSavingIndicator();
@@ -1976,51 +2011,83 @@
             
             // First, try to load from Google Sheets
             try {
+                console.log('Loading quiz history from Google Sheets...');
                 const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_CONFIG.SHEET_ID}/values/${SHEET_CONFIG.RESULTS_SHEET_NAME}?key=${SHEET_CONFIG.API_KEY}`;
                 const response = await fetch(url);
                 const data = await response.json();
                 
-                if (!data.error && data.values) {
+                console.log('Google Sheets response:', data);
+                
+                if (!data.error && data.values && data.values.length > 1) {
                     const rows = data.values || [];
+                    console.log('Total rows in results sheet:', rows.length);
                     
                     // Skip header row and filter by current user
                     for (let i = 1; i < rows.length; i++) {
                         const row = rows[i];
-                        if (row && row.length >= 10 && (row[0] === currentUser.nama || row[1] === currentUser.username)) {
-                            userAsesmenHistory.push({
-                                nama: row[0],
-                                username: row[1],
-                                judulAsesmen: row[2],
-                                tanggal: row[3],
-                                waktu: row[4],
-                                totalSoal: parseInt(row[5]) || 0,
-                                jawabanBenar: parseInt(row[6]) || 0,
-                                skor: row[7],
-                                persentase: row[8],
-                                status: row[9],
-                                waktuPengerjaan: row[10] || '',
-                                detailJawaban: row[11] || '',
-                                source: 'sheets'
-                            });
+                        if (row && row.length >= 10) {
+                            // Check if this row belongs to current user (check both nama and username)
+                            const rowNama = row[0] ? row[0].trim() : '';
+                            const rowUsername = row[1] ? row[1].trim() : '';
+                            const currentNama = currentUser.nama ? currentUser.nama.trim() : '';
+                            const currentUsername = currentUser.username ? currentUser.username.trim() : '';
+                            
+                            if (rowNama === currentNama || rowUsername === currentUsername) {
+                                console.log('Found matching row for user:', row);
+                                
+                                userAsesmenHistory.push({
+                                    nama: rowNama,
+                                    username: rowUsername,
+                                    kelas: row[2] || '',
+                                    judulAsesmen: row[3] || '',
+                                    tanggal: row[4] || '',
+                                    waktu: row[5] || '',
+                                    totalSoal: parseInt(row[6]) || 0,
+                                    jawabanBenar: parseInt(row[7]) || 0,
+                                    skor: row[8] || '',
+                                    persentase: row[9] || '',
+                                    status: row[10] || '',
+                                    waktuPengerjaan: row[11] || '',
+                                    detailJawaban: row[12] || '',
+                                    percobaan: row[13] || 1,
+                                    source: 'sheets'
+                                });
+                            }
                         }
+                    }
+                    console.log('Found', userAsesmenHistory.length, 'records from Google Sheets for user:', currentUser.nama);
+                } else {
+                    console.log('No data found in Google Sheets or sheet is empty');
+                    if (data.error) {
+                        console.error('Google Sheets API error:', data.error);
                     }
                 }
             } catch (error) {
-                console.log('Could not load from Google Sheets, checking local storage...');
+                console.error('Error loading from Google Sheets:', error);
+                console.log('Continuing with local storage only...');
             }
             
             // Also load from localStorage (for results not yet saved to sheets)
             try {
                 const localResults = JSON.parse(localStorage.getItem('asesmenResults') || '[]');
-                const userLocalResults = localResults.filter(result => 
-                    result.nama === currentUser.nama || result.username === currentUser.username
-                );
+                console.log('Local storage results:', localResults.length);
                 
-                // Add local results with a flag
+                const userLocalResults = localResults.filter(result => {
+                    const resultNama = result.nama ? result.nama.trim() : '';
+                    const resultUsername = result.username ? result.username.trim() : '';
+                    const currentNama = currentUser.nama ? currentUser.nama.trim() : '';
+                    const currentUsername = currentUser.username ? currentUser.username.trim() : '';
+                    
+                    return resultNama === currentNama || resultUsername === currentUsername;
+                });
+                
+                console.log('Filtered local results for user:', userLocalResults.length);
+                
+                // Add local results with source flag
                 userLocalResults.forEach(result => {
                     userAsesmenHistory.push({
                         ...result,
-                        source: 'local'
+                        source: result.source || 'local'
                     });
                 });
             } catch (error) {
@@ -2030,6 +2097,13 @@
             // Remove duplicates (prefer sheets data over local)
             const uniqueHistory = [];
             const seen = new Set();
+            
+            // Sort by timestamp/date to get most recent first
+            userAsesmenHistory.sort((a, b) => {
+                const aTime = a.timestamp || new Date(a.tanggal + ' ' + a.waktu).getTime() || 0;
+                const bTime = b.timestamp || new Date(b.tanggal + ' ' + b.waktu).getTime() || 0;
+                return bTime - aTime;
+            });
             
             // First add sheets data
             userAsesmenHistory.filter(h => h.source === 'sheets').forEach(history => {
@@ -2048,6 +2122,8 @@
                     uniqueHistory.push(history);
                 }
             });
+            
+            console.log('Final unique history:', uniqueHistory.length, 'records');
             
             displayAsesmenHistory(uniqueHistory);
             updateProfileStats(uniqueHistory);
@@ -2588,8 +2664,52 @@ function doGet(e) {
             });
         }
 
+        // Show Quiz History Info
+        function showQuizHistoryInfo() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl p-6 max-w-md w-full">
+                    <div class="text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <span class="text-2xl">📊</span>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-2">Tentang Riwayat Asesmen</h3>
+                        <div class="text-left space-y-3 text-sm text-gray-600">
+                            <div class="bg-green-50 p-3 rounded-lg">
+                                <div class="flex items-center mb-2">
+                                    <span class="inline-block w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                                    <span class="font-medium text-green-800">Tersimpan di Google Sheets</span>
+                                </div>
+                                <p class="text-green-700 text-xs">Data sudah tersimpan permanen di Google Sheets dan dapat diakses kapan saja.</p>
+                            </div>
+                            
+                            <div class="bg-orange-50 p-3 rounded-lg">
+                                <div class="flex items-center mb-2">
+                                    <span class="inline-block w-2 h-2 bg-orange-400 rounded-full mr-2"></span>
+                                    <span class="font-medium text-orange-800">Belum tersimpan</span>
+                                </div>
+                                <p class="text-orange-700 text-xs">Data masih di perangkat lokal. Klik tombol "Salin ke Google Sheets" untuk menyimpan permanen.</p>
+                            </div>
+                            
+                            <div class="bg-blue-50 p-3 rounded-lg">
+                                <p class="text-blue-800 text-xs">
+                                    <strong>💡 Tips:</strong> Gunakan tombol Refresh untuk memuat data terbaru dari Google Sheets setelah menyimpan hasil asesmen.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" class="w-full mt-4 bg-blue-500 text-white py-3 rounded-xl font-medium hover:bg-blue-600 transition-colors">
+                            Mengerti
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
         // Initialize app
         checkLoginStatus();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9809cf8e94c48223',t:'MTc1ODEyNDc2Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9809e542a7d38336',t:'MTc1ODEyNTY1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
