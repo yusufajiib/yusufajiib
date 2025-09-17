@@ -147,27 +147,14 @@
                 </div>
             </div>
 
-            <!-- Featured Quiz -->
+            <!-- Active Quiz -->
             <div class="bg-white rounded-2xl p-6 shadow-sm">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4">Quiz Populer</h3>
-                <div class="space-y-3">
-                    <div class="quiz-card bg-gradient-to-r from-orange-100 to-red-100 rounded-xl p-4 cursor-pointer" onclick="startQuiz('Matematika Dasar')">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Matematika Dasar</h4>
-                                <p class="text-sm text-gray-600">10 soal • 5 menit</p>
-                            </div>
-                            <div class="text-2xl">🔢</div>
-                        </div>
-                    </div>
-                    <div class="quiz-card bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-4 cursor-pointer" onclick="startQuiz('Bahasa Indonesia')">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <h4 class="font-semibold text-gray-800">Bahasa Indonesia</h4>
-                                <p class="text-sm text-gray-600">15 soal • 8 menit</p>
-                            </div>
-                            <div class="text-2xl">📚</div>
-                        </div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Quiz Aktif</h3>
+                <div id="activeQuizContainer" class="space-y-3">
+                    <!-- Loading state -->
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+                        <p class="text-sm">Memuat quiz aktif...</p>
                     </div>
                 </div>
             </div>
@@ -175,7 +162,18 @@
 
         <!-- Quiz Page -->
         <div id="quizPage" class="hidden">
-            <div class="bg-white rounded-2xl p-6 shadow-sm">
+            <!-- No Activity Message -->
+            <div id="noActivityMessage" class="flex flex-col items-center justify-center h-96 text-center">
+                <div class="text-6xl mb-4">📝</div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Tidak Ada Aktivitas</h3>
+                <p class="text-gray-600 mb-6">Belum ada quiz yang sedang dikerjakan</p>
+                <button onclick="goHome()" class="bg-blue-500 text-white px-6 py-3 rounded-xl font-medium hover:bg-blue-600 transition-colors">
+                    Kembali ke Beranda
+                </button>
+            </div>
+
+            <!-- Quiz Content -->
+            <div id="quizContent" class="bg-white rounded-2xl p-6 shadow-sm hidden">
                 <div class="flex items-center justify-between mb-6">
                     <button onclick="goHome()" class="text-gray-500">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -224,29 +222,11 @@
         <div id="categoriesPage" class="hidden space-y-4">
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Kategori Quiz</h2>
             
-            <div class="grid grid-cols-2 gap-4">
-                <div class="bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl p-6 text-white cursor-pointer quiz-card" onclick="showCategoryQuizzes('Matematika')">
-                    <div class="text-3xl mb-3">🔢</div>
-                    <h3 class="font-semibold mb-1">Matematika</h3>
-                    <p class="text-sm text-blue-100">12 Quiz</p>
-                </div>
-                
-                <div class="bg-gradient-to-br from-green-400 to-green-600 rounded-2xl p-6 text-white cursor-pointer quiz-card" onclick="showCategoryQuizzes('Bahasa')">
-                    <div class="text-3xl mb-3">📚</div>
-                    <h3 class="font-semibold mb-1">Bahasa</h3>
-                    <p class="text-sm text-green-100">8 Quiz</p>
-                </div>
-                
-                <div class="bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl p-6 text-white cursor-pointer quiz-card" onclick="showCategoryQuizzes('Sains')">
-                    <div class="text-3xl mb-3">🔬</div>
-                    <h3 class="font-semibold mb-1">Sains</h3>
-                    <p class="text-sm text-purple-100">15 Quiz</p>
-                </div>
-                
-                <div class="bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl p-6 text-white cursor-pointer quiz-card" onclick="showCategoryQuizzes('Sejarah')">
-                    <div class="text-3xl mb-3">🏛️</div>
-                    <h3 class="font-semibold mb-1">Sejarah</h3>
-                    <p class="text-sm text-orange-100">6 Quiz</p>
+            <div id="categoriesContainer" class="grid grid-cols-2 gap-4">
+                <!-- Loading state -->
+                <div class="col-span-2 text-center py-8 text-gray-500">
+                    <div class="animate-spin w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+                    <p class="text-sm">Memuat kategori...</p>
                 </div>
             </div>
         </div>
@@ -363,38 +343,50 @@
         let timerInterval;
         let isLoggedIn = false;
         let currentUser = null;
+        let isQuizActive = false;
+        let correctAnswers = 0;
+        let userAnswers = [];
         // Google Sheets API Configuration
         const SHEET_CONFIG = {
             SHEET_ID: '17MDc804lNUm_XwUM6hPj6Ui8T-JVtpxJCLq4XovVs0A',
             SHEET_NAME: 'Login',
+            QUIZ_SHEET_NAME: 'kuis aktif',
+            CATEGORY_SHEET_NAME: 'kategori kuis',
+            QUESTIONS_SHEET_NAME: 'soal quiz',
             API_KEY: 'AIzaSyCAJWvsjw92iebZM54KZivepTpl_Q2gk70'
         };
         let usersData = [];
+        let activeQuizData = [];
+        let categoryData = [];
+        let questionsData = [];
 
         const sampleQuestions = [
             {
                 question: "Berapa hasil dari 15 + 27?",
-                answers: ["42", "41", "43", "40"],
-                correct: 0
-            },
-            {
-                question: "Siapa penemu lampu pijar?",
-                answers: ["Thomas Edison", "Nikola Tesla", "Alexander Bell", "Albert Einstein"],
-                correct: 0
-            },
-            {
-                question: "Apa ibu kota Indonesia?",
-                answers: ["Surabaya", "Bandung", "Jakarta", "Medan"],
+                type: "pilihan_ganda",
+                answers: ["40", "41", "42", "43", "44"],
                 correct: 2
             },
             {
-                question: "Berapa hasil dari 8 × 7?",
-                answers: ["54", "56", "58", "52"],
-                correct: 1
+                question: "Siapa penemu lampu pijar?",
+                type: "pilihan_ganda",
+                answers: ["Thomas Edison", "Nikola Tesla", "Alexander Bell", "Albert Einstein", "Isaac Newton"],
+                correct: 0
+            },
+            {
+                question: "Ibu kota Indonesia adalah ____",
+                type: "isian",
+                correctAnswer: "Jakarta"
+            },
+            {
+                question: "Jelaskan proses fotosintesis pada tumbuhan!",
+                type: "essay",
+                correctAnswer: "Fotosintesis adalah proses pembuatan makanan oleh tumbuhan menggunakan cahaya matahari, air, dan karbon dioksida untuk menghasilkan glukosa dan oksigen."
             },
             {
                 question: "Planet terdekat dengan matahari adalah?",
-                answers: ["Venus", "Mars", "Merkurius", "Bumi"],
+                type: "pilihan_ganda",
+                answers: ["Venus", "Mars", "Merkurius", "Bumi", "Jupiter"],
                 correct: 2
             }
         ];
@@ -411,9 +403,12 @@
                 document.getElementById('homePage').classList.remove('hidden');
             } else if (page === 'categories') {
                 document.getElementById('categoriesPage').classList.remove('hidden');
+                loadCategoriesFromSheet();
             } else if (page === 'quiz') {
                 document.getElementById('quizPage').classList.remove('hidden');
-                startQuiz('Quiz Umum');
+                if (!isQuizActive) {
+                    showNoActivity();
+                }
             } else if (page === 'profile') {
                 document.getElementById('profilePage').classList.remove('hidden');
             }
@@ -428,39 +423,109 @@
             event.target.closest('.nav-item').classList.remove('text-gray-400');
         }
 
-        function startQuiz(title) {
+        async function startQuiz(title) {
             document.getElementById('homePage').classList.add('hidden');
             document.getElementById('categoriesPage').classList.add('hidden');
             document.getElementById('quizPage').classList.remove('hidden');
             
+            isQuizActive = true;
             document.getElementById('quizTitle').textContent = title;
             currentQuestionIndex = 0;
             selectedAnswer = null;
             timer = 300;
+            correctAnswers = 0;
+            userAnswers = [];
+            
+            // Hide no activity message and show quiz content
+            const noActivityDiv = document.getElementById('noActivityMessage');
+            const quizContent = document.getElementById('quizContent');
+            if (noActivityDiv) noActivityDiv.classList.add('hidden');
+            if (quizContent) quizContent.classList.remove('hidden');
+            
+            // Load questions from Google Sheets
+            await loadQuestionsFromSheet();
             
             loadQuestion();
             startTimer();
         }
 
+        function showNoActivity() {
+            const quizContent = document.getElementById('quizContent');
+            const noActivityDiv = document.getElementById('noActivityMessage');
+            
+            if (quizContent) quizContent.classList.add('hidden');
+            if (noActivityDiv) noActivityDiv.classList.remove('hidden');
+        }
+
         function loadQuestion() {
-            const question = sampleQuestions[currentQuestionIndex];
+            // Use questions from Google Sheets if available, otherwise use sample questions
+            const questions = questionsData.length > 0 ? questionsData : sampleQuestions;
+            
+            if (currentQuestionIndex >= questions.length) {
+                finishQuiz();
+                return;
+            }
+            
+            const question = questions[currentQuestionIndex];
             document.getElementById('questionText').textContent = question.question;
             document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
-            document.getElementById('totalQuestions').textContent = sampleQuestions.length;
+            document.getElementById('totalQuestions').textContent = questions.length;
             
             const answersContainer = document.getElementById('answersContainer');
             answersContainer.innerHTML = '';
             
-            question.answers.forEach((answer, index) => {
-                const button = document.createElement('button');
-                button.className = 'answer-btn w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-blue-300 transition-colors';
-                button.innerHTML = `<span class="font-medium text-blue-500">${String.fromCharCode(65 + index)}.</span> ${answer}`;
-                button.onclick = () => selectAnswer(button, String.fromCharCode(65 + index));
-                answersContainer.appendChild(button);
-            });
+            // Handle different question types
+            const questionType = question.type || 'pilihan_ganda';
+            
+            if (questionType === 'pilihan_ganda') {
+                // Multiple choice questions
+                if (questionsData.length > 0) {
+                    // Google Sheets format
+                    const options = [question.optionA, question.optionB, question.optionC, question.optionD, question.optionE];
+                    options.forEach((option, index) => {
+                        if (option && option.trim()) { // Only show non-empty options
+                            const button = document.createElement('button');
+                            button.className = 'answer-btn w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-blue-300 transition-colors';
+                            button.innerHTML = `<span class="font-medium text-blue-500">${String.fromCharCode(65 + index)}.</span> ${option}`;
+                            button.onclick = () => selectAnswer(button, String.fromCharCode(65 + index));
+                            answersContainer.appendChild(button);
+                        }
+                    });
+                } else {
+                    // Sample questions format
+                    question.answers.forEach((answer, index) => {
+                        const button = document.createElement('button');
+                        button.className = 'answer-btn w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-blue-300 transition-colors';
+                        button.innerHTML = `<span class="font-medium text-blue-500">${String.fromCharCode(65 + index)}.</span> ${answer}`;
+                        button.onclick = () => selectAnswer(button, String.fromCharCode(65 + index));
+                        answersContainer.appendChild(button);
+                    });
+                }
+            } else if (questionType === 'isian') {
+                // Fill-in-the-blank questions
+                const inputDiv = document.createElement('div');
+                inputDiv.className = 'w-full';
+                inputDiv.innerHTML = `
+                    <input type="text" id="fillAnswer" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none" 
+                           placeholder="Ketik jawaban Anda di sini..." onkeyup="handleTextInput()">
+                `;
+                answersContainer.appendChild(inputDiv);
+            } else if (questionType === 'essay') {
+                // Essay questions
+                const textareaDiv = document.createElement('div');
+                textareaDiv.className = 'w-full';
+                textareaDiv.innerHTML = `
+                    <textarea id="essayAnswer" rows="6" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:outline-none resize-none" 
+                              placeholder="Tulis jawaban essay Anda di sini..." onkeyup="handleTextInput()"></textarea>
+                    <div class="mt-2 text-sm text-gray-500">
+                        <span id="charCount">0</span> karakter
+                    </div>
+                `;
+                answersContainer.appendChild(textareaDiv);
+            }
             
             // Update progress bar
-            const progress = ((currentQuestionIndex + 1) / sampleQuestions.length) * 100;
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
             document.getElementById('progressBar').style.width = progress + '%';
             
             // Reset next button
@@ -489,12 +554,89 @@
             nextBtn.disabled = false;
         }
 
+        function handleTextInput() {
+            const fillInput = document.getElementById('fillAnswer');
+            const essayInput = document.getElementById('essayAnswer');
+            const charCount = document.getElementById('charCount');
+            
+            let inputValue = '';
+            
+            if (fillInput) {
+                inputValue = fillInput.value.trim();
+                selectedAnswer = inputValue;
+            } else if (essayInput) {
+                inputValue = essayInput.value.trim();
+                selectedAnswer = inputValue;
+                
+                // Update character count
+                if (charCount) {
+                    charCount.textContent = essayInput.value.length;
+                }
+            }
+            
+            // Enable/disable next button based on input
+            const nextBtn = document.getElementById('nextBtn');
+            if (inputValue.length > 0) {
+                nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                nextBtn.disabled = false;
+            } else {
+                nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                nextBtn.disabled = true;
+            }
+        }
+
         function nextQuestion() {
             if (!selectedAnswer) return;
             
+            // Check if answer is correct
+            const questions = questionsData.length > 0 ? questionsData : sampleQuestions;
+            const currentQuestion = questions[currentQuestionIndex];
+            const questionType = currentQuestion.type || 'pilihan_ganda';
+            
+            let isCorrect = false;
+            let correctAnswerDisplay = '';
+            
+            if (questionType === 'pilihan_ganda') {
+                if (questionsData.length > 0) {
+                    // Google Sheets format
+                    isCorrect = selectedAnswer === currentQuestion.correctAnswer;
+                    correctAnswerDisplay = currentQuestion.correctAnswer;
+                } else {
+                    // Sample questions format
+                    const correctIndex = currentQuestion.correct;
+                    const correctLetter = String.fromCharCode(65 + correctIndex);
+                    isCorrect = selectedAnswer === correctLetter;
+                    correctAnswerDisplay = correctLetter;
+                }
+            } else if (questionType === 'isian') {
+                // For fill-in questions, check if answer matches (case-insensitive)
+                const userAnswer = selectedAnswer.toLowerCase().trim();
+                const correctAnswer = currentQuestion.correctAnswer.toLowerCase().trim();
+                isCorrect = userAnswer === correctAnswer;
+                correctAnswerDisplay = currentQuestion.correctAnswer;
+            } else if (questionType === 'essay') {
+                // For essay questions, we'll mark as correct if user provided an answer
+                // In real implementation, this would need manual grading
+                isCorrect = selectedAnswer.length >= 10; // Minimum 10 characters
+                correctAnswerDisplay = currentQuestion.correctAnswer;
+            }
+            
+            if (isCorrect) {
+                correctAnswers++;
+            }
+            
+            // Store user answer
+            userAnswers.push({
+                question: currentQuestion.question,
+                type: questionType,
+                userAnswer: selectedAnswer,
+                correctAnswer: correctAnswerDisplay,
+                isCorrect: isCorrect
+            });
+            
             currentQuestionIndex++;
             
-            if (currentQuestionIndex >= sampleQuestions.length) {
+            if (currentQuestionIndex >= questions.length) {
                 finishQuiz();
             } else {
                 loadQuestion();
@@ -503,7 +645,39 @@
 
         function finishQuiz() {
             clearInterval(timerInterval);
-            alert('Quiz selesai! Skor Anda: 4/5 (80%)');
+            isQuizActive = false;
+            
+            const questions = questionsData.length > 0 ? questionsData : sampleQuestions;
+            const totalQuestions = questions.length;
+            const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+            
+            let resultMessage = `Quiz Selesai!\n\n`;
+            resultMessage += `Skor Anda: ${correctAnswers}/${totalQuestions} (${percentage}%)\n\n`;
+            resultMessage += `Detail Jawaban:\n`;
+            
+            userAnswers.forEach((answer, index) => {
+                const status = answer.isCorrect ? '✓' : '✗';
+                const questionType = answer.type || 'pilihan_ganda';
+                
+                if (questionType === 'pilihan_ganda') {
+                    resultMessage += `${index + 1}. ${status} ${answer.userAnswer} ${answer.isCorrect ? '' : '(Benar: ' + answer.correctAnswer + ')'}\n`;
+                } else if (questionType === 'isian') {
+                    resultMessage += `${index + 1}. ${status} "${answer.userAnswer}" ${answer.isCorrect ? '' : '(Benar: "' + answer.correctAnswer + '")'}\n`;
+                } else if (questionType === 'essay') {
+                    const preview = answer.userAnswer.length > 50 ? answer.userAnswer.substring(0, 50) + '...' : answer.userAnswer;
+                    resultMessage += `${index + 1}. ${status} Essay: "${preview}"\n`;
+                    if (!answer.isCorrect) {
+                        resultMessage += `   Contoh jawaban: "${answer.correctAnswer}"\n`;
+                    }
+                }
+            });
+            
+            alert(resultMessage);
+            
+            // Reset quiz data
+            correctAnswers = 0;
+            userAnswers = [];
+            
             goHome();
         }
 
@@ -523,6 +697,7 @@
 
         function goHome() {
             clearInterval(timerInterval);
+            isQuizActive = false;
             document.getElementById('quizPage').classList.add('hidden');
             document.getElementById('homePage').classList.remove('hidden');
             
@@ -570,6 +745,226 @@
                 console.error('Error loading users from Google Sheets:', error);
                 alert('Gagal memuat data pengguna dari Google Sheets. Periksa konfigurasi API.');
             }
+        }
+
+        async function loadActiveQuizFromSheet() {
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_CONFIG.SHEET_ID}/values/${SHEET_CONFIG.QUIZ_SHEET_NAME}?key=${SHEET_CONFIG.API_KEY}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+                
+                activeQuizData = [];
+                const rows = data.values || [];
+                
+                // Skip header row (index 0)
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (row && row.length >= 4 && row[0]) {
+                        activeQuizData.push({
+                            title: row[0].trim(),
+                            description: row[1].trim(),
+                            duration: row[2].trim(),
+                            icon: row[3].trim(),
+                            color: row[4] ? row[4].trim() : 'blue'
+                        });
+                    }
+                }
+                console.log('Active quiz loaded from Google Sheets:', activeQuizData.length);
+                displayActiveQuiz();
+            } catch (error) {
+                console.error('Error loading active quiz from Google Sheets:', error);
+                displayActiveQuizError();
+            }
+        }
+
+        async function loadCategoriesFromSheet() {
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_CONFIG.SHEET_ID}/values/${SHEET_CONFIG.CATEGORY_SHEET_NAME}?key=${SHEET_CONFIG.API_KEY}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+                
+                categoryData = [];
+                const rows = data.values || [];
+                
+                // Skip header row (index 0)
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (row && row.length >= 3 && row[0]) {
+                        categoryData.push({
+                            name: row[0].trim(),
+                            icon: row[1].trim(),
+                            quizCount: row[2].trim(),
+                            color: row[3] ? row[3].trim() : 'blue',
+                            description: row[4] ? row[4].trim() : ''
+                        });
+                    }
+                }
+                console.log('Categories loaded from Google Sheets:', categoryData.length);
+                displayCategories();
+            } catch (error) {
+                console.error('Error loading categories from Google Sheets:', error);
+                displayCategoriesError();
+            }
+        }
+
+        async function loadQuestionsFromSheet() {
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_CONFIG.SHEET_ID}/values/${SHEET_CONFIG.QUESTIONS_SHEET_NAME}?key=${SHEET_CONFIG.API_KEY}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+                
+                questionsData = [];
+                const rows = data.values || [];
+                
+                // Skip header row (index 0)
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (row && row.length >= 3 && row[0]) {
+                        const questionType = row[1] ? row[1].trim().toLowerCase() : 'pilihan_ganda';
+                        
+                        if (questionType === 'pilihan_ganda' && row.length >= 8) {
+                            questionsData.push({
+                                question: row[0].trim(),
+                                type: 'pilihan_ganda',
+                                optionA: row[2].trim(),
+                                optionB: row[3].trim(),
+                                optionC: row[4].trim(),
+                                optionD: row[5].trim(),
+                                optionE: row[6].trim(),
+                                correctAnswer: row[7].trim().toUpperCase(),
+                                category: row[8] ? row[8].trim() : 'Umum'
+                            });
+                        } else if (questionType === 'isian' && row.length >= 4) {
+                            questionsData.push({
+                                question: row[0].trim(),
+                                type: 'isian',
+                                correctAnswer: row[2].trim(),
+                                category: row[3] ? row[3].trim() : 'Umum'
+                            });
+                        } else if (questionType === 'essay' && row.length >= 4) {
+                            questionsData.push({
+                                question: row[0].trim(),
+                                type: 'essay',
+                                correctAnswer: row[2].trim(),
+                                category: row[3] ? row[3].trim() : 'Umum'
+                            });
+                        }
+                    }
+                }
+                console.log('Questions loaded from Google Sheets:', questionsData.length);
+            } catch (error) {
+                console.error('Error loading questions from Google Sheets:', error);
+                alert('Gagal memuat soal dari Google Sheets. Menggunakan soal default.');
+            }
+        }
+
+        function displayActiveQuiz() {
+            const container = document.getElementById('activeQuizContainer');
+            
+            if (activeQuizData.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-3xl mb-2">📝</div>
+                        <p class="text-sm">Belum ada quiz aktif</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const colorClasses = {
+                'blue': 'from-blue-100 to-blue-200',
+                'green': 'from-green-100 to-emerald-100',
+                'orange': 'from-orange-100 to-red-100',
+                'purple': 'from-purple-100 to-purple-200',
+                'red': 'from-red-100 to-red-200',
+                'yellow': 'from-yellow-100 to-yellow-200'
+            };
+            
+            container.innerHTML = activeQuizData.map(quiz => `
+                <div class="quiz-card bg-gradient-to-r ${colorClasses[quiz.color] || colorClasses.blue} rounded-xl p-4 cursor-pointer" onclick="startQuiz('${quiz.title}')">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="font-semibold text-gray-800">${quiz.title}</h4>
+                            <p class="text-sm text-gray-600">${quiz.description} • ${quiz.duration}</p>
+                        </div>
+                        <div class="text-2xl">${quiz.icon}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayActiveQuizError() {
+            const container = document.getElementById('activeQuizContainer');
+            container.innerHTML = `
+                <div class="text-center py-8 text-gray-500">
+                    <div class="text-3xl mb-2">⚠️</div>
+                    <p class="text-sm">Gagal memuat quiz aktif</p>
+                    <button onclick="loadActiveQuizFromSheet()" class="mt-2 text-blue-500 text-sm hover:underline">Coba lagi</button>
+                </div>
+            `;
+        }
+
+        function displayCategories() {
+            const container = document.getElementById('categoriesContainer');
+            
+            if (categoryData.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-8 text-gray-500">
+                        <div class="text-3xl mb-2">📂</div>
+                        <p class="text-sm">Belum ada kategori tersedia</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const colorClasses = {
+                'blue': 'from-blue-400 to-blue-600',
+                'green': 'from-green-400 to-green-600',
+                'orange': 'from-orange-400 to-orange-600',
+                'purple': 'from-purple-400 to-purple-600',
+                'red': 'from-red-400 to-red-600',
+                'yellow': 'from-yellow-400 to-yellow-600'
+            };
+            
+            const textColorClasses = {
+                'blue': 'text-blue-100',
+                'green': 'text-green-100',
+                'orange': 'text-orange-100',
+                'purple': 'text-purple-100',
+                'red': 'text-red-100',
+                'yellow': 'text-yellow-100'
+            };
+            
+            container.innerHTML = categoryData.map(category => `
+                <div class="bg-gradient-to-br ${colorClasses[category.color] || colorClasses.blue} rounded-2xl p-6 text-white cursor-pointer quiz-card" onclick="showCategoryQuizzes('${category.name}')">
+                    <div class="text-3xl mb-3">${category.icon}</div>
+                    <h3 class="font-semibold mb-1">${category.name}</h3>
+                    <p class="text-sm ${textColorClasses[category.color] || textColorClasses.blue}">${category.quizCount} Quiz</p>
+                </div>
+            `).join('');
+        }
+
+        function displayCategoriesError() {
+            const container = document.getElementById('categoriesContainer');
+            container.innerHTML = `
+                <div class="col-span-2 text-center py-8 text-gray-500">
+                    <div class="text-3xl mb-2">⚠️</div>
+                    <p class="text-sm">Gagal memuat kategori</p>
+                    <button onclick="loadCategoriesFromSheet()" class="mt-2 text-blue-500 text-sm hover:underline">Coba lagi</button>
+                </div>
+            `;
         }
 
         function showLogin() {
@@ -682,6 +1077,9 @@
                 const profileElements = document.querySelectorAll('.user-name');
                 profileElements.forEach(el => el.textContent = currentUser.nama);
             }
+            
+            // Load active quiz data
+            loadActiveQuizFromSheet();
         }
 
         function showLogoutConfirm() {
@@ -723,5 +1121,5 @@
         // Initialize app
         checkLoginStatus();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9806f537f2445f2e',t:'MTc1ODA5NDg1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98077e46f6509f8b',t:'MTc1ODEwMDQ2Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
