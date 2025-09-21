@@ -72,7 +72,13 @@
                 </div>
                 <h1 class="text-xl font-bold">EduAssess</h1>
             </div>
-            <div id="userInfo" class="hidden">
+            <div id="userInfo" class="hidden flex items-center space-x-2">
+                <div class="w-8 h-8 rounded-full overflow-hidden border border-white flex items-center justify-center bg-white bg-opacity-20">
+                    <img id="headerPhoto" src="" alt="Foto" 
+                         class="w-full h-full object-cover hidden"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <i class="fas fa-user text-sm text-white"></i>
+                </div>
                 <span id="userName" class="text-sm"></span>
                 <button onclick="logout()" class="ml-2 text-sm bg-white bg-opacity-20 px-2 py-1 rounded">
                     <i class="fas fa-sign-out-alt"></i>
@@ -147,8 +153,13 @@
             <!-- Welcome Card -->
             <div class="bg-white rounded-2xl card-shadow p-6 mb-6 fade-in">
                 <div class="flex items-center space-x-4">
-                    <div class="w-16 h-16 gradient-bg rounded-full flex items-center justify-center">
-                        <i class="fas fa-user text-2xl text-white"></i>
+                    <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-200 flex items-center justify-center bg-gray-100">
+                        <img id="welcomePhoto" src="" alt="Foto Profil" 
+                             class="w-full h-full object-cover hidden"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="w-full h-full gradient-bg rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-2xl text-white"></i>
+                        </div>
                     </div>
                     <div>
                         <h3 class="text-lg font-bold text-gray-800" id="welcomeName">Selamat datang!</h3>
@@ -210,8 +221,13 @@
         <div id="profileScreen" class="hidden">
             <div class="bg-white rounded-2xl card-shadow p-6">
                 <div class="text-center mb-6">
-                    <div class="w-24 h-24 gradient-bg rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-user text-4xl text-white"></i>
+                    <div class="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-200 flex items-center justify-center mx-auto mb-4 bg-gray-100">
+                        <img id="profilePhoto" src="" alt="Foto Profil" 
+                             class="w-full h-full object-cover hidden"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="w-full h-full gradient-bg rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-4xl text-white"></i>
+                        </div>
                     </div>
                     <h3 class="text-xl font-bold text-gray-800" id="profileName">Nama Siswa</h3>
                     <p class="text-gray-600" id="profileClass">Kelas</p>
@@ -364,7 +380,8 @@
                         name: foundUser[2] || foundUser[0], // Use column C for name, fallback to username
                         email: foundUser[3] || '', // Column D for email if exists
                         class: foundUser[4] || 'Tidak diketahui', // Column E for class
-                        studentId: foundUser[5] || '' // Column F for student ID if exists
+                        studentId: foundUser[5] || '', // Column F for student ID if exists
+                        photoUrl: foundUser[6] || 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEigLX3uVV_Ekk_xsNDlI_VVi65dp7YCOLoQl7w6C5CRnN_-gnWKpDdp1AcryOhNzWARyc0-uNd4JgmRNMpUhrzurL5LOn7NyFZ8gSCdkJE88iIkCHmyeVVcE2LXB8R2bUQHiR7M9c9jPfn-XHRcEW-o3vMmJhf6cYjpdyFe85IsXXcFBo84tLk9Pw3-oBLF/s200-c/photo_.431_w.jpg' // Column G for link foto
                     };
                     
                     currentUser = userDetails;
@@ -413,6 +430,9 @@
             // Update welcome message
             document.getElementById('welcomeName').textContent = `Selamat datang, ${currentUser.name}!`;
             document.getElementById('userClass').textContent = `Kelas: ${currentUser.class}`;
+
+            // Update user photos
+            updateUserPhotos();
 
             // Load assessments
             await loadAssessments();
@@ -1281,6 +1301,88 @@
             }
         }
 
+        // Update user photos across all elements
+        function updateUserPhotos() {
+            if (!currentUser || !currentUser.photoUrl) {
+                console.log('No user or photo URL found');
+                return;
+            }
+            
+            console.log('Updating user photos with URL:', currentUser.photoUrl);
+            
+            const photoElements = [
+                { id: 'headerPhoto', fallback: 'fas fa-user text-sm text-white' },
+                { id: 'welcomePhoto', fallback: 'fas fa-user text-2xl text-white' },
+                { id: 'profilePhoto', fallback: 'fas fa-user text-4xl text-white' }
+            ];
+            
+            photoElements.forEach(element => {
+                const img = document.getElementById(element.id);
+                if (img && currentUser.photoUrl.trim()) {
+                    // Process Blogger URL to ensure it works
+                    let processedUrl = processImageUrl(currentUser.photoUrl.trim());
+                    console.log(`Setting ${element.id} photo URL:`, processedUrl);
+                    
+                    img.src = processedUrl;
+                    img.classList.remove('hidden');
+                    
+                    // Hide fallback icon when image loads successfully
+                    img.onload = function() {
+                        console.log(`${element.id} photo loaded successfully`);
+                        const fallbackIcon = this.nextElementSibling;
+                        if (fallbackIcon && fallbackIcon.tagName === 'DIV') {
+                            fallbackIcon.style.display = 'none';
+                        }
+                    };
+                    
+                    // Show fallback icon if image fails to load
+                    img.onerror = function() {
+                        console.log(`${element.id} photo failed to load:`, this.src);
+                        this.style.display = 'none';
+                        const fallbackIcon = this.nextElementSibling;
+                        if (fallbackIcon && fallbackIcon.tagName === 'DIV') {
+                            fallbackIcon.style.display = 'flex';
+                        }
+                    };
+                }
+            });
+        }
+
+        // Process image URL to handle different formats (Blogger, Google Drive, etc.)
+        function processImageUrl(url) {
+            if (!url || !url.trim()) return '';
+            
+            url = url.trim();
+            
+            // Handle Blogger URLs - ensure they have proper size parameter
+            if (url.includes('blogger.googleusercontent.com') || url.includes('blogspot.com')) {
+                // Remove existing size parameters and add a reasonable size
+                url = url.replace(/\/s\d+(-c)?\//, '/s200-c/');
+                // If no size parameter exists, add one
+                if (!url.includes('/s200-c/') && !url.includes('/s') && url.includes('blogger.googleusercontent.com')) {
+                    url = url.replace(/\/([^\/]+)$/, '/s200-c/$1');
+                }
+                console.log('Processed Blogger URL:', url);
+                return url;
+            }
+            
+            // Handle Google Drive URLs
+            if (url.includes('drive.google.com')) {
+                const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                if (fileIdMatch) {
+                    return `https://drive.google.com/uc?id=${fileIdMatch[1]}`;
+                }
+            }
+            
+            // Handle Google Drive direct links
+            if (url.includes('drive.google.com/uc?id=')) {
+                return url;
+            }
+            
+            // Return original URL for other cases
+            return url;
+        }
+
         // Load user results
         async function loadUserResults() {
             // In demo, load from localStorage
@@ -1388,6 +1490,9 @@
             document.getElementById('profileName').textContent = currentUser.name;
             document.getElementById('profileClass').textContent = `Kelas: ${currentUser.class}`;
             document.getElementById('profileClassNumber').textContent = ``;
+            
+            // Update profile photo
+            updateUserPhotos();
             
             const results = JSON.parse(localStorage.getItem('assessmentResults') || '[]');
             const userResults = results.filter(r => r.username === currentUser.username);
@@ -1526,5 +1631,5 @@
             }, 500);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'982c691bd1533e61',t:'MTc1ODQ4NzU3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'982c7a3be026a3ec',t:'MTc1ODQ4ODI3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
