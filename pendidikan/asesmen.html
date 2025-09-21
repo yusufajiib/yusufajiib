@@ -1091,48 +1091,71 @@
             }
         }
         
-        // Send result to Google Sheet
+        // Send result to Google Sheet via Google Apps Script
         async function sendResultToGoogleSheet(resultData) {
             try {
-                console.log('Sending result to Google Sheet:', resultData);
+                console.log('Sending result to Google Apps Script:', resultData);
                 
-                // Use Google Sheets API to append data
-                const appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/hasil%20asesmen!A:N:append?valueInputOption=RAW&key=${API_KEY}`;
+                // Google Apps Script Web App URL
+                const scriptUrl = 'https://script.google.com/macros/s/AKfycbzhz5RdaIgBQ64MktMBS63LtGHE0V9ieDa2VladvlwPwUQTOZ2PAsq_pXBjPANifgRh/exec';
                 
-                const response = await fetch(appendUrl, {
+                // Prepare form data for Google Apps Script
+                const formData = new FormData();
+                formData.append('action', 'submitResult');
+                formData.append('nama', resultData[0]);
+                formData.append('username', resultData[1]);
+                formData.append('kelas', resultData[2]);
+                formData.append('judul_asesmen', resultData[3]);
+                formData.append('tanggal', resultData[4]);
+                formData.append('waktu', resultData[5]);
+                formData.append('total_soal', resultData[6]);
+                formData.append('jawaban_benar', resultData[7]);
+                formData.append('skor', resultData[8]);
+                formData.append('persentase', resultData[9]);
+                formData.append('status', resultData[10]);
+                formData.append('waktu_pengerjaan', resultData[11]);
+                formData.append('detail_jawaban', resultData[12]);
+                formData.append('percobaan', resultData[13]);
+                
+                const response = await fetch(scriptUrl, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        values: [resultData]
-                    })
+                    body: formData
                 });
                 
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    console.error('Google Sheets API Error:', errorData);
-                    
-                    if (response.status === 403) {
-                        throw new Error('Akses ditolak ke Google Sheet. Periksa pengaturan berbagi dan API key.');
-                    } else if (response.status === 404) {
-                        throw new Error('Sheet "hasil asesmen" tidak ditemukan. Pastikan sheet sudah dibuat dengan nama yang tepat.');
-                    } else {
-                        throw new Error(`HTTP ${response.status}: ${errorData.error?.message || 'Gagal mengirim ke Google Sheet'}`);
-                    }
+                    throw new Error(`HTTP ${response.status}: Gagal mengirim ke Google Apps Script`);
                 }
                 
-                const responseData = await response.json();
-                console.log('Successfully sent to Google Sheet:', responseData);
+                const responseText = await response.text();
+                console.log('Google Apps Script response:', responseText);
                 
+                // Try to parse as JSON, fallback to text
+                let responseData;
+                try {
+                    responseData = JSON.parse(responseText);
+                } catch (e) {
+                    responseData = { message: responseText };
+                }
+                
+                // Check if the response indicates success
+                if (responseData.status === 'error' || responseText.toLowerCase().includes('error')) {
+                    throw new Error(responseData.message || responseText || 'Gagal mengirim hasil asesmen');
+                }
+                
+                console.log('Successfully sent to Google Apps Script:', responseData);
                 return responseData;
                 
             } catch (error) {
-                console.error('Error sending to Google Sheet:', error);
+                console.error('Error sending to Google Apps Script:', error);
                 
                 // If it's a network error, provide more specific message
                 if (!navigator.onLine) {
                     throw new Error('Tidak ada koneksi internet. Periksa koneksi Anda dan coba lagi.');
+                }
+                
+                // Provide more user-friendly error messages
+                if (error.message.includes('Failed to fetch')) {
+                    throw new Error('Tidak dapat terhubung ke server. Periksa koneksi internet Anda.');
                 }
                 
                 throw error;
@@ -1376,5 +1399,5 @@
             }, 500);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'982a020c866dfdbf',t:'MTc1ODQ2MjM3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'982a3d2897aa9fb9',t:'MTc1ODQ2NDgwMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
