@@ -640,8 +640,8 @@
                     console.log('Raw questions data:', data);
                     
                     // Skip header row and map data according to new column structure
-                    // A: Soal, B: Jenis, C: Pilihan A/Jawaban, D: Pilihan B, E: Pilihan C, 
-                    // F: Pilihan D, G: Pilihan E, H: Kunci Jawaban, I: Kategori, J: Target Kelas, K: Tingkat
+                    // A: Soal, B: Jenis, C: Pilihan A/Jawaban Isian-Essay, D: Pilihan B, E: Pilihan C, 
+                    // F: Pilihan D, G: Pilihan E, H: Kunci Jawaban Pilihan Ganda, I: Kategori, J: Target Kelas, K: Tingkat
                     const allQuestions = data.values.slice(1);
                     
                     // Filter questions based on assessment criteria
@@ -685,7 +685,7 @@
                         const questionType = row[1] || 'pilihan_ganda';
                         const isMultipleChoice = questionType.toLowerCase().includes('pilihan') || questionType.toLowerCase().includes('ganda');
                         
-                        // Collect all non-empty options
+                        // Collect all non-empty options for multiple choice
                         const options = [];
                         if (isMultipleChoice) {
                             // For multiple choice, use columns C-G as options
@@ -696,12 +696,22 @@
                             });
                         }
                         
+                        // Determine correct answer based on question type
+                        let correctAnswer = '';
+                        if (isMultipleChoice) {
+                            // For multiple choice: use column H (Kunci Jawaban Pilihan Ganda)
+                            correctAnswer = row[7] || '';
+                        } else {
+                            // For isian/essay: use column C (Pilihan A/Jawaban Isian-Essay)
+                            correctAnswer = row[2] || '';
+                        }
+                        
                         return {
                             id: `question_${index + 1}`,
                             question: row[0] || 'Soal tidak tersedia',
                             type: questionType,
                             options: options,
-                            correctAnswer: row[7] || '', // Column H: Kunci Jawaban
+                            correctAnswer: correctAnswer,
                             category: row[8] || 'Umum', // Column I: Kategori
                             targetClass: row[9] || 'Semua Kelas', // Column J: Target Kelas
                             level: row[10] || 'Menengah', // Column K: Tingkat
@@ -1631,5 +1641,5 @@
             }, 500);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'982c7a3be026a3ec',t:'MTc1ODQ4ODI3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'982c7fb5976aa3ec',t:'MTc1ODQ4ODQ5Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
