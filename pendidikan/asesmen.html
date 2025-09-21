@@ -1101,20 +1101,20 @@
                 
                 // Prepare form data for Google Apps Script
                 const formData = new FormData();
-                formData.append('action', 'submitResult');
+                formData.append('action', 'saveAsesmenResult');
                 formData.append('nama', resultData[0]);
                 formData.append('username', resultData[1]);
                 formData.append('kelas', resultData[2]);
-                formData.append('judul_asesmen', resultData[3]);
+                formData.append('judulAsesmen', resultData[3]);
                 formData.append('tanggal', resultData[4]);
                 formData.append('waktu', resultData[5]);
-                formData.append('total_soal', resultData[6]);
-                formData.append('jawaban_benar', resultData[7]);
+                formData.append('totalSoal', resultData[6]);
+                formData.append('jawabanBenar', resultData[7]);
                 formData.append('skor', resultData[8]);
                 formData.append('persentase', resultData[9]);
                 formData.append('status', resultData[10]);
-                formData.append('waktu_pengerjaan', resultData[11]);
-                formData.append('detail_jawaban', resultData[12]);
+                formData.append('waktuPengerjaan', resultData[11]);
+                formData.append('detailJawaban', resultData[12]);
                 formData.append('percobaan', resultData[13]);
                 
                 const response = await fetch(scriptUrl, {
@@ -1138,7 +1138,7 @@
                 }
                 
                 // Check if the response indicates success
-                if (responseData.status === 'error' || responseText.toLowerCase().includes('error')) {
+                if (responseData.success === false || responseText.toLowerCase().includes('error')) {
                     throw new Error(responseData.message || responseText || 'Gagal mengirim hasil asesmen');
                 }
                 
@@ -1399,5 +1399,5 @@
             }, 500);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'982a3d2897aa9fb9',t:'MTc1ODQ2NDgwMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'982a457d97751e38',t:'MTc1ODQ2NTE0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
