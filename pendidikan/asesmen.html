@@ -942,7 +942,135 @@
             }
         }
 
-        // Submit assessment
+        // Automatic correction function - moved to website
+        function performAutomaticCorrection(questions, userAnswers) {
+            let correctAnswers = 0;
+            const correctionResults = [];
+            
+            questions.forEach(question => {
+                const userAnswer = userAnswers[question.id] || 'Tidak dijawab';
+                let isCorrect = false;
+                let correctionNote = '';
+                
+                // KOREKSI PILIHAN GANDA
+                if (question.isMultipleChoice) {
+                    isCorrect = userAnswer.trim().toLowerCase() === question.correctAnswer.trim().toLowerCase();
+                    correctionNote = isCorrect ? 'Benar' : 'Salah';
+                }
+                // KOREKSI ISIAN SINGKAT DAN ESSAY
+                else {
+                    const jawabanSiswa = userAnswer.trim().toLowerCase();
+                    const kunciJawaban = question.correctAnswer.trim().toLowerCase();
+                    
+                    if (question.type.toLowerCase().includes('isian')) {
+                        // Exact match
+                        if (jawabanSiswa === kunciJawaban) {
+                            isCorrect = true;
+                            correctionNote = 'Benar (exact match)';
+                        }
+                        // Partial match (mengandung kata kunci)
+                        else if (jawabanSiswa.includes(kunciJawaban) || kunciJawaban.includes(jawabanSiswa)) {
+                            isCorrect = true;
+                            correctionNote = 'Benar (partial match)';
+                        }
+                        // Similarity check untuk typo
+                        else if (calculateSimilarity(jawabanSiswa, kunciJawaban) > 0.8) {
+                            isCorrect = true;
+                            correctionNote = 'Benar (similar)';
+                        }
+                        else {
+                            correctionNote = 'Salah';
+                        }
+                    }
+                    // KOREKSI ESSAY (scoring berdasarkan kata kunci)
+                    else if (question.type.toLowerCase().includes('essay') || question.type.toLowerCase().includes('uraian')) {
+                        const kataKunci = kunciJawaban.split(',').map(kata => kata.trim()).filter(kata => kata.length > 0);
+                        
+                        let keywordCount = 0;
+                        kataKunci.forEach(kata => {
+                            if (jawabanSiswa.includes(kata)) {
+                                keywordCount++;
+                            }
+                        });
+                        
+                        const keywordPercentage = kataKunci.length > 0 ? (keywordCount / kataKunci.length) * 100 : 0;
+                        
+                        if (keywordPercentage >= 80) {
+                            isCorrect = true;
+                            correctionNote = `Sangat Baik (${keywordPercentage.toFixed(0)}% kata kunci)`;
+                        } else if (keywordPercentage >= 60) {
+                            isCorrect = true;
+                            correctionNote = `Baik (${keywordPercentage.toFixed(0)}% kata kunci)`;
+                        } else if (keywordPercentage >= 40) {
+                            isCorrect = true;
+                            correctionNote = `Cukup (${keywordPercentage.toFixed(0)}% kata kunci)`;
+                        } else {
+                            correctionNote = `Kurang (${keywordPercentage.toFixed(0)}% kata kunci)`;
+                        }
+                    }
+                }
+                
+                if (isCorrect && userAnswer !== 'Tidak dijawab') {
+                    correctAnswers++;
+                }
+                
+                correctionResults.push({
+                    nomor: question.number,
+                    soal: question.question,
+                    jenis: question.type,
+                    jawaban_siswa: userAnswer,
+                    kunci_jawaban: question.correctAnswer,
+                    status: correctionNote,
+                    benar: isCorrect
+                });
+            });
+            
+            return {
+                correctAnswers,
+                correctionResults
+            };
+        }
+
+        // Helper function untuk menghitung similarity
+        function calculateSimilarity(str1, str2) {
+            const longer = str1.length > str2.length ? str1 : str2;
+            const shorter = str1.length > str2.length ? str2 : str1;
+            
+            if (longer.length === 0) return 1.0;
+            
+            const editDistance = levenshteinDistance(longer, shorter);
+            return (longer.length - editDistance) / longer.length;
+        }
+
+        function levenshteinDistance(str1, str2) {
+            const matrix = [];
+            
+            for (let i = 0; i <= str2.length; i++) {
+                matrix[i] = [i];
+            }
+            
+            for (let j = 0; j <= str1.length; j++) {
+                matrix[0][j] = j;
+            }
+            
+            for (let i = 1; i <= str2.length; i++) {
+                for (let j = 1; j <= str1.length; j++) {
+                    if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+            
+            return matrix[str2.length][str1.length];
+        }
+
+        // Submit assessment with automatic correction
         async function submitAssessment(isAutoSubmit = false) {
             console.log('Submit assessment called, isAutoSubmit:', isAutoSubmit);
             console.log('Current user answers:', userAnswers);
@@ -982,30 +1110,20 @@
             stopAssessmentTimer();
             
             try {
-                // Calculate score and prepare detailed answers
-                let correctAnswers = 0;
+                // Perform automatic correction
+                const correctionResult = performAutomaticCorrection(currentAssessment.questions, userAnswers);
+                const correctAnswers = correctionResult.correctAnswers;
                 const totalQuestions = currentAssessment.questions.length;
-                const detailedAnswers = [];
                 
-                currentAssessment.questions.forEach(question => {
-                    const userAnswer = userAnswers[question.id] || 'Tidak dijawab';
-                    const isCorrect = userAnswer === question.correctAnswer;
-                    
-                    if (isCorrect && userAnswer !== 'Tidak dijawab') {
-                        correctAnswers++;
-                    }
-                    
-                    detailedAnswers.push({
-                        soal: question.number,
-                        pertanyaan: question.question,
-                        jawaban_siswa: userAnswer,
-                        jawaban_benar: question.correctAnswer,
-                        status: isCorrect ? 'Benar' : 'Salah'
-                    });
-                });
-                
+                // Calculate score and percentage
                 const score = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
                 const percentage = `${score}%`;
+                
+                // Determine pass/fail status (75% threshold)
+                const status = score >= 75 ? 'Lulus' : 'Tidak Lulus';
+                
+                // Calculate correct answer percentage
+                const correctPercentage = totalQuestions > 0 ? Math.round((correctAnswers / totalQuestions) * 100) : 0;
                 
                 // Get current date and time in Indonesian format
                 const now = new Date();
@@ -1020,26 +1138,32 @@
                     second: '2-digit'
                 });
                 
-                // Prepare data for Google Sheets
-                const resultData = [
-                    currentUser.name || currentUser.username,           // Nama
-                    currentUser.username,                               // Username  
-                    currentUser.class || 'Tidak diketahui',           // Kelas
-                    currentAssessment.title,                           // Judul Asesmen
-                    tanggal,                                           // Tanggal
-                    waktu,                                             // Waktu
-                    totalQuestions.toString(),                         // Total Soal
-                    correctAnswers.toString(),                         // Jawaban Benar
-                    score.toString(),                                  // Skor
-                    percentage,                                        // Persentase
-                    'Selesai',                                         // Status
-                    timeSpentFormatted,                                // Waktu Pengerjaan
-                    JSON.stringify(detailedAnswers),                   // Detail Jawaban
-                    '1'                                                // Percobaan
-                ];
+                // Prepare detailed answers for storage
+                const detailedAnswers = correctionResult.correctionResults.map(result => ({
+                    soal: result.nomor,
+                    pertanyaan: result.soal,
+                    jawaban_siswa: result.jawaban_siswa,
+                    jawaban_benar: result.kunci_jawaban,
+                    status: result.status
+                }));
                 
-                // Send to Google Sheets
-                await sendResultToGoogleSheet(resultData);
+                // Send to Google Sheets using the simplified approach
+                await sendResultToGoogleSheet({
+                    nama: currentUser.name || currentUser.username,
+                    username: currentUser.username,
+                    kelas: currentUser.class || 'Tidak diketahui',
+                    judulAsesmen: currentAssessment.title,
+                    tanggal: tanggal,
+                    waktu: waktu,
+                    totalSoal: totalQuestions.toString(),
+                    jawabanBenar: correctAnswers.toString(),
+                    skor: score.toString(),
+                    persentase: percentage,
+                    status: status,
+                    waktuPengerjaan: timeSpentFormatted,
+                    detailJawaban: JSON.stringify(detailedAnswers),
+                    percobaan: '1'
+                });
                 
                 // Save result locally as backup
                 const result = {
@@ -1049,6 +1173,7 @@
                     score: score,
                     correctAnswers: correctAnswers,
                     totalQuestions: totalQuestions,
+                    status: status,
                     submittedAt: now.toISOString(),
                     timeSpent: timeSpentFormatted
                 };
@@ -1057,10 +1182,13 @@
                 results.push(result);
                 localStorage.setItem('assessmentResults', JSON.stringify(results));
                 
-                // Show success message
+                // Show success message with detailed results
+                const statusIcon = status === 'Lulus' ? '🎉' : '📚';
+                const statusColor = status === 'Lulus' ? 'text-green-600' : 'text-red-600';
+                
                 const message = isAutoSubmit 
-                    ? `✅ Waktu habis! Asesmen otomatis dikirim ke Google Sheet.\n\n📊 Hasil Anda:\n• Skor: ${score}/100\n• Jawaban benar: ${correctAnswers}/${totalQuestions}\n• Waktu pengerjaan: ${timeSpentFormatted}`
-                    : `✅ Asesmen berhasil dikirim ke Google Sheet!\n\n📊 Hasil Anda:\n• Skor: ${score}/100\n• Jawaban benar: ${correctAnswers}/${totalQuestions}\n• Waktu pengerjaan: ${timeSpentFormatted}`;
+                    ? `⏰ Waktu habis! Asesmen otomatis dikirim ke Google Sheet.\n\n📊 Hasil Anda:\n• Skor: ${score}/100 (${correctPercentage}% jawaban benar)\n• Status: ${status} ${statusIcon}\n• Jawaban benar: ${correctAnswers}/${totalQuestions}\n• Waktu pengerjaan: ${timeSpentFormatted}`
+                    : `✅ Asesmen berhasil dikirim ke Google Sheet!\n\n📊 Hasil Anda:\n• Skor: ${score}/100 (${correctPercentage}% jawaban benar)\n• Status: ${status} ${statusIcon}\n• Jawaban benar: ${correctAnswers}/${totalQuestions}\n• Waktu pengerjaan: ${timeSpentFormatted}`;
                 
                 alert(message);
                 
@@ -1091,7 +1219,7 @@
             }
         }
         
-        // Send result to Google Sheet via Google Apps Script
+        // Send result to Google Sheet via Google Apps Script (simplified)
         async function sendResultToGoogleSheet(resultData) {
             try {
                 console.log('Sending result to Google Apps Script:', resultData);
@@ -1102,20 +1230,11 @@
                 // Prepare form data for Google Apps Script
                 const formData = new FormData();
                 formData.append('action', 'saveAsesmenResult');
-                formData.append('nama', resultData[0]);
-                formData.append('username', resultData[1]);
-                formData.append('kelas', resultData[2]);
-                formData.append('judulAsesmen', resultData[3]);
-                formData.append('tanggal', resultData[4]);
-                formData.append('waktu', resultData[5]);
-                formData.append('totalSoal', resultData[6]);
-                formData.append('jawabanBenar', resultData[7]);
-                formData.append('skor', resultData[8]);
-                formData.append('persentase', resultData[9]);
-                formData.append('status', resultData[10]);
-                formData.append('waktuPengerjaan', resultData[11]);
-                formData.append('detailJawaban', resultData[12]);
-                formData.append('percobaan', resultData[13]);
+                
+                // Add all result data
+                Object.keys(resultData).forEach(key => {
+                    formData.append(key, resultData[key]);
+                });
                 
                 const response = await fetch(scriptUrl, {
                     method: 'POST',
@@ -1202,19 +1321,27 @@
                 const resultCard = document.createElement('div');
                 resultCard.className = 'bg-white rounded-xl card-shadow p-4 mb-4';
                 
-                const scoreColor = result.score >= 80 ? 'text-green-600' : result.score >= 60 ? 'text-yellow-600' : 'text-red-600';
+                const scoreColor = result.score >= 75 ? 'text-green-600' : 'text-red-600';
+                const statusIcon = result.status === 'Lulus' ? '🎉' : '📚';
+                const statusColor = result.status === 'Lulus' ? 'text-green-600' : 'text-red-600';
                 
                 resultCard.innerHTML = `
                     <div class="flex justify-between items-start mb-3">
                         <h3 class="font-bold text-gray-800 flex-1">${result.assessmentTitle}</h3>
-                        <span class="text-2xl font-bold ${scoreColor}">${result.score}</span>
+                        <div class="text-right">
+                            <span class="text-2xl font-bold ${scoreColor}">${result.score}</span>
+                            <div class="text-xs ${statusColor} font-medium">${result.status || (result.score >= 75 ? 'Lulus' : 'Tidak Lulus')} ${statusIcon}</div>
+                        </div>
                     </div>
                     <div class="flex justify-between text-sm text-gray-600 mb-2">
-                        <span>Jawaban benar: ${result.correctAnswers}/${result.totalQuestions}</span>
+                        <span>Jawaban benar: ${result.correctAnswers}/${result.totalQuestions} (${Math.round((result.correctAnswers/result.totalQuestions)*100)}%)</span>
                         <span>${new Date(result.submittedAt).toLocaleDateString('id-ID')}</span>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
                         <div class="bg-blue-600 h-2 rounded-full" style="width: ${result.score}%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 text-center">
+                        Waktu pengerjaan: ${result.timeSpent || 'Tidak tercatat'}
                     </div>
                 `;
                 
@@ -1399,5 +1526,5 @@
             }, 500);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'982a457d97751e38',t:'MTc1ODQ2NTE0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'982c691bd1533e61',t:'MTc1ODQ4NzU3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
