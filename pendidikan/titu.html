@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Wali Songo</title>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .question-card {
+      transition: all 0.3s ease;
+    }
+    
+    .option-btn {
+      transition: all 0.2s ease;
+    }
+    
+    .option-btn:hover {
+      transform: translateX(4px);
+    }
+    
+    .correct {
+      background-color: #10b981 !important;
+      color: white !important;
+    }
+    
+    .incorrect {
+      background-color: #ef4444 !important;
+      color: white !important;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="min-h-full">
+  <div id="app" class="min-h-full p-6"></div>
+  <script>
+    const defaultConfig = {
+      background_color: "#f0f9ff",
+      card_color: "#ffffff",
+      primary_color: "#0ea5e9",
+      text_color: "#1e293b",
+      accent_color: "#06b6d4",
+      judul_kuis: "Kuis Sejarah Wali Songo",
+      deskripsi: "Uji pengetahuan Anda tentang para Wali Songo",
+      tombol_mulai: "Mulai Kuis",
+      tombol_submit: "Submit Jawaban",
+      font_family: "Segoe UI",
+      font_size: 16
+    };
+
+    const quizData = [
+      {
+        id: 1,
+        question: "Nama kecil Sunan Gresik yang menunjukkan asal-usul beliau dari Gujarat, India adalah...",
+        options: ["Maulana Malik Ibrahim", "Raden Paku", "Joko Samudro", "Syekh Maghribi"],
+        correct: "Maulana Malik Ibrahim"
+      },
+      {
+        id: 2,
+        question: "Tempat kelahiran Sunan Maulana Malik Ibrahim yang dipercaya berasal dari Asia Tengah adalah di...",
+        options: ["Baghdad", "Samarkand", "Mekah", "Gujarat"],
+        correct: "Samarkand"
+      },
+      {
+        id: 3,
+        question: "Metode dakwah yang digunakan Sunan Gresik dengan berdagang, bersikap ramah, dan mengobati rakyat secara gratis dikenal sebagai jalur...",
+        options: ["Sosial dan Ekonomi", "Politik dan Budaya", "Pendidikan dan Seni", "Militer dan Diplomasi"],
+        correct: "Sosial dan Ekonomi"
+      },
+      {
+        id: 4,
+        question: "Perjuangan Sunan Gresik dalam bidang politik adalah dengan menjadi...",
+        options: ["Penasihat Raja Majapahit", "Panglima Perang", "Gubernur Wilayah", "Hakim Agung"],
+        correct: "Penasihat Raja Majapahit"
+      },
+      {
+        id: 5,
+        question: "Salah satu karakter mulia Sunan Gresik adalah sifat... karena beliau sering mengobati dan membantu fakir miskin.",
+        options: ["Dermawan", "Pemberani", "Cerdas", "Tegas"],
+        correct: "Dermawan"
+      },
+      {
+        id: 6,
+        question: "Sebutan lain bagi Sunan Gresik yang merujuk pada salah satu julukan beliau di kalangan rakyat adalah...",
+        options: ["Kakek Bantal", "Raden Paku", "Joko Tingkir", "Pangeran Sabrang"],
+        correct: "Kakek Bantal"
+      },
+      {
+        id: 7,
+        question: "Sunan Ampel adalah putra dari... dan Dewi Candrawulan.",
+        options: ["Ibrahim Asmarakandi", "Maulana Malik Ibrahim", "Syekh Jumadil Kubro", "Raden Rahmat"],
+        correct: "Ibrahim Asmarakandi"
+      },
+      {
+        id: 8,
+        question: "Ibu kandung Sunan Ampel, Dewi Candrawulan, adalah putri dari raja yang saat itu berkuasa di...",
+        options: ["Champa", "Majapahit", "Demak", "Mataram"],
+        correct: "Champa"
+      },
+      {
+        id: 9,
+        question: "Daerah utama tempat Sunan Ampel mendirikan pesantren dan menyebarkan Islam terletak di...",
+        options: ["Ampel Denta, Surabaya", "Gresik", "Demak", "Tuban"],
+        correct: "Ampel Denta, Surabaya"
+      },
+      {
+        id: 10,
+        question: "Karakter Sunan Ampel yang menonjol sebagai pemimpin ulama adalah... dalam hukum syariat tetapi tetap bijaksana dalam berdakwah.",
+        options: ["Tegas", "Lemah lembut", "Keras", "Fleksibel"],
+        correct: "Tegas"
+      },
+      {
+        id: 11,
+        question: "Sunan Ampel menggunakan metode pendidikan dengan mendirikan... sebagai pusat pengkaderan ulama.",
+        options: ["Pesantren", "Masjid", "Madrasah", "Zawiyah"],
+        correct: "Pesantren"
+      },
+      {
+        id: 12,
+        question: "Ajaran moral Sunan Ampel yang melarang lima perbuatan tercela adalah...",
+        options: ["Moh Limo", "Panca Sila", "Lima Rukun", "Sepuluh Perintah"],
+        correct: "Moh Limo"
+      },
+      {
+        id: 13,
+        question: "Situs peninggalan bersejarah yang menjadi tempat makam dan pusat ziarah Sunan Ampel terletak di...",
+        options: ["Surabaya", "Gresik", "Demak", "Kudus"],
+        correct: "Surabaya"
+      },
+      {
+        id: 14,
+        question: "Sunan Giri (Raden Paku) adalah murid sekaligus... dari Sunan Ampel.",
+        options: ["Menantu", "Saudara", "Anak", "Keponakan"],
+        correct: "Menantu"
+      },
+      {
+        id: 15,
+        question: "Nama kecil Sunan Giri yang diberikan karena ditemukan mengambang di lautan dalam peti adalah...",
+        options: ["Joko Samudro", "Raden Paku", "Joko Tingkir", "Pangeran Sabrang"],
+        correct: "Joko Samudro"
+      },
+      {
+        id: 16,
+        question: "Setelah diasuh oleh Nyai Gede Pinatih, amanah penting yang dilakukan Sunan Giri adalah belajar ilmu agama di pesantren...",
+        options: ["Ampel Denta", "Giri Kedaton", "Demak", "Tuban"],
+        correct: "Ampel Denta"
+      },
+      {
+        id: 17,
+        question: "Metode dakwah Sunan Giri yang paling efektif dan bertahan lama adalah melalui jalur...",
+        options: ["Pendidikan dan Kesenian", "Politik dan Ekonomi", "Militer dan Diplomasi", "Perdagangan dan Sosial"],
+        correct: "Pendidikan dan Kesenian"
+      },
+      {
+        id: 18,
+        question: "Perjuangan Sunan Giri diwujudkan dengan mendirikan pusat pemerintahan sekaligus keagamaan yang dikenal sebagai...",
+        options: ["Giri Kedaton", "Ampel Denta", "Demak Sultanate", "Majapahit"],
+        correct: "Giri Kedaton"
+      },
+      {
+        id: 19,
+        question: "Makam Sunan Giri dan Giri Kedaton yang bersejarah terletak di Kabupaten...",
+        options: ["Gresik", "Surabaya", "Lamongan", "Tuban"],
+        correct: "Gresik"
+      },
+      {
+        id: 20,
+        question: "Sunan Giri dijuluki... karena selain menjadi raja di Giri Kedaton, beliau juga merupakan seorang ulama yang pandai.",
+        options: ["Raja Pandita", "Kakek Bantal", "Pangeran Sabrang", "Raden Paku"],
+        correct: "Raja Pandita"
+      },
+      {
+        id: 21,
+        question: "Salah satu karya besar Sunan Giri berupa lagu dolanan anak-anak yang mengandung pesan moral Islami adalah...",
+        options: ["Cublak-Cublak Suweng", "Gundul Pacul", "Lir Ilir", "Sluku-Sluku Bathok"],
+        correct: "Cublak-Cublak Suweng"
+      },
+      {
+        id: 22,
+        question: "Pelajaran utama dari perjuangan Sunan Giri adalah bahwa agama dapat disebarkan secara luas melalui...",
+        options: ["Akulturasi dengan budaya lokal", "Kekuatan militer", "Kekuasaan politik", "Perdagangan internasional"],
+        correct: "Akulturasi dengan budaya lokal"
+      },
+      {
+        id: 23,
+        question: "Nama asli Sunan Bonang adalah... putra dari Sunan Ampel.",
+        options: ["Raden Makdum Ibrahim", "Raden Paku", "Raden Qosim", "Raden Rahmat"],
+        correct: "Raden Makdum Ibrahim"
+      },
+      {
+        id: 24,
+        question: "Sunan Bonang menimba ilmu dari ayahnya, Sunan Ampel, dan melanjutkan pendidikannya bersama Raden Paku (Sunan Giri) di...",
+        options: ["Pasai (Aceh)", "Demak", "Tuban", "Gresik"],
+        correct: "Pasai (Aceh)"
+      },
+      {
+        id: 25,
+        question: "Pusat dakwah dan tempat Sunan Bonang dimakamkan terletak di... Jawa Timur.",
+        options: ["Tuban dan Lasem", "Gresik dan Surabaya", "Demak dan Kudus", "Lamongan dan Sidoarjo"],
+        correct: "Tuban dan Lasem"
+      },
+      {
+        id: 26,
+        question: "Perjuangan Sunan Bonang dalam dakwah sangat terkenal karena beliau mampu mengislamkan banyak... dari Kerajaan Majapahit.",
+        options: ["Abdi Dalem", "Pedagang", "Petani", "Nelayan"],
+        correct: "Abdi Dalem"
+      },
+      {
+        id: 27,
+        question: "Alat musik yang menjadi ciri khas metode dakwah Sunan Bonang, yaitu dengan memasukkannya ke dalam perangkat gamelan, adalah...",
+        options: ["Bonang", "Gong", "Kendang", "Saron"],
+        correct: "Bonang"
+      },
+      {
+        id: 28,
+        question: "Tujuan dakwah Sunan Bonang yang menonjol adalah memperkenalkan ajaran... kepada masyarakat Jawa.",
+        options: ["Tasawuf", "Fiqih", "Tauhid", "Akhlak"],
+        correct: "Tasawuf"
+      },
+      {
+        id: 29,
+        question: "Karya sastra Sunan Bonang yang berbentuk puisi Jawa dan mengandung ajaran Tasawuf adalah...",
+        options: ["Suluk Wujil", "Serat Centhini", "Babad Tanah Jawi", "Suluk Malang Sumirang"],
+        correct: "Suluk Wujil"
+      },
+      {
+        id: 30,
+        question: "Sunan Drajat merupakan putra bungsu Sunan Ampel, dengan nama kecil...",
+        options: ["Raden Qosim", "Raden Paku", "Raden Makdum Ibrahim", "Raden Rahmat"],
+        correct: "Raden Qosim"
+      },
+      {
+        id: 31,
+        question: "Sunan Drajat mendapatkan pendidikan agama pertama kali dari ayahnya sendiri di pesantren...",
+        options: ["Ampel Denta", "Giri Kedaton", "Demak", "Drajat"],
+        correct: "Ampel Denta"
+      },
+      {
+        id: 32,
+        question: "Tempat utama Sunan Drajat mendirikan Pesantren Dalem Duwur dan berdakwah adalah di Desa Drajat, Kabupaten...",
+        options: ["Lamongan", "Gresik", "Tuban", "Surabaya"],
+        correct: "Lamongan"
+      },
+      {
+        id: 33,
+        question: "Perjuangan Sunan Drajat yang paling fokus adalah pada... dan pengentasan kemiskinan.",
+        options: ["Kesejahteraan Sosial", "Pendidikan Agama", "Dakwah Islam", "Kesenian Budaya"],
+        correct: "Kesejahteraan Sosial"
+      },
+      {
+        id: 34,
+        question: "Ajaran luhur Sunan Drajat yang menekankan pada kepedulian sosial dan kemanusiaan adalah...",
+        options: ["Pepali Pitu", "Moh Limo", "Suluk Wujil", "Cublak-Cublak Suweng"],
+        correct: "Pepali Pitu"
+      }
+    ];
+
+    let currentState = 'start';
+    let userName = '';
+    let userAnswers = {};
+    let isSubmitted = false;
+    let currentRecordCount = 0;
+
+    const dataHandler = {
+      onDataChanged(data) {
+        currentRecordCount = data.length;
+        if (currentState === 'history') {
+          renderHistoryPage();
+        }
+      }
+    };
+
+    async function initApp() {
+      const initResult = await window.dataSdk.init(dataHandler);
+      if (!initResult.isOk) {
+        console.error("Failed to initialize data SDK");
+      }
+      
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange: async (config) => {
+            const baseSize = config.font_size || defaultConfig.font_size;
+            const customFont = config.font_family || defaultConfig.font_family;
+            const baseFontStack = 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+            
+            document.body.style.background = config.background_color || defaultConfig.background_color;
+            document.body.style.color = config.text_color || defaultConfig.text_color;
+            document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+            document.body.style.fontSize = `${baseSize}px`;
+            
+            const cards = document.querySelectorAll('.card-bg');
+            cards.forEach(card => {
+              card.style.background = config.card_color || defaultConfig.card_color;
+            });
+            
+            const primaryBtns = document.querySelectorAll('.btn-primary');
+            primaryBtns.forEach(btn => {
+              btn.style.background = config.primary_color || defaultConfig.primary_color;
+            });
+            
+            const accentElements = document.querySelectorAll('.accent-color');
+            accentElements.forEach(el => {
+              el.style.color = config.accent_color || defaultConfig.accent_color;
+            });
+            
+            const titleEl = document.getElementById('quiz-title');
+            if (titleEl) titleEl.textContent = config.judul_kuis || defaultConfig.judul_kuis;
+            
+            const descEl = document.getElementById('quiz-desc');
+            if (descEl) descEl.textContent = config.deskripsi || defaultConfig.deskripsi;
+            
+            const startBtn = document.getElementById('start-btn');
+            if (startBtn) startBtn.textContent = config.tombol_mulai || defaultConfig.tombol_mulai;
+            
+            const submitBtn = document.getElementById('submit-btn');
+            if (submitBtn) submitBtn.textContent = config.tombol_submit || defaultConfig.tombol_submit;
+            
+            const headings = document.querySelectorAll('h1');
+            headings.forEach(h => h.style.fontSize = `${baseSize * 2}px`);
+            
+            const subheadings = document.querySelectorAll('h2');
+            subheadings.forEach(h => h.style.fontSize = `${baseSize * 1.5}px`);
+            
+            const labels = document.querySelectorAll('label, .text-sm');
+            labels.forEach(l => l.style.fontSize = `${baseSize * 0.875}px`);
+          },
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () => config.background_color || defaultConfig.background_color,
+                set: (value) => {
+                  config.background_color = value;
+                  window.elementSdk.setConfig({ background_color: value });
+                }
+              },
+              {
+                get: () => config.card_color || defaultConfig.card_color,
+                set: (value) => {
+                  config.card_color = value;
+                  window.elementSdk.setConfig({ card_color: value });
+                }
+              },
+              {
+                get: () => config.primary_color || defaultConfig.primary_color,
+                set: (value) => {
+                  config.primary_color = value;
+                  window.elementSdk.setConfig({ primary_color: value });
+                }
+              },
+              {
+                get: () => config.text_color || defaultConfig.text_color,
+                set: (value) => {
+                  config.text_color = value;
+                  window.elementSdk.setConfig({ text_color: value });
+                }
+              },
+              {
+                get: () => config.accent_color || defaultConfig.accent_color,
+                set: (value) => {
+                  config.accent_color = value;
+                  window.elementSdk.setConfig({ accent_color: value });
+                }
+              }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => config.font_family || defaultConfig.font_family,
+              set: (value) => {
+                config.font_family = value;
+                window.elementSdk.setConfig({ font_family: value });
+              }
+            },
+            fontSizeable: {
+              get: () => config.font_size || defaultConfig.font_size,
+              set: (value) => {
+                config.font_size = value;
+                window.elementSdk.setConfig({ font_size: value });
+              }
+            }
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ["judul_kuis", config.judul_kuis || defaultConfig.judul_kuis],
+            ["deskripsi", config.deskripsi || defaultConfig.deskripsi],
+            ["tombol_mulai", config.tombol_mulai || defaultConfig.tombol_mulai],
+            ["tombol_submit", config.tombol_submit || defaultConfig.tombol_submit]
+          ])
+        });
+      }
+      
+      renderStartPage();
+    }
+
+    function renderStartPage() {
+      currentState = 'start';
+      const config = window.elementSdk?.config || defaultConfig;
+      
+      document.getElementById('app').innerHTML = `
+        <div class="max-w-2xl mx-auto fade-in">
+          <div class="card-bg rounded-2xl shadow-xl p-8 text-center">
+            <h1 id="quiz-title" class="text-4xl font-bold mb-4 accent-color">${config.judul_kuis || defaultConfig.judul_kuis}</h1>
+            <p id="quiz-desc" class="text-lg mb-8 opacity-80">${config.deskripsi || defaultConfig.deskripsi}</p>
+            
+            <div class="mb-6">
+              <label class="block text-left mb-2 font-semibold">Nama Anda:</label>
+              <input 
+                type="text" 
+                id="name-input" 
+                placeholder="Masukkan nama Anda"
+                class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-500 focus:outline-none"
+              />
+            </div>
+            
+            <button 
+              id="start-btn"
+              class="btn-primary w-full py-4 rounded-lg text-white font-bold text-lg hover:opacity-90 transition-opacity mb-4"
+            >
+              ${config.tombol_mulai || defaultConfig.tombol_mulai}
+            </button>
+            
+            <button 
+              onclick="showHistory()"
+              class="w-full py-3 rounded-lg border-2 border-gray-300 font-semibold hover:bg-gray-50 transition-colors"
+            >
+              Lihat Riwayat Nilai
+            </button>
+            
+            <div class="mt-6 text-sm opacity-70">
+              <p>📝 ${quizData.length} Soal Pilihan Ganda</p>
+              <p>⏱️ Tidak ada batas waktu</p>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.getElementById('start-btn').addEventListener('click', startQuiz);
+    }
+
+    function startQuiz() {
+      const nameInput = document.getElementById('name-input');
+      userName = nameInput.value.trim();
+      
+      if (!userName) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'mt-2 text-red-500 text-sm';
+        errorDiv.textContent = 'Mohon masukkan nama Anda terlebih dahulu';
+        nameInput.parentElement.appendChild(errorDiv);
+        setTimeout(() => errorDiv.remove(), 3000);
+        return;
+      }
+      
+      currentState = 'quiz';
+      userAnswers = {};
+      isSubmitted = false;
+      renderQuizPage();
+    }
+
+    function renderQuizPage() {
+      const config = window.elementSdk?.config || defaultConfig;
+      
+      let questionsHTML = quizData.map((q, index) => `
+        <div class="question-card card-bg rounded-xl shadow-lg p-6 mb-6">
+          <h3 class="font-bold text-lg mb-4">
+            <span class="accent-color">Soal ${index + 1}:</span> ${q.question}
+          </h3>
+          <div class="space-y-3">
+            ${q.options.map(option => `
+              <button 
+                class="option-btn w-full text-left px-4 py-3 rounded-lg border-2 border-gray-300 hover:border-blue-400 transition-all ${userAnswers[q.id] === option ? 'border-blue-500 bg-blue-50' : ''}"
+                onclick="selectAnswer(${q.id}, '${option.replace(/'/g, "\\'")}')"
+                ${isSubmitted ? 'disabled' : ''}
+              >
+                ${option}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+      
+      document.getElementById('app').innerHTML = `
+        <div class="max-w-3xl mx-auto fade-in">
+          <div class="card-bg rounded-2xl shadow-xl p-6 mb-6 sticky top-4">
+            <div class="flex justify-between items-center">
+              <div>
+                <h2 class="text-2xl font-bold accent-color">Kuis Wali Songo</h2>
+                <p class="text-sm opacity-70">Peserta: ${userName}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-sm opacity-70">Progres</p>
+                <p class="text-2xl font-bold accent-color">${Object.keys(userAnswers).length}/${quizData.length}</p>
+              </div>
+            </div>
+          </div>
+          
+          ${questionsHTML}
+          
+          <div class="card-bg rounded-xl shadow-lg p-6 sticky bottom-4">
+            <button 
+              id="submit-btn"
+              class="btn-primary w-full py-4 rounded-lg text-white font-bold text-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+              onclick="submitQuiz()"
+              ${Object.keys(userAnswers).length < quizData.length ? 'disabled' : ''}
+            >
+              ${config.tombol_submit || defaultConfig.tombol_submit}
+            </button>
+            <p class="text-center text-sm mt-2 opacity-70">
+              ${Object.keys(userAnswers).length < quizData.length ? 
+                'Jawab semua soal untuk submit' : 'Klik tombol di atas untuk submit jawaban'}
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectAnswer(questionId, answer) {
+      if (isSubmitted) return;
+      userAnswers[questionId] = answer;
+      renderQuizPage();
+    }
+
+    async function submitQuiz() {
+      if (isSubmitted) return;
+      
+      if (currentRecordCount >= 999) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+        errorDiv.textContent = 'Batas maksimum 999 riwayat tercapai. Mohon hapus beberapa riwayat terlebih dahulu.';
+        document.body.appendChild(errorDiv);
+        setTimeout(() => errorDiv.remove(), 5000);
+        return;
+      }
+      
+      isSubmitted = true;
+      
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="inline-block animate-spin mr-2">⏳</span> Memproses...';
+      
+      let correctCount = 0;
+      let incorrectCount = 0;
+      
+      quizData.forEach(q => {
+        const userAnswer = userAnswers[q.id];
+        const isCorrect = userAnswer === q.correct;
+        
+        if (isCorrect) {
+          correctCount++;
+        } else {
+          incorrectCount++;
+        }
+      });
+      
+      const score = Math.round((correctCount / quizData.length) * 100);
+      
+      const result = await window.dataSdk.create({
+        nama: userName,
+        nilai: score,
+        benar: correctCount,
+        salah: incorrectCount,
+        tanggal: new Date().toISOString()
+      });
+      
+      if (result.isOk) {
+        renderResultPage(correctCount, incorrectCount, score);
+      } else {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+        errorDiv.textContent = 'Gagal menyimpan hasil. Silakan coba lagi.';
+        document.body.appendChild(errorDiv);
+        setTimeout(() => errorDiv.remove(), 3000);
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Jawaban';
+      }
+    }
+
+    function renderResultPage(correctCount, incorrectCount, score) {
+      const config = window.elementSdk?.config || defaultConfig;
+      
+      let grade = '';
+      let gradeColor = '';
+      if (score >= 90) {
+        grade = 'A - Luar Biasa! 🌟';
+        gradeColor = 'text-green-600';
+      } else if (score >= 80) {
+        grade = 'B - Sangat Baik! 👏';
+        gradeColor = 'text-blue-600';
+      } else if (score >= 70) {
+        grade = 'C - Baik! 👍';
+        gradeColor = 'text-yellow-600';
+      } else if (score >= 60) {
+        grade = 'D - Cukup 📚';
+        gradeColor = 'text-orange-600';
+      } else {
+        grade = 'E - Perlu Belajar Lagi 💪';
+        gradeColor = 'text-red-600';
+      }
+      
+      let detailsHTML = quizData.map((q, index) => {
+        const userAnswer = userAnswers[q.id];
+        const isCorrect = userAnswer === q.correct;
+        
+        return `
+          <div class="card-bg rounded-xl shadow-lg p-6 mb-4">
+            <h3 class="font-bold mb-3">
+              <span class="accent-color">Soal ${index + 1}:</span> ${q.question}
+            </h3>
+            <div class="space-y-2">
+              ${q.options.map(option => {
+                let className = 'px-4 py-2 rounded-lg border-2 ';
+                if (option === q.correct) {
+                  className += 'border-green-500 bg-green-50';
+                } else if (option === userAnswer && !isCorrect) {
+                  className += 'border-red-500 bg-red-50';
+                } else {
+                  className += 'border-gray-200';
+                }
+                
+                return `
+                  <div class="${className}">
+                    ${option}
+                    ${option === q.correct ? ' ✓' : ''}
+                    ${option === userAnswer && !isCorrect ? ' ✗' : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+            <p class="mt-3 text-sm">
+              <strong>Jawaban Anda:</strong> ${userAnswer || 'Tidak dijawab'}
+              ${isCorrect ? '<span class="text-green-600 font-bold"> ✓ Benar</span>' : '<span class="text-red-600 font-bold"> ✗ Salah</span>'}
+            </p>
+          </div>
+        `;
+      }).join('');
+      
+      document.getElementById('app').innerHTML = `
+        <div class="max-w-3xl mx-auto fade-in">
+          <div class="card-bg rounded-2xl shadow-xl p-8 mb-6 text-center">
+            <h1 class="text-3xl font-bold mb-4 accent-color">Hasil Kuis</h1>
+            <p class="text-xl mb-6">Peserta: <strong>${userName}</strong></p>
+            
+            <div class="grid grid-cols-3 gap-4 mb-6">
+              <div class="card-bg rounded-xl p-4 border-2 border-green-500">
+                <p class="text-3xl font-bold text-green-600">${correctCount}</p>
+                <p class="text-sm opacity-70">Benar</p>
+              </div>
+              <div class="card-bg rounded-xl p-4 border-2 border-red-500">
+                <p class="text-3xl font-bold text-red-600">${incorrectCount}</p>
+                <p class="text-sm opacity-70">Salah</p>
+              </div>
+              <div class="card-bg rounded-xl p-4 border-2 border-blue-500">
+                <p class="text-3xl font-bold text-blue-600">${score}</p>
+                <p class="text-sm opacity-70">Nilai</p>
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <p class="text-2xl font-bold ${gradeColor}">${grade}</p>
+            </div>
+            
+            <div class="flex gap-4">
+              <button 
+                onclick="renderStartPage()"
+                class="btn-primary flex-1 py-3 rounded-lg text-white font-bold hover:opacity-90 transition-opacity"
+              >
+                Kuis Lagi
+              </button>
+              <button 
+                onclick="showHistory()"
+                class="flex-1 py-3 rounded-lg border-2 border-gray-300 font-semibold hover:bg-gray-50 transition-colors"
+              >
+                Lihat Riwayat
+              </button>
+            </div>
+          </div>
+          
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold mb-4 accent-color">Pembahasan Jawaban</h2>
+            ${detailsHTML}
+          </div>
+        </div>
+      `;
+    }
+
+    function showHistory() {
+      currentState = 'history';
+      renderHistoryPage();
+    }
+
+    function renderHistoryPage() {
+      const allData = Array.from(document.querySelectorAll('[data-record]'))
+        .map(el => JSON.parse(el.dataset.record))
+        .sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+      
+      let historyHTML = '';
+      if (allData.length === 0) {
+        historyHTML = `
+          <div class="text-center py-12 opacity-70">
+            <p class="text-xl">Belum ada riwayat kuis</p>
+            <p class="text-sm mt-2">Mulai kuis untuk melihat riwayat nilai Anda</p>
+          </div>
+        `;
+      } else {
+        historyHTML = allData.map((record, index) => {
+          const date = new Date(record.tanggal);
+          const formattedDate = date.toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          
+          return `
+            <div class="card-bg rounded-xl shadow-lg p-6 mb-4" data-record='${JSON.stringify(record)}'>
+              <div class="flex justify-between items-start">
+                <div class="flex-1">
+                  <h3 class="font-bold text-lg accent-color">${record.nama}</h3>
+                  <p class="text-sm opacity-70 mb-3">${formattedDate}</p>
+                  <div class="flex gap-4">
+                    <span class="text-green-600">✓ ${record.benar} Benar</span>
+                    <span class="text-red-600">✗ ${record.salah} Salah</span>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="text-3xl font-bold accent-color">${record.nilai}</p>
+                  <p class="text-sm opacity-70">Nilai</p>
+                  <button 
+                    onclick="deleteRecord('${record.__backendId}')"
+                    class="mt-2 px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                  >
+                    Hapus
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+      
+      document.getElementById('app').innerHTML = `
+        <div class="max-w-3xl mx-auto fade-in">
+          <div class="card-bg rounded-2xl shadow-xl p-6 mb-6">
+            <div class="flex justify-between items-center">
+              <h1 class="text-3xl font-bold accent-color">Riwayat Nilai</h1>
+              <button 
+                onclick="renderStartPage()"
+                class="px-6 py-2 rounded-lg border-2 border-gray-300 font-semibold hover:bg-gray-50 transition-colors"
+              >
+                Kembali
+              </button>
+            </div>
+          </div>
+          
+          ${historyHTML}
+        </div>
+      `;
+    }
+
+    async function deleteRecord(backendId) {
+      const recordEl = document.querySelector(`[data-record*='"__backendId":"${backendId}"']`);
+      if (!recordEl) return;
+      
+      const record = JSON.parse(recordEl.dataset.record);
+      
+      const confirmDiv = document.createElement('div');
+      confirmDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+      confirmDiv.innerHTML = `
+        <div class="bg-white rounded-xl p-6 max-w-sm mx-4">
+          <h3 class="text-xl font-bold mb-4">Konfirmasi Hapus</h3>
+          <p class="mb-6">Yakin ingin menghapus riwayat nilai <strong>${record.nama}</strong>?</p>
+          <div class="flex gap-3">
+            <button id="confirm-delete" class="flex-1 bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600">
+              Hapus
+            </button>
+            <button id="cancel-delete" class="flex-1 border-2 border-gray-300 py-2 rounded-lg font-semibold hover:bg-gray-50">
+              Batal
+            </button>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(confirmDiv);
+      
+      document.getElementById('cancel-delete').addEventListener('click', () => {
+        confirmDiv.remove();
+      });
+      
+      document.getElementById('confirm-delete').addEventListener('click', async () => {
+        const deleteBtn = document.getElementById('confirm-delete');
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '<span class="inline-block animate-spin">⏳</span> Menghapus...';
+        
+        const result = await window.dataSdk.delete(record);
+        
+        if (result.isOk) {
+          confirmDiv.remove();
+        } else {
+          const errorDiv = document.createElement('div');
+          errorDiv.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+          errorDiv.textContent = 'Gagal menghapus riwayat. Silakan coba lagi.';
+          document.body.appendChild(errorDiv);
+          setTimeout(() => errorDiv.remove(), 3000);
+          deleteBtn.disabled = false;
+          deleteBtn.textContent = 'Hapus';
+        }
+      });
+    }
+
+    initApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99a330bf825ed439',t:'MTc2MjQxNzQyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
