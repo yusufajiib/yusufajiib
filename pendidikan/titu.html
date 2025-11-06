@@ -3,36 +3,47 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kuis Wali Songo</title>
+  <title>Kuis Sejarah Wali Songo</title>
   <script src="/_sdk/data_sdk.js"></script>
   <script src="/_sdk/element_sdk.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
       box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
-    .question-card {
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .quiz-container {
+      min-height: 100%;
+    }
+    
+    .option-card {
       transition: all 0.3s ease;
+      cursor: pointer;
     }
     
-    .option-btn {
-      transition: all 0.2s ease;
+    .option-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
     
-    .option-btn:hover {
-      transform: translateX(4px);
+    .option-card.selected {
+      border-width: 3px;
     }
     
-    .correct {
-      background-color: #10b981 !important;
-      color: white !important;
+    .option-card.correct {
+      background-color: #d1fae5;
+      border-color: #10b981;
     }
     
-    .incorrect {
-      background-color: #ef4444 !important;
-      color: white !important;
+    .option-card.incorrect {
+      background-color: #fee2e2;
+      border-color: #ef4444;
     }
     
     .fade-in {
@@ -43,244 +54,251 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    
+    .progress-bar {
+      transition: width 0.3s ease;
+    }
   </style>
   <style>@view-transition { navigation: auto; }</style>
  </head>
- <body class="min-h-full">
-  <div id="app" class="min-h-full p-6"></div>
+ <body>
+  <div id="app" class="quiz-container"></div>
   <script>
     const defaultConfig = {
       background_color: "#f0f9ff",
       card_color: "#ffffff",
-      primary_color: "#0ea5e9",
+      primary_color: "#3b82f6",
       text_color: "#1e293b",
-      accent_color: "#06b6d4",
+      accent_color: "#10b981",
+      font_family: "Inter",
+      font_size: 16,
       judul_kuis: "Kuis Sejarah Wali Songo",
-      deskripsi: "Uji pengetahuan Anda tentang para Wali Songo",
+      deskripsi_kuis: "Uji pengetahuan Anda tentang sejarah para Wali Songo",
       tombol_mulai: "Mulai Kuis",
-      tombol_submit: "Submit Jawaban",
-      font_family: "Segoe UI",
-      font_size: 16
+      tombol_submit: "Submit Jawaban"
     };
+
+    let config = { ...defaultConfig };
+    let currentRecordCount = 0;
 
     const quizData = [
       {
         id: 1,
-        question: "Nama kecil Sunan Gresik yang menunjukkan asal-usul beliau dari Gujarat, India adalah...",
-        options: ["Maulana Malik Ibrahim", "Raden Paku", "Joko Samudro", "Syekh Maghribi"],
-        correct: "Maulana Malik Ibrahim"
+        pertanyaan: "Maulana Malik Ibrahim dihormati oleh rakyat Majapahit dengan sebutan apa?",
+        pilihan: ["Kakek Bantal", "Sunan Ampel", "Raden Paku", "Syekh Maulana"],
+        jawaban: "Kakek Bantal"
       },
       {
         id: 2,
-        question: "Tempat kelahiran Sunan Maulana Malik Ibrahim yang dipercaya berasal dari Asia Tengah adalah di...",
-        options: ["Baghdad", "Samarkand", "Mekah", "Gujarat"],
-        correct: "Samarkand"
+        pertanyaan: "Sumber sejarah menyebutkan bahwa Sunan Gresik kemungkinan berasal dari daerah mana?",
+        pilihan: ["Baghdad", "Samarkand", "Mekah", "Damaskus"],
+        jawaban: "Samarkand"
       },
       {
         id: 3,
-        question: "Metode dakwah yang digunakan Sunan Gresik dengan berdagang, bersikap ramah, dan mengobati rakyat secara gratis dikenal sebagai jalur...",
-        options: ["Sosial dan Ekonomi", "Politik dan Budaya", "Pendidikan dan Seni", "Militer dan Diplomasi"],
-        correct: "Sosial dan Ekonomi"
+        pertanyaan: "Pendekatan dakwah yang dilakukan Sunan Gresik melalui jalur perdagangan dan keramahan dikenal sebagai metode apa?",
+        pilihan: ["Bil-Hikmah", "Bil-Qalam", "Bil-Lisan", "Bil-Hal"],
+        jawaban: "Bil-Hikmah"
       },
       {
         id: 4,
-        question: "Perjuangan Sunan Gresik dalam bidang politik adalah dengan menjadi...",
-        options: ["Penasihat Raja Majapahit", "Panglima Perang", "Gubernur Wilayah", "Hakim Agung"],
-        correct: "Penasihat Raja Majapahit"
+        pertanyaan: "Peran Sunan Gresik di mata Raja Majapahit adalah sebagai apa, selain sebagai saudagar?",
+        pilihan: ["Penasihat", "Tabib", "Panglima", "Menteri"],
+        jawaban: "Tabib"
       },
       {
         id: 5,
-        question: "Salah satu karakter mulia Sunan Gresik adalah sifat... karena beliau sering mengobati dan membantu fakir miskin.",
-        options: ["Dermawan", "Pemberani", "Cerdas", "Tegas"],
-        correct: "Dermawan"
+        pertanyaan: "Karakter Sunan Gresik yang sangat menonjol dalam memuliakan orang miskin dan sakit adalah sifat apa?",
+        pilihan: ["Dermawan", "Pemberani", "Bijaksana", "Tegas"],
+        jawaban: "Dermawan"
       },
       {
         id: 6,
-        question: "Sebutan lain bagi Sunan Gresik yang merujuk pada salah satu julukan beliau di kalangan rakyat adalah...",
-        options: ["Kakek Bantal", "Raden Paku", "Joko Tingkir", "Pangeran Sabrang"],
-        correct: "Kakek Bantal"
+        pertanyaan: "Lokasi kompleks makam Sunan Gresik yang menjadi tujuan ziarah saat ini disebut apa?",
+        pilihan: ["Maqbarah Ampel", "Maqbarah Gapuro Sukolilo", "Maqbarah Giri", "Maqbarah Drajat"],
+        jawaban: "Maqbarah Gapuro Sukolilo"
       },
       {
         id: 7,
-        question: "Sunan Ampel adalah putra dari... dan Dewi Candrawulan.",
-        options: ["Ibrahim Asmarakandi", "Maulana Malik Ibrahim", "Syekh Jumadil Kubro", "Raden Rahmat"],
-        correct: "Ibrahim Asmarakandi"
+        pertanyaan: "Siapa nama ayah Sunan Ampel?",
+        pilihan: ["Syekh Maulana Malik", "Syekh Ibrahim Asmarakandi", "Syekh Jumadil Kubra", "Syekh Ali Rahmatullah"],
+        jawaban: "Syekh Ibrahim Asmarakandi"
       },
       {
         id: 8,
-        question: "Ibu kandung Sunan Ampel, Dewi Candrawulan, adalah putri dari raja yang saat itu berkuasa di...",
-        options: ["Champa", "Majapahit", "Demak", "Mataram"],
-        correct: "Champa"
+        pertanyaan: "Sebelum berdakwah di Jawa, Sunan Ampel tumbuh besar di kerajaan mana?",
+        pilihan: ["Majapahit", "Demak", "Champa", "Malaka"],
+        jawaban: "Champa"
       },
       {
         id: 9,
-        question: "Daerah utama tempat Sunan Ampel mendirikan pesantren dan menyebarkan Islam terletak di...",
-        options: ["Ampel Denta, Surabaya", "Gresik", "Demak", "Tuban"],
-        correct: "Ampel Denta, Surabaya"
+        pertanyaan: "Pesantren Ampel Denta terletak di wilayah kota mana saat ini?",
+        pilihan: ["Gresik", "Surabaya", "Tuban", "Lamongan"],
+        jawaban: "Surabaya"
       },
       {
         id: 10,
-        question: "Karakter Sunan Ampel yang menonjol sebagai pemimpin ulama adalah... dalam hukum syariat tetapi tetap bijaksana dalam berdakwah.",
-        options: ["Tegas", "Lemah lembut", "Keras", "Fleksibel"],
-        correct: "Tegas"
+        pertanyaan: "Karakter Sunan Ampel yang paling kuat dalam menyusun strategi dakwah adalah?",
+        pilihan: ["Visioner", "Pemberani", "Sabar", "Tegas"],
+        jawaban: "Visioner"
       },
       {
         id: 11,
-        question: "Sunan Ampel menggunakan metode pendidikan dengan mendirikan... sebagai pusat pengkaderan ulama.",
-        options: ["Pesantren", "Masjid", "Madrasah", "Zawiyah"],
-        correct: "Pesantren"
+        pertanyaan: "Metode utama Sunan Ampel adalah melalui apa?",
+        pilihan: ["Perdagangan", "Pendidikan", "Politik", "Kesenian"],
+        jawaban: "Pendidikan"
       },
       {
         id: 12,
-        question: "Ajaran moral Sunan Ampel yang melarang lima perbuatan tercela adalah...",
-        options: ["Moh Limo", "Panca Sila", "Lima Rukun", "Sepuluh Perintah"],
-        correct: "Moh Limo"
+        pertanyaan: "Salah satu larangan dalam ajaran Moh Limo adalah Moh Maling, yang berarti tidak mau melakukan apa?",
+        pilihan: ["Berbohong", "Pencurian", "Berjudi", "Mabuk"],
+        jawaban: "Pencurian"
       },
       {
         id: 13,
-        question: "Situs peninggalan bersejarah yang menjadi tempat makam dan pusat ziarah Sunan Ampel terletak di...",
-        options: ["Surabaya", "Gresik", "Demak", "Kudus"],
-        correct: "Surabaya"
+        pertanyaan: "Masjid peninggalan Sunan Ampel yang masih digunakan hingga kini disebut apa?",
+        pilihan: ["Masjid Demak", "Masjid Ampel", "Masjid Giri", "Masjid Agung"],
+        jawaban: "Masjid Ampel"
       },
       {
         id: 14,
-        question: "Sunan Giri (Raden Paku) adalah murid sekaligus... dari Sunan Ampel.",
-        options: ["Menantu", "Saudara", "Anak", "Keponakan"],
-        correct: "Menantu"
+        pertanyaan: "Sunan Giri menikahi putri Sunan Ampel yang bernama siapa?",
+        pilihan: ["Dewi Candrawati", "Dewi Murthasimah", "Dewi Sekardadu", "Dewi Retno"],
+        jawaban: "Dewi Murthasimah"
       },
       {
         id: 15,
-        question: "Nama kecil Sunan Giri yang diberikan karena ditemukan mengambang di lautan dalam peti adalah...",
-        options: ["Joko Samudro", "Raden Paku", "Joko Tingkir", "Pangeran Sabrang"],
-        correct: "Joko Samudro"
+        pertanyaan: "Setelah dihanyutkan, Raden Paku ditemukan dan dibesarkan oleh siapa?",
+        pilihan: ["Nyai Gede Pinatih", "Nyai Roro Kidul", "Nyai Ageng Serang", "Nyai Ontosoroh"],
+        jawaban: "Nyai Gede Pinatih"
       },
       {
         id: 16,
-        question: "Setelah diasuh oleh Nyai Gede Pinatih, amanah penting yang dilakukan Sunan Giri adalah belajar ilmu agama di pesantren...",
-        options: ["Ampel Denta", "Giri Kedaton", "Demak", "Tuban"],
-        correct: "Ampel Denta"
+        pertanyaan: "Setelah dewasa, Sunan Giri diutus oleh Sunan Ampel untuk berguru ke Tanah Suci bersama siapa?",
+        pilihan: ["Sunan Bonang", "Sunan Drajat", "Sunan Kalijaga", "Sunan Kudus"],
+        jawaban: "Sunan Bonang"
       },
       {
         id: 17,
-        question: "Metode dakwah Sunan Giri yang paling efektif dan bertahan lama adalah melalui jalur...",
-        options: ["Pendidikan dan Kesenian", "Politik dan Ekonomi", "Militer dan Diplomasi", "Perdagangan dan Sosial"],
-        correct: "Pendidikan dan Kesenian"
+        pertanyaan: "Metode dakwah Sunan Giri yang inovatif adalah dengan menciptakan apa yang bernapaskan Islam?",
+        pilihan: ["Wayang", "Seni Dolanan", "Gamelan", "Tembang"],
+        jawaban: "Seni Dolanan"
       },
       {
         id: 18,
-        question: "Perjuangan Sunan Giri diwujudkan dengan mendirikan pusat pemerintahan sekaligus keagamaan yang dikenal sebagai...",
-        options: ["Giri Kedaton", "Ampel Denta", "Demak Sultanate", "Majapahit"],
-        correct: "Giri Kedaton"
+        pertanyaan: "Pusat kekuasaan dan pendidikan yang didirikan Sunan Giri di atas bukit disebut apa?",
+        pilihan: ["Giri Kedaton", "Ampel Denta", "Demak Bintoro", "Kudus Menara"],
+        jawaban: "Giri Kedaton"
       },
       {
         id: 19,
-        question: "Makam Sunan Giri dan Giri Kedaton yang bersejarah terletak di Kabupaten...",
-        options: ["Gresik", "Surabaya", "Lamongan", "Tuban"],
-        correct: "Gresik"
+        pertanyaan: "Kota tempat Sunan Giri menyebarkan Islam dan di mana Giri Kedaton berdiri adalah?",
+        pilihan: ["Surabaya", "Gresik", "Tuban", "Lamongan"],
+        jawaban: "Gresik"
       },
       {
         id: 20,
-        question: "Sunan Giri dijuluki... karena selain menjadi raja di Giri Kedaton, beliau juga merupakan seorang ulama yang pandai.",
-        options: ["Raja Pandita", "Kakek Bantal", "Pangeran Sabrang", "Raden Paku"],
-        correct: "Raja Pandita"
+        pertanyaan: "Sunan Giri dijuluki apa karena beliau mampu menyatukan urusan agama dan pemerintahan?",
+        pilihan: ["Prabu Satmata", "Ratu Adil", "Sultan Agung", "Pangeran Diponegoro"],
+        jawaban: "Prabu Satmata"
       },
       {
         id: 21,
-        question: "Salah satu karya besar Sunan Giri berupa lagu dolanan anak-anak yang mengandung pesan moral Islami adalah...",
-        options: ["Cublak-Cublak Suweng", "Gundul Pacul", "Lir Ilir", "Sluku-Sluku Bathok"],
-        correct: "Cublak-Cublak Suweng"
+        pertanyaan: "Selain Cublak-Cublak Suweng, lagu dolanan karya Sunan Giri yang lain adalah?",
+        pilihan: ["Gundul Pacul", "Jelungan", "Lir Ilir", "Tombo Ati"],
+        jawaban: "Jelungan"
       },
       {
         id: 22,
-        question: "Pelajaran utama dari perjuangan Sunan Giri adalah bahwa agama dapat disebarkan secara luas melalui...",
-        options: ["Akulturasi dengan budaya lokal", "Kekuatan militer", "Kekuasaan politik", "Perdagangan internasional"],
-        correct: "Akulturasi dengan budaya lokal"
+        pertanyaan: "Pelajaran utama dari perjuangan Sunan Giri adalah kemampuan apa yang diwujudkan dalam penguasaan agama dan politik?",
+        pilihan: ["Kepemimpinan", "Kesabaran", "Keberanian", "Kebijaksanaan"],
+        jawaban: "Kepemimpinan"
       },
       {
         id: 23,
-        question: "Nama asli Sunan Bonang adalah... putra dari Sunan Ampel.",
-        options: ["Raden Makdum Ibrahim", "Raden Paku", "Raden Qosim", "Raden Rahmat"],
-        correct: "Raden Makdum Ibrahim"
+        pertanyaan: "Sunan Bonang dikenal dengan nama kecil apa?",
+        pilihan: ["Raden Paku", "Makdum Ibrahim", "Raden Qosim", "Raden Mas Said"],
+        jawaban: "Makdum Ibrahim"
       },
       {
         id: 24,
-        question: "Sunan Bonang menimba ilmu dari ayahnya, Sunan Ampel, dan melanjutkan pendidikannya bersama Raden Paku (Sunan Giri) di...",
-        options: ["Pasai (Aceh)", "Demak", "Tuban", "Gresik"],
-        correct: "Pasai (Aceh)"
+        pertanyaan: "Sunan Bonang memiliki keahlian dalam ilmu apa yang diperoleh dari berbagai guru?",
+        pilihan: ["Fiqih", "Tasawuf", "Hadits", "Tafsir"],
+        jawaban: "Tasawuf"
       },
       {
         id: 25,
-        question: "Pusat dakwah dan tempat Sunan Bonang dimakamkan terletak di... Jawa Timur.",
-        options: ["Tuban dan Lasem", "Gresik dan Surabaya", "Demak dan Kudus", "Lamongan dan Sidoarjo"],
-        correct: "Tuban dan Lasem"
+        pertanyaan: "Meskipun berpusat di Tuban dan Lasem, nama Bonang diambil dari nama desa di daerah mana?",
+        pilihan: ["Gresik", "Rembang", "Demak", "Kudus"],
+        jawaban: "Rembang"
       },
       {
         id: 26,
-        question: "Perjuangan Sunan Bonang dalam dakwah sangat terkenal karena beliau mampu mengislamkan banyak... dari Kerajaan Majapahit.",
-        options: ["Abdi Dalem", "Pedagang", "Petani", "Nelayan"],
-        correct: "Abdi Dalem"
+        pertanyaan: "Salah satu strategi Sunan Bonang untuk menarik perhatian masyarakat adalah melalui alat musik apa?",
+        pilihan: ["Rebana", "Gamelan", "Seruling", "Kendang"],
+        jawaban: "Gamelan"
       },
       {
         id: 27,
-        question: "Alat musik yang menjadi ciri khas metode dakwah Sunan Bonang, yaitu dengan memasukkannya ke dalam perangkat gamelan, adalah...",
-        options: ["Bonang", "Gong", "Kendang", "Saron"],
-        correct: "Bonang"
+        pertanyaan: "Tembang-tembang karya Sunan Bonang yang berisi nasihat keagamaan disebut apa?",
+        pilihan: ["Tembang Macapat", "Tembang Dolanan", "Tembang Kinanthi", "Tembang Sinom"],
+        jawaban: "Tembang Macapat"
       },
       {
         id: 28,
-        question: "Tujuan dakwah Sunan Bonang yang menonjol adalah memperkenalkan ajaran... kepada masyarakat Jawa.",
-        options: ["Tasawuf", "Fiqih", "Tauhid", "Akhlak"],
-        correct: "Tasawuf"
+        pertanyaan: "Ajaran apa yang disampaikan Sunan Bonang untuk memenuhi kebutuhan spiritual masyarakat Jawa?",
+        pilihan: ["Fiqih", "Tasawuf", "Akhlak", "Tauhid"],
+        jawaban: "Tasawuf"
       },
       {
         id: 29,
-        question: "Karya sastra Sunan Bonang yang berbentuk puisi Jawa dan mengandung ajaran Tasawuf adalah...",
-        options: ["Suluk Wujil", "Serat Centhini", "Babad Tanah Jawi", "Suluk Malang Sumirang"],
-        correct: "Suluk Wujil"
+        pertanyaan: "Salah satu kitab yang ditulis Sunan Bonang dan menjadi pedoman ajaran spiritual adalah?",
+        pilihan: ["Suluk Wujil", "Serat Centhini", "Babad Tanah Jawi", "Kitab Primbon"],
+        jawaban: "Suluk Wujil"
       },
       {
         id: 30,
-        question: "Sunan Drajat merupakan putra bungsu Sunan Ampel, dengan nama kecil...",
-        options: ["Raden Qosim", "Raden Paku", "Raden Makdum Ibrahim", "Raden Rahmat"],
-        correct: "Raden Qosim"
+        pertanyaan: "Sunan Drajat merupakan putra bungsu Sunan Ampel yang dikenal dengan nama apa?",
+        pilihan: ["Raden Paku", "Raden Qosim", "Makdum Ibrahim", "Raden Mas Said"],
+        jawaban: "Raden Qosim"
       },
       {
         id: 31,
-        question: "Sunan Drajat mendapatkan pendidikan agama pertama kali dari ayahnya sendiri di pesantren...",
-        options: ["Ampel Denta", "Giri Kedaton", "Demak", "Drajat"],
-        correct: "Ampel Denta"
+        pertanyaan: "Sama seperti saudara-saudaranya, guru utama Sunan Drajat di masa mudanya adalah siapa?",
+        pilihan: ["Sunan Gresik", "Sunan Ampel", "Sunan Giri", "Sunan Bonang"],
+        jawaban: "Sunan Ampel"
       },
       {
         id: 32,
-        question: "Tempat utama Sunan Drajat mendirikan Pesantren Dalem Duwur dan berdakwah adalah di Desa Drajat, Kabupaten...",
-        options: ["Lamongan", "Gresik", "Tuban", "Surabaya"],
-        correct: "Lamongan"
+        pertanyaan: "Sunan Drajat berdakwah di daerah pantai utara Jawa, tepatnya di mana?",
+        pilihan: ["Gresik", "Lamongan", "Tuban", "Rembang"],
+        jawaban: "Lamongan"
       },
       {
         id: 33,
-        question: "Perjuangan Sunan Drajat yang paling fokus adalah pada... dan pengentasan kemiskinan.",
-        options: ["Kesejahteraan Sosial", "Pendidikan Agama", "Dakwah Islam", "Kesenian Budaya"],
-        correct: "Kesejahteraan Sosial"
+        pertanyaan: "Perjuangan Sunan Drajat yang paling terkenal adalah ajaran apa yang fokus pada 7 ajaran moral?",
+        pilihan: ["Moh Limo", "Pepali Pitu", "Wejangan Luhur", "Piwulang Becik"],
+        jawaban: "Pepali Pitu"
       },
       {
         id: 34,
-        question: "Ajaran luhur Sunan Drajat yang menekankan pada kepedulian sosial dan kemanusiaan adalah...",
-        options: ["Pepali Pitu", "Moh Limo", "Suluk Wujil", "Cublak-Cublak Suweng"],
-        correct: "Pepali Pitu"
+        pertanyaan: "Pesan utama dari ajaran 'Wenehana mangan marang wong kang luwe' mengajarkan pentingnya apa?",
+        pilihan: ["Kejujuran", "Kepedulian Sosial", "Kesabaran", "Keikhlasan"],
+        jawaban: "Kepedulian Sosial"
       }
     ];
 
-    let currentState = 'start';
-    let userName = '';
-    let userAnswers = {};
-    let isSubmitted = false;
-    let currentRecordCount = 0;
+    let currentQuestion = 0;
+    let userAnswers = [];
+    let quizStarted = false;
+    let quizFinished = false;
+    let isSubmitting = false;
 
     const dataHandler = {
       onDataChanged(data) {
         currentRecordCount = data.length;
-        if (currentState === 'history') {
-          renderHistoryPage();
+        if (quizFinished) {
+          renderResults();
         }
       }
     };
@@ -288,540 +306,580 @@
     async function initApp() {
       const initResult = await window.dataSdk.init(dataHandler);
       if (!initResult.isOk) {
-        console.error("Failed to initialize data SDK");
+        console.error("Gagal menginisialisasi Data SDK");
       }
       
       if (window.elementSdk) {
         window.elementSdk.init({
           defaultConfig,
-          onConfigChange: async (config) => {
-            const baseSize = config.font_size || defaultConfig.font_size;
-            const customFont = config.font_family || defaultConfig.font_family;
-            const baseFontStack = 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
-            
-            document.body.style.background = config.background_color || defaultConfig.background_color;
-            document.body.style.color = config.text_color || defaultConfig.text_color;
-            document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
-            document.body.style.fontSize = `${baseSize}px`;
-            
-            const cards = document.querySelectorAll('.card-bg');
-            cards.forEach(card => {
-              card.style.background = config.card_color || defaultConfig.card_color;
-            });
-            
-            const primaryBtns = document.querySelectorAll('.btn-primary');
-            primaryBtns.forEach(btn => {
-              btn.style.background = config.primary_color || defaultConfig.primary_color;
-            });
-            
-            const accentElements = document.querySelectorAll('.accent-color');
-            accentElements.forEach(el => {
-              el.style.color = config.accent_color || defaultConfig.accent_color;
-            });
-            
-            const titleEl = document.getElementById('quiz-title');
-            if (titleEl) titleEl.textContent = config.judul_kuis || defaultConfig.judul_kuis;
-            
-            const descEl = document.getElementById('quiz-desc');
-            if (descEl) descEl.textContent = config.deskripsi || defaultConfig.deskripsi;
-            
-            const startBtn = document.getElementById('start-btn');
-            if (startBtn) startBtn.textContent = config.tombol_mulai || defaultConfig.tombol_mulai;
-            
-            const submitBtn = document.getElementById('submit-btn');
-            if (submitBtn) submitBtn.textContent = config.tombol_submit || defaultConfig.tombol_submit;
-            
-            const headings = document.querySelectorAll('h1');
-            headings.forEach(h => h.style.fontSize = `${baseSize * 2}px`);
-            
-            const subheadings = document.querySelectorAll('h2');
-            subheadings.forEach(h => h.style.fontSize = `${baseSize * 1.5}px`);
-            
-            const labels = document.querySelectorAll('label, .text-sm');
-            labels.forEach(l => l.style.fontSize = `${baseSize * 0.875}px`);
+          onConfigChange: async (newConfig) => {
+            config = { ...newConfig };
+            render();
           },
-          mapToCapabilities: (config) => ({
+          mapToCapabilities: (cfg) => ({
             recolorables: [
               {
-                get: () => config.background_color || defaultConfig.background_color,
+                get: () => cfg.background_color || defaultConfig.background_color,
                 set: (value) => {
-                  config.background_color = value;
+                  cfg.background_color = value;
                   window.elementSdk.setConfig({ background_color: value });
                 }
               },
               {
-                get: () => config.card_color || defaultConfig.card_color,
+                get: () => cfg.card_color || defaultConfig.card_color,
                 set: (value) => {
-                  config.card_color = value;
+                  cfg.card_color = value;
                   window.elementSdk.setConfig({ card_color: value });
                 }
               },
               {
-                get: () => config.primary_color || defaultConfig.primary_color,
+                get: () => cfg.primary_color || defaultConfig.primary_color,
                 set: (value) => {
-                  config.primary_color = value;
+                  cfg.primary_color = value;
                   window.elementSdk.setConfig({ primary_color: value });
                 }
               },
               {
-                get: () => config.text_color || defaultConfig.text_color,
+                get: () => cfg.text_color || defaultConfig.text_color,
                 set: (value) => {
-                  config.text_color = value;
+                  cfg.text_color = value;
                   window.elementSdk.setConfig({ text_color: value });
                 }
               },
               {
-                get: () => config.accent_color || defaultConfig.accent_color,
+                get: () => cfg.accent_color || defaultConfig.accent_color,
                 set: (value) => {
-                  config.accent_color = value;
+                  cfg.accent_color = value;
                   window.elementSdk.setConfig({ accent_color: value });
                 }
               }
             ],
             borderables: [],
             fontEditable: {
-              get: () => config.font_family || defaultConfig.font_family,
+              get: () => cfg.font_family || defaultConfig.font_family,
               set: (value) => {
-                config.font_family = value;
+                cfg.font_family = value;
                 window.elementSdk.setConfig({ font_family: value });
               }
             },
             fontSizeable: {
-              get: () => config.font_size || defaultConfig.font_size,
+              get: () => cfg.font_size || defaultConfig.font_size,
               set: (value) => {
-                config.font_size = value;
+                cfg.font_size = value;
                 window.elementSdk.setConfig({ font_size: value });
               }
             }
           }),
-          mapToEditPanelValues: (config) => new Map([
-            ["judul_kuis", config.judul_kuis || defaultConfig.judul_kuis],
-            ["deskripsi", config.deskripsi || defaultConfig.deskripsi],
-            ["tombol_mulai", config.tombol_mulai || defaultConfig.tombol_mulai],
-            ["tombol_submit", config.tombol_submit || defaultConfig.tombol_submit]
+          mapToEditPanelValues: (cfg) => new Map([
+            ["judul_kuis", cfg.judul_kuis || defaultConfig.judul_kuis],
+            ["deskripsi_kuis", cfg.deskripsi_kuis || defaultConfig.deskripsi_kuis],
+            ["tombol_mulai", cfg.tombol_mulai || defaultConfig.tombol_mulai],
+            ["tombol_submit", cfg.tombol_submit || defaultConfig.tombol_submit]
           ])
         });
+        
+        if (window.elementSdk.config) {
+          config = { ...window.elementSdk.config };
+        }
       }
       
-      renderStartPage();
+      render();
     }
 
-    function renderStartPage() {
-      currentState = 'start';
-      const config = window.elementSdk?.config || defaultConfig;
+    function render() {
+      const app = document.getElementById('app');
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseSize = config.font_size || defaultConfig.font_size;
+      const bgColor = config.background_color || defaultConfig.background_color;
+      const cardColor = config.card_color || defaultConfig.card_color;
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const accentColor = config.accent_color || defaultConfig.accent_color;
       
-      document.getElementById('app').innerHTML = `
-        <div class="max-w-2xl mx-auto fade-in">
-          <div class="card-bg rounded-2xl shadow-xl p-8 text-center">
-            <h1 id="quiz-title" class="text-4xl font-bold mb-4 accent-color">${config.judul_kuis || defaultConfig.judul_kuis}</h1>
-            <p id="quiz-desc" class="text-lg mb-8 opacity-80">${config.deskripsi || defaultConfig.deskripsi}</p>
-            
+      document.body.style.backgroundColor = bgColor;
+      document.body.style.fontFamily = `${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+      
+      if (!quizStarted) {
+        app.innerHTML = `
+          <div class="flex items-center justify-center min-h-full p-6">
+            <div class="w-full max-w-2xl fade-in" style="background-color: ${cardColor}; border-radius: 16px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); padding: 48px;">
+              <div class="text-center">
+                <div style="width: 80px; height: 80px; background-color: ${primaryColor}; border-radius: 50%; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;">
+                  <span style="font-size: ${baseSize * 2.5}px;">📚</span>
+                </div>
+                <h1 style="font-size: ${baseSize * 2}px; font-weight: 700; color: ${textColor}; margin-bottom: 16px; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                  ${config.judul_kuis || defaultConfig.judul_kuis}
+                </h1>
+                <p style="font-size: ${baseSize * 1.125}px; color: ${textColor}; opacity: 0.7; margin-bottom: 32px; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                  ${config.deskripsi_kuis || defaultConfig.deskripsi_kuis}
+                </p>
+                <div style="background-color: ${bgColor}; border-radius: 12px; padding: 24px; margin-bottom: 32px;">
+                  <div style="display: flex; justify-content: space-around; text-align: center;">
+                    <div>
+                      <div style="font-size: ${baseSize * 2}px; font-weight: 700; color: ${primaryColor}; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">${quizData.length}</div>
+                      <div style="font-size: ${baseSize * 0.875}px; color: ${textColor}; opacity: 0.6; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">Pertanyaan</div>
+                    </div>
+                    <div>
+                      <div style="font-size: ${baseSize * 2}px; font-weight: 700; color: ${accentColor}; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">⏱️</div>
+                      <div style="font-size: ${baseSize * 0.875}px; color: ${textColor}; opacity: 0.6; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">Tanpa Batas</div>
+                    </div>
+                  </div>
+                </div>
+                <button onclick="startQuiz()" style="background-color: ${primaryColor}; color: white; font-size: ${baseSize * 1.125}px; font-weight: 600; padding: 16px 48px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 8px 24px rgba(59, 130, 246, 0.3)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                  ${config.tombol_mulai || defaultConfig.tombol_mulai}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (!quizFinished) {
+        renderQuestion();
+      } else {
+        renderResults();
+      }
+    }
+
+    function renderQuestion() {
+      const app = document.getElementById('app');
+      const question = quizData[currentQuestion];
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseSize = config.font_size || defaultConfig.font_size;
+      const cardColor = config.card_color || defaultConfig.card_color;
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const accentColor = config.accent_color || defaultConfig.accent_color;
+      const progress = ((currentQuestion + 1) / quizData.length) * 100;
+      
+      app.innerHTML = `
+        <div class="min-h-full p-6">
+          <div class="max-w-3xl mx-auto">
             <div class="mb-6">
-              <label class="block text-left mb-2 font-semibold">Nama Anda:</label>
-              <input 
-                type="text" 
-                id="name-input" 
-                placeholder="Masukkan nama Anda"
-                class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-500 focus:outline-none"
-              />
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: ${baseSize * 0.875}px; color: ${textColor}; opacity: 0.7; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                  Pertanyaan ${currentQuestion + 1} dari ${quizData.length}
+                </span>
+                <span style="font-size: ${baseSize * 0.875}px; font-weight: 600; color: ${primaryColor}; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                  ${Math.round(progress)}%
+                </span>
+              </div>
+              <div style="width: 100%; height: 8px; background-color: rgba(59, 130, 246, 0.2); border-radius: 999px; overflow: hidden;">
+                <div class="progress-bar" style="width: ${progress}%; height: 100%; background-color: ${primaryColor}; border-radius: 999px;"></div>
+              </div>
             </div>
             
-            <button 
-              id="start-btn"
-              class="btn-primary w-full py-4 rounded-lg text-white font-bold text-lg hover:opacity-90 transition-opacity mb-4"
-            >
-              ${config.tombol_mulai || defaultConfig.tombol_mulai}
-            </button>
-            
-            <button 
-              onclick="showHistory()"
-              class="w-full py-3 rounded-lg border-2 border-gray-300 font-semibold hover:bg-gray-50 transition-colors"
-            >
-              Lihat Riwayat Nilai
-            </button>
-            
-            <div class="mt-6 text-sm opacity-70">
-              <p>📝 ${quizData.length} Soal Pilihan Ganda</p>
-              <p>⏱️ Tidak ada batas waktu</p>
+            <div class="fade-in" style="background-color: ${cardColor}; border-radius: 16px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); padding: 40px; margin-bottom: 24px;">
+              <h2 style="font-size: ${baseSize * 1.5}px; font-weight: 700; color: ${textColor}; margin-bottom: 32px; line-height: 1.4; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                ${question.pertanyaan}
+              </h2>
+              
+              <div id="options-container" style="display: grid; gap: 16px;">
+                ${question.pilihan.map((pilihan, index) => `
+                  <div class="option-card" onclick="selectOption(${index})" style="background-color: ${cardColor}; border: 2px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 20px; cursor: pointer; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                      <div style="width: 32px; height: 32px; border-radius: 50%; background-color: ${primaryColor}; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: ${baseSize * 0.875}px; flex-shrink: 0;">
+                        ${String.fromCharCode(65 + index)}
+                      </div>
+                      <span style="font-size: ${baseSize}px; color: ${textColor}; font-weight: 500;">
+                        ${pilihan}
+                      </span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
             </div>
-          </div>
-        </div>
-      `;
-      
-      document.getElementById('start-btn').addEventListener('click', startQuiz);
-    }
-
-    function startQuiz() {
-      const nameInput = document.getElementById('name-input');
-      userName = nameInput.value.trim();
-      
-      if (!userName) {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'mt-2 text-red-500 text-sm';
-        errorDiv.textContent = 'Mohon masukkan nama Anda terlebih dahulu';
-        nameInput.parentElement.appendChild(errorDiv);
-        setTimeout(() => errorDiv.remove(), 3000);
-        return;
-      }
-      
-      currentState = 'quiz';
-      userAnswers = {};
-      isSubmitted = false;
-      renderQuizPage();
-    }
-
-    function renderQuizPage() {
-      const config = window.elementSdk?.config || defaultConfig;
-      
-      let questionsHTML = quizData.map((q, index) => `
-        <div class="question-card card-bg rounded-xl shadow-lg p-6 mb-6">
-          <h3 class="font-bold text-lg mb-4">
-            <span class="accent-color">Soal ${index + 1}:</span> ${q.question}
-          </h3>
-          <div class="space-y-3">
-            ${q.options.map(option => `
-              <button 
-                class="option-btn w-full text-left px-4 py-3 rounded-lg border-2 border-gray-300 hover:border-blue-400 transition-all ${userAnswers[q.id] === option ? 'border-blue-500 bg-blue-50' : ''}"
-                onclick="selectAnswer(${q.id}, '${option.replace(/'/g, "\\'")}')"
-                ${isSubmitted ? 'disabled' : ''}
-              >
-                ${option}
+            
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <button onclick="previousQuestion()" ${currentQuestion === 0 ? 'disabled' : ''} style="background-color: ${cardColor}; color: ${textColor}; font-size: ${baseSize}px; font-weight: 600; padding: 12px 24px; border-radius: 12px; border: 2px solid rgba(59, 130, 246, 0.2); cursor: ${currentQuestion === 0 ? 'not-allowed' : 'pointer'}; opacity: ${currentQuestion === 0 ? '0.5' : '1'}; transition: all 0.3s ease; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                ← Sebelumnya
               </button>
-            `).join('')}
-          </div>
-        </div>
-      `).join('');
-      
-      document.getElementById('app').innerHTML = `
-        <div class="max-w-3xl mx-auto fade-in">
-          <div class="card-bg rounded-2xl shadow-xl p-6 mb-6 sticky top-4">
-            <div class="flex justify-between items-center">
-              <div>
-                <h2 class="text-2xl font-bold accent-color">Kuis Wali Songo</h2>
-                <p class="text-sm opacity-70">Peserta: ${userName}</p>
-              </div>
-              <div class="text-right">
-                <p class="text-sm opacity-70">Progres</p>
-                <p class="text-2xl font-bold accent-color">${Object.keys(userAnswers).length}/${quizData.length}</p>
-              </div>
+              
+              ${currentQuestion === quizData.length - 1 ? `
+                <button id="submit-btn" onclick="submitQuiz()" style="background-color: ${accentColor}; color: white; font-size: ${baseSize}px; font-weight: 600; padding: 12px 32px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                  ${config.tombol_submit || defaultConfig.tombol_submit}
+                </button>
+              ` : `
+                <button onclick="nextQuestion()" style="background-color: ${primaryColor}; color: white; font-size: ${baseSize}px; font-weight: 600; padding: 12px 32px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                  Selanjutnya →
+                </button>
+              `}
             </div>
-          </div>
-          
-          ${questionsHTML}
-          
-          <div class="card-bg rounded-xl shadow-lg p-6 sticky bottom-4">
-            <button 
-              id="submit-btn"
-              class="btn-primary w-full py-4 rounded-lg text-white font-bold text-lg hover:opacity-90 transition-opacity disabled:opacity-50"
-              onclick="submitQuiz()"
-              ${Object.keys(userAnswers).length < quizData.length ? 'disabled' : ''}
-            >
-              ${config.tombol_submit || defaultConfig.tombol_submit}
-            </button>
-            <p class="text-center text-sm mt-2 opacity-70">
-              ${Object.keys(userAnswers).length < quizData.length ? 
-                'Jawab semua soal untuk submit' : 'Klik tombol di atas untuk submit jawaban'}
-            </p>
           </div>
         </div>
       `;
-    }
-
-    function selectAnswer(questionId, answer) {
-      if (isSubmitted) return;
-      userAnswers[questionId] = answer;
-      renderQuizPage();
-    }
-
-    async function submitQuiz() {
-      if (isSubmitted) return;
       
-      if (currentRecordCount >= 999) {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-        errorDiv.textContent = 'Batas maksimum 999 riwayat tercapai. Mohon hapus beberapa riwayat terlebih dahulu.';
-        document.body.appendChild(errorDiv);
-        setTimeout(() => errorDiv.remove(), 5000);
-        return;
+      if (userAnswers[currentQuestion] !== undefined) {
+        const selectedCard = document.querySelectorAll('.option-card')[userAnswers[currentQuestion]];
+        if (selectedCard) {
+          selectedCard.classList.add('selected');
+          selectedCard.style.borderColor = primaryColor;
+          selectedCard.style.backgroundColor = `${primaryColor}15`;
+        }
       }
-      
-      isSubmitted = true;
-      
-      const submitBtn = document.getElementById('submit-btn');
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="inline-block animate-spin mr-2">⏳</span> Memproses...';
+    }
+
+    function renderResults() {
+      const app = document.getElementById('app');
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseSize = config.font_size || defaultConfig.font_size;
+      const cardColor = config.card_color || defaultConfig.card_color;
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const accentColor = config.accent_color || defaultConfig.accent_color;
       
       let correctCount = 0;
-      let incorrectCount = 0;
-      
-      quizData.forEach(q => {
-        const userAnswer = userAnswers[q.id];
-        const isCorrect = userAnswer === q.correct;
-        
-        if (isCorrect) {
-          correctCount++;
-        } else {
-          incorrectCount++;
-        }
+      const results = quizData.map((q, index) => {
+        const userAnswer = q.pilihan[userAnswers[index]];
+        const isCorrect = userAnswer === q.jawaban;
+        if (isCorrect) correctCount++;
+        return { ...q, userAnswer, isCorrect };
       });
       
       const score = Math.round((correctCount / quizData.length) * 100);
+      const incorrectCount = quizData.length - correctCount;
+      
+      app.innerHTML = `
+        <div class="min-h-full p-6">
+          <div class="max-w-4xl mx-auto">
+            <div class="fade-in" style="background-color: ${cardColor}; border-radius: 16px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); padding: 48px; margin-bottom: 24px; text-align: center;">
+              <div style="width: 100px; height: 100px; background: linear-gradient(135deg, ${primaryColor}, ${accentColor}); border-radius: 50%; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: ${baseSize * 3}px;">🎉</span>
+              </div>
+              
+              <h1 style="font-size: ${baseSize * 2}px; font-weight: 700; color: ${textColor}; margin-bottom: 16px; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                Kuis Selesai!
+              </h1>
+              
+              <p style="font-size: ${baseSize * 1.125}px; color: ${textColor}; opacity: 0.7; margin-bottom: 32px; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                Berikut adalah hasil kuis Anda
+              </p>
+              
+              <div style="display: inline-block; background: linear-gradient(135deg, ${primaryColor}, ${accentColor}); border-radius: 16px; padding: 32px 48px; margin-bottom: 32px;">
+                <div style="font-size: ${baseSize * 4}px; font-weight: 700; color: white; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                  ${score}
+                </div>
+                <div style="font-size: ${baseSize * 1.125}px; color: white; opacity: 0.9; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                  Nilai Akhir
+                </div>
+              </div>
+              
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 32px;">
+                <div style="background-color: rgba(16, 185, 129, 0.1); border-radius: 12px; padding: 20px;">
+                  <div style="font-size: ${baseSize * 2}px; font-weight: 700; color: ${accentColor}; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                    ${correctCount}
+                  </div>
+                  <div style="font-size: ${baseSize * 0.875}px; color: ${textColor}; opacity: 0.7; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                    Benar ✓
+                  </div>
+                </div>
+                
+                <div style="background-color: rgba(239, 68, 68, 0.1); border-radius: 12px; padding: 20px;">
+                  <div style="font-size: ${baseSize * 2}px; font-weight: 700; color: #ef4444; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                    ${incorrectCount}
+                  </div>
+                  <div style="font-size: ${baseSize * 0.875}px; color: ${textColor}; opacity: 0.7; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                    Salah ✗
+                  </div>
+                </div>
+                
+                <div style="background-color: rgba(59, 130, 246, 0.1); border-radius: 12px; padding: 20px;">
+                  <div style="font-size: ${baseSize * 2}px; font-weight: 700; color: ${primaryColor}; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                    ${quizData.length}
+                  </div>
+                  <div style="font-size: ${baseSize * 0.875}px; color: ${textColor}; opacity: 0.7; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                    Total Soal
+                  </div>
+                </div>
+              </div>
+              
+              <div style="margin-bottom: 24px;">
+                <label style="display: block; font-size: ${baseSize * 0.875}px; font-weight: 600; color: ${textColor}; margin-bottom: 8px; text-align: left; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                  Nama Peserta (Opsional)
+                </label>
+                <input type="text" id="participant-name" placeholder="Masukkan nama Anda" style="width: 100%; padding: 12px 16px; border: 2px solid rgba(59, 130, 246, 0.2); border-radius: 8px; font-size: ${baseSize}px; color: ${textColor}; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;" />
+              </div>
+              
+              <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+                <button id="save-btn" onclick="saveResult()" style="background-color: ${accentColor}; color: white; font-size: ${baseSize}px; font-weight: 600; padding: 12px 32px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                  💾 Simpan Hasil
+                </button>
+                <button onclick="restartQuiz()" style="background-color: ${primaryColor}; color: white; font-size: ${baseSize}px; font-weight: 600; padding: 12px 32px; border-radius: 12px; border: none; cursor: pointer; transition: all 0.3s ease; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                  🔄 Ulangi Kuis
+                </button>
+              </div>
+            </div>
+            
+            <div style="background-color: ${cardColor}; border-radius: 16px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); padding: 32px;">
+              <h2 style="font-size: ${baseSize * 1.5}px; font-weight: 700; color: ${textColor}; margin-bottom: 24px; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                📋 Pembahasan Jawaban
+              </h2>
+              
+              <div style="display: grid; gap: 16px;">
+                ${results.map((result, index) => `
+                  <div style="border: 2px solid ${result.isCorrect ? accentColor : '#ef4444'}; border-radius: 12px; padding: 20px; background-color: ${result.isCorrect ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)'};">
+                    <div style="display: flex; align-items: start; gap: 12px; margin-bottom: 12px;">
+                      <span style="font-size: ${baseSize * 1.5}px;">
+                        ${result.isCorrect ? '✅' : '❌'}
+                      </span>
+                      <div style="flex: 1;">
+                        <div style="font-size: ${baseSize * 0.875}px; color: ${textColor}; opacity: 0.6; margin-bottom: 4px; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                          Soal ${index + 1}
+                        </div>
+                        <div style="font-size: ${baseSize}px; font-weight: 600; color: ${textColor}; margin-bottom: 12px; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                          ${result.pertanyaan}
+                        </div>
+                        <div style="font-size: ${baseSize * 0.875}px; color: ${textColor}; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                          <span style="opacity: 0.7;">Jawaban Anda:</span>
+                          <span style="font-weight: 600; color: ${result.isCorrect ? accentColor : '#ef4444'};">
+                            ${result.userAnswer || 'Tidak dijawab'}
+                          </span>
+                        </div>
+                        ${!result.isCorrect ? `
+                          <div style="font-size: ${baseSize * 0.875}px; color: ${textColor}; margin-top: 4px; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+                            <span style="opacity: 0.7;">Jawaban Benar:</span>
+                            <span style="font-weight: 600; color: ${accentColor};">
+                              ${result.jawaban}
+                            </span>
+                          </div>
+                        ` : ''}
+                      </div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function startQuiz() {
+      quizStarted = true;
+      currentQuestion = 0;
+      userAnswers = [];
+      quizFinished = false;
+      render();
+    }
+
+    function selectOption(index) {
+      userAnswers[currentQuestion] = index;
+      const cards = document.querySelectorAll('.option-card');
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      
+      cards.forEach((card, i) => {
+        card.classList.remove('selected');
+        card.style.borderColor = 'rgba(59, 130, 246, 0.2)';
+        card.style.backgroundColor = config.card_color || defaultConfig.card_color;
+        
+        if (i === index) {
+          card.classList.add('selected');
+          card.style.borderColor = primaryColor;
+          card.style.backgroundColor = `${primaryColor}15`;
+        }
+      });
+    }
+
+    function nextQuestion() {
+      if (currentQuestion < quizData.length - 1) {
+        currentQuestion++;
+        renderQuestion();
+      }
+    }
+
+    function previousQuestion() {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        renderQuestion();
+      }
+    }
+
+    async function submitQuiz() {
+      if (isSubmitting) return;
+      
+      const unanswered = userAnswers.filter(a => a === undefined).length;
+      if (unanswered > 0) {
+        const confirmDiv = document.createElement('div');
+        confirmDiv.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background-color: ${config.card_color || defaultConfig.card_color};
+          padding: 32px;
+          border-radius: 16px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          z-index: 1000;
+          max-width: 400px;
+          text-align: center;
+        `;
+        
+        const baseSize = config.font_size || defaultConfig.font_size;
+        const customFont = config.font_family || defaultConfig.font_family;
+        const textColor = config.text_color || defaultConfig.text_color;
+        const primaryColor = config.primary_color || defaultConfig.primary_color;
+        
+        confirmDiv.innerHTML = `
+          <div style="font-size: ${baseSize * 3}px; margin-bottom: 16px;">⚠️</div>
+          <h3 style="font-size: ${baseSize * 1.25}px; font-weight: 700; color: ${textColor}; margin-bottom: 12px; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+            Ada ${unanswered} soal yang belum dijawab
+          </h3>
+          <p style="font-size: ${baseSize}px; color: ${textColor}; opacity: 0.7; margin-bottom: 24px; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+            Apakah Anda yakin ingin submit?
+          </p>
+          <div style="display: flex; gap: 12px; justify-content: center;">
+            <button onclick="this.parentElement.parentElement.remove()" style="background-color: rgba(59, 130, 246, 0.1); color: ${textColor}; font-size: ${baseSize * 0.875}px; font-weight: 600; padding: 10px 24px; border-radius: 8px; border: none; cursor: pointer; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+              Batal
+            </button>
+            <button onclick="confirmSubmit(); this.parentElement.parentElement.remove();" style="background-color: ${primaryColor}; color: white; font-size: ${baseSize * 0.875}px; font-weight: 600; padding: 10px 24px; border-radius: 8px; border: none; cursor: pointer; font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+              Ya, Submit
+            </button>
+          </div>
+        `;
+        
+        const backdrop = document.createElement('div');
+        backdrop.style.cssText = `
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          z-index: 999;
+        `;
+        backdrop.onclick = () => {
+          backdrop.remove();
+          confirmDiv.remove();
+        };
+        
+        document.body.appendChild(backdrop);
+        document.body.appendChild(confirmDiv);
+        return;
+      }
+      
+      confirmSubmit();
+    }
+
+    function confirmSubmit() {
+      quizFinished = true;
+      render();
+    }
+
+    async function saveResult() {
+      if (isSubmitting) return;
+      
+      if (currentRecordCount >= 999) {
+        showMessage("Batas maksimum 999 hasil telah tercapai. Silakan hapus beberapa hasil terlebih dahulu.", "error");
+        return;
+      }
+      
+      isSubmitting = true;
+      const saveBtn = document.getElementById('save-btn');
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Menyimpan...';
+        saveBtn.style.opacity = '0.6';
+      }
+      
+      const participantName = document.getElementById('participant-name').value.trim() || 'Anonim';
+      
+      let correctCount = 0;
+      quizData.forEach((q, index) => {
+        const userAnswer = q.pilihan[userAnswers[index]];
+        if (userAnswer === q.jawaban) correctCount++;
+      });
+      
+      const score = Math.round((correctCount / quizData.length) * 100);
+      const incorrectCount = quizData.length - correctCount;
       
       const result = await window.dataSdk.create({
-        nama: userName,
+        nama_peserta: participantName,
         nilai: score,
         benar: correctCount,
         salah: incorrectCount,
         tanggal: new Date().toISOString()
       });
       
+      isSubmitting = false;
+      
       if (result.isOk) {
-        renderResultPage(correctCount, incorrectCount, score);
-      } else {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-        errorDiv.textContent = 'Gagal menyimpan hasil. Silakan coba lagi.';
-        document.body.appendChild(errorDiv);
-        setTimeout(() => errorDiv.remove(), 3000);
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit Jawaban';
-      }
-    }
-
-    function renderResultPage(correctCount, incorrectCount, score) {
-      const config = window.elementSdk?.config || defaultConfig;
-      
-      let grade = '';
-      let gradeColor = '';
-      if (score >= 90) {
-        grade = 'A - Luar Biasa! 🌟';
-        gradeColor = 'text-green-600';
-      } else if (score >= 80) {
-        grade = 'B - Sangat Baik! 👏';
-        gradeColor = 'text-blue-600';
-      } else if (score >= 70) {
-        grade = 'C - Baik! 👍';
-        gradeColor = 'text-yellow-600';
-      } else if (score >= 60) {
-        grade = 'D - Cukup 📚';
-        gradeColor = 'text-orange-600';
-      } else {
-        grade = 'E - Perlu Belajar Lagi 💪';
-        gradeColor = 'text-red-600';
-      }
-      
-      let detailsHTML = quizData.map((q, index) => {
-        const userAnswer = userAnswers[q.id];
-        const isCorrect = userAnswer === q.correct;
-        
-        return `
-          <div class="card-bg rounded-xl shadow-lg p-6 mb-4">
-            <h3 class="font-bold mb-3">
-              <span class="accent-color">Soal ${index + 1}:</span> ${q.question}
-            </h3>
-            <div class="space-y-2">
-              ${q.options.map(option => {
-                let className = 'px-4 py-2 rounded-lg border-2 ';
-                if (option === q.correct) {
-                  className += 'border-green-500 bg-green-50';
-                } else if (option === userAnswer && !isCorrect) {
-                  className += 'border-red-500 bg-red-50';
-                } else {
-                  className += 'border-gray-200';
-                }
-                
-                return `
-                  <div class="${className}">
-                    ${option}
-                    ${option === q.correct ? ' ✓' : ''}
-                    ${option === userAnswer && !isCorrect ? ' ✗' : ''}
-                  </div>
-                `;
-              }).join('')}
-            </div>
-            <p class="mt-3 text-sm">
-              <strong>Jawaban Anda:</strong> ${userAnswer || 'Tidak dijawab'}
-              ${isCorrect ? '<span class="text-green-600 font-bold"> ✓ Benar</span>' : '<span class="text-red-600 font-bold"> ✗ Salah</span>'}
-            </p>
-          </div>
-        `;
-      }).join('');
-      
-      document.getElementById('app').innerHTML = `
-        <div class="max-w-3xl mx-auto fade-in">
-          <div class="card-bg rounded-2xl shadow-xl p-8 mb-6 text-center">
-            <h1 class="text-3xl font-bold mb-4 accent-color">Hasil Kuis</h1>
-            <p class="text-xl mb-6">Peserta: <strong>${userName}</strong></p>
-            
-            <div class="grid grid-cols-3 gap-4 mb-6">
-              <div class="card-bg rounded-xl p-4 border-2 border-green-500">
-                <p class="text-3xl font-bold text-green-600">${correctCount}</p>
-                <p class="text-sm opacity-70">Benar</p>
-              </div>
-              <div class="card-bg rounded-xl p-4 border-2 border-red-500">
-                <p class="text-3xl font-bold text-red-600">${incorrectCount}</p>
-                <p class="text-sm opacity-70">Salah</p>
-              </div>
-              <div class="card-bg rounded-xl p-4 border-2 border-blue-500">
-                <p class="text-3xl font-bold text-blue-600">${score}</p>
-                <p class="text-sm opacity-70">Nilai</p>
-              </div>
-            </div>
-            
-            <div class="mb-6">
-              <p class="text-2xl font-bold ${gradeColor}">${grade}</p>
-            </div>
-            
-            <div class="flex gap-4">
-              <button 
-                onclick="renderStartPage()"
-                class="btn-primary flex-1 py-3 rounded-lg text-white font-bold hover:opacity-90 transition-opacity"
-              >
-                Kuis Lagi
-              </button>
-              <button 
-                onclick="showHistory()"
-                class="flex-1 py-3 rounded-lg border-2 border-gray-300 font-semibold hover:bg-gray-50 transition-colors"
-              >
-                Lihat Riwayat
-              </button>
-            </div>
-          </div>
-          
-          <div class="mb-6">
-            <h2 class="text-2xl font-bold mb-4 accent-color">Pembahasan Jawaban</h2>
-            ${detailsHTML}
-          </div>
-        </div>
-      `;
-    }
-
-    function showHistory() {
-      currentState = 'history';
-      renderHistoryPage();
-    }
-
-    function renderHistoryPage() {
-      const allData = Array.from(document.querySelectorAll('[data-record]'))
-        .map(el => JSON.parse(el.dataset.record))
-        .sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
-      
-      let historyHTML = '';
-      if (allData.length === 0) {
-        historyHTML = `
-          <div class="text-center py-12 opacity-70">
-            <p class="text-xl">Belum ada riwayat kuis</p>
-            <p class="text-sm mt-2">Mulai kuis untuk melihat riwayat nilai Anda</p>
-          </div>
-        `;
-      } else {
-        historyHTML = allData.map((record, index) => {
-          const date = new Date(record.tanggal);
-          const formattedDate = date.toLocaleDateString('id-ID', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          });
-          
-          return `
-            <div class="card-bg rounded-xl shadow-lg p-6 mb-4" data-record='${JSON.stringify(record)}'>
-              <div class="flex justify-between items-start">
-                <div class="flex-1">
-                  <h3 class="font-bold text-lg accent-color">${record.nama}</h3>
-                  <p class="text-sm opacity-70 mb-3">${formattedDate}</p>
-                  <div class="flex gap-4">
-                    <span class="text-green-600">✓ ${record.benar} Benar</span>
-                    <span class="text-red-600">✗ ${record.salah} Salah</span>
-                  </div>
-                </div>
-                <div class="text-right">
-                  <p class="text-3xl font-bold accent-color">${record.nilai}</p>
-                  <p class="text-sm opacity-70">Nilai</p>
-                  <button 
-                    onclick="deleteRecord('${record.__backendId}')"
-                    class="mt-2 px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-                  >
-                    Hapus
-                  </button>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      }
-      
-      document.getElementById('app').innerHTML = `
-        <div class="max-w-3xl mx-auto fade-in">
-          <div class="card-bg rounded-2xl shadow-xl p-6 mb-6">
-            <div class="flex justify-between items-center">
-              <h1 class="text-3xl font-bold accent-color">Riwayat Nilai</h1>
-              <button 
-                onclick="renderStartPage()"
-                class="px-6 py-2 rounded-lg border-2 border-gray-300 font-semibold hover:bg-gray-50 transition-colors"
-              >
-                Kembali
-              </button>
-            </div>
-          </div>
-          
-          ${historyHTML}
-        </div>
-      `;
-    }
-
-    async function deleteRecord(backendId) {
-      const recordEl = document.querySelector(`[data-record*='"__backendId":"${backendId}"']`);
-      if (!recordEl) return;
-      
-      const record = JSON.parse(recordEl.dataset.record);
-      
-      const confirmDiv = document.createElement('div');
-      confirmDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-      confirmDiv.innerHTML = `
-        <div class="bg-white rounded-xl p-6 max-w-sm mx-4">
-          <h3 class="text-xl font-bold mb-4">Konfirmasi Hapus</h3>
-          <p class="mb-6">Yakin ingin menghapus riwayat nilai <strong>${record.nama}</strong>?</p>
-          <div class="flex gap-3">
-            <button id="confirm-delete" class="flex-1 bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-600">
-              Hapus
-            </button>
-            <button id="cancel-delete" class="flex-1 border-2 border-gray-300 py-2 rounded-lg font-semibold hover:bg-gray-50">
-              Batal
-            </button>
-          </div>
-        </div>
-      `;
-      
-      document.body.appendChild(confirmDiv);
-      
-      document.getElementById('cancel-delete').addEventListener('click', () => {
-        confirmDiv.remove();
-      });
-      
-      document.getElementById('confirm-delete').addEventListener('click', async () => {
-        const deleteBtn = document.getElementById('confirm-delete');
-        deleteBtn.disabled = true;
-        deleteBtn.innerHTML = '<span class="inline-block animate-spin">⏳</span> Menghapus...';
-        
-        const result = await window.dataSdk.delete(record);
-        
-        if (result.isOk) {
-          confirmDiv.remove();
-        } else {
-          const errorDiv = document.createElement('div');
-          errorDiv.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
-          errorDiv.textContent = 'Gagal menghapus riwayat. Silakan coba lagi.';
-          document.body.appendChild(errorDiv);
-          setTimeout(() => errorDiv.remove(), 3000);
-          deleteBtn.disabled = false;
-          deleteBtn.textContent = 'Hapus';
+        showMessage("✅ Hasil kuis berhasil disimpan!", "success");
+        if (saveBtn) {
+          saveBtn.textContent = '✓ Tersimpan';
+          saveBtn.style.backgroundColor = config.accent_color || defaultConfig.accent_color;
         }
-      });
+      } else {
+        showMessage("❌ Gagal menyimpan hasil. Silakan coba lagi.", "error");
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = '💾 Simpan Hasil';
+          saveBtn.style.opacity = '1';
+        }
+      }
     }
 
-    initApp();
+    function showMessage(message, type) {
+      const toast = document.createElement('div');
+      const bgColor = type === 'success' ? (config.accent_color || defaultConfig.accent_color) : '#ef4444';
+      const baseSize = config.font_size || defaultConfig.font_size;
+      const customFont = config.font_family || defaultConfig.font_family;
+      
+      toast.style.cssText = `
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        background-color: ${bgColor};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        font-size: ${baseSize}px;
+        font-weight: 600;
+        animation: slideIn 0.3s ease;
+        font-family: ${customFont}, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      `;
+      
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    function restartQuiz() {
+      quizStarted = false;
+      currentQuestion = 0;
+      userAnswers = [];
+      quizFinished = false;
+      isSubmitting = false;
+      render();
+    }
+
+    document.addEventListener('DOMContentLoaded', initApp);
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99a330bf825ed439',t:'MTc2MjQxNzQyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+  <style>
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes slideOut {
+      from {
+        transform: translateX(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+    }
+  </style>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99a3889d273690f2',t:'MTc2MjQyMTAyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
