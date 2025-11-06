@@ -314,11 +314,6 @@
               btn.style.background = config.primary_color || defaultConfig.primary_color;
             });
             
-            const submitBtns = document.querySelectorAll('#submit-btn');
-            submitBtns.forEach(btn => {
-              btn.style.background = '#10b981';
-            });
-            
             const accentElements = document.querySelectorAll('.accent-color');
             accentElements.forEach(el => {
               el.style.color = config.accent_color || defaultConfig.accent_color;
@@ -333,10 +328,8 @@
             const startBtn = document.getElementById('start-btn');
             if (startBtn) startBtn.textContent = config.tombol_mulai || defaultConfig.tombol_mulai;
             
-            const submitBtns = document.querySelectorAll('#submit-btn');
-            submitBtns.forEach(btn => {
-              btn.textContent = config.tombol_submit || defaultConfig.tombol_submit;
-            });
+            const submitBtn = document.getElementById('submit-btn');
+            if (submitBtn) submitBtn.textContent = config.tombol_submit || defaultConfig.tombol_submit;
             
             const headings = document.querySelectorAll('h1');
             headings.forEach(h => h.style.fontSize = `${baseSize * 2}px`);
@@ -519,8 +512,7 @@
           <div class="card-bg rounded-xl shadow-lg p-6 sticky bottom-4">
             <button 
               id="submit-btn"
-              class="w-full py-4 rounded-lg text-white font-bold text-lg hover:opacity-90 transition-opacity disabled:opacity-50"
-              style="background-color: #10b981;"
+              class="btn-primary w-full py-4 rounded-lg text-white font-bold text-lg hover:opacity-90 transition-opacity disabled:opacity-50"
               onclick="submitQuiz()"
               ${Object.keys(userAnswers).length < quizData.length ? 'disabled' : ''}
             >
@@ -831,5 +823,5 @@
 
     initApp();
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99a1486197caef70',t:'MTc2MjM5NzQyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99a0feb7e46c9d6f',t:'MTc2MjM5NDQwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
