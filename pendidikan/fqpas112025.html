@@ -1,1 +1,790 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Fiqh Jinayat dan Hudud</title>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    .quiz-option {
+      transition: all 0.3s ease;
+    }
+    
+    .quiz-option:hover {
+      transform: translateX(5px);
+    }
+    
+    .correct-answer {
+      background-color: #10b981;
+      color: white;
+      border-color: #10b981;
+    }
+    
+    .wrong-answer {
+      background-color: #ef4444;
+      color: white;
+      border-color: #ef4444;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="min-h-full" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+  <div class="min-h-full flex items-center justify-center p-6">
+   <div class="w-full max-w-4xl"><!-- Welcome Screen -->
+    <div id="welcomeScreen" class="bg-white rounded-2xl shadow-2xl p-8 fade-in">
+     <div class="text-center">
+      <div class="mb-6">
+       <div class="text-6xl mb-4">
+        📚
+       </div>
+       <h1 id="mainTitle" class="text-4xl font-bold mb-3" style="color: #667eea;">Kuis Fiqh Jinayat dan Hudud</h1>
+       <p id="subtitle" class="text-xl" style="color: #764ba2;">Uji Pemahaman Anda tentang Hukum Islam</p>
+      </div>
+      <div class="bg-gray-50 rounded-xl p-6 mb-8">
+       <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="text-center">
+         <div class="text-3xl font-bold" style="color: #667eea;">
+          45
+         </div>
+         <div class="text-gray-600">
+          Total Soal
+         </div>
+        </div>
+        <div class="text-center">
+         <div class="text-3xl font-bold" style="color: #764ba2;">
+          ⏱️
+         </div>
+         <div class="text-gray-600">
+          Tanpa Batas Waktu
+         </div>
+        </div>
+       </div>
+       <div class="mb-6"><label for="studentName" class="block text-left mb-2 font-semibold text-gray-700">Nama Peserta:</label> <input type="text" id="studentName" placeholder="Masukkan nama Anda" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-purple-500">
+       </div><button id="startBtn" class="w-full py-4 rounded-lg text-white text-lg font-bold transition-all hover:shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"> Mulai Kuis </button>
+      </div>
+     </div>
+    </div><!-- Quiz Screen -->
+    <div id="quizScreen" class="bg-white rounded-2xl shadow-2xl p-8 hidden">
+     <div class="mb-6">
+      <div class="flex justify-between items-center mb-4">
+       <div class="text-sm font-semibold" style="color: #667eea;">
+        Soal <span id="currentQuestion">1</span> dari <span id="totalQuestions">45</span>
+       </div>
+       <div class="text-sm font-semibold" style="color: #764ba2;">
+        Skor: <span id="currentScore">0</span>
+       </div>
+      </div>
+      <div class="w-full bg-gray-200 rounded-full h-3">
+       <div id="progressBar" class="h-3 rounded-full transition-all" style="width: 5%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+      </div>
+     </div>
+     <div class="mb-8">
+      <div id="categoryBadge" class="inline-block px-4 py-2 rounded-full text-sm font-semibold mb-4" style="background-color: #667eea; color: white;"></div>
+      <h2 id="questionText" class="text-2xl font-bold text-gray-800 mb-6"></h2>
+      <div id="optionsContainer" class="space-y-3"></div>
+     </div>
+     <div id="feedbackContainer" class="hidden mb-6 p-4 rounded-lg"></div><button id="nextBtn" class="w-full py-4 rounded-lg text-white text-lg font-bold transition-all hidden" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"> Soal Berikutnya </button>
+    </div><!-- Results Screen -->
+    <div id="resultsScreen" class="bg-white rounded-2xl shadow-2xl p-8 hidden fade-in">
+     <div class="text-center mb-8">
+      <div id="resultEmoji" class="text-8xl mb-4">
+       🎉
+      </div>
+      <h2 class="text-4xl font-bold mb-3" style="color: #667eea;">Kuis Selesai!</h2>
+      <p id="studentNameResult" class="text-xl text-gray-600 mb-6"></p>
+      <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl p-8 mb-6">
+       <div class="text-6xl font-bold mb-2" style="color: #667eea;"><span id="finalScore">0</span>%
+       </div>
+       <div class="text-gray-600 text-lg">
+        Nilai Akhir
+       </div>
+      </div>
+      <div class="grid grid-cols-3 gap-4 mb-8">
+       <div class="bg-green-50 rounded-lg p-4">
+        <div class="text-3xl font-bold text-green-600" id="correctCount">
+         0
+        </div>
+        <div class="text-sm text-gray-600">
+         Benar
+        </div>
+       </div>
+       <div class="bg-red-50 rounded-lg p-4">
+        <div class="text-3xl font-bold text-red-600" id="wrongCount">
+         0
+        </div>
+        <div class="text-sm text-gray-600">
+         Salah
+        </div>
+       </div>
+       <div class="bg-blue-50 rounded-lg p-4">
+        <div class="text-3xl font-bold text-blue-600" id="totalCount">
+         45
+        </div>
+        <div class="text-sm text-gray-600">
+         Total
+        </div>
+       </div>
+      </div>
+      <div class="space-y-3"><button id="retryBtn" class="w-full py-4 rounded-lg text-white text-lg font-bold transition-all" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"> Coba Lagi </button> <button id="viewHistoryBtn" class="w-full py-4 rounded-lg text-lg font-bold transition-all border-2" style="color: #667eea; border-color: #667eea;"> Lihat Riwayat Hasil </button>
+      </div>
+     </div>
+    </div><!-- History Screen -->
+    <div id="historyScreen" class="bg-white rounded-2xl shadow-2xl p-8 hidden">
+     <div class="mb-6">
+      <h2 class="text-3xl font-bold mb-2" style="color: #667eea;">Riwayat Hasil Kuis</h2>
+      <p class="text-gray-600">Lihat semua hasil kuis yang telah diselesaikan</p>
+     </div>
+     <div id="historyList" class="space-y-4 mb-6"></div><button id="backToResultsBtn" class="w-full py-4 rounded-lg text-lg font-bold transition-all border-2" style="color: #667eea; border-color: #667eea;"> Kembali ke Hasil </button>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      judul_utama: "Kuis Fiqh Jinayat dan Hudud",
+      subjudul: "Uji Pemahaman Anda tentang Hukum Islam",
+      tombol_mulai: "Mulai Kuis",
+      tombol_lihat_hasil: "Lihat Riwayat Hasil",
+      background_color: "#667eea",
+      surface_color: "#ffffff",
+      text_color: "#1f2937",
+      primary_action_color: "#667eea",
+      secondary_action_color: "#764ba2",
+      font_family: "system-ui",
+      font_size: 16
+    };
 
+    const quizData = [
+      // JINAYAT
+      {
+        category: "JINAYAT",
+        question: "Jinayah adalah perbuatan yang diancam dengan hukuman dalam Islam, baik berkaitan dengan jiwa maupun ____________.",
+        options: ["harta", "kehormatan", "keluarga", "pekerjaan"],
+        correct: 0
+      },
+      {
+        category: "JINAYAT",
+        question: "Pembunuhan yang dilakukan tanpa kesengajaan disebut pembunuhan ____________.",
+        options: ["syibhul 'amd", "khatha' (tidak sengaja)", "qasad", "ta'dib"],
+        correct: 1
+      },
+      {
+        category: "JINAYAT",
+        question: "Pembunuhan yang terjadi karena kelalaian disebut ____________.",
+        options: ["qishas", "diyat", "syibhul 'amd", "kafarat"],
+        correct: 2
+      },
+      {
+        category: "JINAYAT",
+        question: "QS. Al-Maidah ayat 32 menegaskan bahwa membunuh satu jiwa tanpa alasan yang benar sama seperti membunuh ____________.",
+        options: ["keluarga korban", "seluruh manusia", "satu kaum", "satu bangsa"],
+        correct: 1
+      },
+      {
+        category: "JINAYAT",
+        question: "Hukuman bagi pelaku pembunuhan sengaja adalah ____________.",
+        options: ["diyat", "ta'zir", "qishas", "kafarat"],
+        correct: 2
+      },
+      {
+        category: "JINAYAT",
+        question: "Salah satu hikmah dari diberlakukannya qishas adalah menjaga ____________.",
+        options: ["harta benda", "keamanan / kelestarian jiwa", "kehormatan", "keturunan"],
+        correct: 1
+      },
+      {
+        category: "JINAYAT",
+        question: "Salah satu syarat qishas adalah kedua belah pihak memiliki agama yang ____________.",
+        options: ["berbeda", "sama", "tidak diketahui", "campuran"],
+        correct: 1
+      },
+      {
+        category: "JINAYAT",
+        question: "Diyat mukhafafah adalah diyat yang dibayarkan dalam bentuk ____________.",
+        options: ["uang tunai", "100 ekor unta (dengan jenis lebih ringan)", "budak", "emas"],
+        correct: 1
+      },
+      {
+        category: "JINAYAT",
+        question: "Diyat adalah harta pengganti yang wajib diberikan kepada keluarga korban sebagai ____________.",
+        options: ["hadiah", "kompensasi", "sedekah", "zakat"],
+        correct: 1
+      },
+      {
+        category: "JINAYAT",
+        question: "Diyat mughaladhah adalah diyat yang jumlahnya lebih berat karena dilakukan ____________.",
+        options: ["pada siang hari", "pada bulan haram / tempat haram / korban wanita hamil", "di tempat ramai", "dengan senjata"],
+        correct: 1
+      },
+      {
+        category: "JINAYAT",
+        question: "Kafarat pembunuhan tidak sengaja salah satunya adalah memerdekakan ____________.",
+        options: ["tawanan perang", "budak", "utang", "tanggungan"],
+        correct: 1
+      },
+      {
+        category: "JINAYAT",
+        question: "Jika tidak mampu memerdekakan budak, kafarat pembunuhan adalah puasa selama ____________.",
+        options: ["satu bulan", "tiga bulan", "dua bulan berturut-turut", "empat bulan"],
+        correct: 2
+      },
+      // HUDUD - Zina
+      {
+        category: "HUDUD",
+        question: "Hudud adalah hukuman yang telah ditentukan langsung oleh ____________.",
+        options: ["hakim", "ulama", "Allah", "imam"],
+        correct: 2
+      },
+      {
+        category: "HUDUD",
+        question: "Pelaku zina yang belum menikah disebut ____________.",
+        options: ["muhshan", "ghairu muhshan", "murtad", "fasiq"],
+        correct: 1
+      },
+      {
+        category: "HUDUD",
+        question: "Pelaku zina yang sudah menikah disebut ____________.",
+        options: ["ghairu muhshan", "muhshan", "kafir", "munafik"],
+        correct: 1
+      },
+      {
+        category: "HUDUD",
+        question: "Hukuman bagi pezina ghairu muhshan adalah ____________.",
+        options: ["rajam", "50 cambukan", "100 cambukan", "pengasingan"],
+        correct: 2
+      },
+      {
+        category: "HUDUD",
+        question: "Hukuman bagi pezina muhshan adalah ____________.",
+        options: ["100 cambukan", "80 cambukan", "pengasingan", "rajam"],
+        correct: 3
+      },
+      {
+        category: "HUDUD",
+        question: "Penetapan hukuman zina harus dengan empat orang saksi laki-laki yang ____________.",
+        options: ["kaya", "terpelajar", "adil", "berusia lanjut"],
+        correct: 2
+      },
+      {
+        category: "HUDUD",
+        question: "QS. An-Nur ayat 2 menjelaskan bahwa pelaksanaan hukuman zina tidak boleh diiringi rasa ____________.",
+        options: ["belas kasihan", "takut", "ragu", "marah"],
+        correct: 0
+      },
+      // HUDUD - Qadzaf
+      {
+        category: "HUDUD - QADZAF",
+        question: "Qadzaf adalah menuduh seseorang berzina tanpa menghadirkan ____________.",
+        options: ["dua saksi", "tiga saksi", "empat saksi", "lima saksi"],
+        correct: 2
+      },
+      {
+        category: "HUDUD - QADZAF",
+        question: "Hukuman qadzaf adalah ____________ kali cambuk.",
+        options: ["40", "60", "80", "100"],
+        correct: 2
+      },
+      {
+        category: "HUDUD - QADZAF",
+        question: "QS. An-Nur ayat 4 menjelaskan bahwa penuduh zina tidak diterima ____________ selamanya.",
+        options: ["permohonan maafnya", "persaksiannya", "tobatnya", "pengakuannya"],
+        correct: 1
+      },
+      {
+        category: "HUDUD - QADZAF",
+        question: "Penyebab dijatuhkannya hudud qadzaf adalah tuduhan yang dilakukan tanpa bukti yang ____________.",
+        options: ["kuat", "sah", "lengkap", "jelas"],
+        correct: 1
+      },
+      // HUDUD - Khomer
+      {
+        category: "HUDUD - KHOMER",
+        question: "Kata khamr berarti sesuatu yang menutupi ____________.",
+        options: ["hati", "akal", "pandangan", "pendengaran"],
+        correct: 1
+      },
+      {
+        category: "HUDUD - KHOMER",
+        question: "Orang yang minum khamr akan mudah melakukan tindakan ____________.",
+        options: ["kebajikan", "ibadah", "kejahatan / maksiat", "sosial"],
+        correct: 2
+      },
+      {
+        category: "HUDUD - KHOMER",
+        question: "Hukuman bagi peminum khamr menurut mayoritas ulama adalah ____________ cambukan.",
+        options: ["20", "30", "40", "50"],
+        correct: 2
+      },
+      {
+        category: "HUDUD - KHOMER",
+        question: "Salah satu hikmah larangan khomer adalah menjaga kemampuan ____________.",
+        options: ["fisik", "akal", "harta", "keturunan"],
+        correct: 1
+      },
+      // HUDUD - Pencurian dan Perampokan
+      {
+        category: "HUDUD - PENCURIAN",
+        question: "Mencuri adalah mengambil harta orang lain secara sembunyi-sembunyi tanpa ____________.",
+        options: ["sepengetahuan", "izin", "alasan", "saksi"],
+        correct: 1
+      },
+      {
+        category: "HUDUD - PENCURIAN",
+        question: "QS. Al-Maidah ayat 38 menjelaskan bahwa pencuri laki-laki maupun perempuan dihukum dengan ____________.",
+        options: ["cambuk", "penjara", "potong tangan", "denda"],
+        correct: 2
+      },
+      {
+        category: "HUDUD - PENCURIAN",
+        question: "Nishab pencurian yang dikenai hudud adalah senilai ____________.",
+        options: ["½ dinar", "¼ dinar / sekitar 1,06 gram emas", "1 dinar", "2 dinar"],
+        correct: 1
+      },
+      {
+        category: "HUDUD - PERAMPOKAN",
+        question: "Merampok adalah mengambil harta orang lain dengan cara ____________.",
+        options: ["diam-diam", "kekerasan", "tipu daya", "pinjaman"],
+        correct: 1
+      },
+      {
+        category: "HUDUD - PERAMPOKAN",
+        question: "Jika perampok membunuh korban, hukuman yang diterapkan adalah ____________.",
+        options: ["diyat", "ta'zir", "qishas", "pengasingan"],
+        correct: 2
+      },
+      // HUDUD - Bughat
+      {
+        category: "HUDUD - BUGHAT",
+        question: "Bughat adalah kelompok yang memberontak kepada pemerintah yang ____________.",
+        options: ["tidak adil", "sah", "zalim", "lemah"],
+        correct: 1
+      },
+      {
+        category: "HUDUD - BUGHAT",
+        question: "Salah satu syarat bughat adalah memiliki kekuatan yang ____________.",
+        options: ["tersembunyi", "lemah", "nyata", "asing"],
+        correct: 2
+      },
+      {
+        category: "HUDUD - BUGHAT",
+        question: "Tindakan hukum terhadap bughat adalah memerangi mereka sampai kembali kepada ____________.",
+        options: ["ketaatan", "negara asal", "daerah mereka", "keluarga"],
+        correct: 0
+      },
+      {
+        category: "HUDUD - BUGHAT",
+        question: "Contoh bughat adalah kelompok bersenjata yang menolak tunduk pada ____________.",
+        options: ["ulama", "hakim", "pemerintah", "masyarakat"],
+        correct: 2
+      },
+      // PERADILAN ISLAM
+      {
+        category: "PERADILAN ISLAM",
+        question: "Salah satu fungsi peradilan adalah menegakkan ____________.",
+        options: ["kekuasaan", "keadilan", "hukuman", "peraturan"],
+        correct: 1
+      },
+      {
+        category: "PERADILAN ISLAM",
+        question: "Tujuan peradilan dalam Islam adalah menyelesaikan perkara sesuai prinsip ____________.",
+        options: ["adat", "syariat", "demokrasi", "musyawarah"],
+        correct: 1
+      },
+      {
+        category: "PERADILAN ISLAM",
+        question: "Hikmah adanya peradilan adalah terciptanya ketertiban dan ____________.",
+        options: ["kekayaan", "kemakmuran", "keamanan", "persatuan"],
+        correct: 2
+      },
+      {
+        category: "PERADILAN ISLAM",
+        question: "Salah satu syarat hakim adalah beragama ____________.",
+        options: ["samawi", "Ibrahim", "Islam", "tauhid"],
+        correct: 2
+      },
+      {
+        category: "PERADILAN ISLAM",
+        question: "Hakim tidak boleh mengambil keputusan ketika sedang dalam keadaan ____________.",
+        options: ["lapar", "marah", "senang", "sedih"],
+        correct: 1
+      },
+      {
+        category: "PERADILAN ISLAM",
+        question: "Dalam hadis, hakim dibagi menjadi tiga: satu di surga dan dua di ____________.",
+        options: ["neraka", "dunia", "alam barzakh", "mahsyar"],
+        correct: 0
+      },
+      {
+        category: "PERADILAN ISLAM",
+        question: "Kedudukan hakim perempuan menurut sebagian ulama adalah boleh pada perkara ____________.",
+        options: ["pidana", "jinayat", "perdata", "hudud"],
+        correct: 2
+      },
+      {
+        category: "PERADILAN ISLAM",
+        question: "Syarat saksi adalah adil, baligh, berakal, dan beragama ____________.",
+        options: ["samawi", "monoteis", "Islam", "Allah"],
+        correct: 2
+      },
+      {
+        category: "PERADILAN ISLAM",
+        question: "Salah satu penyebab saksi ditolak adalah ketika ia dikenal sebagai ____________.",
+        options: ["miskin", "fasik", "bodoh", "lemah"],
+        correct: 1
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let correctAnswers = 0;
+    let wrongAnswers = 0;
+    let studentName = "";
+    let selectedAnswer = null;
+    let historyData = [];
+
+    async function onConfigChange(config) {
+      const baseSize = config.font_size || defaultConfig.font_size;
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseFontStack = 'system-ui, -apple-system, sans-serif';
+
+      document.getElementById('mainTitle').textContent = config.judul_utama || defaultConfig.judul_utama;
+      document.getElementById('subtitle').textContent = config.subjudul || defaultConfig.subjudul;
+      document.getElementById('startBtn').textContent = config.tombol_mulai || defaultConfig.tombol_mulai;
+      document.getElementById('viewHistoryBtn').textContent = config.tombol_lihat_hasil || defaultConfig.tombol_lihat_hasil;
+
+      document.body.style.background = `linear-gradient(135deg, ${config.background_color || defaultConfig.background_color} 0%, ${config.secondary_action_color || defaultConfig.secondary_action_color} 100%)`;
+      
+      const surfaces = document.querySelectorAll('#welcomeScreen, #quizScreen, #resultsScreen, #historyScreen');
+      surfaces.forEach(el => el.style.backgroundColor = config.surface_color || defaultConfig.surface_color);
+      
+      document.getElementById('mainTitle').style.color = config.primary_action_color || defaultConfig.primary_action_color;
+      document.getElementById('subtitle').style.color = config.secondary_action_color || defaultConfig.secondary_action_color;
+      
+      const buttons = document.querySelectorAll('#startBtn, #nextBtn, #retryBtn');
+      buttons.forEach(btn => {
+        btn.style.background = `linear-gradient(135deg, ${config.primary_action_color || defaultConfig.primary_action_color} 0%, ${config.secondary_action_color || defaultConfig.secondary_action_color} 100%)`;
+      });
+      
+      const secondaryBtns = document.querySelectorAll('#viewHistoryBtn, #backToResultsBtn');
+      secondaryBtns.forEach(btn => {
+        btn.style.color = config.primary_action_color || defaultConfig.primary_action_color;
+        btn.style.borderColor = config.primary_action_color || defaultConfig.primary_action_color;
+      });
+
+      document.getElementById('mainTitle').style.fontFamily = `${customFont}, ${baseFontStack}`;
+      document.getElementById('subtitle').style.fontFamily = `${customFont}, ${baseFontStack}`;
+      document.getElementById('questionText').style.fontFamily = `${customFont}, ${baseFontStack}`;
+      
+      document.getElementById('mainTitle').style.fontSize = `${baseSize * 2.5}px`;
+      document.getElementById('subtitle').style.fontSize = `${baseSize * 1.25}px`;
+      document.getElementById('questionText').style.fontSize = `${baseSize * 1.5}px`;
+      document.body.style.fontSize = `${baseSize}px`;
+    }
+
+    const dataHandler = {
+      onDataChanged(data) {
+        historyData = data.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+        if (document.getElementById('historyScreen').classList.contains('hidden') === false) {
+          renderHistory();
+        }
+      }
+    };
+
+    async function initApp() {
+      const result = await window.dataSdk.init(dataHandler);
+      if (!result.isOk) {
+        console.error("Failed to initialize data SDK");
+      }
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () => config.background_color || defaultConfig.background_color,
+                set: (value) => {
+                  window.elementSdk.config.background_color = value;
+                  window.elementSdk.setConfig({ background_color: value });
+                }
+              },
+              {
+                get: () => config.surface_color || defaultConfig.surface_color,
+                set: (value) => {
+                  window.elementSdk.config.surface_color = value;
+                  window.elementSdk.setConfig({ surface_color: value });
+                }
+              },
+              {
+                get: () => config.text_color || defaultConfig.text_color,
+                set: (value) => {
+                  window.elementSdk.config.text_color = value;
+                  window.elementSdk.setConfig({ text_color: value });
+                }
+              },
+              {
+                get: () => config.primary_action_color || defaultConfig.primary_action_color,
+                set: (value) => {
+                  window.elementSdk.config.primary_action_color = value;
+                  window.elementSdk.setConfig({ primary_action_color: value });
+                }
+              },
+              {
+                get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+                set: (value) => {
+                  window.elementSdk.config.secondary_action_color = value;
+                  window.elementSdk.setConfig({ secondary_action_color: value });
+                }
+              }
+            ],
+            borderables: [],
+            fontEditable: {
+              get: () => window.elementSdk.config.font_family || defaultConfig.font_family,
+              set: (value) => {
+                window.elementSdk.config.font_family = value;
+                window.elementSdk.setConfig({ font_family: value });
+              }
+            },
+            fontSizeable: {
+              get: () => window.elementSdk.config.font_size || defaultConfig.font_size,
+              set: (value) => {
+                window.elementSdk.config.font_size = value;
+                window.elementSdk.setConfig({ font_size: value });
+              }
+            }
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ["judul_utama", config.judul_utama || defaultConfig.judul_utama],
+            ["subjudul", config.subjudul || defaultConfig.subjudul],
+            ["tombol_mulai", config.tombol_mulai || defaultConfig.tombol_mulai],
+            ["tombol_lihat_hasil", config.tombol_lihat_hasil || defaultConfig.tombol_lihat_hasil]
+          ])
+        });
+      }
+    }
+
+    document.getElementById('startBtn').addEventListener('click', () => {
+      const nameInput = document.getElementById('studentName').value.trim();
+      if (!nameInput) {
+        const inputEl = document.getElementById('studentName');
+        inputEl.style.borderColor = '#ef4444';
+        setTimeout(() => inputEl.style.borderColor = '#d1d5db', 2000);
+        return;
+      }
+      studentName = nameInput;
+      startQuiz();
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    });
+
+    document.getElementById('retryBtn').addEventListener('click', () => {
+      resetQuiz();
+      document.getElementById('resultsScreen').classList.add('hidden');
+      document.getElementById('welcomeScreen').classList.remove('hidden');
+    });
+
+    document.getElementById('viewHistoryBtn').addEventListener('click', () => {
+      document.getElementById('resultsScreen').classList.add('hidden');
+      document.getElementById('historyScreen').classList.remove('hidden');
+      renderHistory();
+    });
+
+    document.getElementById('backToResultsBtn').addEventListener('click', () => {
+      document.getElementById('historyScreen').classList.add('hidden');
+      document.getElementById('resultsScreen').classList.remove('hidden');
+    });
+
+    function startQuiz() {
+      document.getElementById('welcomeScreen').classList.add('hidden');
+      document.getElementById('quizScreen').classList.remove('hidden');
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const question = quizData[currentQuestionIndex];
+      selectedAnswer = null;
+      
+      document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+      document.getElementById('totalQuestions').textContent = quizData.length;
+      document.getElementById('currentScore').textContent = score;
+      document.getElementById('categoryBadge').textContent = question.category;
+      document.getElementById('questionText').textContent = question.question;
+      
+      const progress = ((currentQuestionIndex + 1) / quizData.length) * 100;
+      document.getElementById('progressBar').style.width = progress + '%';
+      
+      const optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.innerHTML = '';
+      
+      question.options.forEach((option, index) => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'quiz-option border-2 border-gray-300 rounded-lg p-4 cursor-pointer hover:border-purple-500';
+        optionDiv.innerHTML = `
+          <div class="flex items-center">
+            <div class="w-8 h-8 rounded-full border-2 border-gray-400 flex items-center justify-center mr-3 font-bold text-gray-600">
+              ${String.fromCharCode(65 + index)}
+            </div>
+            <span class="text-gray-800 text-lg">${option}</span>
+          </div>
+        `;
+        
+        optionDiv.addEventListener('click', () => selectAnswer(index));
+        optionsContainer.appendChild(optionDiv);
+      });
+      
+      document.getElementById('feedbackContainer').classList.add('hidden');
+      document.getElementById('nextBtn').classList.add('hidden');
+    }
+
+    function selectAnswer(answerIndex) {
+      if (selectedAnswer !== null) return;
+      
+      selectedAnswer = answerIndex;
+      const question = quizData[currentQuestionIndex];
+      const isCorrect = answerIndex === question.correct;
+      
+      const options = document.querySelectorAll('.quiz-option');
+      options.forEach((option, index) => {
+        option.style.pointerEvents = 'none';
+        
+        if (index === question.correct) {
+          option.classList.add('correct-answer');
+        } else if (index === answerIndex && !isCorrect) {
+          option.classList.add('wrong-answer');
+        }
+      });
+      
+      if (isCorrect) {
+        score += Math.round(100 / quizData.length);
+        correctAnswers++;
+        showFeedback('Benar! 🎉', 'Jawaban Anda tepat!', 'bg-green-100 text-green-800 border-2 border-green-300');
+      } else {
+        wrongAnswers++;
+        showFeedback('Kurang Tepat 😔', `Jawaban yang benar adalah: ${question.options[question.correct]}`, 'bg-red-100 text-red-800 border-2 border-red-300');
+      }
+      
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function showFeedback(title, message, className) {
+      const feedback = document.getElementById('feedbackContainer');
+      feedback.className = 'mb-6 p-4 rounded-lg ' + className;
+      feedback.innerHTML = `
+        <div class="font-bold text-lg mb-1">${title}</div>
+        <div>${message}</div>
+      `;
+      feedback.classList.remove('hidden');
+    }
+
+    async function showResults() {
+      document.getElementById('quizScreen').classList.add('hidden');
+      document.getElementById('resultsScreen').classList.remove('hidden');
+      
+      const finalScore = Math.round((correctAnswers / quizData.length) * 100);
+      
+      document.getElementById('studentNameResult').textContent = studentName;
+      document.getElementById('finalScore').textContent = finalScore;
+      document.getElementById('correctCount').textContent = correctAnswers;
+      document.getElementById('wrongCount').textContent = wrongAnswers;
+      document.getElementById('totalCount').textContent = quizData.length;
+      
+      const emoji = finalScore >= 80 ? '🎉' : finalScore >= 60 ? '😊' : '💪';
+      document.getElementById('resultEmoji').textContent = emoji;
+      
+      if (historyData.length >= 999) {
+        showFeedback('Batas Maksimum Tercapai', 'Sudah ada 999 hasil tersimpan. Tidak dapat menyimpan hasil baru.', 'bg-yellow-100 text-yellow-800 border-2 border-yellow-300');
+        return;
+      }
+      
+      const result = await window.dataSdk.create({
+        nama: studentName,
+        nilai: finalScore,
+        benar: correctAnswers,
+        salah: wrongAnswers,
+        tanggal: new Date().toISOString()
+      });
+      
+      if (!result.isOk) {
+        console.error("Failed to save result");
+      }
+    }
+
+    function renderHistory() {
+      const historyList = document.getElementById('historyList');
+      
+      if (historyData.length === 0) {
+        historyList.innerHTML = '<div class="text-center text-gray-500 py-8">Belum ada riwayat hasil kuis</div>';
+        return;
+      }
+      
+      historyList.innerHTML = historyData.map(record => {
+        const date = new Date(record.tanggal);
+        const formattedDate = date.toLocaleDateString('id-ID', { 
+          day: 'numeric', 
+          month: 'long', 
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        const scoreColor = record.nilai >= 80 ? 'text-green-600' : record.nilai >= 60 ? 'text-blue-600' : 'text-orange-600';
+        
+        return `
+          <div class="border-2 border-gray-200 rounded-lg p-5 hover:border-purple-300 transition-all">
+            <div class="flex justify-between items-start mb-3">
+              <div>
+                <div class="font-bold text-xl text-gray-800">${record.nama}</div>
+                <div class="text-sm text-gray-500">${formattedDate}</div>
+              </div>
+              <div class="text-3xl font-bold ${scoreColor}">${record.nilai}%</div>
+            </div>
+            <div class="flex gap-4 text-sm">
+              <span class="text-green-600">✓ ${record.benar} Benar</span>
+              <span class="text-red-600">✗ ${record.salah} Salah</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function resetQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      correctAnswers = 0;
+      wrongAnswers = 0;
+      selectedAnswer = null;
+      document.getElementById('studentName').value = '';
+    }
+
+    initApp();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a0d0b6281f98796',t:'MTc2MzUyNzM4My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
