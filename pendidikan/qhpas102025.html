@@ -1,1 +1,708 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Al-Qur'an</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    html {
+      height: 100%;
+    }
+    .quiz-option {
+      transition: all 0.2s ease;
+    }
+    .quiz-option:hover {
+      transform: translateX(4px);
+    }
+    .correct-answer {
+      background-color: #10b981 !important;
+      border-color: #059669 !important;
+    }
+    .wrong-answer {
+      background-color: #ef4444 !important;
+      border-color: #dc2626 !important;
+    }
+    .fade-in {
+      animation: fadeIn 0.3s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="min-h-full">
+  <div id="app" class="min-h-full p-6" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"><!-- Start Screen -->
+   <div id="startScreen" class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-2xl p-8 fade-in">
+     <h1 id="quizTitle" class="text-4xl font-bold text-center mb-4" style="color: #667eea;">Kuis Al-Qur'an Sebagai Wahyu Allah</h1>
+     <p id="welcomeMessage" class="text-center text-gray-600 mb-8">Uji pengetahuan Anda tentang Al-Qur'an dengan menjawab 50 soal pilihan ganda</p>
+     <div class="mb-6"><label for="studentName" class="block text-sm font-medium text-gray-700 mb-2">Nama Peserta</label> <input type="text" id="studentName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Masukkan nama Anda">
+     </div><button id="startBtn" class="w-full py-4 px-6 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"> Mulai Kuis </button>
+     <div class="mt-8 p-4 bg-purple-50 rounded-lg">
+      <h3 class="font-semibold text-purple-900 mb-2">Riwayat Nilai</h3>
+      <div id="historyList" class="space-y-2 max-h-48 overflow-y-auto"></div>
+     </div>
+    </div>
+   </div><!-- Quiz Screen -->
+   <div id="quizScreen" class="hidden max-w-3xl mx-auto">
+    <div class="bg-white rounded-lg shadow-2xl p-8 fade-in">
+     <div class="flex justify-between items-center mb-6">
+      <div class="text-sm font-medium text-gray-600">
+       Soal <span id="currentQuestion">1</span> dari <span id="totalQuestions">50</span>
+      </div>
+      <div class="text-sm font-medium" style="color: #667eea;">
+       Skor: <span id="currentScore">0</span>
+      </div>
+     </div>
+     <div class="mb-4 bg-gray-200 rounded-full h-2">
+      <div id="progressBar" class="h-2 rounded-full transition-all duration-300" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 5%;"></div>
+     </div>
+     <div id="sectionTitle" class="text-sm font-semibold text-purple-700 mb-2"></div>
+     <h2 id="questionText" class="text-2xl font-bold text-gray-800 mb-6"></h2>
+     <div id="optionsContainer" class="space-y-3 mb-6"></div><button id="nextBtn" class="hidden w-full py-3 px-6 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"> Lanjut </button>
+    </div>
+   </div><!-- Result Screen -->
+   <div id="resultScreen" class="hidden max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg shadow-2xl p-8 fade-in">
+     <div class="text-center mb-6">
+      <div class="text-6xl mb-4" id="resultEmoji">
+       🎉
+      </div>
+      <h2 class="text-3xl font-bold text-gray-800 mb-2">Kuis Selesai!</h2>
+      <p class="text-xl text-gray-600" id="studentNameResult"></p>
+     </div>
+     <div class="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-6 mb-6">
+      <div class="text-center">
+       <div class="text-5xl font-bold mb-2" style="color: #667eea;" id="finalScore">
+        0
+       </div>
+       <div class="text-gray-600">
+        Nilai Akhir
+       </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4 mt-4">
+       <div class="text-center">
+        <div class="text-2xl font-bold text-green-600" id="correctCount">
+         0
+        </div>
+        <div class="text-sm text-gray-600">
+         Benar
+        </div>
+       </div>
+       <div class="text-center">
+        <div class="text-2xl font-bold text-red-600" id="wrongCount">
+         0
+        </div>
+        <div class="text-sm text-gray-600">
+         Salah
+        </div>
+       </div>
+      </div>
+     </div>
+     <div id="resultMessage" class="text-center text-lg font-medium mb-6"></div><button id="retryBtn" class="w-full py-3 px-6 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"> Coba Lagi </button>
+    </div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      quiz_title: "Kuis Al-Qur'an Sebagai Wahyu Allah",
+      welcome_message: "Uji pengetahuan Anda tentang Al-Qur'an dengan menjawab 50 soal pilihan ganda",
+      primary_color: "#667eea",
+      secondary_color: "#764ba2",
+      text_color: "#1f2937",
+      surface_color: "#ffffff",
+      accent_color: "#10b981"
+    };
 
+    const questions = [
+      {
+        section: "I. AL-QUR'AN SEBAGAI WAHYU ALLAH",
+        question: "Secara bahasa, Al-Qur'an berarti ____________.",
+        options: ["bacaan", "tulisan", "wahyu", "kitab"],
+        answer: "bacaan"
+      },
+      {
+        section: "I. AL-QUR'AN SEBAGAI WAHYU ALLAH",
+        question: "Secara istilah, Al-Qur'an adalah firman Allah yang diturunkan kepada Nabi Muhammad melalui malaikat ____________.",
+        options: ["Jibril", "Mikail", "Israfil", "Izrail"],
+        answer: "Jibril"
+      },
+      {
+        section: "I. AL-QUR'AN SEBAGAI WAHYU ALLAH",
+        question: "Salah satu nama lain Al-Qur'an yang terdapat dalam Al-Isra' 9 adalah ____________.",
+        options: ["Al-Huda", "Al-Furqan", "An-Nur", "Al-Kitab"],
+        answer: "Al-Huda"
+      },
+      {
+        section: "I. AL-QUR'AN SEBAGAI WAHYU ALLAH",
+        question: "Menurut Syekh Muhammad Khudri Beik, salah satu unsur pengertian Al-Qur'an adalah bahwa ia diturunkan secara ____________.",
+        options: ["berangsur-angsur", "sekaligus", "bertahap cepat", "tiba-tiba"],
+        answer: "berangsur-angsur"
+      },
+      {
+        section: "I. AL-QUR'AN SEBAGAI WAHYU ALLAH",
+        question: "Surat Yasin ayat 2 menyebut Al-Qur'an sebagai ____________.",
+        options: ["Al-Qur'anil-Hakim", "Al-Qur'anil-Karim", "Al-Qur'anil-Azim", "Al-Qur'anil-Majid"],
+        answer: "Al-Qur'anil-Hakim"
+      },
+      {
+        section: "I. AL-QUR'AN SEBAGAI WAHYU ALLAH",
+        question: "Salah satu nama Al-Qur'an yang menunjukkan cahaya adalah ____________.",
+        options: ["An-Nur", "Al-Huda", "Al-Furqan", "Asy-Syifa"],
+        answer: "An-Nur"
+      },
+      {
+        section: "I. AL-QUR'AN SEBAGAI WAHYU ALLAH",
+        question: "Al-Qur'an disebut sebagai Furqan karena berfungsi sebagai pembeda antara benar dan ____________.",
+        options: ["salah", "baik", "buruk", "haram"],
+        answer: "salah"
+      },
+      {
+        section: "II. SEJARAH PENURUNAN DAN PENULISAN AL-QUR'AN",
+        question: "Sejarah penurunan Al-Qur'an dimulai pada malam ____________ di Gua Hira.",
+        options: ["Lailatul Qadar", "Isra Mi'raj", "Hijrah", "Badar"],
+        answer: "Lailatul Qadar"
+      },
+      {
+        section: "II. SEJARAH PENURUNAN DAN PENULISAN AL-QUR'AN",
+        question: "Al-Qur'an turun dalam dua fase: secara sekaligus ke Lauhul Mahfuzh, lalu secara ____________ ke Nabi Muhammad.",
+        options: ["berangsur-angsur", "langsung", "cepat", "tiba-tiba"],
+        answer: "berangsur-angsur"
+      },
+      {
+        section: "II. SEJARAH PENURUNAN DAN PENULISAN AL-QUR'AN",
+        question: "Ayat pertama yang turun adalah QS. Al-'Alaq ayat ____________.",
+        options: ["1–5", "1–3", "1–10", "1–7"],
+        answer: "1–5"
+      },
+      {
+        section: "II. SEJARAH PENURUNAN DAN PENULISAN AL-QUR'AN",
+        question: "Al-Qur'an dikumpulkan menjadi mushaf pada masa Khalifah ____________.",
+        options: ["Abu Bakar", "Umar bin Khattab", "Utsman bin Affan", "Ali bin Abi Thalib"],
+        answer: "Abu Bakar"
+      },
+      {
+        section: "II. SEJARAH PENURUNAN DAN PENULISAN AL-QUR'AN",
+        question: "Usulan pengumpulan Al-Qur'an pada masa Abu Bakar berasal dari sahabat ____________.",
+        options: ["Umar bin Khattab", "Utsman bin Affan", "Ali bin Abi Thalib", "Zaid bin Tsabit"],
+        answer: "Umar bin Khattab"
+      },
+      {
+        section: "II. SEJARAH PENURUNAN DAN PENULISAN AL-QUR'AN",
+        question: "Tujuan pengumpulan Al-Qur'an pada masa Umar adalah untuk mencegah hilangnya hafalan para ____________.",
+        options: ["huffaz", "sahabat", "ulama", "qari"],
+        answer: "huffaz"
+      },
+      {
+        section: "III. KEAUNTETIKAN AL-QUR'AN",
+        question: "Salah satu bukti keaslian Al-Qur'an adalah adanya sistem hafalan yang dikenal dengan istilah ____________.",
+        options: ["tahfidz", "tajwid", "tafsir", "tarjamah"],
+        answer: "tahfidz"
+      },
+      {
+        section: "III. KEAUNTETIKAN AL-QUR'AN",
+        question: "QS. Al-Hijr ayat 9 menjelaskan bahwa Allah yang akan menjaga ____________.",
+        options: ["Al-Qur'an", "Hadits", "Sunnah", "Ijma"],
+        answer: "Al-Qur'an"
+      },
+      {
+        section: "III. KEAUNTETIKAN AL-QUR'AN",
+        question: "Tantangan Allah kepada orang kafir untuk membuat satu surah terdapat dalam QS. ____________.",
+        options: ["Al-Baqarah ayat 23", "Al-Baqarah ayat 22", "Yunus ayat 38", "Hud ayat 13"],
+        answer: "Al-Baqarah ayat 23"
+      },
+      {
+        section: "III. KEAUNTETIKAN AL-QUR'AN",
+        question: "Tantangan membuat sepuluh surah terdapat dalam QS. ____________.",
+        options: ["Hud ayat 13", "Yunus ayat 38", "Al-Baqarah ayat 23", "Al-Isra ayat 88"],
+        answer: "Hud ayat 13"
+      },
+      {
+        section: "III. KEAUNTETIKAN AL-QUR'AN",
+        question: "Salah satu bukti keauntetikan Al-Qur'an adalah tidak adanya kontradiksi dalam isi, sebagaimana disebut dalam QS. An-Nisa ayat ____________.",
+        options: ["82", "80", "83", "85"],
+        answer: "82"
+      },
+      {
+        section: "III. KEAUNTETIKAN AL-QUR'AN",
+        question: "Pelafalan Al-Qur'an harus sesuai dengan ilmu ____________.",
+        options: ["tajwid", "tahfidz", "tafsir", "tarjamah"],
+        answer: "tajwid"
+      },
+      {
+        section: "III. KEAUNTETIKAN AL-QUR'AN",
+        question: "Al-Qur'an terjaga dari perubahan huruf tanpa alasan yang benar karena bersifat ____________.",
+        options: ["mutawatir", "masyhur", "ahad", "gharib"],
+        answer: "mutawatir"
+      },
+      {
+        section: "IV. KEMUKJIZATAN AL-QUR'AN",
+        question: "Secara bahasa, mukjizat berarti sesuatu yang melemahkan atau membuat orang lain ____________.",
+        options: ["tidak mampu", "takjub", "terpesona", "menyerah"],
+        answer: "tidak mampu"
+      },
+      {
+        section: "IV. KEMUKJIZATAN AL-QUR'AN",
+        question: "Secara istilah, mukjizat adalah kejadian luar biasa yang diberikan Allah kepada ____________.",
+        options: ["para Nabi", "para ulama", "orang saleh", "para sahabat"],
+        answer: "para Nabi"
+      },
+      {
+        section: "IV. KEMUKJIZATAN AL-QUR'AN",
+        question: "Salah satu syarat mukjizat adalah tidak dapat ditandingi oleh ____________.",
+        options: ["manusia", "jin", "setan", "makhluk"],
+        answer: "manusia"
+      },
+      {
+        section: "IV. KEMUKJIZATAN AL-QUR'AN",
+        question: "Mukjizat Al-Qur'an berbeda dari mukjizat para Nabi karena bersifat ____________.",
+        options: ["abadi", "sementara", "temporer", "terbatas"],
+        answer: "abadi"
+      },
+      {
+        section: "IV. KEMUKJIZATAN AL-QUR'AN",
+        question: "I'jaz Al-Qur'an berarti ketidakmampuan manusia dalam membuat yang ____________ seperti Al-Qur'an.",
+        options: ["semisal", "mirip", "sama", "serupa"],
+        answer: "semisal"
+      },
+      {
+        section: "IV. KEMUKJIZATAN AL-QUR'AN",
+        question: "Salah satu aspek kemukjizatan Al-Qur'an adalah dari segi ____________.",
+        options: ["bahasa", "tulisan", "huruf", "bentuk"],
+        answer: "bahasa"
+      },
+      {
+        section: "IV. KEMUKJIZATAN AL-QUR'AN",
+        question: "QS. Yunus ayat 92 menunjukkan kemukjizatan dari aspek ____________.",
+        options: ["ilmu pengetahuan", "bahasa", "sastra", "sejarah"],
+        answer: "ilmu pengetahuan"
+      },
+      {
+        section: "IV. KEMUKJIZATAN AL-QUR'AN",
+        question: "Keindahan uslub Al-Qur'an berarti memiliki gaya bahasa yang ____________.",
+        options: ["tinggi", "sederhana", "biasa", "mudah"],
+        answer: "tinggi"
+      },
+      {
+        section: "IV. KEMUKJIZATAN AL-QUR'AN",
+        question: "Mukjizat Nabi Muhammad selain Al-Qur'an antara lain peristiwa ____________.",
+        options: ["Isra' Mi'raj", "Hijrah", "Badar", "Fathu Makkah"],
+        answer: "Isra' Mi'raj"
+      },
+      {
+        section: "IV. KEMUKJIZATAN AL-QUR'AN",
+        question: "Salah satu mukjizat Nabi Nuh adalah keselamatan dari ____________.",
+        options: ["banjir besar", "angin topan", "gempa bumi", "gunung meletus"],
+        answer: "banjir besar"
+      },
+      {
+        section: "IV. KEMUKJIZATAN AL-QUR'AN",
+        question: "Mukjizat para nabi sebelumnya bersifat temporer, sedangkan Al-Qur'an berlaku ____________.",
+        options: ["sepanjang zaman", "sementara", "terbatas", "sesaat"],
+        answer: "sepanjang zaman"
+      },
+      {
+        section: "V. POKOK-POKOK ISI AL-QUR'AN",
+        question: "Contoh ayat akidah adalah QS. Al-Ikhlas ayat ____________.",
+        options: ["1–4", "1–3", "1–5", "1–2"],
+        answer: "1–4"
+      },
+      {
+        section: "V. POKOK-POKOK ISI AL-QUR'AN",
+        question: "Salah satu ayat yang berisi tentang sains adalah QS. Al-Anbiya ayat ____________ (tentang alam semesta).",
+        options: ["30", "31", "32", "33"],
+        answer: "30"
+      },
+      {
+        section: "V. POKOK-POKOK ISI AL-QUR'AN",
+        question: "Ayat tentang ibadah terdapat dalam QS. Al-Baqarah ayat ____________ (tentang shalat).",
+        options: ["43", "42", "44", "45"],
+        answer: "43"
+      },
+      {
+        section: "V. POKOK-POKOK ISI AL-QUR'AN",
+        question: "Contoh ibadah mahdah adalah ____________.",
+        options: ["shalat", "sedekah", "silaturahmi", "berbakti"],
+        answer: "shalat"
+      },
+      {
+        section: "V. POKOK-POKOK ISI AL-QUR'AN",
+        question: "Ayat tentang akhlak mulia terdapat dalam QS. Luqman ayat ____________.",
+        options: ["14–19", "13–18", "15–20", "12–17"],
+        answer: "14–19"
+      },
+      {
+        section: "V. POKOK-POKOK ISI AL-QUR'AN",
+        question: "Hadis tentang akhlak Rasulullah menyatakan bahwa akhlak beliau adalah ____________.",
+        options: ["Al-Qur'an", "Hadits", "Sunnah", "Ijma"],
+        answer: "Al-Qur'an"
+      },
+      {
+        section: "V. POKOK-POKOK ISI AL-QUR'AN",
+        question: "Ayat tentang hukum salah satunya adalah QS. An-Nisa ayat ____________.",
+        options: ["59", "58", "60", "61"],
+        answer: "59"
+      },
+      {
+        section: "V. POKOK-POKOK ISI AL-QUR'AN",
+        question: "Pokok ajaran Al-Qur'an mencakup akidah, ibadah, akhlak, dan ____________.",
+        options: ["muamalah", "tauhid", "fiqih", "tasawuf"],
+        answer: "muamalah"
+      },
+      {
+        section: "V. POKOK-POKOK ISI AL-QUR'AN",
+        question: "Ayat sejarah dalam Al-Qur'an terdapat dalam kisah Nabi Yusuf pada surat ____________.",
+        options: ["Yusuf", "Ibrahim", "Musa", "Nuh"],
+        answer: "Yusuf"
+      },
+      {
+        section: "V. POKOK-POKOK ISI AL-QUR'AN",
+        question: "Sains dan teknologi banyak disebut dalam Al-Qur'an, misalnya dalam QS. Ar-Rahman tentang fenomena ____________.",
+        options: ["alam", "sosial", "budaya", "politik"],
+        answer: "alam"
+      },
+      {
+        section: "V. POKOK-POKOK ISI AL-QUR'AN",
+        question: "Contoh ayat tentang kisah para nabi adalah surat ____________.",
+        options: ["Al-Qasas", "Al-Mulk", "Al-Waqi'ah", "Al-Hadid"],
+        answer: "Al-Qasas"
+      },
+      {
+        section: "V. POKOK-POKOK ISI AL-QUR'AN",
+        question: "QS. Al-Baqarah ayat 183 membahas tentang kewajiban ____________.",
+        options: ["puasa", "shalat", "zakat", "haji"],
+        answer: "puasa"
+      },
+      {
+        section: "VI. STRUKTUR AL-QUR'AN",
+        question: "Al-Qur'an terdiri dari ____________ surah.",
+        options: ["114", "113", "115", "112"],
+        answer: "114"
+      },
+      {
+        section: "VI. STRUKTUR AL-QUR'AN",
+        question: "Manzil adalah pembagian Al-Qur'an menjadi ____________ bagian.",
+        options: ["tujuh", "lima", "enam", "empat"],
+        answer: "tujuh"
+      },
+      {
+        section: "VI. STRUKTUR AL-QUR'AN",
+        question: "Ciri surat Makkiyah salah satunya adalah ayatnya ____________.",
+        options: ["pendek-pendek", "panjang-panjang", "sedang", "bervariasi"],
+        answer: "pendek-pendek"
+      },
+      {
+        section: "VI. STRUKTUR AL-QUR'AN",
+        question: "Ciri surat Madaniyah salah satunya adalah membahas tentang ____________.",
+        options: ["hukum", "tauhid", "akhirat", "kiamat"],
+        answer: "hukum"
+      },
+      {
+        section: "VI. STRUKTUR AL-QUR'AN",
+        question: "Surat yang tidak diawali basmalah adalah surat ____________.",
+        options: ["At-Taubah", "Al-Fatihah", "An-Nas", "Al-Ikhlas"],
+        answer: "At-Taubah"
+      },
+      {
+        section: "VI. STRUKTUR AL-QUR'AN",
+        question: "Maqra' adalah bagian bacaan dalam salat tarawih yang disebut juga ____________.",
+        options: ["ruku'", "sajdah", "rakaat", "sujud"],
+        answer: "ruku'"
+      },
+      {
+        section: "VI. STRUKTUR AL-QUR'AN",
+        question: "Struktur surah dalam Al-Qur'an bersifat tauqifi, artinya penetapannya berdasarkan ____________.",
+        options: ["wahyu", "ijtihad", "ijma", "qiyas"],
+        answer: "wahyu"
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let correctAnswers = 0;
+    let selectedAnswer = null;
+    let studentName = "";
+    let quizHistory = [];
+
+    const dataHandler = {
+      onDataChanged(data) {
+        quizHistory = data;
+        renderHistory();
+      }
+    };
+
+    async function onConfigChange(config) {
+      const quizTitle = document.getElementById('quizTitle');
+      const welcomeMessage = document.getElementById('welcomeMessage');
+      
+      if (quizTitle) {
+        quizTitle.textContent = config.quiz_title || defaultConfig.quiz_title;
+      }
+      if (welcomeMessage) {
+        welcomeMessage.textContent = config.welcome_message || defaultConfig.welcome_message;
+      }
+      
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+      
+      document.querySelectorAll('[style*="background: linear-gradient"]').forEach(el => {
+        el.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`;
+      });
+    }
+
+    async function init() {
+      const initResult = await window.dataSdk.init(dataHandler);
+      if (!initResult.isOk) {
+        console.error("Failed to initialize data SDK");
+      }
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities: (config) => ({
+            recolorables: [
+              {
+                get: () => config.primary_color || defaultConfig.primary_color,
+                set: (value) => {
+                  config.primary_color = value;
+                  window.elementSdk.setConfig({ primary_color: value });
+                }
+              },
+              {
+                get: () => config.secondary_color || defaultConfig.secondary_color,
+                set: (value) => {
+                  config.secondary_color = value;
+                  window.elementSdk.setConfig({ secondary_color: value });
+                }
+              }
+            ],
+            borderables: [],
+            fontEditable: undefined,
+            fontSizeable: undefined
+          }),
+          mapToEditPanelValues: (config) => new Map([
+            ["quiz_title", config.quiz_title || defaultConfig.quiz_title],
+            ["welcome_message", config.welcome_message || defaultConfig.welcome_message]
+          ])
+        });
+      }
+
+      setupEventListeners();
+      renderHistory();
+    }
+
+    function setupEventListeners() {
+      document.getElementById('startBtn').addEventListener('click', startQuiz);
+      document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+      document.getElementById('retryBtn').addEventListener('click', resetQuiz);
+    }
+
+    function startQuiz() {
+      const nameInput = document.getElementById('studentName');
+      studentName = nameInput.value.trim();
+      
+      if (!studentName) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'mt-2 text-red-600 text-sm';
+        errorDiv.textContent = 'Mohon masukkan nama Anda';
+        
+        const existingError = nameInput.parentElement.querySelector('.text-red-600');
+        if (existingError) existingError.remove();
+        
+        nameInput.parentElement.appendChild(errorDiv);
+        return;
+      }
+      
+      document.getElementById('startScreen').classList.add('hidden');
+      document.getElementById('quizScreen').classList.remove('hidden');
+      document.getElementById('totalQuestions').textContent = questions.length;
+      
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const question = questions[currentQuestionIndex];
+      
+      document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+      document.getElementById('sectionTitle').textContent = question.section;
+      document.getElementById('questionText').textContent = question.question;
+      
+      const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+      document.getElementById('progressBar').style.width = progress + '%';
+      
+      const optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.innerHTML = '';
+      
+      question.options.forEach((option, index) => {
+        const optionBtn = document.createElement('button');
+        optionBtn.className = 'quiz-option w-full text-left px-6 py-4 border-2 border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-all';
+        optionBtn.textContent = option;
+        optionBtn.addEventListener('click', () => selectAnswer(option, optionBtn));
+        optionsContainer.appendChild(optionBtn);
+      });
+      
+      document.getElementById('nextBtn').classList.add('hidden');
+      selectedAnswer = null;
+    }
+
+    function selectAnswer(answer, buttonElement) {
+      if (selectedAnswer !== null) return;
+      
+      selectedAnswer = answer;
+      const question = questions[currentQuestionIndex];
+      const isCorrect = answer === question.answer;
+      
+      if (isCorrect) {
+        correctAnswers++;
+        buttonElement.classList.add('correct-answer');
+        buttonElement.classList.remove('border-gray-300');
+        buttonElement.innerHTML = `${answer} ✓`;
+      } else {
+        buttonElement.classList.add('wrong-answer');
+        buttonElement.classList.remove('border-gray-300');
+        buttonElement.innerHTML = `${answer} ✗`;
+        
+        const optionButtons = document.querySelectorAll('.quiz-option');
+        optionButtons.forEach(btn => {
+          if (btn.textContent === question.answer) {
+            btn.classList.add('correct-answer');
+            btn.classList.remove('border-gray-300');
+            btn.innerHTML = `${question.answer} ✓`;
+          }
+        });
+      }
+      
+      document.querySelectorAll('.quiz-option').forEach(btn => {
+        btn.disabled = true;
+        btn.style.cursor = 'not-allowed';
+      });
+      
+      document.getElementById('currentScore').textContent = correctAnswers;
+      document.getElementById('nextBtn').classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+      currentQuestionIndex++;
+      
+      if (currentQuestionIndex < questions.length) {
+        showQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    async function showResult() {
+      document.getElementById('quizScreen').classList.add('hidden');
+      document.getElementById('resultScreen').classList.remove('hidden');
+      
+      const finalScore = Math.round((correctAnswers / questions.length) * 100);
+      const wrongAnswers = questions.length - correctAnswers;
+      
+      document.getElementById('studentNameResult').textContent = studentName;
+      document.getElementById('finalScore').textContent = finalScore;
+      document.getElementById('correctCount').textContent = correctAnswers;
+      document.getElementById('wrongCount').textContent = wrongAnswers;
+      
+      let message = '';
+      let emoji = '🎉';
+      
+      if (finalScore >= 90) {
+        message = 'Luar biasa! Penguasaan materi Anda sangat baik!';
+        emoji = '🏆';
+      } else if (finalScore >= 75) {
+        message = 'Bagus sekali! Anda memahami materi dengan baik.';
+        emoji = '⭐';
+      } else if (finalScore >= 60) {
+        message = 'Cukup baik! Terus tingkatkan pemahaman Anda.';
+        emoji = '👍';
+      } else {
+        message = 'Tetap semangat! Mari pelajari kembali materinya.';
+        emoji = '💪';
+      }
+      
+      document.getElementById('resultEmoji').textContent = emoji;
+      document.getElementById('resultMessage').textContent = message;
+      
+      const saveButton = document.getElementById('retryBtn');
+      saveButton.disabled = true;
+      saveButton.textContent = 'Menyimpan...';
+      
+      const result = await window.dataSdk.create({
+        student_name: studentName,
+        score: finalScore,
+        correct_answers: correctAnswers,
+        total_questions: questions.length,
+        completed_at: new Date().toISOString()
+      });
+      
+      saveButton.disabled = false;
+      saveButton.textContent = 'Coba Lagi';
+      
+      if (!result.isOk) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'mt-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm';
+        errorDiv.textContent = 'Gagal menyimpan hasil kuis. Silakan coba lagi.';
+        document.getElementById('resultScreen').querySelector('.bg-white').appendChild(errorDiv);
+      }
+    }
+
+    function renderHistory() {
+      const historyList = document.getElementById('historyList');
+      
+      if (quizHistory.length === 0) {
+        historyList.innerHTML = '<p class="text-gray-500 text-sm">Belum ada riwayat kuis</p>';
+        return;
+      }
+      
+      const sortedHistory = [...quizHistory].sort((a, b) => 
+        new Date(b.completed_at) - new Date(a.completed_at)
+      );
+      
+      historyList.innerHTML = sortedHistory.slice(0, 5).map(record => {
+        const date = new Date(record.completed_at);
+        const formattedDate = date.toLocaleDateString('id-ID', { 
+          day: 'numeric', 
+          month: 'short',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        return `
+          <div class="flex justify-between items-center p-2 bg-white rounded">
+            <div>
+              <div class="font-medium text-sm">${record.student_name}</div>
+              <div class="text-xs text-gray-500">${formattedDate}</div>
+            </div>
+            <div class="text-lg font-bold" style="color: #667eea;">${record.score}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function resetQuiz() {
+      currentQuestionIndex = 0;
+      correctAnswers = 0;
+      selectedAnswer = null;
+      
+      document.getElementById('resultScreen').classList.add('hidden');
+      document.getElementById('startScreen').classList.remove('hidden');
+      document.getElementById('studentName').value = '';
+      document.getElementById('currentScore').textContent = '0';
+    }
+
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a0d61dbd61b472e',t:'MTc2MzUzMDkyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
