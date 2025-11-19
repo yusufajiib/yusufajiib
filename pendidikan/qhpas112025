@@ -1,0 +1,1206 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Pendidikan Agama Islam</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 800px;
+      width: 100%;
+      padding: 40px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 3px solid #667eea;
+    }
+
+    .header h1 {
+      color: #667eea;
+      margin: 0 0 10px 0;
+      font-size: 2em;
+    }
+
+    .header p {
+      color: #666;
+      margin: 0;
+      font-size: 1.1em;
+    }
+
+    .start-screen {
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    .start-screen h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 1.5em;
+    }
+
+    .start-screen p {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 1.1em;
+      line-height: 1.6;
+    }
+
+    .btn {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 1.1em;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+
+    .btn:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .quiz-screen {
+      display: none;
+    }
+
+    .progress-bar {
+      background: #f0f0f0;
+      height: 10px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      height: 100%;
+      transition: width 0.3s;
+      border-radius: 10px;
+    }
+
+    .question-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      color: #666;
+      font-size: 0.9em;
+    }
+
+    .question-card {
+      background: #f8f9ff;
+      padding: 30px;
+      border-radius: 15px;
+      margin-bottom: 30px;
+      border-left: 5px solid #667eea;
+    }
+
+    .question-text {
+      color: #333;
+      font-size: 1.2em;
+      font-weight: 600;
+      margin-bottom: 25px;
+      line-height: 1.6;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .option {
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 15px 20px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .option:hover {
+      border-color: #667eea;
+      background: #f8f9ff;
+      transform: translateX(5px);
+    }
+
+    .option.selected {
+      border-color: #667eea;
+      background: #667eea;
+      color: white;
+    }
+
+    .option.correct {
+      border-color: #10b981;
+      background: #10b981;
+      color: white;
+    }
+
+    .option.incorrect {
+      border-color: #ef4444;
+      background: #ef4444;
+      color: white;
+    }
+
+    .option.disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    .option-letter {
+      background: #667eea;
+      color: white;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .option.selected .option-letter,
+    .option.correct .option-letter,
+    .option.incorrect .option-letter {
+      background: white;
+      color: #667eea;
+    }
+
+    .option-text {
+      flex: 1;
+      font-size: 1em;
+    }
+
+    .feedback {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-align: center;
+      display: none;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback.correct {
+      background: #d1fae5;
+      color: #065f46;
+      border: 2px solid #10b981;
+    }
+
+    .feedback.incorrect {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 2px solid #ef4444;
+    }
+
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 1em;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    .result-screen {
+      display: none;
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    .score-circle {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 30px;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .score-circle .score {
+      font-size: 3em;
+      font-weight: 700;
+      color: white;
+      margin: 0;
+    }
+
+    .score-circle .score-label {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.1em;
+      margin: 0;
+    }
+
+    .result-details {
+      background: #f8f9ff;
+      padding: 30px;
+      border-radius: 15px;
+      margin: 30px 0;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px 0;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 1.1em;
+    }
+
+    .result-row:last-child {
+      border-bottom: none;
+    }
+
+    .result-label {
+      color: #666;
+      font-weight: 600;
+    }
+
+    .result-value {
+      color: #333;
+      font-weight: 700;
+    }
+
+    .result-value.correct {
+      color: #10b981;
+    }
+
+    .result-value.incorrect {
+      color: #ef4444;
+    }
+
+    .grade {
+      font-size: 1.5em;
+      font-weight: 700;
+      color: #667eea;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      .header h1 {
+        font-size: 1.5em;
+      }
+
+      .question-text {
+        font-size: 1em;
+      }
+
+      .score-circle {
+        width: 150px;
+        height: 150px;
+      }
+
+      .score-circle .score {
+        font-size: 2em;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container">
+   <div class="header">
+    <h1 id="quiz-title">Kuis Pendidikan Agama Islam</h1>
+    <p id="quiz-subtitle">Manusia sebagai Khalifah &amp; Berbakti kepada Orang Tua</p>
+   </div>
+   <div class="start-screen" id="startScreen">
+    <h2>Selamat Datang! 📚</h2>
+    <p>Kuis ini terdiri dari 45 soal pilihan ganda tentang:<br><strong>• Manusia sebagai Khalifah (12 soal)</strong><br><strong>• Berbakti kepada Orang Tua (12 soal)</strong><br><strong>• Menghindari Perbuatan Keji (8 soal)</strong><br><strong>• Toleransi (8 soal)</strong><br><strong>• Kewajiban Menuntut Ilmu (5 soal)</strong></p>
+    <p>Setiap soal memiliki 4 pilihan jawaban.<br>
+     Pilih jawaban yang paling tepat!</p><button class="btn" onclick="startQuiz()">Mulai Kuis</button>
+   </div>
+   <div class="quiz-screen" id="quizScreen">
+    <div class="progress-bar">
+     <div class="progress-fill" id="progressBar"></div>
+    </div>
+    <div class="question-info"><span id="questionNumber">Soal 1 dari 24</span> <span id="categoryLabel">Manusia sebagai Khalifah</span>
+    </div>
+    <div class="question-card">
+     <div class="question-text" id="questionText"></div>
+     <div class="options" id="optionsContainer"></div>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <div class="navigation"><button class="btn-secondary" onclick="previousQuestion()" id="prevBtn" disabled>← Sebelumnya</button> <button class="btn" onclick="nextQuestion()" id="nextBtn" disabled>Selanjutnya →</button>
+    </div>
+   </div>
+   <div class="result-screen" id="resultScreen">
+    <h2 style="color: #667eea; margin-bottom: 30px;">🎉 Kuis Selesai!</h2>
+    <div class="score-circle">
+     <p class="score" id="finalScore">0</p>
+     <p class="score-label">dari 100</p>
+    </div>
+    <div class="grade" id="gradeLabel"></div>
+    <div class="result-details">
+     <div class="result-row"><span class="result-label">Jawaban Benar</span> <span class="result-value correct" id="correctCount">0</span>
+     </div>
+     <div class="result-row"><span class="result-label">Jawaban Salah</span> <span class="result-value incorrect" id="incorrectCount">0</span>
+     </div>
+     <div class="result-row"><span class="result-label">Total Soal</span> <span class="result-value" id="totalQuestions">45</span>
+     </div>
+     <div class="result-row"><span class="result-label">Persentase</span> <span class="result-value" id="percentage">0%</span>
+     </div>
+    </div><button class="btn" onclick="restartQuiz()">Ulangi Kuis</button>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      quiz_title: "Kuis Pendidikan Agama Islam",
+      quiz_subtitle: "Manusia sebagai Khalifah & Berbakti kepada Orang Tua",
+      background_color: "#667eea",
+      surface_color: "#ffffff",
+      text_color: "#333333",
+      primary_action_color: "#667eea",
+      secondary_action_color: "#6b7280",
+      font_family: "Segoe UI",
+      font_size: 16
+    };
+
+    const quizData = [
+      {
+        category: "Manusia sebagai Khalifah",
+        question: "Proses awal penciptaan manusia menurut QS. Al-Mu'minun ayat 12 berasal dari ____________.",
+        options: [
+          "sari pati tanah",
+          "tanah liat",
+          "setetes air",
+          "angin"
+        ],
+        correctAnswer: 0
+      },
+      {
+        category: "Manusia sebagai Khalifah",
+        question: "Tahapan penciptaan manusia dimulai dari nuthfah, lalu berubah menjadi ____________.",
+        options: [
+          "mudhghah",
+          "'alaqah",
+          "tulang",
+          "daging"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Manusia sebagai Khalifah",
+        question: "Setelah menjadi 'alaqah, manusia berubah menjadi ____________.",
+        options: [
+          "nuthfah",
+          "tulang",
+          "mudhghah",
+          "janin"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Manusia sebagai Khalifah",
+        question: "Arti kata nuthfah adalah ____________.",
+        options: [
+          "segumpal darah",
+          "setetes mani",
+          "segumpal daging",
+          "tanah liat"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Manusia sebagai Khalifah",
+        question: "Tujuan penciptaan manusia dan jin dalam QS. Adz-Dzariyat: 56 adalah untuk ____________.",
+        options: [
+          "menguasai bumi",
+          "beribadah kepada Allah",
+          "mencari kekayaan",
+          "hidup bersama"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Manusia sebagai Khalifah",
+        question: "Sikap yang tidak sesuai dengan QS. Adz-Dzariyat 56 adalah meninggalkan ____________.",
+        options: [
+          "pekerjaan",
+          "keluarga",
+          "ibadah",
+          "makanan"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Manusia sebagai Khalifah",
+        question: "Dalam QS. Al-Baqarah 30, Allah menjadikan manusia sebagai ____________ di bumi.",
+        options: [
+          "penguasa",
+          "khalifah",
+          "penjaga",
+          "pemimpin"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Manusia sebagai Khalifah",
+        question: "Salah satu perilaku orang yang mengimani kebesaran Allah adalah selalu ____________.",
+        options: [
+          "berdoa",
+          "bersyukur",
+          "berpuasa",
+          "bersedekah"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Manusia sebagai Khalifah",
+        question: "Orang yang tidak mengimani proses penciptaan alam akan mudah melakukan ____________.",
+        options: [
+          "kebaikan",
+          "kemusyrikan",
+          "ketaatan",
+          "keikhlasan"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Manusia sebagai Khalifah",
+        question: "Contoh sikap pengamalan QS. Al-Baqarah 30 adalah menjaga dan memakmurkan ____________.",
+        options: [
+          "rumah",
+          "harta",
+          "bumi",
+          "keluarga"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Manusia sebagai Khalifah",
+        question: "Ayat QS. Al-Baqarah ayat 30 diawali dengan kalimat 'Wa idz qāla rabbuka lil-malāikati…' yang artinya ____________.",
+        options: [
+          "Dan ketika Tuhanmu menciptakan langit dan bumi",
+          "Dan ketika Tuhanmu berfirman kepada para malaikat",
+          "Dan ketika para malaikat bertanya kepada Tuhanmu",
+          "Dan ketika Tuhanmu menjadikan manusia sebagai khalifah"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Manusia sebagai Khalifah",
+        question: "Terjemahan akhir ayat QS. Al-Baqarah ayat 30 menjelaskan bahwa Allah lebih mengetahui apa yang tidak ____________ oleh malaikat.",
+        options: [
+          "dilihat",
+          "didengar",
+          "diketahui",
+          "dipahami"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Berbakti kepada Orang Tua",
+        question: "Isi utama QS. Al-Isra' ayat 23 adalah larangan berkata ____________ kepada kedua orang tua.",
+        options: [
+          "keras",
+          "kasar",
+          "ah",
+          "tidak"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Berbakti kepada Orang Tua",
+        question: "QS. Al-Isra' ayat 24 mengajarkan agar kita merendahkan diri di hadapan orang tua dengan penuh ____________.",
+        options: [
+          "rasa takut",
+          "kasih sayang",
+          "kehormatan",
+          "kepatuhan"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Berbakti kepada Orang Tua",
+        question: "Bentuk berbakti kepada orang tua yang telah meninggal adalah selalu ____________ mereka.",
+        options: [
+          "mengingat",
+          "mengenang",
+          "mendoakan",
+          "menceritakan"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Berbakti kepada Orang Tua",
+        question: "Dalam QS. Luqman ayat 14, manusia diwajibkan bersyukur kepada Allah dan ____________.",
+        options: [
+          "kepada sesama",
+          "kedua orang tua",
+          "kepada guru",
+          "kepada pemimpin"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Berbakti kepada Orang Tua",
+        question: "Dalam QS. Luqman ayat 13, Luqman menasihati anaknya agar tidak melakukan perbuatan ____________.",
+        options: [
+          "dosa",
+          "maksiat",
+          "syirik",
+          "munafik"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Berbakti kepada Orang Tua",
+        question: "QS. Luqman ayat 17 memerintahkan kita untuk menegakkan ____________.",
+        options: [
+          "keadilan",
+          "kebenaran",
+          "shalat",
+          "puasa"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Berbakti kepada Orang Tua",
+        question: "Salah satu pengamalan QS. Luqman 13–17 adalah mengajak kepada kebaikan dan mencegah ____________.",
+        options: [
+          "kejahatan",
+          "kemungkaran",
+          "kezaliman",
+          "kekejian"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Berbakti kepada Orang Tua",
+        question: "Salah satu sikap berbakti kepada orang tua adalah berbicara dengan ____________.",
+        options: [
+          "sopan",
+          "jelas",
+          "lemah lembut",
+          "lantang"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Berbakti kepada Orang Tua",
+        question: "Menentang atau membentak orang tua dapat menyebabkan hilangnya ____________ Allah.",
+        options: [
+          "ampunan",
+          "rahmat",
+          "ridha",
+          "berkah"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Berbakti kepada Orang Tua",
+        question: "Dalam QS. Al-Isra' ayat 23–24, doa yang diajarkan untuk orang tua adalah 'Rahamhumā ____________.'",
+        options: [
+          "Kamā yuraḥḥimūnanī",
+          "Kamā rabbayānī shaghīrā",
+          "Kamā yuḥibbūnanī",
+          "Kamā ya'lamūnanī"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Berbakti kepada Orang Tua",
+        question: "Orang tua yang telah merawat kita sejak kecil layak mendapatkan perlakuan penuh ____________.",
+        options: [
+          "perhatian",
+          "kasih sayang",
+          "hormat",
+          "cinta"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Berbakti kepada Orang Tua",
+        question: "HR. Bukhari-Muslim menjelaskan bahwa merawat orang tua dapat menjadi jalan menuju ____________.",
+        options: [
+          "kebahagiaan",
+          "kesuksesan",
+          "surga",
+          "kemakmuran"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Menghindari Perbuatan Keji",
+        question: "QS. Al-Isra' ayat 32 melarang mendekati perbuatan ____________.",
+        options: [
+          "maksiat",
+          "zina",
+          "dosa",
+          "mungkar"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Menghindari Perbuatan Keji",
+        question: "Salah satu contoh menghindari zina adalah menjaga ____________ dengan lawan jenis.",
+        options: [
+          "jarak",
+          "hubungan",
+          "pergaulan",
+          "komunikasi"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Menghindari Perbuatan Keji",
+        question: "Hukuman bagi pezina ghairu muhshan adalah ____________ kali cambuk.",
+        options: [
+          "80",
+          "90",
+          "100",
+          "110"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Menghindari Perbuatan Keji",
+        question: "Dalam QS. An-Nur ayat 2 disebutkan bahwa jangan merasa ____________ dalam menegakkan hukum Allah.",
+        options: [
+          "ragu-ragu",
+          "belas kasihan",
+          "takut",
+          "gentar"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Menghindari Perbuatan Keji",
+        question: "HR. Bukhari menjelaskan bahwa iman yang kuat mencegah seseorang dari perbuatan ____________.",
+        options: [
+          "dosa",
+          "maksiat",
+          "keji",
+          "mungkar"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Menghindari Perbuatan Keji",
+        question: "Akibat ilmu tidak disampaikan oleh ahlinya adalah munculnya ____________ dalam masyarakat.",
+        options: [
+          "kebodohan",
+          "kesesatan",
+          "perselisihan",
+          "perpecahan"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Menghindari Perbuatan Keji",
+        question: "Salah satu contoh perbuatan keji adalah melakukan ____________.",
+        options: [
+          "ghibah",
+          "tolong menolong",
+          "gotong royong",
+          "silaturahmi"
+        ],
+        correctAnswer: 0
+      },
+      {
+        category: "Menghindari Perbuatan Keji",
+        question: "QS. An-Nur ayat 2 memberikan sanksi tegas agar masyarakat menjauhi perbuatan ____________.",
+        options: [
+          "mencuri",
+          "berbohong",
+          "zina",
+          "membunuh"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Toleransi",
+        question: "Salah satu strategi toleransi Sunan Kudus adalah menghormati tradisi lokal dalam ____________.",
+        options: [
+          "berdagang",
+          "berdakwah",
+          "berpolitik",
+          "bercocok tanam"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Toleransi",
+        question: "QS. Al-Hujurat ayat 10 menjelaskan bahwa sesama mukmin adalah ____________.",
+        options: [
+          "teman",
+          "sahabat",
+          "bersaudara",
+          "kerabat"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Toleransi",
+        question: "Arti QS. Al-Kafirun 1–6 adalah penegasan untuk tidak mencampuradukkan ____________.",
+        options: [
+          "budaya",
+          "tradisi",
+          "akidah",
+          "adat istiadat"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Toleransi",
+        question: "QS. Al-Kafirun ayat 6 berbunyi 'Lakum dīnukum wa liya dīn' yang artinya ____________.",
+        options: [
+          "agama kita sama dengan agama kalian",
+          "bagimu agamamu dan bagiku agamaku",
+          "semua agama sama saja",
+          "kita harus toleran dalam beragama"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Toleransi",
+        question: "Balasan bagi orang yang tidak beriman kepada Allah adalah menerima ____________ di akhirat.",
+        options: [
+          "siksa",
+          "hukuman",
+          "azab",
+          "pembalasan"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Toleransi",
+        question: "QS. Al-Hujurat 10–13 memerintahkan untuk tidak saling mengejek karena manusia diciptakan untuk saling ____________.",
+        options: [
+          "membantu",
+          "mengenal",
+          "menghormati",
+          "menyayangi"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Toleransi",
+        question: "Salah satu kewajiban muslim terhadap muslim lainnya adalah mengucapkan ____________.",
+        options: [
+          "terima kasih",
+          "maaf",
+          "salam",
+          "permisi"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Toleransi",
+        question: "Ghibah diibaratkan seperti memakan daging ____________.",
+        options: [
+          "bangkai",
+          "haram",
+          "busuk",
+          "saudaranya yang sudah mati"
+        ],
+        correctAnswer: 3
+      },
+      {
+        category: "Kewajiban Menuntut Ilmu",
+        question: "QS. At-Taubah 122 menyebutkan bahwa sebagian orang harus memperdalam ____________ agama.",
+        options: [
+          "sejarah",
+          "ilmu",
+          "budaya",
+          "tradisi"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Kewajiban Menuntut Ilmu",
+        question: "Salah satu ciri orang berilmu menurut QS. Ali Imran 190–191 adalah selalu berzikir dalam keadaan berdiri, duduk, dan ____________.",
+        options: [
+          "berjalan",
+          "berbaring",
+          "bersujud",
+          "berlari"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Kewajiban Menuntut Ilmu",
+        question: "Maksud hadis 'Ballighu 'annī walau āyah' adalah menyampaikan ____________ meskipun sedikit.",
+        options: [
+          "harta",
+          "makanan",
+          "ilmu",
+          "kebaikan"
+        ],
+        correctAnswer: 2
+      },
+      {
+        category: "Kewajiban Menuntut Ilmu",
+        question: "HR. Ibnu Majah menyatakan bahwa menuntut ilmu adalah kewajiban bagi setiap ____________.",
+        options: [
+          "manusia",
+          "muslim",
+          "laki-laki",
+          "orang dewasa"
+        ],
+        correctAnswer: 1
+      },
+      {
+        category: "Kewajiban Menuntut Ilmu",
+        question: "Salah satu ketentuan agar ilmu bermanfaat adalah menuntut ilmu dengan niat yang ____________.",
+        options: [
+          "kuat",
+          "sungguh-sungguh",
+          "ikhlas",
+          "tekun"
+        ],
+        correctAnswer: 2
+      }
+    ];
+
+    let currentQuestion = 0;
+    let userAnswers = [];
+    let score = 0;
+
+    function startQuiz() {
+      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('quizScreen').style.display = 'block';
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const data = quizData[currentQuestion];
+      document.getElementById('questionText').textContent = data.question;
+      document.getElementById('questionNumber').textContent = `Soal ${currentQuestion + 1} dari ${quizData.length}`;
+      document.getElementById('categoryLabel').textContent = data.category;
+      
+      const progress = ((currentQuestion + 1) / quizData.length) * 100;
+      document.getElementById('progressBar').style.width = progress + '%';
+
+      const optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.innerHTML = '';
+
+      const letters = ['A', 'B', 'C', 'D'];
+      data.options.forEach((option, index) => {
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'option';
+        optionDiv.onclick = () => selectOption(index);
+        
+        if (userAnswers[currentQuestion] !== undefined) {
+          optionDiv.classList.add('disabled');
+          if (index === userAnswers[currentQuestion]) {
+            if (index === data.correctAnswer) {
+              optionDiv.classList.add('correct');
+            } else {
+              optionDiv.classList.add('incorrect');
+            }
+          }
+          if (index === data.correctAnswer) {
+            optionDiv.classList.add('correct');
+          }
+        }
+
+        optionDiv.innerHTML = `
+          <div class="option-letter">${letters[index]}</div>
+          <div class="option-text">${option}</div>
+        `;
+        
+        optionsContainer.appendChild(optionDiv);
+      });
+
+      if (userAnswers[currentQuestion] !== undefined) {
+        showFeedback();
+      } else {
+        document.getElementById('feedback').classList.remove('show');
+      }
+
+      document.getElementById('prevBtn').disabled = currentQuestion === 0;
+      document.getElementById('nextBtn').disabled = userAnswers[currentQuestion] === undefined;
+      
+      if (currentQuestion === quizData.length - 1 && userAnswers[currentQuestion] !== undefined) {
+        document.getElementById('nextBtn').textContent = 'Lihat Hasil →';
+      } else {
+        document.getElementById('nextBtn').textContent = 'Selanjutnya →';
+      }
+    }
+
+    function selectOption(index) {
+      if (userAnswers[currentQuestion] !== undefined) return;
+
+      userAnswers[currentQuestion] = index;
+      
+      const options = document.querySelectorAll('.option');
+      options.forEach(opt => {
+        opt.classList.add('disabled');
+      });
+      
+      options[index].classList.add('selected');
+      
+      const correctAnswer = quizData[currentQuestion].correctAnswer;
+      
+      setTimeout(() => {
+        if (index === correctAnswer) {
+          options[index].classList.remove('selected');
+          options[index].classList.add('correct');
+          score++;
+        } else {
+          options[index].classList.remove('selected');
+          options[index].classList.add('incorrect');
+          options[correctAnswer].classList.add('correct');
+        }
+        
+        showFeedback();
+        document.getElementById('nextBtn').disabled = false;
+      }, 300);
+    }
+
+    function showFeedback() {
+      const feedback = document.getElementById('feedback');
+      const userAnswer = userAnswers[currentQuestion];
+      const correctAnswer = quizData[currentQuestion].correctAnswer;
+      
+      feedback.classList.add('show');
+      
+      if (userAnswer === correctAnswer) {
+        feedback.className = 'feedback show correct';
+        feedback.textContent = '✓ Benar! Jawaban Anda tepat.';
+      } else {
+        feedback.className = 'feedback show incorrect';
+        feedback.textContent = `✗ Salah. Jawaban yang benar adalah: ${quizData[currentQuestion].options[correctAnswer]}`;
+      }
+    }
+
+    function nextQuestion() {
+      if (currentQuestion < quizData.length - 1) {
+        currentQuestion++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function previousQuestion() {
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        loadQuestion();
+      }
+    }
+
+    function showResults() {
+      document.getElementById('quizScreen').style.display = 'none';
+      document.getElementById('resultScreen').style.display = 'block';
+
+      const finalScore = Math.round((score / quizData.length) * 100);
+      const incorrectCount = quizData.length - score;
+      const percentage = finalScore;
+
+      document.getElementById('finalScore').textContent = finalScore;
+      document.getElementById('correctCount').textContent = score;
+      document.getElementById('incorrectCount').textContent = incorrectCount;
+      document.getElementById('totalQuestions').textContent = quizData.length;
+      document.getElementById('percentage').textContent = percentage + '%';
+
+      let grade = '';
+      if (percentage >= 90) {
+        grade = 'Nilai: A - Sangat Baik! 🌟';
+      } else if (percentage >= 80) {
+        grade = 'Nilai: B - Baik! 👍';
+      } else if (percentage >= 70) {
+        grade = 'Nilai: C - Cukup 📚';
+      } else if (percentage >= 60) {
+        grade = 'Nilai: D - Perlu Belajar Lagi 📖';
+      } else {
+        grade = 'Nilai: E - Terus Semangat! 💪';
+      }
+
+      document.getElementById('gradeLabel').textContent = grade;
+    }
+
+    function restartQuiz() {
+      currentQuestion = 0;
+      userAnswers = [];
+      score = 0;
+      document.getElementById('resultScreen').style.display = 'none';
+      document.getElementById('startScreen').style.display = 'block';
+    }
+
+    async function onConfigChange(config) {
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseFont = 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
+      const baseSize = config.font_size || defaultConfig.font_size;
+      const bgColor = config.background_color || defaultConfig.background_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const primaryColor = config.primary_action_color || defaultConfig.primary_action_color;
+      const secondaryColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+
+      document.body.style.fontFamily = `${customFont}, ${baseFont}`;
+      document.body.style.fontSize = `${baseSize}px`;
+      document.body.style.background = `linear-gradient(135deg, ${bgColor} 0%, ${bgColor} 100%)`;
+
+      document.querySelectorAll('.container').forEach(el => {
+        el.style.background = surfaceColor;
+      });
+
+      document.querySelectorAll('.header h1, .header p, .question-text, .result-label, .result-value, h2, p, span, .option-text').forEach(el => {
+        el.style.color = textColor;
+      });
+
+      document.querySelectorAll('.btn').forEach(el => {
+        el.style.background = primaryColor;
+      });
+
+      document.querySelectorAll('.btn-secondary').forEach(el => {
+        el.style.background = secondaryColor;
+      });
+
+      document.getElementById('quiz-title').textContent = config.quiz_title || defaultConfig.quiz_title;
+      document.getElementById('quiz-subtitle').textContent = config.quiz_subtitle || defaultConfig.quiz_subtitle;
+
+      document.querySelectorAll('.header h1').forEach(el => {
+        el.style.fontSize = `${baseSize * 2}px`;
+      });
+
+      document.querySelectorAll('.header p').forEach(el => {
+        el.style.fontSize = `${baseSize * 1.1}px`;
+      });
+
+      document.querySelectorAll('.question-text').forEach(el => {
+        el.style.fontSize = `${baseSize * 1.2}px`;
+      });
+
+      document.querySelectorAll('.option-text').forEach(el => {
+        el.style.fontSize = `${baseSize}px`;
+      });
+
+      document.querySelectorAll('.btn').forEach(el => {
+        el.style.fontSize = `${baseSize * 1.1}px`;
+      });
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => {
+                config.background_color = value;
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => {
+                config.surface_color = value;
+                window.elementSdk.setConfig({ surface_color: value });
+              }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => {
+                config.text_color = value;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            },
+            {
+              get: () => config.primary_action_color || defaultConfig.primary_action_color,
+              set: (value) => {
+                config.primary_action_color = value;
+                window.elementSdk.setConfig({ primary_action_color: value });
+              }
+            },
+            {
+              get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+              set: (value) => {
+                config.secondary_action_color = value;
+                window.elementSdk.setConfig({ secondary_action_color: value });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => {
+              config.font_family = value;
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (value) => {
+              config.font_size = value;
+              window.elementSdk.setConfig({ font_size: value });
+            }
+          }
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['quiz_title', config.quiz_title || defaultConfig.quiz_title],
+          ['quiz_subtitle', config.quiz_subtitle || defaultConfig.quiz_subtitle]
+        ])
+      });
+
+      onConfigChange(window.elementSdk.config);
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a0c1b51f35bc09d',t:'MTc2MzUxNzU1MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
