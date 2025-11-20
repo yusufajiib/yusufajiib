@@ -1,1 +1,649 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Multi Kategori</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .category-card {
+            transition: all 0.3s ease;
+        }
+        .category-card:hover {
+            transform: translateY(-5px);
+        }
+        .content-frame {
+            min-height: 600px;
+        }
+        .search-highlight {
+            background-color: #fef08a;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-lg">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-3xl font-bold text-gray-800 cursor-pointer" onclick="showHome()">
+                    🌟 Website Multi Kategori
+                </h1>
+                <nav class="hidden md:flex space-x-6">
+                    <button onclick="showHome()" class="text-gray-600 hover:text-blue-600 font-medium">Beranda</button>
+                    <button onclick="showAllCategories()" class="text-gray-600 hover:text-blue-600 font-medium">Semua Kategori</button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Home Section -->
+        <div id="home-section" class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">Selamat Datang</h2>
+            <p class="text-xl text-gray-600 mb-8">Jelajahi berbagai kategori konten yang tersedia</p>
+
+            <!-- Search Bar -->
+            <div class="max-w-md mx-auto mb-8">
+                <div class="relative">
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        placeholder="Cari kategori atau konten..." 
+                        class="w-full px-4 py-3 pl-12 pr-4 text-gray-700 bg-white border border-gray-300 rounded-full focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                        oninput="performSearch()"
+                        onkeydown="handleSearchKeydown(event)"
+                    >
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <button 
+                        id="clear-search" 
+                        class="absolute inset-y-0 right-0 flex items-center pr-4 hidden"
+                        onclick="clearSearch()"
+                    >
+                        <svg class="w-5 h-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="mt-2 text-xs text-gray-500 text-center">
+                    Tekan Enter untuk mencari, Escape untuk membersihkan
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div id="search-results" class="hidden mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 id="search-results-title" class="text-2xl font-semibold text-gray-800">Hasil Pencarian</h3>
+                    <button onclick="clearSearch()" class="text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        <span>Tutup Pencarian</span>
+                    </button>
+                </div>
+                <div id="search-results-content" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Search results will appear here -->
+                </div>
+            </div>
+
+            <!-- Categories Grid -->
+            <div id="categories-container" class="mb-8">
+                <div id="categories-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Categories will be loaded here -->
+                </div>
+
+                <!-- Pagination -->
+                <div id="pagination" class="flex justify-center items-center space-x-2 mb-8">
+                    <button 
+                        id="prev-page" 
+                        onclick="changePage(-1)" 
+                        class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled
+                    >
+                        ← Sebelumnya
+                    </button>
+
+                    <div id="page-info" class="px-4 py-2 text-gray-600 font-medium">
+                        Halaman 1 dari 2
+                    </div>
+
+                    <button 
+                        id="next-page" 
+                        onclick="changePage(1)" 
+                        class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        Selanjutnya →
+                    </button>
+                </div>
+
+                <!-- View All Categories Button -->
+                <button 
+                    onclick="showAllCategoriesPage()" 
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                >
+                    Lihat Semua 12 Kategori
+                </button>
+            </div>
+        </div>
+
+        <!-- Category Content Section -->
+        <div id="category-section" class="hidden">
+            <!-- Breadcrumb -->
+            <nav class="mb-6">
+                <ol class="flex items-center space-x-2 text-sm text-gray-600">
+                    <li><button onclick="showHome()" class="hover:text-blue-600">Beranda</button></li>
+                    <li>/</li>
+                    <li id="current-category" class="font-medium text-gray-800"></li>
+                </ol>
+            </nav>
+
+            <!-- Category Header -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                <h2 id="category-title" class="text-3xl font-bold text-gray-800 mb-2"></h2>
+                <p id="category-description" class="text-gray-600"></p>
+            </div>
+
+            <!-- Content List -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Daftar Konten</h3>
+                <div id="content-list" class="space-y-3">
+                    <!-- Content items will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- All Categories Section -->
+        <div id="all-categories-section" class="hidden">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Semua Kategori</h2>
+                <p class="text-gray-600 mb-6">Jelajahi semua 12 kategori yang tersedia</p>
+                <button onclick="showHome()" class="text-blue-600 hover:text-blue-800 font-medium">
+                    ← Kembali ke Beranda
+                </button>
+            </div>
+
+            <div id="all-categories-grid" class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- All categories will be loaded here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; 2024 Website Multi Kategori. Dibuat untuk GitHub Pages.</p>
+            <p class="mt-2 text-gray-400">Struktur: website-utama/folder-kategori/konten.html</p>
+        </div>
+    </footer>
+
+    <script>
+        // Data struktur website
+        const categories = {
+            teknologi: {
+                title: 'Teknologi',
+                description: 'Artikel dan tutorial seputar teknologi terkini, programming, dan inovasi digital',
+                icon: '💻',
+                contents: [
+                    { file: 'explore_kategory.html', title: 'Web Link Kategori' },
+                    { file: 'artificial-intelligence.html', title: 'Artificial Intelligence dan Masa Depan' },
+                    { file: 'web-development.html', title: 'Panduan Web Development Modern' },
+                    { file: 'mobile-apps.html', title: 'Tren Aplikasi Mobile 2024' },
+                    { file: 'cybersecurity.html', title: 'Keamanan Siber untuk Pemula' },
+                    { file: 'karya-siswa.html', title: 'Karya Siswa' },
+                    { file: 'proyek-canva-ai.html', title: 'Proyek Canva AI' },
+                    { file: 'portfolio-canva-ai.html', title: 'Portfolio Canva AI' }
+                ]
+            },
+            bisnis: {
+                title: 'Bisnis',
+                description: 'Tips dan strategi untuk mengembangkan bisnis, entrepreneurship, dan manajemen',
+                icon: '💼',
+                contents: [
+                    { file: 'startup-guide.html', title: 'Panduan Memulai Startup' },
+                    { file: 'digital-marketing.html', title: 'Strategi Digital Marketing' },
+                    { file: 'financial-planning.html', title: 'Perencanaan Keuangan Bisnis' },
+                    { file: 'leadership.html', title: 'Kepemimpinan Efektif' }
+                ]
+            },
+            kesehatan: {
+                title: 'Kesehatan',
+                description: 'Informasi kesehatan, tips hidup sehat, dan panduan medis',
+                icon: '🏥',
+                contents: [
+                    { file: 'healthy-lifestyle.html', title: 'Gaya Hidup Sehat Modern' },
+                    { file: 'mental-health.html', title: 'Kesehatan Mental di Era Digital' },
+                    { file: 'nutrition-guide.html', title: 'Panduan Nutrisi Seimbang' },
+                    { file: 'exercise-tips.html', title: 'Tips Olahraga di Rumah' }
+                ]
+            },
+            pendidikan: {
+                title: 'Pendidikan',
+                description: 'Materi pembelajaran, pengembangan diri, dan metode belajar efektif',
+                icon: '📚',
+                contents: [
+                    { file: 'qhpas102025.html', title: 'PAS GASAL Quran Hadist 10' },
+                    { file: 'qhpas112025.html', title: 'PAS GASAL Quran Hadist 11' },
+                    { file: 'qhpas122025.html', title: 'PAS GASAL Quran Hadist 12' },
+                    { file: 'fqpas102025.html', title: 'PAS GASAL Fikih 10' },
+                    { file: 'fqpas112025.html', title: 'PAS GASAL Fikih 11' },
+                    { file: 'fqpas122025.html', title: 'PAS GASAL Fikih 12' },                  
+                    { file: 'tahfidz.html', title: 'Laporan Tahfidz' },
+                    { file: 'online-learning.html', title: 'Efektivitas Pembelajaran Online' },
+                    { file: 'study-methods.html', title: 'Metode Belajar yang Efektif' },
+                    { file: 'skill-development.html', title: 'Pengembangan Skill di Era Digital' },
+                    { file: 'career-guidance.html', title: 'Panduan Karir untuk Fresh Graduate' }
+                ]
+            },
+            travel: {
+                title: 'Travel',
+                description: 'Panduan wisata, destinasi menarik, dan tips perjalanan',
+                icon: '✈️',
+                contents: [
+                    { file: 'indonesia-destinations.html', title: 'Destinasi Wisata Indonesia Tersembunyi' },
+                    { file: 'budget-travel.html', title: 'Tips Traveling dengan Budget Minim' },
+                    { file: 'solo-travel.html', title: 'Panduan Solo Traveling Aman' },
+                    { file: 'cultural-tourism.html', title: 'Wisata Budaya Nusantara' }
+                ]
+            },
+            kuliner: {
+                title: 'Kuliner',
+                description: 'Resep masakan, review kuliner, dan tips memasak',
+                icon: '🍽️',
+                contents: [
+                    { file: 'traditional-recipes.html', title: 'Resep Masakan Tradisional' },
+                    { file: 'healthy-cooking.html', title: 'Memasak Sehat dan Lezat' },
+                    { file: 'street-food.html', title: 'Jajanan Kaki Lima Favorit' },
+                    { file: 'cooking-tips.html', title: 'Tips Memasak untuk Pemula' }
+                ]
+            },
+            olahraga: {
+                title: 'Olahraga',
+                description: 'Tips olahraga, fitness, dan aktivitas fisik untuk kesehatan optimal',
+                icon: '⚽',
+                contents: [
+                    { file: 'home-workout.html', title: 'Workout di Rumah Tanpa Alat' },
+                    { file: 'running-guide.html', title: 'Panduan Lari untuk Pemula' },
+                    { file: 'yoga-basics.html', title: 'Dasar-dasar Yoga untuk Relaksasi' },
+                    { file: 'sports-nutrition.html', title: 'Nutrisi untuk Atlet' }
+                ]
+            },
+            seni: {
+                title: 'Seni & Budaya',
+                description: 'Eksplorasi seni, budaya, dan kreativitas dalam berbagai bentuk',
+                icon: '🎨',
+                contents: [
+                    { file: 'digital-art.html', title: 'Seni Digital untuk Pemula' },
+                    { file: 'traditional-crafts.html', title: 'Kerajinan Tradisional Indonesia' },
+                    { file: 'music-theory.html', title: 'Teori Musik Dasar' },
+                    { file: 'photography-tips.html', title: 'Tips Fotografi Mobile' }
+                ]
+            },
+            keuangan: {
+                title: 'Keuangan Personal',
+                description: 'Panduan mengelola keuangan pribadi, investasi, dan perencanaan finansial',
+                icon: '💰',
+                contents: [
+                    { file: 'format-spp.html', title: 'Format Pembayaran' },
+                    { file: 'spp.html', title: 'Administrasi Madrasah' },
+                    { file: 'budgeting-basics.html', title: 'Dasar-dasar Budgeting' },
+                    { file: 'investment-guide.html', title: 'Panduan Investasi untuk Pemula' },
+                    { file: 'saving-strategies.html', title: 'Strategi Menabung Efektif' },
+                    { file: 'financial-planning.html', title: 'Perencanaan Keuangan Jangka Panjang' }
+                ]
+            },
+            lifestyle: {
+                title: 'Lifestyle',
+                description: 'Tips gaya hidup modern, produktivitas, dan keseimbangan hidup',
+                icon: '🌟',
+                contents: [
+                    { file: 'minimalism.html', title: 'Hidup Minimalis di Era Modern' },
+                    { file: 'productivity-hacks.html', title: 'Hack Produktivitas Sehari-hari' },
+                    { file: 'work-life-balance.html', title: 'Mencapai Work-Life Balance' },
+                    { file: 'self-care.html', title: 'Self Care untuk Mental Health' }
+                ]
+            },
+            otomotif: {
+                title: 'Otomotif',
+                description: 'Informasi seputar kendaraan, perawatan, dan teknologi otomotif',
+                icon: '🚗',
+                contents: [
+                    { file: 'car-maintenance.html', title: 'Perawatan Mobil Harian' },
+                    { file: 'motorcycle-tips.html', title: 'Tips Berkendara Motor Aman' },
+                    { file: 'electric-vehicles.html', title: 'Masa Depan Kendaraan Listrik' },
+                    { file: 'driving-safety.html', title: 'Keselamatan Berkendara' }
+                ]
+            },
+            properti: {
+                title: 'Properti & Investasi',
+                description: 'Panduan investasi properti, tips membeli rumah, dan tren real estate',
+                icon: '🏠',
+                contents: [
+                    { file: 'home-buying-guide.html', title: 'Panduan Membeli Rumah Pertama' },
+                    { file: 'property-investment.html', title: 'Investasi Properti untuk Pemula' },
+                    { file: 'home-design.html', title: 'Desain Interior Rumah Minimalis' },
+                    { file: 'real-estate-trends.html', title: 'Tren Properti 2024' }
+                ]
+            }
+        };
+
+        let currentCategory = '';
+        let currentPage = 1;
+        const categoriesPerPage = 6;
+        const categoryKeys = Object.keys(categories);
+        const totalPages = Math.ceil(categoryKeys.length / categoriesPerPage);
+
+        function showHome() {
+            document.getElementById('home-section').classList.remove('hidden');
+            document.getElementById('category-section').classList.add('hidden');
+            document.getElementById('all-categories-section').classList.add('hidden');
+            clearSearch();
+            loadCategoriesPage();
+        }
+
+        function showAllCategories() {
+            showHome();
+        }
+
+        function showAllCategoriesPage() {
+            document.getElementById('home-section').classList.add('hidden');
+            document.getElementById('category-section').classList.add('hidden');
+            document.getElementById('all-categories-section').classList.remove('hidden');
+            clearSearch();
+            loadAllCategories();
+        }
+
+        function loadCategoriesPage() {
+            const startIndex = (currentPage - 1) * categoriesPerPage;
+            const endIndex = startIndex + categoriesPerPage;
+            const pageCategories = categoryKeys.slice(startIndex, endIndex);
+
+            const grid = document.getElementById('categories-grid');
+            grid.innerHTML = '';
+
+            pageCategories.forEach(key => {
+                const category = categories[key];
+                const categoryCard = createCategoryCard(key, category);
+                grid.appendChild(categoryCard);
+            });
+
+            updatePagination();
+        }
+
+        function loadAllCategories() {
+            const grid = document.getElementById('all-categories-grid');
+            grid.innerHTML = '';
+
+            categoryKeys.forEach(key => {
+                const category = categories[key];
+                const categoryCard = createCategoryCard(key, category);
+                grid.appendChild(categoryCard);
+            });
+        }
+
+        function createCategoryCard(key, category) {
+            const card = document.createElement('a');
+            card.href = `${key}/index.html`;
+            card.className = 'category-card bg-white rounded-xl shadow-md p-6 cursor-pointer block hover:no-underline';
+            card.onclick = (e) => {
+                e.preventDefault();
+                loadCategory(key);
+            };
+
+            card.innerHTML = `
+                <div class="text-4xl mb-4">${category.icon}</div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">${category.title}</h3>
+                <p class="text-gray-600">${category.description}</p>
+            `;
+
+            return card;
+        }
+
+        function updatePagination() {
+            document.getElementById('page-info').textContent = `Halaman ${currentPage} dari ${totalPages}`;
+
+            const prevBtn = document.getElementById('prev-page');
+            const nextBtn = document.getElementById('next-page');
+
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
+
+        function changePage(direction) {
+            const newPage = currentPage + direction;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                loadCategoriesPage();
+            }
+        }
+
+        function performSearch() {
+            const searchInput = document.getElementById('search-input');
+            if (!searchInput) return;
+
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const clearBtn = document.getElementById('clear-search');
+
+            if (searchTerm.length === 0) {
+                clearSearch();
+                return;
+            }
+
+            if (clearBtn) {
+                clearBtn.classList.remove('hidden');
+            }
+
+            const searchResults = [];
+
+            // Search in categories
+            categoryKeys.forEach(key => {
+                const category = categories[key];
+                const titleMatch = category.title.toLowerCase().includes(searchTerm);
+                const descMatch = category.description.toLowerCase().includes(searchTerm);
+                const keyMatch = key.toLowerCase().includes(searchTerm);
+
+                if (titleMatch || descMatch || keyMatch) {
+                    searchResults.push({
+                        type: 'category',
+                        key: key,
+                        category: category,
+                        matchType: 'Kategori'
+                    });
+                }
+
+                // Search in content
+                category.contents.forEach(content => {
+                    const contentTitleMatch = content.title.toLowerCase().includes(searchTerm);
+                    const fileMatch = content.file.toLowerCase().includes(searchTerm);
+
+                    if (contentTitleMatch || fileMatch) {
+                        searchResults.push({
+                            type: 'content',
+                            key: key,
+                            category: category,
+                            content: content,
+                            matchType: 'Konten'
+                        });
+                    }
+                });
+            });
+
+            displaySearchResults(searchResults, searchTerm);
+        }
+
+        function handleSearchKeydown(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                performSearch();
+            } else if (event.key === 'Escape') {
+                clearSearch();
+            }
+        }
+
+        function displaySearchResults(results, searchTerm) {
+            const searchResultsSection = document.getElementById('search-results');
+            const searchResultsContent = document.getElementById('search-results-content');
+            const searchTitle = document.getElementById('search-results-title');
+            const categoriesContainer = document.getElementById('categories-container');
+
+            if (!searchResultsSection || !searchResultsContent || !searchTitle) return;
+
+            searchTitle.textContent = `Hasil Pencarian untuk "${searchTerm}" (${results.length} hasil)`;
+            searchResultsContent.innerHTML = '';
+
+            if (results.length === 0) {
+                searchResultsContent.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <div class="text-6xl mb-4">🔍</div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Tidak ada hasil ditemukan</h3>
+                        <p class="text-gray-600 mb-4">Tidak ditemukan kategori atau konten yang cocok dengan "<strong>${searchTerm}</strong>"</p>
+                        <div class="text-sm text-gray-500 bg-gray-50 p-4 rounded-lg max-w-md mx-auto">
+                            <p class="font-medium mb-2">💡 Tips pencarian:</p>
+                            <ul class="text-left space-y-1">
+                                <li>• Coba kata kunci yang lebih umum</li>
+                                <li>• Periksa ejaan kata kunci</li>
+                                <li>• Gunakan sinonim atau kata yang berkaitan</li>
+                                <li>• Coba kata dalam bahasa Inggris</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            } else {
+                results.forEach((result, index) => {
+                    const resultCard = document.createElement('div');
+                    resultCard.className = 'bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-all duration-200';
+
+                    if (result.type === 'category') {
+                        resultCard.onclick = () => {
+                            clearSearch();
+                            loadCategory(result.key);
+                        };
+
+                        resultCard.innerHTML = `
+                            <div class="flex items-start space-x-3">
+                                <div class="text-3xl">${result.category.icon}</div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full font-medium">${result.matchType}</span>
+                                        <span class="text-xs text-gray-400">#${index + 1}</span>
+                                    </div>
+                                    <h4 class="font-semibold text-gray-800 mb-1">${result.category.title}</h4>
+                                    <p class="text-sm text-gray-600 leading-relaxed">${result.category.description}</p>
+                                    <div class="mt-2 text-xs text-gray-500">
+                                        <span class="bg-gray-100 px-2 py-1 rounded">${result.category.contents.length} konten tersedia</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        resultCard.onclick = () => {
+                            clearSearch();
+                            window.location.href = `${result.key}/${result.content.file}`;
+                        };
+
+                        resultCard.innerHTML = `
+                            <div class="flex items-start space-x-3">
+                                <div class="text-3xl">${result.category.icon}</div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full font-medium">${result.matchType}</span>
+                                            <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">${result.category.title}</span>
+                                        </div>
+                                        <span class="text-xs text-gray-400">#${index + 1}</span>
+                                    </div>
+                                    <h4 class="font-semibold text-gray-800 mb-1">${result.content.title}</h4>
+                                    <p class="text-sm text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded">${result.key}/${result.content.file}</p>
+                                    <div class="mt-2 flex items-center text-xs text-blue-600">
+                                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                        Klik untuk membuka konten
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    searchResultsContent.appendChild(resultCard);
+                });
+            }
+
+            searchResultsSection.classList.remove('hidden');
+            if (categoriesContainer) {
+                categoriesContainer.classList.add('hidden');
+            }
+        }
+
+        function clearSearch() {
+            const searchInput = document.getElementById('search-input');
+            const clearBtn = document.getElementById('clear-search');
+            const searchResults = document.getElementById('search-results');
+            const categoriesContainer = document.getElementById('categories-container');
+
+            if (searchInput) searchInput.value = '';
+            if (clearBtn) clearBtn.classList.add('hidden');
+            if (searchResults) searchResults.classList.add('hidden');
+            if (categoriesContainer) categoriesContainer.classList.remove('hidden');
+        }
+
+        function loadCategory(categoryName) {
+            currentCategory = categoryName;
+            const category = categories[categoryName];
+
+            if (!category) {
+                alert('Kategori tidak ditemukan!');
+                return;
+            }
+
+            document.getElementById('current-category').textContent = category.title;
+            document.getElementById('category-title').textContent = category.icon + ' ' + category.title;
+            document.getElementById('category-description').textContent = category.description;
+
+            const contentList = document.getElementById('content-list');
+            contentList.innerHTML = '';
+
+            category.contents.forEach(content => {
+                const contentItem = document.createElement('a');
+                contentItem.href = `${categoryName}/${content.file}`;
+                contentItem.className = 'flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer block hover:no-underline';
+
+                contentItem.innerHTML = `
+                    <div>
+                        <h4 class="font-medium text-gray-800">${content.title}</h4>
+                        <p class="text-sm text-gray-600">${categoryName}/${content.file}</p>
+                    </div>
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                `;
+
+                contentList.appendChild(contentItem);
+            });
+
+            document.getElementById('home-section').classList.add('hidden');
+            document.getElementById('category-section').classList.remove('hidden');
+        }
+
+        function goBackToCategory() {
+            if (currentCategory) {
+                loadCategory(currentCategory);
+            } else {
+                showHome();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            showHome();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9747de61c62f5f72',t:'MTc1NjA5MTEzNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
 
