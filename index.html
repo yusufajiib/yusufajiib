@@ -269,12 +269,73 @@
       padding: 20px 24px;
       transition: all 0.2s;
       cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .link-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 4px;
+      height: 100%;
+      transition: width 0.3s;
     }
 
     .link-item:hover {
       background: #f1f5f9;
       border-color: #667eea;
       transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .link-item:hover::before {
+      width: 8px;
+    }
+
+    .link-item:nth-child(1)::before {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .link-item:nth-child(2)::before {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .link-item:nth-child(3)::before {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .link-item:nth-child(4)::before {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    .link-item:nth-child(5)::before {
+      background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+
+    .link-item:nth-child(6)::before {
+      background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+    }
+
+    .link-item:nth-child(7)::before {
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    }
+
+    .link-item:nth-child(8)::before {
+      background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);
+    }
+
+    .link-item:nth-child(9)::before {
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    }
+
+    .link-item:nth-child(10)::before {
+      background: linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%);
+    }
+
+    .link-item:nth-child(n+11)::before {
+      background: linear-gradient(135deg, #c471f5 0%, #fa71cd 100%);
     }
 
     .link-title {
@@ -434,7 +495,6 @@
         icon: "💻",
         description: "Perkembangan teknologi, programming, dan software development",
         links: [
-          { title: "Proyek Website - Explore Kategory", url: "https://www.canva.com/ai/code/thread/b1676fa3-aeb8-4374-b758-525bde9d7de5" },
           { title: "GitHub", url: "https://github.com" },
           { title: "Stack Overflow", url: "https://stackoverflow.com" },
           { title: "MDN Web Docs", url: "https://developer.mozilla.org" },
@@ -1006,5 +1066,5 @@
     renderCategories(defaultConfig);
     renderBreadcrumb(defaultConfig);
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a15f1f7149a90f2',t:'MTc2MzYyMDcxNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a16004b840d407a',t:'MTc2MzYyMTMwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
