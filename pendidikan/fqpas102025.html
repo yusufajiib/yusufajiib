@@ -105,6 +105,9 @@
       text-decoration: none;
       cursor: pointer;
       transition: color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .breadcrumb-link:hover {
@@ -114,6 +117,28 @@
 
     .breadcrumb-separator {
       color: #cbd5e1;
+    }
+
+    .home-button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    }
+
+    .home-button:hover {
+      background: #764ba2;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
 
     .view-title {
@@ -303,7 +328,7 @@
       }
 
       .site-title {
-        font-size: 32px;
+        font-size: 24px !important;
       }
 
       .site-description {
@@ -336,6 +361,20 @@
         font-size: 13px;
         min-width: 38px;
       }
+
+      .home-button {
+        padding: 8px 12px;
+        font-size: 12px;
+        gap: 4px;
+      }
+
+      .home-button span:last-child {
+        display: none;
+      }
+
+      .home-button span:first-child {
+        font-size: 18px;
+      }
     }
   </style>
   <style>@view-transition { navigation: auto; }</style>
@@ -353,9 +392,11 @@
    </header>
    <div class="current-view">
     <div class="breadcrumb" id="breadcrumb"></div>
-    <h2 class="view-title" id="viewTitle">Semua Kategori</h2>
     <div id="content"></div>
    </div>
+   <footer style="text-align: center; color: white; padding: 32px 20px; margin-top: 40px; opacity: 0.9;">
+    <p style="margin: 0; font-size: 14px;">© 2024 Website Category Explorer.</p>
+   </footer>
   </div>
   <script>
     const defaultConfig = {
@@ -445,7 +486,7 @@
         ]
       },
       travel: {
-        icon: "✈️",
+        icon: "����️",
         description: "Panduan wisata, booking hotel, dan tips perjalanan",
         links: [
           { title: "TripAdvisor", url: "https://tripadvisor.com" },
@@ -566,7 +607,7 @@
         ]
       },
       film: {
-        icon: "🎥",
+        icon: "��",
         description: "Review film, rating, dan berita industri perfilman",
         links: [
           { title: "Rotten Tomatoes", url: "https://rottentomatoes.com" },
@@ -716,8 +757,11 @@
         breadcrumb.innerHTML = '<span style="color: #94a3b8;">Beranda</span>';
       } else {
         breadcrumb.innerHTML = `
-          <a class="breadcrumb-link" onclick="goHome()">Beranda</a>
-          <span class="breadcrumb-separator">›</span>
+          <button class="home-button" onclick="goHome()">
+            <span>🏠</span>
+            <span>Kembali ke Beranda</span>
+          </button>
+          <span class="breadcrumb-separator" style="margin: 0 8px;">›</span>
           <span style="color: #94a3b8;">${currentCategory}</span>
         `;
       }
@@ -793,7 +837,7 @@
       if (searchQuery.trim()) {
         document.getElementById('viewTitle').textContent = 'Hasil Pencarian';
       } else {
-        document.getElementById('viewTitle').textContent = `Semua Kategori (Halaman ${currentPage} dari ${Math.ceil(filteredCategories.length / itemsPerPage)})`;
+        document.getElementById('viewTitle').textContent = 'Semua Kategori';
       }
     }
 
@@ -830,7 +874,21 @@
         return;
       }
 
-      let html = '<div class="links-list">';
+      let html = `
+        <div style="margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #e2e8f0;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px; font-size: 14px;">
+            <span onclick="goHome()" style="cursor: pointer; color: #667eea; transition: color 0.2s; font-weight: 500;">Beranda</span>
+            <span style="color: #cbd5e1;">/</span>
+            <span style="color: #94a3b8;">${categoryName}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
+            <div style="font-size: 64px;">${data.icon}</div>
+            <h2 style="font-size: 36px; font-weight: 700; color: #1e293b; margin: 0;">${categoryName}</h2>
+          </div>
+          <p style="font-size: 16px; color: #64748b; margin: 0; line-height: 1.6;">${data.description}</p>
+        </div>
+        <div class="links-list">
+      `;
       
       links.forEach(link => {
         const highlightedTitle = highlightText(link.title, searchQuery);
@@ -849,7 +907,6 @@
       html += '</div>';
       
       document.getElementById('content').innerHTML = html;
-      document.getElementById('viewTitle').textContent = categoryName;
     }
 
     function showCategory(categoryName) {
@@ -947,5 +1004,5 @@
     renderCategories(defaultConfig);
     renderBreadcrumb(defaultConfig);
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a1579ccc0fa87f3',t:'MTc2MzYxNTc5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a15967a641da2c5',t:'MTc2MzYxNjk2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
