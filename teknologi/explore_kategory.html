@@ -1,1 +1,534 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Category Explorer</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    .category-card {
+      transition: all 0.3s ease;
+    }
+    
+    .category-card:hover {
+      transform: translateY(-8px);
+    }
+    
+    .subcategory-item {
+      transition: all 0.2s ease;
+    }
+    
+    .subcategory-item:hover {
+      padding-left: 1.5rem;
+    }
+    
+    .icon-rotate {
+      transition: transform 0.3s ease;
+    }
+    
+    .icon-rotate.expanded {
+      transform: rotate(180deg);
+    }
 
+    .add-form {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+    }
+
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="min-h-full">
+  <div id="app" class="min-h-full p-8"></div>
+  <script>
+    const defaultConfig = {
+      main_title: "Jelajahi Kategori",
+      subtitle: "Temukan berbagai kategori menarik dengan sub kategori lengkap",
+      background_color: "#f0f4f8",
+      card_color: "#ffffff",
+      text_color: "#1a202c",
+      primary_action_color: "#3b82f6",
+      secondary_action_color: "#64748b",
+      font_family: "Inter",
+      font_size: 16
+    };
+
+    const defaultCategories = [
+      {
+        id: 1,
+        name: "🎨 Desain & Kreativitas",
+        icon: "🎨",
+        isDefault: true
+      },
+      {
+        id: 2,
+        name: "💻 Teknologi",
+        icon: "💻",
+        isDefault: true
+      },
+      {
+        id: 3,
+        name: "📚 Pendidikan",
+        icon: "📚",
+        isDefault: true
+      },
+      {
+        id: 4,
+        name: "🏋️ Kesehatan & Olahraga",
+        icon: "🏋️",
+        isDefault: true
+      },
+      {
+        id: 5,
+        name: "🎮 Hiburan",
+        icon: "🎮",
+        isDefault: true
+      },
+      {
+        id: 6,
+        name: "🍳 Kuliner",
+        icon: "🍳",
+        isDefault: true
+      }
+    ];
+
+    let categories = [...defaultCategories];
+
+    let expandedCategories = new Set();
+    let userSubcategories = [];
+    let showAddForm = false;
+    let selectedCategoryForAdd = null;
+    let showAddCategoryForm = false;
+    let nextCategoryId = 7;
+
+    const dataHandler = {
+      onDataChanged(data) {
+        userSubcategories = data;
+        
+        // Load custom categories from data
+        const customCategories = data.filter(item => item.is_category === true);
+        const customCategoryList = customCategories.map(cat => ({
+          id: cat.category_id,
+          name: cat.category_name,
+          icon: cat.category_icon,
+          isDefault: false,
+          __backendId: cat.__backendId
+        }));
+        
+        // Update nextCategoryId
+        if (customCategoryList.length > 0) {
+          const maxId = Math.max(...customCategoryList.map(c => c.id));
+          nextCategoryId = Math.max(nextCategoryId, maxId + 1);
+        }
+        
+        categories = [...defaultCategories, ...customCategoryList];
+        renderApp();
+      }
+    };
+
+    async function addCategory(name, icon) {
+      if (userSubcategories.length >= 999) {
+        showToast("Maksimum 999 item tercapai. Silakan hapus beberapa item terlebih dahulu.", "error");
+        return;
+      }
+
+      const result = await window.dataSdk.create({
+        category_id: nextCategoryId,
+        category_name: name,
+        category_icon: icon,
+        is_category: true,
+        subcategory_name: "",
+        url: ""
+      });
+
+      if (result.isOk) {
+        nextCategoryId++;
+        showAddCategoryForm = false;
+        showToast("Kategori berhasil ditambahkan!", "success");
+      } else {
+        showToast("Gagal menambahkan kategori. Silakan coba lagi.", "error");
+      }
+    }
+
+    async function deleteCategory(record) {
+      const result = await window.dataSdk.delete(record);
+
+      if (result.isOk) {
+        showToast("Kategori berhasil dihapus!", "success");
+      } else {
+        showToast("Gagal menghapus kategori. Silakan coba lagi.", "error");
+      }
+    }
+
+    async function addSubcategory(categoryId, name, url) {
+      if (userSubcategories.length >= 999) {
+        showToast("Maksimum 999 sub kategori tercapai. Silakan hapus beberapa item terlebih dahulu.", "error");
+        return;
+      }
+
+      const addButton = document.querySelector(`[data-add-category="${categoryId}"]`);
+      if (addButton) addButton.disabled = true;
+
+      const result = await window.dataSdk.create({
+        category_id: categoryId,
+        category_name: "",
+        category_icon: "",
+        is_category: false,
+        subcategory_name: name,
+        url: url
+      });
+
+      if (addButton) addButton.disabled = false;
+
+      if (result.isOk) {
+        showAddForm = false;
+        selectedCategoryForAdd = null;
+        showToast("Sub kategori berhasil ditambahkan!", "success");
+      } else {
+        showToast("Gagal menambahkan sub kategori. Silakan coba lagi.", "error");
+      }
+    }
+
+    async function deleteSubcategory(record) {
+      const result = await window.dataSdk.delete(record);
+
+      if (result.isOk) {
+        showToast("Sub kategori berhasil dihapus!", "success");
+      } else {
+        showToast("Gagal menghapus sub kategori. Silakan coba lagi.", "error");
+      }
+    }
+
+    function showToast(message, type) {
+      const toast = document.createElement('div');
+      toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white z-50 ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function getSubcategoriesForCategory(categoryId) {
+      return userSubcategories.filter(sub => sub.category_id === categoryId && sub.is_category !== true);
+    }
+
+    async function onConfigChange(config) {
+      renderApp();
+    }
+
+    function renderApp() {
+      const config = window.elementSdk?.config || defaultConfig;
+      const app = document.getElementById('app');
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseFontStack = 'system-ui, -apple-system, sans-serif';
+      const baseSize = config.font_size || defaultConfig.font_size;
+      
+      document.body.style.backgroundColor = config.background_color || defaultConfig.background_color;
+      document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+      
+      app.innerHTML = `
+        <div class="max-w-7xl mx-auto">
+          <header class="text-center mb-12">
+            <h1 id="main-title" class="font-bold mb-3" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseSize * 2.5}px;">${config.main_title || defaultConfig.main_title}</h1>
+            <p id="subtitle" style="color: ${config.secondary_action_color || defaultConfig.secondary_action_color}; font-size: ${baseSize * 1.1}px;">${config.subtitle || defaultConfig.subtitle}</p>
+            
+            <div class="mt-6 flex justify-center gap-4">
+              ${showAddCategoryForm ? `
+                <div class="add-form p-4 rounded-lg border-2 inline-block" style="border-color: ${config.primary_action_color || defaultConfig.primary_action_color};">
+                  <h3 class="font-bold mb-3" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseSize * 1.1}px;">Tambah Kategori Baru</h3>
+                  <form id="add-category-form" class="space-y-3">
+                    <div class="flex gap-3">
+                      <div class="flex-1">
+                        <label class="block mb-1" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseSize * 0.9}px;">Nama Kategori</label>
+                        <input type="text" id="category-name" required class="w-full px-3 py-2 rounded border" style="font-size: ${baseSize}px;" placeholder="Contoh: Bisnis">
+                      </div>
+                      <div style="width: 120px;">
+                        <label class="block mb-1" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseSize * 0.9}px;">Emoji Icon</label>
+                        <input type="text" id="category-icon" required class="w-full px-3 py-2 rounded border text-center" style="font-size: ${baseSize * 1.5}px;" placeholder="💼" maxlength="2">
+                      </div>
+                    </div>
+                    <div class="flex gap-2">
+                      <button type="submit" class="flex-1 px-4 py-2 rounded font-medium text-white" style="background-color: ${config.primary_action_color || defaultConfig.primary_action_color}; font-size: ${baseSize}px;">
+                        Simpan Kategori
+                      </button>
+                      <button type="button" class="cancel-category-btn flex-1 px-4 py-2 rounded font-medium" style="background-color: ${config.secondary_action_color || defaultConfig.secondary_action_color}; color: white; font-size: ${baseSize}px;">
+                        Batal
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              ` : `
+                <button class="add-new-category-btn px-6 py-3 rounded-lg font-medium text-white shadow-lg" style="background-color: ${config.primary_action_color || defaultConfig.primary_action_color}; font-size: ${baseSize}px;">
+                  + Tambah Kategori Baru
+                </button>
+              `}
+            </div>
+          </header>
+
+          <div id="categories-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            ${categories.map(category => {
+              const subcats = getSubcategoriesForCategory(category.id);
+              return `
+                <div class="category-card rounded-xl shadow-lg overflow-hidden" style="background-color: ${config.card_color || defaultConfig.card_color};">
+                  <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                      <div class="flex items-center gap-3 flex-1">
+                        <span style="font-size: ${baseSize * 2}px;">${category.icon}</span>
+                        <h2 class="font-bold" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseSize * 1.25}px;">${category.name}</h2>
+                      </div>
+                      <button 
+                        class="toggle-btn icon-rotate ${expandedCategories.has(category.id) ? 'expanded' : ''}" 
+                        data-category-id="${category.id}"
+                        style="color: ${config.primary_action_color || defaultConfig.primary_action_color}; font-size: ${baseSize * 1.5}px;"
+                        aria-label="Toggle subcategories">
+                        ▼
+                      </button>
+                    </div>
+                    
+                    <div class="subcategories-list ${expandedCategories.has(category.id) ? '' : 'hidden'}" id="subcategories-${category.id}">
+                      <div class="border-t pt-4" style="border-color: ${config.background_color || defaultConfig.background_color};">
+                        ${subcats.length === 0 ? `
+                          <p class="text-center py-4" style="color: ${config.secondary_action_color || defaultConfig.secondary_action_color}; font-size: ${baseSize * 0.9}px;">
+                            Belum ada sub kategori
+                          </p>
+                        ` : subcats.map(sub => `
+                          ${sub.url ? `
+                            <a href="${sub.url}" target="_blank" rel="noopener noreferrer" class="block mb-2">
+                              <div class="subcategory-item py-2 px-3 rounded-lg cursor-pointer" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseSize}px; background-color: ${config.background_color || defaultConfig.background_color};">
+                                <span class="mr-2">→</span>${sub.subcategory_name} <span style="color: ${config.primary_action_color || defaultConfig.primary_action_color};">🔗</span>
+                              </div>
+                            </a>
+                          ` : `
+                            <div class="subcategory-item py-2 px-3 rounded-lg mb-2" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseSize}px; background-color: ${config.background_color || defaultConfig.background_color};">
+                              <span class="mr-2">→</span>${sub.subcategory_name}
+                            </div>
+                          `}
+                        `).join('')}
+                        
+                        ${showAddForm && selectedCategoryForAdd === category.id ? `
+                          <div class="add-form mt-4 p-4 rounded-lg border-2" style="border-color: ${config.primary_action_color || defaultConfig.primary_action_color};">
+                            <h3 class="font-bold mb-3" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseSize * 1.1}px;">Tambah Sub Kategori</h3>
+                            <form id="add-form-${category.id}" class="space-y-3">
+                              <div>
+                                <label class="block mb-1" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseSize * 0.9}px;">Nama Sub Kategori</label>
+                                <input type="text" id="name-${category.id}" required class="w-full px-3 py-2 rounded border" style="font-size: ${baseSize}px;" placeholder="Contoh: Ilustrasi Digital">
+                              </div>
+                              <div>
+                                <label class="block mb-1" style="color: ${config.text_color || defaultConfig.text_color}; font-size: ${baseSize * 0.9}px;">URL Link (Opsional)</label>
+                                <input type="url" id="url-${category.id}" class="w-full px-3 py-2 rounded border" style="font-size: ${baseSize}px;" placeholder="https://example.com">
+                              </div>
+                              <div class="flex gap-2">
+                                <button type="submit" class="flex-1 px-4 py-2 rounded font-medium text-white" style="background-color: ${config.primary_action_color || defaultConfig.primary_action_color}; font-size: ${baseSize}px;">
+                                  Simpan
+                                </button>
+                                <button type="button" class="cancel-btn flex-1 px-4 py-2 rounded font-medium" style="background-color: ${config.secondary_action_color || defaultConfig.secondary_action_color}; color: white; font-size: ${baseSize}px;">
+                                  Batal
+                                </button>
+                              </div>
+                            </form>
+                          </div>
+                        ` : `
+                          <button class="add-category-btn mt-4 w-full py-2 px-4 rounded-lg font-medium border-2 border-dashed" data-add-category="${category.id}" style="color: ${config.primary_action_color || defaultConfig.primary_action_color}; border-color: ${config.primary_action_color || defaultConfig.primary_action_color}; font-size: ${baseSize}px;">
+                            + Tambah Sub Kategori
+                          </button>
+                        `}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+
+      attachEventListeners();
+    }
+
+    function attachEventListeners() {
+      // Add new category button
+      const addNewCategoryBtn = document.querySelector('.add-new-category-btn');
+      if (addNewCategoryBtn) {
+        addNewCategoryBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          showAddCategoryForm = true;
+          renderApp();
+        });
+      }
+
+      // Cancel add category
+      const cancelCategoryBtn = document.querySelector('.cancel-category-btn');
+      if (cancelCategoryBtn) {
+        cancelCategoryBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          showAddCategoryForm = false;
+          renderApp();
+        });
+      }
+
+      // Add category form
+      const addCategoryForm = document.getElementById('add-category-form');
+      if (addCategoryForm) {
+        addCategoryForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const name = document.getElementById('category-name').value.trim();
+          const icon = document.getElementById('category-icon').value.trim();
+          
+          if (name && icon) {
+            await addCategory(name, icon);
+          }
+        });
+      }
+
+      const toggleButtons = document.querySelectorAll('.toggle-btn');
+      toggleButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const categoryId = parseInt(this.dataset.categoryId);
+          
+          if (expandedCategories.has(categoryId)) {
+            expandedCategories.delete(categoryId);
+          } else {
+            expandedCategories.add(categoryId);
+          }
+          renderApp();
+        });
+      });
+
+      const addButtons = document.querySelectorAll('.add-category-btn');
+      addButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const categoryId = parseInt(this.dataset.addCategory);
+          showAddForm = true;
+          selectedCategoryForAdd = categoryId;
+          if (!expandedCategories.has(categoryId)) {
+            expandedCategories.add(categoryId);
+          }
+          renderApp();
+        });
+      });
+
+      const cancelButtons = document.querySelectorAll('.cancel-btn');
+      cancelButtons.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          showAddForm = false;
+          selectedCategoryForAdd = null;
+          renderApp();
+        });
+      });
+
+      categories.forEach(category => {
+        const form = document.getElementById(`add-form-${category.id}`);
+        if (form) {
+          form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById(`name-${category.id}`).value.trim();
+            const url = document.getElementById(`url-${category.id}`).value.trim();
+            
+            if (name) {
+              await addSubcategory(category.id, name, url || '');
+            }
+          });
+        }
+      });
+
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.background_color || defaultConfig.background_color,
+            set: (value) => {
+              config.background_color = value;
+              window.elementSdk.setConfig({ background_color: value });
+            }
+          },
+          {
+            get: () => config.card_color || defaultConfig.card_color,
+            set: (value) => {
+              config.card_color = value;
+              window.elementSdk.setConfig({ card_color: value });
+            }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (value) => {
+              config.text_color = value;
+              window.elementSdk.setConfig({ text_color: value });
+            }
+          },
+          {
+            get: () => config.primary_action_color || defaultConfig.primary_action_color,
+            set: (value) => {
+              config.primary_action_color = value;
+              window.elementSdk.setConfig({ primary_action_color: value });
+            }
+          },
+          {
+            get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+            set: (value) => {
+              config.secondary_action_color = value;
+              window.elementSdk.setConfig({ secondary_action_color: value });
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (value) => {
+            config.font_family = value;
+            window.elementSdk.setConfig({ font_family: value });
+          }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (value) => {
+            config.font_size = value;
+            window.elementSdk.setConfig({ font_size: value });
+          }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["main_title", config.main_title || defaultConfig.main_title],
+        ["subtitle", config.subtitle || defaultConfig.subtitle]
+      ]);
+    }
+
+    async function init() {
+      if (window.dataSdk) {
+        const result = await window.dataSdk.init(dataHandler);
+        if (!result.isOk) {
+          console.error("Failed to initialize data SDK");
+        }
+      }
+
+      if (window.elementSdk) {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToCapabilities,
+          mapToEditPanelValues
+        });
+      }
+    }
+
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a153af4160f3e35',t:'MTc2MzYxMzIxOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
