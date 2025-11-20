@@ -1,1 +1,951 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Category Explorer</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      min-height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
 
+    * {
+      box-sizing: border-box;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      color: white;
+    }
+
+    .site-title {
+      font-size: 48px;
+      font-weight: 700;
+      margin: 0 0 16px 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .site-description {
+      font-size: 20px;
+      opacity: 0.95;
+      margin: 0 0 32px 0;
+    }
+
+    .search-container {
+      max-width: 600px;
+      margin: 0 auto 24px auto;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 16px 48px 16px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 50px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      outline: none;
+      transition: box-shadow 0.2s;
+    }
+
+    .search-input:focus {
+      box-shadow: 0 6px 30px rgba(0,0,0,0.25);
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: #667eea;
+      pointer-events: none;
+    }
+
+    .search-results-info {
+      text-align: center;
+      color: white;
+      font-size: 14px;
+      margin-bottom: 20px;
+      opacity: 0.9;
+    }
+
+    .current-view {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+      min-height: 400px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 32px;
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    .breadcrumb-link {
+      color: #667eea;
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .breadcrumb-link:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+
+    .breadcrumb-separator {
+      color: #cbd5e1;
+    }
+
+    .view-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 0 0 32px 0;
+    }
+
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+
+    .category-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      padding: 32px 24px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      text-align: center;
+    }
+
+    .category-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+    }
+
+    .category-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .category-name {
+      font-size: 24px;
+      font-weight: 600;
+      color: white;
+      margin: 0 0 8px 0;
+    }
+
+    .category-count {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 0;
+    }
+
+    .category-description {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.85);
+      margin: 8px 0 0 0;
+      line-height: 1.4;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .pagination-button {
+      padding: 10px 20px;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #475569;
+      transition: all 0.2s;
+    }
+
+    .pagination-button:hover:not(:disabled) {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .pagination-button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .pagination-number {
+      padding: 10px 16px;
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #475569;
+      transition: all 0.2s;
+      min-width: 44px;
+      text-align: center;
+    }
+
+    .pagination-number:hover {
+      background: #f1f5f9;
+      border-color: #667eea;
+    }
+
+    .pagination-number.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .pagination-info {
+      font-size: 14px;
+      color: #64748b;
+    }
+
+    .links-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .link-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 20px 24px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .link-item:hover {
+      background: #f1f5f9;
+      border-color: #667eea;
+      transform: translateX(4px);
+    }
+
+    .link-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1e293b;
+      margin: 0 0 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .link-url {
+      font-size: 14px;
+      color: #667eea;
+      margin: 0;
+      word-break: break-all;
+    }
+
+    .external-icon {
+      font-size: 16px;
+      opacity: 0.6;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #64748b;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    .empty-text {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .highlight {
+      background-color: #fef08a;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 24px 16px;
+      }
+
+      .site-title {
+        font-size: 32px;
+      }
+
+      .site-description {
+        font-size: 16px;
+      }
+
+      .current-view {
+        padding: 24px 20px;
+      }
+
+      .view-title {
+        font-size: 24px;
+      }
+
+      .categories-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pagination {
+        flex-wrap: wrap;
+      }
+
+      .pagination-button {
+        padding: 8px 16px;
+        font-size: 13px;
+      }
+
+      .pagination-number {
+        padding: 8px 12px;
+        font-size: 13px;
+        min-width: 38px;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container">
+   <header>
+    <h1 class="site-title" id="siteTitle">Category Explorer</h1>
+    <p class="site-description" id="siteDescription">Jelajahi berbagai kategori dan temukan link yang Anda butuhkan</p>
+    <div class="search-container"><input type="text" class="search-input" id="searchInput" placeholder="Cari kategori atau link..." autocomplete="off"> <span class="search-icon">🔍</span>
+    </div>
+    <div class="search-results-info" id="searchInfo"></div>
+   </header>
+   <div class="current-view">
+    <div class="breadcrumb" id="breadcrumb"></div>
+    <h2 class="view-title" id="viewTitle">Semua Kategori</h2>
+    <div id="content"></div>
+   </div>
+  </div>
+  <script>
+    const defaultConfig = {
+      site_title: "Category Explorer",
+      site_description: "Jelajahi berbagai kategori dan temukan link yang Anda butuhkan",
+      category_1_title: "Teknologi",
+      category_2_title: "Bisnis",
+      category_3_title: "Pendidikan",
+      category_4_title: "Kesehatan",
+      category_5_title: "Hiburan",
+      category_6_title: "Travel",
+      category_7_title: "Kuliner",
+      category_8_title: "Olahraga",
+      category_9_title: "Keuangan",
+      category_10_title: "Desain",
+      category_11_title: "Sains",
+      category_12_title: "Berita",
+      category_13_title: "Gaming",
+      category_14_title: "Fotografi",
+      category_15_title: "Musik",
+      category_16_title: "Fashion",
+      category_17_title: "Film",
+      category_18_title: "Otomotif",
+      category_19_title: "Properti",
+      category_20_title: "Lingkungan",
+      category_21_title: "Hukum",
+      category_22_title: "Politik",
+      category_23_title: "Teknologi AI",
+      category_24_title: "E-Commerce"
+    };
+
+    // Data struktur kategori dengan link
+    const categoriesData = {
+      teknologi: {
+        icon: "💻",
+        description: "Perkembangan teknologi, programming, dan software development",
+        links: [
+          { title: "GitHub", url: "https://github.com" },
+          { title: "Stack Overflow", url: "https://stackoverflow.com" },
+          { title: "MDN Web Docs", url: "https://developer.mozilla.org" },
+          { title: "Dev.to", url: "https://dev.to" },
+          { title: "CSS Tricks", url: "https://css-tricks.com" }
+        ]
+      },
+      bisnis: {
+        icon: "💼",
+        description: "Berita bisnis, strategi perusahaan, dan entrepreneurship",
+        links: [
+          { title: "LinkedIn", url: "https://linkedin.com" },
+          { title: "Forbes", url: "https://forbes.com" },
+          { title: "Harvard Business Review", url: "https://hbr.org" },
+          { title: "Entrepreneur", url: "https://entrepreneur.com" },
+          { title: "Bloomberg", url: "https://bloomberg.com" }
+        ]
+      },
+      pendidikan: {
+        icon: "📚",
+        description: "Kursus online, pembelajaran, dan sumber edukasi berkualitas",
+        links: [
+          { title: "Coursera", url: "https://coursera.org" },
+          { title: "edX", url: "https://edx.org" },
+          { title: "Khan Academy", url: "https://khanacademy.org" },
+          { title: "Udemy", url: "https://udemy.com" },
+          { title: "MIT OpenCourseWare", url: "https://ocw.mit.edu" }
+        ]
+      },
+      kesehatan: {
+        icon: "🏥",
+        description: "Informasi kesehatan, tips medis, dan panduan hidup sehat",
+        links: [
+          { title: "WebMD", url: "https://webmd.com" },
+          { title: "Mayo Clinic", url: "https://mayoclinic.org" },
+          { title: "Healthline", url: "https://healthline.com" },
+          { title: "CDC", url: "https://cdc.gov" },
+          { title: "WHO", url: "https://who.int" }
+        ]
+      },
+      hiburan: {
+        icon: "🎬",
+        description: "Streaming, musik, film, dan konten entertainment terkini",
+        links: [
+          { title: "Netflix", url: "https://netflix.com" },
+          { title: "Spotify", url: "https://spotify.com" },
+          { title: "IMDb", url: "https://imdb.com" },
+          { title: "YouTube", url: "https://youtube.com" },
+          { title: "Twitch", url: "https://twitch.tv" }
+        ]
+      },
+      travel: {
+        icon: "✈️",
+        description: "Panduan wisata, booking hotel, dan tips perjalanan",
+        links: [
+          { title: "TripAdvisor", url: "https://tripadvisor.com" },
+          { title: "Booking.com", url: "https://booking.com" },
+          { title: "Airbnb", url: "https://airbnb.com" },
+          { title: "Lonely Planet", url: "https://lonelyplanet.com" },
+          { title: "Skyscanner", url: "https://skyscanner.com" }
+        ]
+      },
+      kuliner: {
+        icon: "🍳",
+        description: "Resep masakan, tips memasak, dan review makanan",
+        links: [
+          { title: "AllRecipes", url: "https://allrecipes.com" },
+          { title: "Food Network", url: "https://foodnetwork.com" },
+          { title: "Serious Eats", url: "https://seriouseats.com" },
+          { title: "Tasty", url: "https://tasty.co" },
+          { title: "Bon Appétit", url: "https://bonappetit.com" }
+        ]
+      },
+      olahraga: {
+        icon: "⚽",
+        description: "Berita olahraga, skor pertandingan, dan analisis",
+        links: [
+          { title: "ESPN", url: "https://espn.com" },
+          { title: "BBC Sport", url: "https://bbc.com/sport" },
+          { title: "Bleacher Report", url: "https://bleacherreport.com" },
+          { title: "The Athletic", url: "https://theathletic.com" },
+          { title: "Sports Illustrated", url: "https://si.com" }
+        ]
+      },
+      keuangan: {
+        icon: "💰",
+        description: "Investasi, pasar saham, dan berita finansial",
+        links: [
+          { title: "Investopedia", url: "https://investopedia.com" },
+          { title: "The Wall Street Journal", url: "https://wsj.com" },
+          { title: "Financial Times", url: "https://ft.com" },
+          { title: "MarketWatch", url: "https://marketwatch.com" },
+          { title: "Yahoo Finance", url: "https://finance.yahoo.com" }
+        ]
+      },
+      desain: {
+        icon: "🎨",
+        description: "Inspirasi desain grafis, UI/UX, dan kreativitas visual",
+        links: [
+          { title: "Dribbble", url: "https://dribbble.com" },
+          { title: "Behance", url: "https://behance.net" },
+          { title: "Awwwards", url: "https://awwwards.com" },
+          { title: "Adobe Creative Cloud", url: "https://adobe.com" },
+          { title: "Figma Community", url: "https://figma.com/community" }
+        ]
+      },
+      sains: {
+        icon: "🔬",
+        description: "Penelitian ilmiah, penemuan, dan eksplorasi sains",
+        links: [
+          { title: "Nature", url: "https://nature.com" },
+          { title: "Science Magazine", url: "https://science.org" },
+          { title: "Scientific American", url: "https://scientificamerican.com" },
+          { title: "NASA", url: "https://nasa.gov" },
+          { title: "National Geographic", url: "https://nationalgeographic.com" }
+        ]
+      },
+      berita: {
+        icon: "📰",
+        description: "Berita terkini dunia, update harian, dan jurnalisme",
+        links: [
+          { title: "BBC News", url: "https://bbc.com/news" },
+          { title: "CNN", url: "https://cnn.com" },
+          { title: "Reuters", url: "https://reuters.com" },
+          { title: "The Guardian", url: "https://theguardian.com" },
+          { title: "Associated Press", url: "https://apnews.com" }
+        ]
+      },
+      gaming: {
+        icon: "🎮",
+        description: "Review game, berita esports, dan komunitas gaming",
+        links: [
+          { title: "IGN", url: "https://ign.com" },
+          { title: "GameSpot", url: "https://gamespot.com" },
+          { title: "Polygon", url: "https://polygon.com" },
+          { title: "Steam", url: "https://steampowered.com" },
+          { title: "Epic Games", url: "https://epicgames.com" }
+        ]
+      },
+      fotografi: {
+        icon: "📷",
+        description: "Galeri foto, tips fotografi, dan inspirasi visual",
+        links: [
+          { title: "Unsplash", url: "https://unsplash.com" },
+          { title: "500px", url: "https://500px.com" },
+          { title: "Flickr", url: "https://flickr.com" },
+          { title: "National Geographic Photo", url: "https://nationalgeographic.com/photography" },
+          { title: "Adobe Lightroom", url: "https://lightroom.adobe.com" }
+        ]
+      },
+      musik: {
+        icon: "🎵",
+        description: "Streaming musik, playlist, dan discovery artis baru",
+        links: [
+          { title: "Spotify", url: "https://spotify.com" },
+          { title: "Apple Music", url: "https://music.apple.com" },
+          { title: "SoundCloud", url: "https://soundcloud.com" },
+          { title: "Bandcamp", url: "https://bandcamp.com" },
+          { title: "Last.fm", url: "https://last.fm" }
+        ]
+      },
+      fashion: {
+        icon: "👗",
+        description: "Tren fashion, style guide, dan industri mode terkini",
+        links: [
+          { title: "Vogue", url: "https://vogue.com" },
+          { title: "Harper's Bazaar", url: "https://harpersbazaar.com" },
+          { title: "Elle", url: "https://elle.com" },
+          { title: "Fashionista", url: "https://fashionista.com" },
+          { title: "The Cut", url: "https://thecut.com" }
+        ]
+      },
+      film: {
+        icon: "🎥",
+        description: "Review film, rating, dan berita industri perfilman",
+        links: [
+          { title: "Rotten Tomatoes", url: "https://rottentomatoes.com" },
+          { title: "Metacritic", url: "https://metacritic.com" },
+          { title: "Letterboxd", url: "https://letterboxd.com" },
+          { title: "The Hollywood Reporter", url: "https://hollywoodreporter.com" },
+          { title: "Variety", url: "https://variety.com" }
+        ]
+      },
+      otomotif: {
+        icon: "🚗",
+        description: "Review mobil, berita otomotif, dan tips berkendara",
+        links: [
+          { title: "Car and Driver", url: "https://caranddriver.com" },
+          { title: "Motor Trend", url: "https://motortrend.com" },
+          { title: "Top Gear", url: "https://topgear.com" },
+          { title: "Autocar", url: "https://autocar.co.uk" },
+          { title: "Edmunds", url: "https://edmunds.com" }
+        ]
+      },
+      properti: {
+        icon: "🏠",
+        description: "Jual beli properti, listing rumah, dan investasi real estate",
+        links: [
+          { title: "Zillow", url: "https://zillow.com" },
+          { title: "Realtor.com", url: "https://realtor.com" },
+          { title: "Redfin", url: "https://redfin.com" },
+          { title: "Trulia", url: "https://trulia.com" },
+          { title: "Homes.com", url: "https://homes.com" }
+        ]
+      },
+      lingkungan: {
+        icon: "🌍",
+        description: "Isu lingkungan, konservasi, dan climate change",
+        links: [
+          { title: "Greenpeace", url: "https://greenpeace.org" },
+          { title: "WWF", url: "https://worldwildlife.org" },
+          { title: "Earth.org", url: "https://earth.org" },
+          { title: "Climate.gov", url: "https://climate.gov" },
+          { title: "The Nature Conservancy", url: "https://nature.org" }
+        ]
+      },
+      hukum: {
+        icon: "⚖️",
+        description: "Informasi hukum, konsultasi legal, dan regulasi",
+        links: [
+          { title: "FindLaw", url: "https://findlaw.com" },
+          { title: "Justia", url: "https://justia.com" },
+          { title: "LegalZoom", url: "https://legalzoom.com" },
+          { title: "Nolo", url: "https://nolo.com" },
+          { title: "Cornell Law School", url: "https://law.cornell.edu" }
+        ]
+      },
+      politik: {
+        icon: "🏛️",
+        description: "Berita politik, analisis kebijakan, dan isu pemerintahan",
+        links: [
+          { title: "Politico", url: "https://politico.com" },
+          { title: "The Hill", url: "https://thehill.com" },
+          { title: "Foreign Affairs", url: "https://foreignaffairs.com" },
+          { title: "C-SPAN", url: "https://c-span.org" },
+          { title: "RealClearPolitics", url: "https://realclearpolitics.com" }
+        ]
+      },
+      teknologiai: {
+        icon: "🤖",
+        description: "Artificial Intelligence, machine learning, dan AI tools",
+        links: [
+          { title: "OpenAI", url: "https://openai.com" },
+          { title: "Google AI", url: "https://ai.google" },
+          { title: "DeepMind", url: "https://deepmind.com" },
+          { title: "Hugging Face", url: "https://huggingface.co" },
+          { title: "AI News", url: "https://artificialintelligence-news.com" }
+        ]
+      },
+      ecommerce: {
+        icon: "🛒",
+        description: "Platform jualan online, marketplace, dan e-commerce tools",
+        links: [
+          { title: "Shopify", url: "https://shopify.com" },
+          { title: "Amazon Seller Central", url: "https://sellercentral.amazon.com" },
+          { title: "Etsy", url: "https://etsy.com" },
+          { title: "BigCommerce", url: "https://bigcommerce.com" },
+          { title: "WooCommerce", url: "https://woocommerce.com" }
+        ]
+      }
+    };
+
+    let currentCategory = null;
+    let currentPage = 1;
+    let searchQuery = '';
+    const itemsPerPage = 8;
+
+    function getCategoryKey(categoryTitle) {
+      const titleLower = categoryTitle.toLowerCase();
+      const config = window.elementSdk?.config || defaultConfig;
+      
+      for (let i = 1; i <= 24; i++) {
+        const configKey = `category_${i}_title`;
+        if (config[configKey]?.toLowerCase() === titleLower) {
+          const keyMap = ['teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'hiburan', 'travel', 'kuliner', 'olahraga', 'keuangan', 'desain', 'sains', 'berita', 'gaming', 'fotografi', 'musik', 'fashion', 'film', 'otomotif', 'properti', 'lingkungan', 'hukum', 'politik', 'teknologiai', 'ecommerce'];
+          return keyMap[i - 1];
+        }
+      }
+      return 'teknologi';
+    }
+
+    function getAllCategories(config) {
+      const categories = [];
+      const keyMap = ['teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'hiburan', 'travel', 'kuliner', 'olahraga', 'keuangan', 'desain', 'sains', 'berita', 'gaming', 'fotografi', 'musik', 'fashion', 'film', 'otomotif', 'properti', 'lingkungan', 'hukum', 'politik', 'teknologiai', 'ecommerce'];
+      
+      for (let i = 1; i <= 24; i++) {
+        const configKey = `category_${i}_title`;
+        categories.push({
+          name: config[configKey] || defaultConfig[configKey],
+          key: keyMap[i - 1]
+        });
+      }
+      return categories;
+    }
+
+    function filterCategories(categories, query) {
+      if (!query.trim()) return categories;
+      
+      return categories.filter(cat => {
+        const nameMatch = cat.name.toLowerCase().includes(query.toLowerCase());
+        const data = categoriesData[cat.key];
+        const linksMatch = data.links.some(link => 
+          link.title.toLowerCase().includes(query.toLowerCase()) ||
+          link.url.toLowerCase().includes(query.toLowerCase())
+        );
+        return nameMatch || linksMatch;
+      });
+    }
+
+    function highlightText(text, query) {
+      if (!query.trim()) return text;
+      
+      const regex = new RegExp(`(${query})`, 'gi');
+      return text.replace(regex, '<span class="highlight">$1</span>');
+    }
+
+    function renderBreadcrumb(config) {
+      const breadcrumb = document.getElementById('breadcrumb');
+      
+      if (!currentCategory) {
+        breadcrumb.innerHTML = '<span style="color: #94a3b8;">Beranda</span>';
+      } else {
+        breadcrumb.innerHTML = `
+          <a class="breadcrumb-link" onclick="goHome()">Beranda</a>
+          <span class="breadcrumb-separator">›</span>
+          <span style="color: #94a3b8;">${currentCategory}</span>
+        `;
+      }
+    }
+
+    function renderPagination(totalItems, currentPageNum) {
+      const totalPages = Math.ceil(totalItems / itemsPerPage);
+      
+      if (totalPages <= 1) return '';
+      
+      let html = '<div class="pagination">';
+      
+      html += `<button class="pagination-button" onclick="changePage(${currentPageNum - 1})" ${currentPageNum === 1 ? 'disabled' : ''}>← Sebelumnya</button>`;
+      
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<div class="pagination-number ${i === currentPageNum ? 'active' : ''}" onclick="changePage(${i})">${i}</div>`;
+      }
+      
+      html += `<button class="pagination-button" onclick="changePage(${currentPageNum + 1})" ${currentPageNum === totalPages ? 'disabled' : ''}>Selanjutnya →</button>`;
+      
+      html += '</div>';
+      
+      return html;
+    }
+
+    function renderCategories(config) {
+      const allCategories = getAllCategories(config);
+      const filteredCategories = filterCategories(allCategories, searchQuery);
+      
+      const searchInfo = document.getElementById('searchInfo');
+      if (searchQuery.trim()) {
+        searchInfo.textContent = `Ditemukan ${filteredCategories.length} kategori untuk "${searchQuery}"`;
+      } else {
+        searchInfo.textContent = '';
+      }
+      
+      if (filteredCategories.length === 0) {
+        document.getElementById('content').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <p class="empty-text">Tidak ada kategori yang ditemukan untuk pencarian "${searchQuery}"</p>
+          </div>
+        `;
+        document.getElementById('viewTitle').textContent = 'Hasil Pencarian';
+        return;
+      }
+      
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const categoriesToShow = filteredCategories.slice(startIndex, endIndex);
+      
+      let html = '<div class="categories-grid">';
+      
+      categoriesToShow.forEach(cat => {
+        const data = categoriesData[cat.key];
+        const highlightedName = highlightText(cat.name, searchQuery);
+        const highlightedDesc = highlightText(data.description, searchQuery);
+        html += `
+          <div class="category-card" onclick="showCategory('${cat.name}')">
+            <div class="category-icon">${data.icon}</div>
+            <h3 class="category-name">${highlightedName}</h3>
+            <p class="category-description">${highlightedDesc}</p>
+            <p class="category-count">${data.links.length} link tersedia</p>
+          </div>
+        `;
+      });
+      
+      html += '</div>';
+      html += renderPagination(filteredCategories.length, currentPage);
+      
+      document.getElementById('content').innerHTML = html;
+      
+      if (searchQuery.trim()) {
+        document.getElementById('viewTitle').textContent = 'Hasil Pencarian';
+      } else {
+        document.getElementById('viewTitle').textContent = `Semua Kategori (Halaman ${currentPage} dari ${Math.ceil(filteredCategories.length / itemsPerPage)})`;
+      }
+    }
+
+    function renderLinks(categoryName, config) {
+      const categoryKey = getCategoryKey(categoryName);
+      const data = categoriesData[categoryKey];
+      
+      if (!data || !data.links.length) {
+        document.getElementById('content').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <p class="empty-text">Belum ada link di kategori ini</p>
+          </div>
+        `;
+        return;
+      }
+
+      let links = data.links;
+      
+      if (searchQuery.trim()) {
+        links = links.filter(link => 
+          link.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          link.url.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      if (links.length === 0) {
+        document.getElementById('content').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <p class="empty-text">Tidak ada link yang ditemukan untuk pencarian "${searchQuery}"</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '<div class="links-list">';
+      
+      links.forEach(link => {
+        const highlightedTitle = highlightText(link.title, searchQuery);
+        const highlightedUrl = highlightText(link.url, searchQuery);
+        html += `
+          <div class="link-item" onclick="openLink('${link.url}')">
+            <h3 class="link-title">
+              ${highlightedTitle}
+              <span class="external-icon">↗</span>
+            </h3>
+            <p class="link-url">${highlightedUrl}</p>
+          </div>
+        `;
+      });
+      
+      html += '</div>';
+      
+      document.getElementById('content').innerHTML = html;
+      document.getElementById('viewTitle').textContent = categoryName;
+    }
+
+    function showCategory(categoryName) {
+      currentCategory = categoryName;
+      const config = window.elementSdk?.config || defaultConfig;
+      renderLinks(categoryName, config);
+      renderBreadcrumb(config);
+    }
+
+    function goHome() {
+      currentCategory = null;
+      currentPage = 1;
+      const config = window.elementSdk?.config || defaultConfig;
+      renderCategories(config);
+      renderBreadcrumb(config);
+    }
+
+    function changePage(page) {
+      const config = window.elementSdk?.config || defaultConfig;
+      const allCategories = getAllCategories(config);
+      const filteredCategories = filterCategories(allCategories, searchQuery);
+      const totalPages = Math.ceil(filteredCategories.length / itemsPerPage);
+      
+      if (page < 1 || page > totalPages) return;
+      
+      currentPage = page;
+      renderCategories(config);
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openLink(url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+
+    function handleSearch() {
+      searchQuery = document.getElementById('searchInput').value;
+      currentPage = 1;
+      
+      const config = window.elementSdk?.config || defaultConfig;
+      
+      if (currentCategory) {
+        renderLinks(currentCategory, config);
+      } else {
+        renderCategories(config);
+      }
+    }
+
+    async function onConfigChange(config) {
+      document.getElementById('siteTitle').textContent = config.site_title || defaultConfig.site_title;
+      document.getElementById('siteDescription').textContent = config.site_description || defaultConfig.site_description;
+      
+      if (currentCategory) {
+        renderLinks(currentCategory, config);
+      } else {
+        renderCategories(config);
+      }
+      renderBreadcrumb(config);
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      const map = new Map([
+        ["site_title", config.site_title || defaultConfig.site_title],
+        ["site_description", config.site_description || defaultConfig.site_description]
+      ]);
+      
+      for (let i = 1; i <= 24; i++) {
+        const key = `category_${i}_title`;
+        map.set(key, config[key] || defaultConfig[key]);
+      }
+      
+      return map;
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    document.getElementById('searchInput').addEventListener('input', handleSearch);
+    
+    renderCategories(defaultConfig);
+    renderBreadcrumb(defaultConfig);
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a1579ccc0fa87f3',t:'MTc2MzYxNTc5Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
