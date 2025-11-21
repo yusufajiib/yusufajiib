@@ -465,7 +465,7 @@
    <header>
     <h1 class="site-title" id="siteTitle">Category Explorer</h1>
     <p class="site-description" id="siteDescription">Jelajahi berbagai kategori dan temukan link yang Anda butuhkan</p>
-    <div class="search-container"><input type="text" class="search-input" id="searchInput" placeholder="Cari kategori atau link..." autocomplete="off"> <span class="search-icon">🔍</span>
+    <div class="search-container"><input type="text" class="search-input" id="searchInput" placeholder="Cari kategori atau link..." autocomplete="off"> <span class="search-icon">������</span>
     </div>
     <div class="search-results-info" id="searchInfo"></div>
    </header>
@@ -497,14 +497,14 @@
       category_14_title: "Fotografi",
       category_15_title: "Musik",
       category_16_title: "Fashion",
-      category_17_title: "Film",
-      category_18_title: "Otomotif",
-      category_19_title: "Properti",
-      category_20_title: "Lingkungan",
-      category_21_title: "Hukum",
-      category_22_title: "Politik",
-      category_23_title: "Teknologi AI",
-      category_24_title: "E-Commerce"
+      category_17_title: "Pondok Pesantren",
+      category_18_title: "Madin",
+      category_19_title: "TPQ",
+      category_20_title: "Raudlatul Athfal",
+      category_21_title: "Madrasah Ibtidaiyah",
+      category_22_title: "Madrasah Tsanawiyah",
+      category_23_title: "Madrasah Aliyah",
+      category_24_title: "Ma'had Aly"
     };
 
     // Data struktur kategori dengan link
@@ -513,8 +513,6 @@
         icon: "💻",
         description: "Perkembangan teknologi, programming, dan software development",
         links: [
-          { title: "Proyek Website - Aplikasi Kuis 1", url: "https://www.canva.com/ai/code/thread/e9828875-e0b5-4e69-87b3-894e8b8fbf4f" },
-          { title: "Proyek Website - Explore Kategory", url: "https://www.canva.com/ai/code/thread/b1676fa3-aeb8-4374-b758-525bde9d7de5" },
           { title: "GitHub", url: "https://github.com" },
           { title: "Stack Overflow", url: "https://stackoverflow.com" },
           { title: "MDN Web Docs", url: "https://developer.mozilla.org" },
@@ -568,7 +566,7 @@
         ]
       },
       travel: {
-        icon: "✈️",
+        icon: "����️",
         description: "Panduan wisata, booking hotel, dan tips perjalanan",
         links: [
           { title: "TripAdvisor", url: "https://tripadvisor.com" },
@@ -688,8 +686,96 @@
           { title: "The Cut", url: "https://thecut.com" }
         ]
       },
+      pondokpesantren: {
+        icon: "🕌",
+        description: "Informasi pondok pesantren, santri, dan pendidikan Islam",
+        links: [
+          { title: "Kemenag - Pesantren", url: "https://kemenag.go.id" },
+          { title: "Database Pesantren", url: "https://ditpdpontren.kemenag.go.id" },
+          { title: "NU Online - Pesantren", url: "https://nu.or.id" },
+          { title: "Santri Kita", url: "https://santrikita.id" },
+          { title: "Pesantren Virtual", url: "https://pesantrenvirtual.com" }
+        ]
+      },
+      madin: {
+        icon: "📖",
+        description: "Madrasah Diniyah, pembelajaran agama, dan kurikulum",
+        links: [
+          { title: "Kemenag - Madin", url: "https://kemenag.go.id" },
+          { title: "Portal Madin", url: "https://madin.kemenag.go.id" },
+          { title: "Kurikulum Madin", url: "https://kurikulum.kemenag.go.id" },
+          { title: "Siaga Madin", url: "https://siaga.kemenag.go.id" },
+          { title: "Info Madrasah Diniyah", url: "https://infomadin.id" }
+        ]
+      },
+      tpq: {
+        icon: "📚",
+        description: "Taman Pendidikan Al-Quran, pembelajaran Quran anak",
+        links: [
+          { title: "TPQ Online", url: "https://tpqonline.id" },
+          { title: "Metode Iqro", url: "https://metodeiqro.com" },
+          { title: "Buku Iqro Digital", url: "https://bukuiqro.id" },
+          { title: "Ustadz TPQ", url: "https://ustadztpq.com" },
+          { title: "Panduan TPQ", url: "https://panduantpq.id" }
+        ]
+      },
+      raudlatulathfal: {
+        icon: "🎒",
+        description: "RA, pendidikan anak usia dini berbasis Islam",
+        links: [
+          { title: "Kemenag - RA", url: "https://kemenag.go.id" },
+          { title: "PAUD Dikmas", url: "https://pauddikmas.kemdikbud.go.id" },
+          { title: "Kurikulum RA", url: "https://kurikulum.kemenag.go.id" },
+          { title: "Portal RA", url: "https://ra.kemenag.go.id" },
+          { title: "Guru RA Indonesia", url: "https://gururaindonesia.id" }
+        ]
+      },
+      madrasahibtidaiyah: {
+        icon: "✏️",
+        description: "MI, pendidikan dasar setara SD berbasis Islam",
+        links: [
+          { title: "Kemenag - MI", url: "https://kemenag.go.id" },
+          { title: "Portal Madrasah", url: "https://portalmadrasah.kemenag.go.id" },
+          { title: "Kurikulum MI", url: "https://kurikulum.kemenag.go.id" },
+          { title: "ARD Madrasah", url: "https://ard.kemenag.go.id" },
+          { title: "e-Learning Madrasah", url: "https://elearning.kemenag.go.id" }
+        ]
+      },
+      madrasahtsanawiyah: {
+        icon: "📝",
+        description: "MTs, pendidikan menengah pertama berbasis Islam",
+        links: [
+          { title: "Kemenag - MTs", url: "https://kemenag.go.id" },
+          { title: "Portal Madrasah", url: "https://portalmadrasah.kemenag.go.id" },
+          { title: "Kurikulum MTs", url: "https://kurikulum.kemenag.go.id" },
+          { title: "Siaga Madrasah", url: "https://siaga.kemenag.go.id" },
+          { title: "Info MTs", url: "https://infomts.id" }
+        ]
+      },
+      madrasahaliyah: {
+        icon: "🎓",
+        description: "MA, pendidikan menengah atas berbasis Islam",
+        links: [
+          { title: "Kemenag - MA", url: "https://kemenag.go.id" },
+          { title: "Portal Madrasah", url: "https://portalmadrasah.kemenag.go.id" },
+          { title: "Kurikulum MA", url: "https://kurikulum.kemenag.go.id" },
+          { title: "SNPMB Madrasah", url: "https://snpmb.bppp.kemdikbud.go.id" },
+          { title: "PPDB Madrasah", url: "https://ppdb.kemenag.go.id" }
+        ]
+      },
+      mahadaly: {
+        icon: "🏛️",
+        description: "Ma'had Aly, pendidikan tinggi Islam tradisional",
+        links: [
+          { title: "Kemenag - Ma'had Aly", url: "https://kemenag.go.id" },
+          { title: "Diktis Kemenag", url: "https://diktis.kemenag.go.id" },
+          { title: "Ma'had Aly NU", url: "https://nu.or.id" },
+          { title: "Database Ma'had Aly", url: "https://ditpdpontren.kemenag.go.id" },
+          { title: "Forum Ma'had Aly", url: "https://forummahadaly.id" }
+        ]
+      },
       film: {
-        icon: "📽️",
+        icon: "��",
         description: "Review film, rating, dan berita industri perfilman",
         links: [
           { title: "Rotten Tomatoes", url: "https://rottentomatoes.com" },
@@ -790,7 +876,7 @@
       for (let i = 1; i <= 24; i++) {
         const configKey = `category_${i}_title`;
         if (config[configKey]?.toLowerCase() === titleLower) {
-          const keyMap = ['teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'hiburan', 'travel', 'kuliner', 'olahraga', 'keuangan', 'desain', 'sains', 'berita', 'gaming', 'fotografi', 'musik', 'fashion', 'film', 'otomotif', 'properti', 'lingkungan', 'hukum', 'politik', 'teknologiai', 'ecommerce'];
+          const keyMap = ['teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'hiburan', 'travel', 'kuliner', 'olahraga', 'keuangan', 'desain', 'sains', 'berita', 'gaming', 'fotografi', 'musik', 'fashion', 'pondokpesantren', 'madin', 'tpq', 'raudlatulathfal', 'madrasahibtidaiyah', 'madrasahtsanawiyah', 'madrasahaliyah', 'mahadaly'];
           return keyMap[i - 1];
         }
       }
@@ -799,7 +885,7 @@
 
     function getAllCategories(config) {
       const categories = [];
-      const keyMap = ['teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'hiburan', 'travel', 'kuliner', 'olahraga', 'keuangan', 'desain', 'sains', 'berita', 'gaming', 'fotografi', 'musik', 'fashion', 'film', 'otomotif', 'properti', 'lingkungan', 'hukum', 'politik', 'teknologiai', 'ecommerce'];
+      const keyMap = ['teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'hiburan', 'travel', 'kuliner', 'olahraga', 'keuangan', 'desain', 'sains', 'berita', 'gaming', 'fotografi', 'musik', 'fashion', 'pondokpesantren', 'madin', 'tpq', 'raudlatulathfal', 'madrasahibtidaiyah', 'madrasahtsanawiyah', 'madrasahaliyah', 'mahadaly'];
       
       for (let i = 1; i <= 24; i++) {
         const configKey = `category_${i}_title`;
@@ -1086,5 +1172,5 @@
     renderCategories(defaultConfig);
     renderBreadcrumb(defaultConfig);
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a1618747338f8d0',t:'MTc2MzYyMjI5MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a1d0ae375220d78',t:'MTc2MzY5NTEzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
