@@ -504,7 +504,15 @@
       category_21_title: "Gaming",
       category_12_title: "Fotografi",
       category_23_title: "Musik",
-      category_24_title: "Fashion"
+      category_24_title: "Fashion",
+      category_25_title: "film",
+      category_26_title: "otomotif",
+      category_27_title: "properti",
+      category_28_title: "lingkungan",
+      category_29_title: "hukum",
+      category_30_title: "politik",
+      category_31_title: "teknologiai",
+      category_32_title: "ecommerce"
     };
 
     // Data struktur kategori dengan link
@@ -905,10 +913,10 @@
       const titleLower = categoryTitle.toLowerCase();
       const config = window.elementSdk?.config || defaultConfig;
       
-      for (let i = 1; i <= 24; i++) {
+      for (let i = 1; i <= 32; i++) {
         const configKey = `category_${i}_title`;
         if (config[configKey]?.toLowerCase() === titleLower) {
-          const keyMap = ['pondokpesantren', 'madin', 'tpq', 'raudlatulathfal', 'madrasahibtidaiyah', 'madrasahtsanawiyah', 'madrasahaliyah', 'mahadaly', 'teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'hiburan', 'travel', 'kuliner', 'olahraga', 'keuangan', 'desain', 'sains', 'berita', 'gaming', 'fotografi', 'musik', 'fashion'];
+          const keyMap = ['pondokpesantren', 'madin', 'tpq', 'raudlatulathfal', 'madrasahibtidaiyah', 'madrasahtsanawiyah', 'madrasahaliyah', 'mahadaly', 'teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'hiburan', 'travel', 'kuliner', 'olahraga', 'keuangan', 'desain', 'sains', 'berita', 'gaming', 'fotografi', 'musik', 'fashion', 'film', 'otomotif', 'properti',  'lingkungan', 'hukum', 'politik', 'teknologiai',  'ecommerce'];
           return keyMap[i - 1];
         }
       }
@@ -917,9 +925,9 @@
 
     function getAllCategories(config) {
       const categories = [];
-      const keyMap = ['pondokpesantren', 'madin', 'tpq', 'raudlatulathfal', 'madrasahibtidaiyah', 'madrasahtsanawiyah', 'madrasahaliyah', 'mahadaly', 'teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'hiburan', 'travel', 'kuliner', 'olahraga', 'keuangan', 'desain', 'sains', 'berita', 'gaming', 'fotografi', 'musik', 'fashion'];
+      const keyMap = ['pondokpesantren', 'madin', 'tpq', 'raudlatulathfal', 'madrasahibtidaiyah', 'madrasahtsanawiyah', 'madrasahaliyah', 'mahadaly', 'teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'hiburan', 'travel', 'kuliner', 'olahraga', 'keuangan', 'desain', 'sains', 'berita', 'gaming', 'fotografi', 'musik', 'fashion', 'film', 'otomotif', 'properti',  'lingkungan', 'hukum', 'politik', 'teknologiai',  'ecommerce'];
       
-      for (let i = 1; i <= 24; i++) {
+      for (let i = 1; i <= 32; i++) {
         const configKey = `category_${i}_title`;
         categories.push({
           name: config[configKey] || defaultConfig[configKey],
