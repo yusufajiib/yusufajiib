@@ -876,7 +876,7 @@
       for (let i = 1; i <= 24; i++) {
         const configKey = `category_${i}_title`;
         if (config[configKey]?.toLowerCase() === titleLower) {
-          const keyMap = ['teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'hiburan', 'travel', 'kuliner', 'olahraga', 'keuangan', 'desain', 'sains', 'berita', 'gaming', 'fotografi', 'musik', 'fashion', 'pondokpesantren', 'madin', 'tpq', 'raudlatulathfal', 'madrasahibtidaiyah', 'madrasahtsanawiyah', 'madrasahaliyah', 'mahadaly'];
+          const keyMap = ['pondokpesantren', 'madin', 'tpq', 'raudlatulathfal', 'madrasahibtidaiyah', 'madrasahtsanawiyah', 'madrasahaliyah', 'mahadaly', 'teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'hiburan', 'travel', 'kuliner', 'olahraga', 'keuangan', 'desain', 'sains', 'berita', 'gaming', 'fotografi', 'musik', 'fashion'];
           return keyMap[i - 1];
         }
       }
@@ -885,7 +885,7 @@
 
     function getAllCategories(config) {
       const categories = [];
-      const keyMap = ['teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'hiburan', 'travel', 'kuliner', 'olahraga', 'keuangan', 'desain', 'sains', 'berita', 'gaming', 'fotografi', 'musik', 'fashion', 'pondokpesantren', 'madin', 'tpq', 'raudlatulathfal', 'madrasahibtidaiyah', 'madrasahtsanawiyah', 'madrasahaliyah', 'mahadaly'];
+      const keyMap = ['pondokpesantren', 'madin', 'tpq', 'raudlatulathfal', 'madrasahibtidaiyah', 'madrasahtsanawiyah', 'madrasahaliyah', 'mahadaly', 'teknologi', 'bisnis', 'pendidikan', 'kesehatan', 'hiburan', 'travel', 'kuliner', 'olahraga', 'keuangan', 'desain', 'sains', 'berita', 'gaming', 'fotografi', 'musik', 'fashion'];
       
       for (let i = 1; i <= 24; i++) {
         const configKey = `category_${i}_title`;
