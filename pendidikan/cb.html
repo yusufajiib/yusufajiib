@@ -1,1 +1,1193 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CBT Academic - MA NU HASYIM ASY'ARI 1 KUDUS</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts & Lucide Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Chart.js untuk Diagram Hasil -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- HTML2Canvas untuk download hasil (Infografis) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
+  <!-- QRCode.js untuk QR Code dinamis -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            madrasah: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+              800: '#065f46',
+              900: '#064e3b',
+              950: '#022c22',
+            },
+            gold: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at top left, #022c22 0%, #020617 100%);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .glass {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.45);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Kustom scrollbar untuk estetika modern */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(2, 44, 34, 0.1);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(16, 185, 129, 0.3);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(16, 185, 129, 0.5);
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between selection:bg-madrasah-500 selection:text-white">
+
+  <!-- TOP HEADER DEKORATIF -->
+  <header class="w-full border-b border-madrasah-900/40 bg-slate-950/80 backdrop-blur-md py-4 px-6 sticky top-0 z-40 transition-all">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <!-- Logo Madrasah Baru dengan GitHub CORS-friendly link -->
+        <div class="w-12 h-12 rounded-xl bg-slate-900 flex items-center justify-center shadow-lg shadow-madrasah-500/20 ring-2 ring-gold-400/20 overflow-hidden">
+          <img src="https://raw.githubusercontent.com/yusufajiib/Membuat-Web-Layout/refs/heads/main/LOGO%20MA%20HASYIM%20BARU.png" 
+               alt="Logo MA Hasyim" 
+               class="w-10 h-10 object-contain" 
+               crossorigin="anonymous">
+        </div>
+        <div>
+          <h1 class="text-base md:text-lg font-bold tracking-tight bg-gradient-to-r from-emerald-400 via-emerald-200 to-gold-400 bg-clip-text text-transparent">
+            MA NU HASYIM ASY'ARI 1 KUDUS
+          </h1>
+          <p class="text-xs text-slate-400">Ujian Akademik Peserta Didik Baru (PPDB) Kelas X</p>
+        </div>
+      </div>
+      <div id="header-meta" class="hidden md:flex items-center gap-6 text-sm">
+        <div class="flex items-center gap-2 bg-slate-900/60 py-1.5 px-3 rounded-full border border-slate-800">
+          <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span id="meta-nama" class="font-medium text-slate-300">Tamu</span>
+        </div>
+        <div class="flex items-center gap-2 bg-slate-900/60 py-1.5 px-3 rounded-full border border-slate-800 text-slate-400">
+          <i data-lucide="tag" class="w-4 h-4"></i>
+          <span id="meta-paket">Acak</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+    
+    <!-- 1. LOGIN SCREEN -->
+    <section id="screen-login" class="max-w-md w-full mx-auto my-8 transition-all duration-300 transform scale-100">
+      <div class="glass rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-40 h-40 bg-madrasah-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-gold-500/5 rounded-full blur-3xl"></div>
+        
+        <div class="text-center mb-8">
+          <span class="text-xs font-semibold tracking-wider text-emerald-400 uppercase bg-emerald-500/10 px-3.5 py-1.5 rounded-full border border-emerald-500/20">MA NU HASYIM ASY'ARI 1 KUDUS</span>
+          <h2 class="text-2xl font-extrabold text-slate-100 mt-4">UJIAN AKADEMIK</h2>
+          <p class="text-slate-400 text-xs mt-2">Silakan isi formulir identitas dengan data asli Anda</p>
+        </div>
+
+        <form id="form-login" onsubmit="handleLogin(event)" class="space-y-5">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Nama Lengkap</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
+                <i data-lucide="user" class="w-4 h-4"></i>
+              </span>
+              <input type="text" id="login-nama" required placeholder="Contoh: Muhammad Akhyar" 
+                class="w-full bg-slate-900/80 border border-slate-800 rounded-xl py-3 pl-11 pr-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-madrasah-500 focus:border-transparent transition-all">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Asal Madrasah/Sekolah</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
+                <i data-lucide="school" class="w-4 h-4"></i>
+              </span>
+              <input type="text" id="login-asal-sekolah" required placeholder="Contoh: MTsN 1 Kudus/SMP 1 Kudus" 
+                class="w-full bg-slate-900/80 border border-slate-800 rounded-xl py-3 pl-11 pr-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-madrasah-500 focus:border-transparent transition-all">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">Password Ujian</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-500">
+                <i data-lucide="key-round" class="w-4 h-4"></i>
+              </span>
+              <input type="password" id="login-password" required placeholder="Ketik Password Dari Panitia" 
+                class="w-full bg-slate-900/80 border border-slate-800 rounded-xl py-3 pl-11 pr-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-madrasah-500 focus:border-transparent transition-all">
+            </div>
+            <p class="text-[10px] text-slate-500 mt-1">Gunakan password yang telah dibagikan oleh panitia PPDB.</p>
+          </div>
+
+          <button type="submit" class="w-full bg-gradient-to-r from-madrasah-600 to-emerald-500 hover:from-madrasah-500 hover:to-emerald-400 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-emerald-900/20 transform transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+            Mulai Ujian Sekarang <i data-lucide="arrow-right" class="w-5 h-5"></i>
+          </button>
+        </form>
+
+        <div class="mt-8 pt-6 border-t border-slate-800 text-center text-xs text-slate-500 space-y-1">
+          <p>MA NU HASYIM ASY'ARI 1 KUDUS</p>
+          <p class="text-[11px]">Jl. Mayor H. Basuno No. 17 Sunggingan, Kota, Kudus</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. EXAM SCREEN -->
+    <section id="screen-exam" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-6 my-4 transition-all duration-300">
+      
+      <!-- KIRI: INFORMASI & SIDEBAR NAVIGASI SOAL -->
+      <aside class="lg:col-span-1 space-y-6 flex flex-col order-2 lg:order-1">
+        <!-- TIMER CARD -->
+        <div class="glass rounded-2xl p-5 flex items-center justify-between shadow-lg">
+          <div class="flex items-center gap-3">
+            <div class="p-2.5 bg-rose-500/10 text-rose-400 rounded-xl border border-rose-500/20">
+              <i data-lucide="timer" class="w-5 h-5 animate-pulse"></i>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400">Sisa Waktu</p>
+              <div id="exam-timer" class="text-2xl font-black font-mono text-rose-400">00:00:00</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROGRESS CARD -->
+        <div class="glass rounded-2xl p-5 space-y-3 shadow-lg">
+          <div class="flex justify-between items-center text-xs font-semibold">
+            <span class="text-slate-400">Kemajuan Pengerjaan</span>
+            <span id="progress-text" class="text-emerald-400">0/50 Terjawab</span>
+          </div>
+          <div class="w-full bg-slate-900 rounded-full h-2.5 overflow-hidden border border-slate-800">
+            <div id="progress-bar" class="bg-gradient-to-r from-madrasah-500 to-emerald-400 h-full w-0 transition-all duration-300"></div>
+          </div>
+        </div>
+
+        <!-- NOMOR SOAL NAVIGASI SPREADS -->
+        <div class="glass rounded-2xl p-5 flex-grow flex flex-col shadow-lg min-h-[300px]">
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+            <i data-lucide="grid" class="w-4 h-4 text-emerald-500"></i> Peta Lembar Jawab
+          </h3>
+          
+          <div class="grid grid-cols-5 gap-2 overflow-y-auto max-h-[350px] pr-2 flex-grow" id="grid-navigation">
+            <!-- Dinamis dengan Javascript -->
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-slate-800/80 flex flex-col gap-2.5 text-xs text-slate-400">
+            <div class="flex items-center gap-2">
+              <span class="w-3.5 h-3.5 rounded-md bg-madrasah-600 border border-madrasah-400/30 block"></span>
+              <span>Sudah Terjawab</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3.5 h-3.5 rounded-md bg-slate-800 border border-slate-700 block"></span>
+              <span>Belum Terjawab</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3.5 h-3.5 rounded-md ring-2 ring-gold-400 bg-slate-900 block"></span>
+              <span>Soal Sedang Aktif</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- KANAN: AREA SOAL -->
+      <article class="lg:col-span-3 space-y-6 flex flex-col order-1 lg:order-2">
+        <!-- HEADER KARTU SOAL -->
+        <div class="glass rounded-2xl p-4 md:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-lg">
+          <div class="flex items-center gap-3">
+            <div class="py-1 px-3 bg-gold-500/15 border border-gold-400/20 rounded-md text-gold-400 font-bold text-sm">
+              <span id="soal-no-display">Soal 1</span>
+            </div>
+            <span id="soal-mapel" class="text-xs font-bold text-slate-300 uppercase tracking-widest bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700/50">Mata Pelajaran</span>
+          </div>
+          <div class="flex items-center gap-3 text-xs text-slate-400 bg-slate-900/60 p-2 rounded-lg border border-slate-800">
+            <span class="flex items-center gap-1"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500"></i> Auto-Save Aktif</span>
+          </div>
+        </div>
+
+        <!-- KONTEN SOAL -->
+        <div class="glass rounded-3xl p-6 md:p-8 shadow-xl flex-grow min-h-[400px] flex flex-col justify-between relative overflow-hidden">
+          <div class="absolute -top-20 -right-20 w-64 h-64 bg-madrasah-500/5 rounded-full blur-3xl pointer-events-none"></div>
+          
+          <div class="space-y-6">
+            <!-- Teks Pertanyaan -->
+            <p id="soal-text" class="text-base md:text-lg leading-relaxed text-slate-100 font-medium select-none">
+              Memuat naskah soal...
+            </p>
+
+            <!-- Opsi Jawaban -->
+            <div id="soal-options" class="grid grid-cols-1 gap-3.5 mt-8">
+              <!-- Dinamis diisi JS -->
+            </div>
+          </div>
+
+          <!-- NAVIGASI BAWAH SOAL -->
+          <div class="mt-12 pt-6 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-4">
+            <button onclick="navigatePrev()" id="btn-prev" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3 px-6 rounded-xl transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+              <i data-lucide="arrow-left" class="w-4 h-4"></i> Sebelumnya
+            </button>
+            
+            <button onclick="confirmSubmit()" id="btn-submit" class="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-bold py-3 px-8 rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-amber-950/20">
+              <i data-lucide="check-square" class="w-4 h-4"></i> Selesaikan Ujian
+            </button>
+
+            <button onclick="navigateNext()" id="btn-next" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-6 rounded-xl transition-all flex items-center gap-2 disabled:opacity-40">
+              Berikutnya <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- 3. HASIL SCREEN & DOWNLOAD INFOGRAFIS -->
+    <section id="screen-result" class="hidden max-w-7xl w-full mx-auto my-6 transition-all duration-300">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- KIRI: SUMMARY CARD & CHART (COL-SPAN-4) -->
+        <div class="glass rounded-3xl p-6 shadow-xl space-y-6 lg:col-span-4 flex flex-col justify-between">
+          <div>
+            <div class="text-center">
+              <div class="inline-flex p-3 bg-emerald-500/10 text-emerald-400 rounded-full mb-3">
+                <i data-lucide="award" class="w-8 h-8"></i>
+              </div>
+              <h3 class="text-xl font-bold text-slate-100">Evaluasi Selesai</h3>
+              <p class="text-xs text-slate-400">Hasil pengerjaan Anda telah terekam aman</p>
+            </div>
+
+            <div class="p-4 bg-slate-900/60 rounded-2xl border border-slate-800 space-y-3.5 text-sm mt-6">
+              <div class="flex justify-between">
+                <span class="text-slate-400">Paket Soal</span>
+                <span id="res-paket" class="font-semibold text-emerald-400">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Benar</span>
+                <span id="res-benar" class="font-semibold text-emerald-400">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Salah</span>
+                <span id="res-salah" class="font-semibold text-rose-400">-</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Persentase</span>
+                <span id="res-persentase" class="font-semibold text-gold-400">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart Visual Mini -->
+          <div class="relative w-44 h-44 mx-auto my-4">
+            <canvas id="chart-mini-hasil"></canvas>
+          </div>
+        </div>
+
+        <!-- KANAN: DOWNLOAD CARD & INFOGRAFIS LIVE PREVIEW (COL-SPAN-8) -->
+        <div class="glass rounded-3xl p-6 shadow-xl lg:col-span-8 flex flex-col justify-between gap-6">
+          <div class="space-y-4">
+            <h3 class="text-xl font-bold bg-gradient-to-r from-emerald-400 to-gold-400 bg-clip-text text-transparent">Infografis Sertifikat Hasil</h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Unduh lembar sertifikat kelulusan mandiri ini sebagai bukti keabsahan ujian PPDB kelas X MA NU Hasyim Asy'ari 1 Kudus. Gunakan scroll horizontal di HP Anda untuk melihat pratinjau sertifikat secara penuh sebelum diunduh.
+            </p>
+
+            <!-- CONTAINER GULIR SECARA HORIZONTAL UNTUK MOBILE SCREEN -->
+            <div class="w-full overflow-x-auto pb-4 scrollbar-thin">
+              
+              <!-- LIVE PREVIEW INFOGRAFIS DENGAN BACKGROUND GAMBAR DARI GITHUB (UKURAN STATIS 620PX) -->
+              <div id="infografis-sertifikat" class="text-slate-100 rounded-2xl relative overflow-hidden font-sans p-1 shadow-2xl shrink-0" 
+                   style="width: 620px; min-width: 620px; margin: 0 auto; background-image: url('https://raw.githubusercontent.com/yusufajiib/yusufajiib/refs/heads/main/gambar/border%20bingkai.jpg'); background-size: cover; background-position: center;">
+                
+                <!-- Overlay warna gelap semi-transparan yang memikat untuk kenyamanan membaca tulisan di atas gambar bingkai -->
+                <div class="bg-slate-950/92 p-7 rounded-xl relative overflow-hidden min-h-[750px] flex flex-col justify-between">
+                  
+                  <!-- Background Ornamen Airbrush & Tekstur halus -->
+                  <div class="absolute inset-0 bg-[radial-gradient(#fbbf2404_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none"></div>
+                  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                  <!-- Header Madrasah -->
+                  <div class="text-center border-b-2 border-amber-500/40 pb-4 mb-4 relative z-10 px-6">
+                    <div class="flex items-center justify-center gap-4 mb-1">
+                      <!-- Logo Madrasah CORS friendly -->
+                      <div class="w-12 h-12 rounded-full bg-white p-1 flex items-center justify-center shadow-md shrink-0">
+                        <img src="https://raw.githubusercontent.com/yusufajiib/Membuat-Web-Layout/refs/heads/main/LOGO%20MA%20HASYIM%20BARU.png" 
+                             alt="Logo Madrasah" 
+                             class="w-10 h-10 object-contain" 
+                             crossorigin="anonymous">
+                      </div>
+                      <div class="text-left">
+                        <h2 class="text-[9px] font-black tracking-widest text-[#fbbf24] uppercase">PANITIA PPDB 2026/2027</h2>
+                        <h1 class="text-sm font-extrabold text-white tracking-tight">MA NU HASYIM ASY'ARI 1 KUDUS</h1>
+                        <p class="text-[8px] text-slate-300">Jl. Mayor H. Basuno No. 17 Sunggingan, Kota, Kudus | Telp. (0291) 4250176</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Judul Sertifikat -->
+                  <div class="text-center mb-4">
+                    <h3 class="text-xs font-bold tracking-widest text-[#fbbf24] uppercase">LEMBAR HASIL AKADEMIK MANDIRI</h3>
+                    <p class="text-[8px] text-slate-400">Nomor Registrasi: <span id="info-no-peserta" class="font-mono text-slate-200">PPDB-2026-XXXX</span></p>
+                  </div>
+
+                  <!-- Rincian Identitas Siswa -->
+                  <div class="grid grid-cols-2 gap-4 bg-emerald-950/45 p-4 rounded-xl border border-emerald-900/40 mb-4 text-xs relative z-10 overflow-visible">
+                    <div class="overflow-visible min-h-[44px] flex flex-col justify-center">
+                      <span class="text-[8px] text-emerald-400 block uppercase font-bold tracking-wider mb-0.5">Nama Lengkap</span>
+                      <span id="info-nama" class="font-bold text-white text-[11px] block leading-normal overflow-visible py-0.5">NAMA PESERTA</span>
+                    </div>
+                    <div class="overflow-visible min-h-[44px] flex flex-col justify-center">
+                      <span class="text-[8px] text-emerald-400 block uppercase font-bold tracking-wider mb-0.5">Asal Sekolah</span>
+                      <span id="info-sekolah" class="font-bold text-white text-[11px] block leading-normal overflow-visible py-0.5">ASAL SEKOLAH</span>
+                    </div>
+                    <div>
+                      <span class="text-[8px] text-emerald-400 block uppercase font-bold tracking-wider mb-0.5">Tanggal Ujian</span>
+                      <span id="info-tanggal" class="font-semibold text-slate-200 text-[10px] block py-0.5">04 Juli 2026</span>
+                    </div>
+                    <div>
+                      <span class="text-[8px] text-emerald-400 block uppercase font-bold tracking-wider mb-0.5">Paket Soal</span>
+                      <span id="info-paket" class="font-semibold text-amber-400 text-[10px] block py-0.5">Paket Soal</span>
+                    </div>
+                  </div>
+
+                  <!-- SEKSI PROGRESS 5 PENDIDIKAN (Dengan jarak yang diperlebar agar tidak menumpuk) -->
+                  <div class="bg-slate-950/80 p-4 rounded-xl border border-amber-500/20 mb-4 relative z-10 space-y-3.5">
+                    <h4 class="text-[8px] font-bold text-amber-400 uppercase tracking-wider border-b border-slate-800 pb-1 mb-1.5">Progress Capaian Kompetensi</h4>
+                    
+                    <!-- Agama Islam -->
+                    <div class="flex flex-col gap-1.5">
+                      <div class="flex justify-between text-[9px] leading-tight">
+                        <span class="text-slate-300">Pendidikan Agama Islam (Qur'an Hadis, Fikih, Akidah, SKI)</span>
+                        <span id="score-agama" class="font-semibold text-emerald-400">0</span>
+                      </div>
+                      <div class="w-full bg-slate-900 rounded-full h-1.5 shadow-inner">
+                        <div id="bar-agama" class="bg-emerald-500 h-full w-0 rounded-full transition-all duration-500"></div>
+                      </div>
+                    </div>
+
+                    <!-- Bahasa -->
+                    <div class="flex flex-col gap-1.5">
+                      <div class="flex justify-between text-[9px] leading-tight">
+                        <span class="text-slate-300">Bahasa (Inggris, Arab, Jawa)</span>
+                        <span id="score-bahasa" class="font-semibold text-emerald-400">0</span>
+                      </div>
+                      <div class="w-full bg-slate-900 rounded-full h-1.5 shadow-inner">
+                        <div id="bar-bahasa" class="bg-teal-500 h-full w-0 rounded-full transition-all duration-500"></div>
+                      </div>
+                    </div>
+
+                    <!-- Matematika -->
+                    <div class="flex flex-col gap-1.5">
+                      <div class="flex justify-between text-[9px] leading-tight">
+                        <span class="text-slate-300">Matematika</span>
+                        <span id="score-matematika" class="font-semibold text-emerald-400">0</span>
+                      </div>
+                      <div class="w-full bg-slate-900 rounded-full h-1.5 shadow-inner">
+                        <div id="bar-matematika" class="bg-indigo-500 h-full w-0 rounded-full transition-all duration-500"></div>
+                      </div>
+                    </div>
+
+                    <!-- Informatika -->
+                    <div class="flex flex-col gap-1.5">
+                      <div class="flex justify-between text-[9px] leading-tight">
+                        <span class="text-slate-300">Informatika (Word, Excel, Canva, AI)</span>
+                        <span id="score-informatika" class="font-semibold text-emerald-400">0</span>
+                      </div>
+                      <div class="w-full bg-slate-900 rounded-full h-1.5 shadow-inner">
+                        <div id="bar-informatika" class="bg-purple-500 h-full w-0 rounded-full transition-all duration-500"></div>
+                      </div>
+                    </div>
+
+                    <!-- IPS -->
+                    <div class="flex flex-col gap-1.5">
+                      <div class="flex justify-between text-[9px] leading-tight">
+                        <span class="text-slate-300">Jurusan IPS (Sejarah, Ekonomi, Geografi, Sosiologi)</span>
+                        <span id="score-ips" class="font-semibold text-emerald-400">0</span>
+                      </div>
+                      <div class="w-full bg-slate-900 rounded-full h-1.5 shadow-inner">
+                        <div id="bar-ips" class="bg-amber-500 h-full w-0 rounded-full transition-all duration-500"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Hasil Skor Utama -->
+                  <div class="flex items-center justify-around gap-4 mb-4 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                    <div class="text-center">
+                      <span class="text-[8px] text-slate-400 uppercase font-bold block">Skor Total</span>
+                      <span id="info-nilai" class="text-2xl font-extrabold text-emerald-400 font-mono tracking-tight">00.00</span>
+                    </div>
+                    <div class="h-8 w-[1px] bg-slate-800"></div>
+                    <div class="text-[9px] space-y-0.5">
+                      <div class="flex justify-between gap-4">
+                        <span class="text-slate-400">Jumlah Benar:</span>
+                        <span id="info-benar" class="font-bold text-emerald-400">0</span>
+                      </div>
+                      <div class="flex justify-between gap-4">
+                        <span class="text-slate-400">Jumlah Salah:</span>
+                        <span id="info-salah" class="font-bold text-rose-400">0</span>
+                      </div>
+                      <div class="flex justify-between gap-4">
+                        <span class="text-slate-400">Status Kelulusan:</span>
+                        <span id="info-status" class="font-bold text-emerald-400">-</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- QR Code & Tanda Tangan Panitia & Kepala Madrasah -->
+                  <div class="flex items-end justify-between pt-4 border-t border-amber-500/20 text-[8px] md:text-[9px] relative z-10 overflow-visible">
+                    
+                    <!-- QR Code Column -->
+                    <div class="flex flex-col items-center shrink-0 w-[100px]">
+                      <div id="qrcode-container" class="bg-white p-1 rounded-md inline-block shadow-md"></div>
+                      <span class="text-[7px] text-slate-400 mt-1">Verifikasi Sistem</span>
+                    </div>
+                    
+                    <!-- Ketua Panitia PPDB (Ihsan Darmawan, M.Pd.) -->
+                    <div class="text-center flex flex-col justify-between items-center h-28 w-[210px] overflow-visible shrink-0">
+                      <span class="text-slate-300 block mb-1">Ketua Panitia PPDB</span>
+                      <!-- Wadah tanda tangan berlatar belakang putih halus meniru dokumen fisik asli agar aman saat di-render canvas -->
+                      <div class="w-16 h-12 bg-white/95 rounded-lg p-0.5 flex items-center justify-center shadow-sm shrink-0">
+                        <img src="https://raw.githubusercontent.com/yusufajiib/Membuat-Web-Layout/refs/heads/main/af475d85-2980-451b-8f3b-d925c4e9ee91%20pak%20ihsan.png" 
+                             alt="Tanda Tangan Ketua" 
+                             class="max-w-full max-h-full object-contain" 
+                             crossorigin="anonymous">
+                      </div>
+                      <div class="mt-1 overflow-visible">
+                        <span class="font-bold text-white block leading-normal py-0.5 whitespace-nowrap overflow-visible">Ihsan Darmawan, M.Pd.</span>
+                        <span class="text-slate-400 text-[7px] block">NIP. -</span>
+                      </div>
+                    </div>
+
+                    <!-- Kepala Madrasah (H. Musafak, S.Ag., M.Pd.) -->
+                    <div class="text-center flex flex-col justify-between items-center h-28 w-[210px] overflow-visible shrink-0">
+                      <span class="text-slate-300 block mb-1">Kepala Madrasah</span>
+                      <div class="w-16 h-12 bg-white/95 rounded-lg p-0.5 flex items-center justify-center shadow-sm shrink-0">
+                        <img src="https://raw.githubusercontent.com/yusufajiib/Membuat-Web-Layout/refs/heads/main/1119ce6c-8638-4866-abba-7e14fa4d1fd5%20pak%20haji.png" 
+                             alt="Tanda Tangan Kamad" 
+                             class="max-w-full max-h-full object-contain" 
+                             crossorigin="anonymous">
+                      </div>
+                      <div class="mt-1 overflow-visible">
+                        <span class="font-bold text-white block leading-normal py-0.5 whitespace-nowrap overflow-visible">H. Musafak, S.Ag., M.Pd.</span>
+                        <span class="text-slate-400 text-[7px] block">NIP. -</span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Tombol Download -->
+          <button onclick="downloadSertifikat()" class="w-full bg-gradient-to-r from-gold-500 to-amber-600 hover:from-gold-400 hover:to-amber-500 text-slate-950 font-extrabold py-4 px-6 rounded-2xl shadow-lg shadow-gold-500/10 flex items-center justify-center gap-2 transition-all transform active:scale-95">
+            <i data-lucide="download" class="w-5 h-5"></i> Download Kartu Hasil (PNG)
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL NOTIFIKASI KUSTOM -->
+  <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center px-4 bg-slate-950/80 backdrop-blur-sm hidden transition-all duration-300">
+    <div class="glass max-w-md w-full rounded-2xl p-6 shadow-2xl space-y-4 border border-emerald-500/30">
+      <div class="flex items-center gap-3">
+        <div id="modal-icon-bg" class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl">
+          <i id="modal-icon" data-lucide="info" class="w-6 h-6"></i>
+        </div>
+        <h4 id="modal-title" class="text-lg font-bold text-slate-100">Judul Modal</h4>
+      </div>
+      <p id="modal-desc" class="text-sm text-slate-300 leading-relaxed">
+        Deskripsi pesan.
+      </p>
+      <div id="modal-actions" class="flex justify-end gap-3 pt-2">
+        <button id="modal-btn-close" onclick="hideModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-2.5 px-4 rounded-xl transition-all">
+          Tutup
+        </button>
+        <button id="modal-btn-confirm" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold py-2.5 px-5 rounded-xl transition-all">
+          Lanjutkan
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADING OVERLAY -->
+  <div id="loading-overlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md hidden">
+    <div class="relative w-20 h-20">
+      <div class="absolute inset-0 border-4 border-emerald-500/20 rounded-full"></div>
+      <div class="absolute inset-0 border-4 border-t-emerald-500 rounded-full animate-spin"></div>
+    </div>
+    <h3 class="text-lg font-bold text-slate-100 mt-6 tracking-wide">Mengirim Lembar Jawaban...</h3>
+    <p class="text-xs text-slate-400 mt-2">Harap tunggu, koneksi aman database sedang dibangun.</p>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="w-full border-t border-slate-900 bg-slate-950/60 py-4 px-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2">
+      <p>&copy; 2026 PPDB MA NU Hasyim Asy'ari 1 Kudus. All rights reserved.</p>
+      <p class="flex items-center gap-1"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i> Sistem Terenkripsi & Terintegrasi Cloud</p>
+    </div>
+  </footer>
+
+  <!-- DATA & JAVASCRIPT LOGIC -->
+  <script>
+    // ==========================================
+    // DATABASE SOAL: 2 PAKET SOAL (A & B) @ 50 SOAL
+    // ==========================================
+    const DB_SOAL = {
+      Paket_A: [
+        // --- AGAMA (1-10) ---
+        { id: 1, mapel: "Al-Qur'an Hadis", q: "Hadis yang diriwayatkan oleh banyak perawi pada setiap tingkatan sanadnya sehingga tidak memungkinkan mereka sepakat untuk berdusta disebut...", a: ["Mutawatir", "Ahad", "Shahih", "Maudhu'", "Mursal"], k: "Mutawatir" },
+        { id: 2, mapel: "Al-Qur'an Hadis", q: "Surah Al-Alaq ayat 1-5 merupakan wahyu pertama yang diturunkan kepada Nabi Muhammad SAW. Makna utama dari perintah 'Iqra' adalah...", a: ["Membaca untuk mencari ilmu pengetahuan dan mengenal Allah", "Menulis indah Al-Qur'an", "Menghafalkan syair Arab kuno", "Mendengarkan kisah para nabi", "Menyebarkan ajaran Islam secara diam-diam"], k: "Membaca untuk mencari ilmu pengetahuan dan mengenal Allah" },
+        { id: 3, mapel: "Fikih", q: "Manakah di bawah ini yang merupakan rukun wudhu secara berurutan yang benar menurut Mazhab Syafi'i?", a: ["Niat, membasuh wajah, membasuh kedua tangan, mengusap sebagian kepala, membasuh kedua kaki, tertib", "Niat, berkumur, membasuh wajah, membasuh tangan, mengusap kepala, membasuh kaki", "Membasuh telinga, niat, membasuh wajah, membasuh tangan, mengusap kepala, tertib", "Niat, membasuh wajah, membasuh tangan hingga siku, membasuh kaki hingga mata kaki", "Membasuh wajah, membasuh tangan, membasuh kaki, tertib"], k: "Niat, membasuh wajah, membasuh kedua tangan, mengusap sebagian kepala, membasuh kedua kaki, tertib" },
+        { id: 4, mapel: "Fikih", q: "Batas minimal jumlah harta kekayaan yang wajib dikeluarkan zakatnya setelah mencapai haul disebut...", a: ["Nisab", "Mustahik", "Muzakki", "Kifarat", "Infaq"], k: "Nisab" },
+        { id: 5, mapel: "Akidah Akhlak", q: "Sifat wajib bagi Allah yang berarti 'Terdahulu' dan tidak diawali dengan ketiadaan adalah...", a: ["Qidam", "Wujud", "Baqa'", "Wahdaniyah", "Mukhalafatu lil-hawaditsi"], k: "Qidam" },
+        { id: 6, mapel: "Akidah Akhlak", q: "Sikap mementingkan kepentingan orang lain demi kebaikan bersama di atas kepentingan pribadi disebut...", a: ["Itsar", "Tasamuh", "Ta'awun", "Ukhuwah", "Ghibah"], k: "Itsar" },
+        { id: 7, mapel: "Sejarah Kebudayaan Islam", q: "Perang dalam sejarah perkembangan Islam yang terjadi pada tahun 2 Hijriah dan dimenangkan oleh kaum Muslimin dengan jumlah pasukan yang sedikit adalah...", a: ["Perang Badar", "Perang Uhud", "Perang Khandak", "Perang Hunain", "Perang Tabuk"], k: "Perang Badar" },
+        { id: 8, mapel: "Sejarah Kebudayaan Islam", q: "Khalifah pertama dari Khulafaur Rasyidin yang memfokuskan pemerintahannya untuk memberantas nabi palsu dan kaum murtad adalah...", a: ["Abu Bakar Ash-Shiddiq", "Umar bin Khattab", "Utsman bin Affan", "Ali bin Abi Thalib", "Muawiyah bin Abi Sufyan"], k: "Abu Bakar Ash-Shiddiq" },
+        { id: 9, mapel: "Al-Qur'an Hadis", q: "Salah satu fungsi Al-Qur'an sebagai 'Asy-Syifa' mengandung arti sebagai...", a: ["Obat penawar lahir batin", "Pembeda antara hak dan batil", "Petunjuk bagi orang bertakwa", "Peringatan bagi alam semesta", "Kisah umat masa lalu"], k: "Obat penawar lahir batin" },
+        { id: 10, mapel: "Fikih", q: "Apabila seseorang melakukan kesalahan atau ragu-ragu dalam jumlah rakaat shalat sebelum salam, maka disunnahkan untuk melakukan...", a: ["Sujud sahwi", "Sujud tilawah", "Sujud syukur", "Sujud rukun", "Sujud wajib"], k: "Sujud sahwi" },
+
+        // --- BAHASA (11-20) ---
+        { id: 11, mapel: "Bahasa Inggris", q: "Choose the correct sentence to complete the dialogue. <br><b>A: 'What are you planning to do after graduating from Junior High School?'</b><br><b>B: '...'</b>", a: ["I am planning to enroll in MA NU Hasyim Asy'ari 1 Kudus.", "I went to Kudus yesterday.", "I have graduated last month.", "I would like to sleep all day.", "I don't know where MA NU is."], k: "I am planning to enroll in MA NU Hasyim Asy'ari 1 Kudus." },
+        { id: 12, mapel: "Bahasa Inggris", q: "The passive voice of: 'The student answers the exam question correctly' is...", a: ["The exam question is answered correctly by the student.", "The exam question was answered correctly by the student.", "The exam question has been answered correctly by the student.", "The exam question is being answered correctly by the student.", "The student is answered by the exam question."], k: "The exam question is answered correctly by the student." },
+        { id: 13, mapel: "Bahasa Arab", q: "Kata ganti (Dhomir) untuk orang ketiga perempuan jamak (mereka perempuan) dalam bahasa Arab adalah...", a: ["هُنَّ (Hunna)", "هُمْ (Hum)", "أَنْتُنَّ (Antunna)", "نَحْنُ (Nahnu)", "هِيَ (Hiya)"], k: "هُنَّ (Hunna)" },
+        { id: 14, mapel: "Bahasa Arab", q: "Terjemahan dari kalimat 'أَنَا أَدْرُسُ فِي Mَدْرَسَةِ الثَّانَوِيَّةِ' adalah...", a: ["Saya belajar di sekolah menengah", "Saya bermain di halaman sekolah", "Saya membaca buku di perpustakaan", "Kami belajar di kelas", "Dia mengajar di madrasah"], k: "Saya belajar di sekolah menengah" },
+        { id: 15, mapel: "Bahasa Jawa", q: "Tembung ing ngisor iki sing kalebu basa krama alus sing bener kanggo ukara 'Bapak mangan sego goreng' yaiku...", a: ["Bapak dhahar sekul goreng", "Bapak nedha sekul goreng", "Bapak maem sego goreng", "Bapak nedhi sekul goreng", "Bapak dahar sego goreng"], k: "Bapak dhahar sekul goreng" },
+        { id: 16, mapel: "Bahasa Jawa", q: "Aksara Jawa sing digunakake kanggo nulis jeneng kutha, gelar, utawa paraga penting diarani...", a: ["Aksara Murda", "Aksara Swara", "Aksara Rekan", "Aksara Pasangan", "Aksara Carakan"], k: "Aksara Murda" },
+        { id: 17, mapel: "Bahasa Inggris", q: "Identify the noun in the following sentence: 'Education is the key to a better future.'", a: ["Education", "Is", "The", "Better", "To"], k: "Education" },
+        { id: 18, mapel: "Bahasa Inggris", q: "If we ... (study) hard, we will pass the PPDB selection test easily.", a: ["study", "studied", "studies", "will study", "have studied"], k: "study" },
+        { id: 19, mapel: "Bahasa Arab", q: "Lawan kata (Lafadz Al-Mutaqabilah) dari kata 'كَبِيْرٌ' (Besar) adalah...", a: ["صَغِيْرٌ (Shoghirun)", "جَمِيْلٌ (Jamilun)", "قَصِيْرٌ (Qoshirun)", "قَدِيْمٌ (Qodimun)", "بَعِيْدٌ (Baidun)"], k: "صَغِيْرٌ (Shoghirun)" },
+        { id: 20, mapel: "Bahasa Jawa", q: "Prastawa budaya khas ing kutha Kudus sing dianakake kanggo mapag tekane wulan Ramadhan diarani...", a: ["Dandangan", "Buka Luwur", "Ampyang Maulid", "Syawalan", "Grebeg Suro"], k: "Dandangan" },
+
+        // --- MATEMATIKA (21-30) ---
+        { id: 21, mapel: "Matematika", q: "Jika nilai x yang memenuhi persamaan $3x - 7 = 14$ adalah...", a: ["7", "3", "5", "8", "6"], k: "7" },
+        { id: 22, mapel: "Matematika", q: "Hasil dari operasi bentuk akar $\\sqrt{48} + 2\\sqrt{12} - \\sqrt{75}$ adalah...", a: ["$3\\sqrt{3}$", "$2\\sqrt{3}$", "$4\\sqrt{3}$", "$5\\sqrt{3}$", "$\\sqrt{3}$"], k: "$3\\sqrt{3}$" },
+        { id: 23, mapel: "Matematika", q: "Suatu barisan aritmatika memiliki suku pertama $a = 4$ and beda $b = 3$. Suku ke-15 dari barisan tersebut adalah...", a: ["46", "49", "43", "52", "40"], k: "46" },
+        { id: 24, mapel: "Matematika", q: "Sebuah segitiga siku-siku memiliki panjang hipotenusa 13 cm dan salah satu sisi siku-sikunya 12 cm. Panjang sisi siku-siku lainnya adalah...", a: ["5 cm", "7 cm", "8 cm", "9 cm", "10 cm"], k: "5 cm" },
+        { id: 25, mapel: "Matematika", q: "Persamaan kuadrat $x^2 - 5x + 6 = 0$ memiliki akar-akar $x_1$ dan $x_2$. Nilai dari $x_1 \\cdot x_2$ adalah...", a: ["6", "5", "-5", "-6", "2"], k: "6" },
+        { id: 26, mapel: "Matematika", q: "Berapa banyak susunan huruf berbeda yang dapat dibentuk dari kata 'KUDUS'?", a: ["60", "120", "24", "48", "30"], k: "60" },
+        { id: 27, mapel: "Matematika", q: "Median dari data berkelompok/tunggal berikut: 5, 8, 3, 6, 7, 8, 9, 10, 4 adalah...", a: ["7", "6", "8", "6.5", "7.5"], k: "7" },
+        { id: 28, mapel: "Matematika", q: "Jika harga 3 buku tulis dan 2 pensil adalah Rp17.000, sedangkan harga 1 buku tulis dan 4 pensil adalah Rp19.000, maka harga 1 buku tulis adalah...", a: ["Rp3.000", "Rp2.000", "Rp4.000", "Rp3.500", "Rp1.500"], k: "Rp3.000" },
+        { id: 29, mapel: "Matematika", q: "Suatu fungsi f didefinisikan dengan $f(x) = 2x^2 - 3x + 1$. Nilai dari $f(3)$ adalah...", a: ["10", "8", "12", "14", "9"], k: "10" },
+        { id: 30, mapel: "Matematika", q: "Luas permukaan kubus dengan panjang rusuk 5 cm adalah...", a: ["150 cm²", "125 cm²", "100 cm²", "75 cm²", "180 cm²"], k: "150 cm²" },
+
+        // --- INFORMATIKA (31-40) ---
+        { id: 31, mapel: "Informatika", q: "Pada Microsoft Word, kombinasi tombol keyboard (shortcut) yang berfungsi untuk mengganti teks secara cepat (Find and Replace) adalah...", a: ["Ctrl + H", "Ctrl + F", "Ctrl + R", "Ctrl + G", "Ctrl + Shift + F"], k: "Ctrl + H" },
+        { id: 32, mapel: "Informatika", q: "Di Microsoft Excel, rumus matematika yang tepat untuk menjumpulan sekumpulan data numerik pada suatu range sel adalah...", a: ["SUM", "AVERAGE", "COUNT", "MAX", "TOTAL"], k: "SUM" },
+        { id: 33, mapel: "Informatika", q: "Gemini AI merupakan kecerdasan buatan berbasis Large Language Model (LLM) yang dikembangkan oleh...", a: ["Google", "Microsoft", "OpenAI", "Meta", "Apple"], k: "Google" },
+        { id: 34, mapel: "Informatika", q: "Canva merupakan platform desain grafis online. Format file unduhan terbaik untuk cetakan fisik berkualitas tinggi di Canva adalah...", a: ["Cetak PDF (PDF Print)", "PNG", "JPG", "MP4", "SVG"], k: "Cetak PDF (PDF Print)" },
+        { id: 35, mapel: "Informatika", q: "Jenis jaringan komputer yang memiliki cakupan geografis paling luas seperti antar negara atau benua disebut...", a: ["WAN", "LAN", "MAN", "PAN", "WLAN"], k: "WAN" },
+        { id: 36, mapel: "Informatika", q: "Apakah kepanjangan dari AI dalam dunia teknologi informasi modern?", a: ["Artificial Intelligence", "Automated Information", "Advanced Integration", "Algorithm Instruction", "Analysis Interactive"], k: "Artificial Intelligence" },
+        { id: 37, mapel: "Informatika", q: "Di Excel, hasil dari rumus <b>=IF(85>=80, 'Lulus', 'Remedi')</b> adalah...", a: ["Lulus", "Remedi", "85", "Error", "FALSE"], k: "Lulus" },
+        { id: 38, mapel: "Informatika", q: "Sebutkan fitur di Microsoft Word yang digunakan untuk membuat dokumen massal seperti undangan/surat dengan database nama yang berbeda-beda...", a: ["Mail Merge", "Track Changes", "SmartArt", "Cross-reference", "Page Break"], k: "Mail Merge" },
+        { id: 39, mapel: "Informatika", q: "Layanan penyimpanan awan (cloud storage) yang terintegrasi langsung secara bawaan di ekosistem Google Workspace adalah...", a: ["Google Drive", "OneDrive", "Dropbox", "iCloud", "Mediafire"], k: "Google Drive" },
+        { id: 40, mapel: "Informatika", q: "Dalam Canva, apa kegunaan utama dari fitur 'Brand Kit'?", a: ["Menyimpan aset warna logo, palet warna, dan jenis font khas lembaga", "Membuat animasi 3D", "Mengedit video secara otomatis", "Mengonversi file JPG ke Excel", "Mendeteksi plagiarisme gambar"], k: "Menyimpan aset warna logo, palet warna, dan jenis font khas lembaga" },
+
+        // --- IPS (41-50) ---
+        { id: 41, mapel: "IPS - Sejarah", q: "Peristiwa penculikan Ir. Soekarno dan Drs. Moh. Hatta oleh golongan muda ke luar kota guna mempercepat proklamasi kemerdekaan dikenal dengan peristiwa...", a: ["Rengasdengklok", "Ambarawa", "Bandung Lautan Api", "Trisakti", "10 November"], k: "Rengasdengklok" },
+        { id: 42, mapel: "IPS - Ekonomi", q: "Faktor produksi alam utama yang melimpah dan menjadi unggulan di daerah pesisir pantai adalah...", a: ["Hasil laut dan garam", "Padi dan jagung", "Kayu jati", "Batu bara", "Teh dan kopi"], k: "Hasil laut dan garam" },
+        { id: 43, mapel: "IPS - Geografi", q: "Secara astronomis, wilayah Indonesia terletak di daerah beriklim tropis. Hal ini dipengaruhi oleh garis khayal bumi yang membelah utara dan selatan yaitu...", a: ["Garis Khatulistiwa (Ekuator)", "Garis Bujur Timur", "Garis Balik Utara", "Garis Balik Selatan", "Garis Meridian Utama"], k: "Garis Khatulistiwa (Ekuator)" },
+        { id: 44, mapel: "IPS - Sosiologi", q: "Proses interaksi sosial yang mengarah pada kesatuan pandangan, kerja sama, dan penyatuan kebudayaan disebut interaksi...", a: ["Asosiatif", "Disosiatif", "Akulturasi", "Akomodasi", "Asimilasi"], k: "Asosiatif" },
+        { id: 45, mapel: "IPS - Sejarah", q: "Sidang pertama BPUPKI pada tanggal 29 Mei - 1 Juni 1945 fokus membahas tentang...", a: ["Rumusan dasar negara Indonesia", "Rancangan Undang-Undang Dasar", "Pembagian wilayah provinsi", "Pemilihan Presiden dan Wakil Presiden", "Pembentukan Tentara Keamanan Rakyat"], k: "Rumusan dasar negara Indonesia" },
+        { id: 46, mapel: "IPS - Ekonomi", q: "Jenis pasar di mana hanya terdapat satu penjual tunggal yang menguasai seluruh pasokan barang atau jasa tanpa adanya pesaing dekat dinamakan pasar...", a: ["Monopoli", "Oligopoli", "Persaingan Sempurna", "Monopsoni", "Kartel"], k: "Monopoli" },
+        { id: 47, mapel: "IPS - Geografi", q: "Kudus dikenal sebagai kota penghasil rokok kretek terbesar di Jawa Tengah. Berdasarkan letak geografisnya, kota Kudus berbatasan langsung di sebelah utara dengan kabupaten...", a: ["Jepara", "Pati", "Demak", "Grobogan", "Semarang"], k: "Jepara" },
+        { id: 48, mapel: "IPS - Sosiologi", q: "Norma sosial yang memiliki sanksi paling tegas berupa hukuman kurungan penjara atau denda materiil dari lembaga peradilan negara adalah norma...", a: ["Hukum", "Agama", "Kesopanan", "Kesusilaan", "Adat istiadat"], k: "Hukum" },
+        { id: 49, mapel: "IPS - Sejarah", q: "Tokoh Walisongo yang terkenal menyebarkan Islam di wilayah Kudus dengan pendekatan toleransi budaya yang sangat tinggi, termasuk melarang menyembelih sapi demi menghormati umat Hindu, adalah...", a: ["Sunan Kudus", "Sunan Muria", "Sunan Kalijaga", "Sunan Ampel", "Sunan Bonang"], k: "Sunan Kudus" },
+        { id: 50, mapel: "IPS - Ekonomi", q: "Kegiatan menyalurkan barang dan jasa dari produsen agar sampai ke tangan konsumen akhir disebut...", a: ["Distribusi", "Produksi", "Konsumsi", "Investasi", "Eksplorasi"], k: "Distribusi" }
+      ]
+    };
+
+    // ==========================================
+    // STATE MANAGEMENT (IN-MEMORY STATE)
+    // ==========================================
+    let currentUser = { nama: "", sekolah: "", password: "", paket: "" };
+    let activeQuestions = []; 
+    let activeAnswers = {};   
+    let currentQuestionIndex = 0;
+    let examDurationSeconds = 90 * 60; // 90 Menit
+    let timerInterval = null;
+    let isSubmitted = false;
+
+    // URL Google Apps Script Web App
+    const GAS_URL = "https://script.google.com/macros/s/AKfycby3wLaCEZOkEHDdpLplc53NletMdP-clHnaS55kl4Mjptzy4sdlRYktd22CmSyARqX3/exec";
+
+    // Pada saat DOM siap
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+
+    // ==========================================
+    // ALGORITMA ACAK (Fisher-Yates)
+    // ==========================================
+    function shuffleArray(array) {
+      let m = array.length, t, i;
+      while (m) {
+        i = Math.floor(Math.random() * m--);
+        t = array[m];
+        array[m] = array[i];
+        array[i] = t;
+      }
+      return array;
+    }
+
+    // ==========================================
+    // HANDLER LOGIN & INISIALISASI UJIAN
+    // ==========================================
+    function handleLogin(event) {
+      event.preventDefault();
+      
+      const nama = document.getElementById('login-nama').value.trim();
+      const sekolah = document.getElementById('login-asal-sekolah').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+
+      if (!nama || !sekolah || !password) {
+        showModal("Lengkapi Formulir", "Mohon isi seluruh kolom input data sebelum memulai ujian.", "info");
+        return;
+      }
+
+      // Pilih paket secara acak dengan peluang 50%
+      const pilihPaket = Math.random() < 0.5 ? 'Paket_A' : 'Paket_B';
+      const namaPaketDisplay = pilihPaket === 'Paket_A' ? 'Paket A' : 'Paket B';
+
+      currentUser = { nama, sekolah, password, paket: pilihPaket };
+
+      // Update Meta UI
+      document.getElementById('meta-nama').innerText = nama;
+      document.getElementById('meta-paket').innerText = namaPaketDisplay;
+      document.getElementById('header-meta').classList.remove('hidden');
+
+      // Ambil Soal dari paket terpilih lalu acak urutan soalnya
+      let rawSoal = JSON.parse(JSON.stringify(DB_SOAL[pilihPaket]));
+      activeQuestions = shuffleArray(rawSoal);
+
+      // Untuk setiap soal, acak pilihan jawabannya
+      activeQuestions.forEach((soal) => {
+        let opsiAsli = [...soal.a];
+        soal.a = shuffleArray(opsiAsli);
+      });
+
+      // Pindah Layar
+      document.getElementById('screen-login').classList.add('hidden');
+      document.getElementById('screen-exam').classList.remove('hidden');
+
+      // Mulai Timer & Render Soal Pertama
+      startTimer();
+      renderNavigationGrid();
+      loadQuestion(0);
+
+      showModal("Ujian Dimulai", `Selamat datang ${nama}. Anda akan mengerjakan ${namaPaketDisplay} sebanyak 50 soal dalam waktu 90 menit secara mandiri dan jujur. Selamat berjuang!`, "success");
+    }
+
+    // ==========================================
+    // TIMER ENGINE
+    // ==========================================
+    function startTimer() {
+      const display = document.getElementById('exam-timer');
+      
+      timerInterval = setInterval(() => {
+        if (examDurationSeconds <= 0) {
+          clearInterval(timerInterval);
+          autoSubmitOnTimeout();
+          return;
+        }
+
+        examDurationSeconds--;
+        let hrs = Math.floor(examDurationSeconds / 3600);
+        let mins = Math.floor((examDurationSeconds % 3600) / 60);
+        let secs = examDurationSeconds % 60;
+
+        hrs = hrs < 10 ? '0' + hrs : hrs;
+        mins = mins < 10 ? '0' + mins : mins;
+        secs = secs < 10 ? '0' + secs : secs;
+
+        display.innerText = `${hrs}:${mins}:${secs}`;
+        
+        // Ganti warna teks jika waktu menipis (< 10 menit)
+        if (examDurationSeconds < 600) {
+          display.className = "text-2xl font-black font-mono text-rose-500 animate-pulse";
+        }
+      }, 1000);
+    }
+
+    // ==========================================
+    // RENDER DETAIL PERTANYAAN
+    // ==========================================
+    function loadQuestion(index) {
+      currentQuestionIndex = index;
+      const staticSoal = activeQuestions[index];
+      
+      // Update UI No dan Mapel
+      document.getElementById('soal-no-display').innerText = `Soal ${index + 1} dari 50`;
+      document.getElementById('soal-mapel').innerText = staticSoal.mapel;
+      document.getElementById('soal-text').innerHTML = staticSoal.q;
+
+      // Render Opsi Jawaban (A-E)
+      const optionsContainer = document.getElementById('soal-options');
+      optionsContainer.innerHTML = '';
+
+      const labels = ['A', 'B', 'C', 'D', 'E'];
+      staticSoal.a.forEach((opsi, i) => {
+        const isSelected = activeAnswers[index] === opsi;
+        const alphabet = labels[i];
+
+        const optionButton = document.createElement('button');
+        optionButton.type = 'button';
+        optionButton.onclick = () => selectAnswer(index, opsi);
+        optionButton.className = `w-full text-left p-4 rounded-xl border flex items-center gap-4 transition-all duration-200 select-none ${
+          isSelected 
+            ? 'bg-madrasah-950/80 border-madrasah-500 text-white shadow-md ring-1 ring-madrasah-500/50' 
+            : 'bg-slate-900/40 border-slate-800 hover:border-slate-700 hover:bg-slate-900/80 text-slate-300'
+        }`;
+
+        optionButton.innerHTML = `
+          <span class="w-8 h-8 flex items-center justify-center rounded-lg font-bold text-sm ${
+            isSelected ? 'bg-madrasah-500 text-white' : 'bg-slate-800 text-slate-400 group-hover:bg-slate-700'
+          }">${alphabet}</span>
+          <span class="text-sm font-medium leading-relaxed">${opsi}</span>
+        `;
+        optionsContainer.appendChild(optionButton);
+      });
+
+      // Update Navigasi Tombol State
+      document.getElementById('btn-prev').disabled = index === 0;
+      document.getElementById('btn-next').disabled = index === activeQuestions.length - 1;
+
+      // Beri Efek Ring Aktif pada Navigasi Grid
+      updateNavigationGridFocus(index);
+    }
+
+    // ==========================================
+    // SELEKSI JAWABAN & AUTO SAVE PROGRESS
+    // ==========================================
+    function selectAnswer(soalIdx, jawabanPilihan) {
+      activeAnswers[soalIdx] = jawabanPilihan;
+      
+      // Re-render soal agar tombol opsi aktif berubah warna
+      loadQuestion(soalIdx);
+      
+      // Update progress pengerjaan
+      const answeredCount = Object.keys(activeAnswers).length;
+      document.getElementById('progress-text').innerText = `${answeredCount}/50 Terjawab`;
+      document.getElementById('progress-bar').style.width = `${(answeredCount / 50) * 100}%`;
+
+      // Update warna tombol lembar jawab
+      const gridBtn = document.getElementById(`grid-btn-${soalIdx}`);
+      if (gridBtn) {
+        gridBtn.className = `w-full aspect-square flex items-center justify-center rounded-xl font-bold text-sm transition-all duration-150 bg-madrasah-600 border border-madrasah-400/30 text-white hover:bg-madrasah-500`;
+      }
+    }
+
+    // ==========================================
+    // LEMBAR JAWAB NAVIGASI GENERATOR
+    // ==========================================
+    function renderNavigationGrid() {
+      const container = document.getElementById('grid-navigation');
+      container.innerHTML = '';
+
+      for (let i = 0; i < 50; i++) {
+        const btn = document.createElement('button');
+        btn.id = `grid-btn-${i}`;
+        btn.type = 'button';
+        btn.onclick = () => loadQuestion(i);
+        btn.innerText = i + 1;
+        btn.className = `w-full aspect-square flex items-center justify-center rounded-xl font-bold text-sm transition-all duration-150 bg-slate-900 border border-slate-800 text-slate-400 hover:bg-slate-800`;
+        container.appendChild(btn);
+      }
+    }
+
+    function updateNavigationGridFocus(activeIdx) {
+      for (let i = 0; i < 50; i++) {
+        const btn = document.getElementById(`grid-btn-${i}`);
+        if (!btn) continue;
+
+        const isAnswered = activeAnswers[i] !== undefined;
+        
+        if (i === activeIdx) {
+          // Sedang fokus aktif
+          btn.className = `w-full aspect-square flex items-center justify-center rounded-xl font-extrabold text-sm transition-all duration-150 ring-2 ring-gold-400 bg-slate-900 text-gold-400`;
+        } else if (isAnswered) {
+          // Terjawab
+          btn.className = `w-full aspect-square flex items-center justify-center rounded-xl font-bold text-sm transition-all duration-150 bg-madrasah-600 border border-madrasah-400/30 text-white hover:bg-madrasah-500`;
+        } else {
+          // Belum terjawab
+          btn.className = `w-full aspect-square flex items-center justify-center rounded-xl font-bold text-sm transition-all duration-150 bg-slate-900 border border-slate-800 text-slate-400 hover:bg-slate-800`;
+        }
+      }
+    }
+
+    // ==========================================
+    // NAVIGASI TOMBOL
+    // ==========================================
+    function navigatePrev() {
+      if (currentQuestionIndex > 0) {
+        loadQuestion(currentQuestionIndex - 1);
+      }
+    }
+
+    function navigateNext() {
+      if (currentQuestionIndex < activeQuestions.length - 1) {
+        loadQuestion(currentQuestionIndex + 1);
+      }
+    }
+
+    // ==========================================
+    // CUSTOM MODAL WINDOW (Tidak Pakai Alert)
+    // ==========================================
+    function showModal(title, desc, type = "info", onConfirm = null) {
+      const modal = document.getElementById('custom-modal');
+      const mTitle = document.getElementById('modal-title');
+      const mDesc = document.getElementById('modal-desc');
+      const mIcon = document.getElementById('modal-icon');
+      const mIconBg = document.getElementById('modal-icon-bg');
+      const btnConfirm = document.getElementById('modal-btn-confirm');
+
+      mTitle.innerText = title;
+      mDesc.innerText = desc;
+
+      if (type === "success") {
+        mIconBg.className = "p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl";
+        mIcon.setAttribute('data-lucide', 'check-circle');
+      } else if (type === "warning") {
+        mIconBg.className = "p-2.5 bg-amber-500/10 text-amber-400 rounded-xl";
+        mIcon.setAttribute('data-lucide', 'alert-triangle');
+      } else if (type === "error") {
+        mIconBg.className = "p-2.5 bg-rose-500/10 text-rose-400 rounded-xl";
+        mIcon.setAttribute('data-lucide', 'x-circle');
+      } else {
+        mIconBg.className = "p-2.5 bg-slate-800 text-slate-300 rounded-xl";
+        mIcon.setAttribute('data-lucide', 'info');
+      }
+
+      lucide.createIcons();
+
+      if (onConfirm) {
+        btnConfirm.classList.remove('hidden');
+        btnConfirm.onclick = () => {
+          onConfirm();
+          hideModal();
+        };
+      } else {
+        btnConfirm.classList.add('hidden');
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function hideModal() {
+      document.getElementById('custom-modal').classList.add('hidden');
+    }
+
+    // ==========================================
+    // SUBMIT & VALIDASI PENGERJAAN
+    // ==========================================
+    function confirmSubmit() {
+      const totalSoal = activeQuestions.length;
+      const totalTerjawab = Object.keys(activeAnswers).length;
+
+      if (totalTerjawab < totalSoal) {
+        showModal(
+          "Ujian Belum Lengkap", 
+          `Masih ada soal yang belum dijawab. Anda baru menjawab ${totalTerjawab} dari ${totalSoal} soal. Anda tidak boleh menekan tombol Selesai jika masih ada soal yang belum dijawab.`, 
+          "warning"
+        );
+        return;
+      }
+
+      showModal(
+        "Konfirmasi Selesai", 
+        "Apakah Anda yakin ingin menyelesaikan ujian ini? Setelah dikonfirmasi, seluruh lembar jawaban akan dikunci dan dikirim ke sistem penilaian panitia.", 
+        "warning", 
+        () => {
+          submitExam();
+        }
+      );
+    }
+
+    // ==========================================
+    // PROSES INTEGRASI PENILAIAN & APPS SCRIPT
+    // ==========================================
+    function submitExam() {
+      if (isSubmitted) return;
+      
+      clearInterval(timerInterval);
+      document.getElementById('loading-overlay').classList.remove('hidden');
+
+      let benar = 0;
+      let salah = 0;
+      let logJawaban = {}; 
+
+      // Peta Penilaian Kompetensi 5 Kategori
+      let correctMap = {
+        "Agama Islam": 0,
+        "Bahasa": 0,
+        "Matematika": 0,
+        "Informatika": 0,
+        "Jurusan IPS": 0
+      };
+
+      activeQuestions.forEach((soal, index) => {
+        const jwbSiswa = activeAnswers[index] || "";
+        const jwbBenar = Rural = soal.k;
+        const idAsli = soal.id;
+
+        logJawaban[`Soal_${idAsli}`] = jwbSiswa;
+
+        // Tentukan Kategori Berdasarkan Nama Mata Pelajaran
+        let kategori = "";
+        if (["Al-Qur'an Hadis", "Fikih", "Akidah Akhlak", "Sejarah Kebudayaan Islam"].includes(soal.mapel)) {
+          kategori = "Agama Islam";
+        } else if (["Bahasa Inggris", "Bahasa Arab", "Bahasa Jawa"].includes(soal.mapel)) {
+          kategori = "Bahasa";
+        } else if (soal.mapel === "Matematika") {
+          kategori = "Matematika";
+        } else if (soal.mapel === "Informatika") {
+          kategori = "Informatika";
+        } else if (soal.mapel.startsWith("IPS")) {
+          kategori = "Jurusan IPS";
+        }
+
+        if (jwbSiswa === jwbBenar) {
+          benar++;
+          if (kategori) {
+            correctMap[kategori]++;
+          }
+        } else {
+          salah++;
+        }
+      });
+
+      const totalScore = parseFloat(((benar / activeQuestions.length) * 100).toFixed(2));
+      const statusLulus = totalScore >= 65 ? "LULUS SELEKSI" : "REKOMENDASI PEMBINAAN";
+
+      // 5 Nilai Kategori Pendidikan (0 - 100)
+      const nilaiAgama = correctMap["Agama Islam"] * 10;
+      const nilaiBahasa = correctMap["Bahasa"] * 10;
+      const nilaiMatematika = correctMap["Matematika"] * 10;
+      const nilaiInformatika = correctMap["Informatika"] * 10;
+      const nilaiIps = correctMap["Jurusan IPS"] * 10;
+      const timestampIso = new Date().toISOString();
+
+      // Siapkan payload data untuk dikirim ke Google Sheets
+      const payload = {
+        timestamp: timestampIso,
+        nama: currentUser.nama,
+        asalSekolah: currentUser.sekolah,
+        password: currentUser.password,
+        paketSoal: currentUser.paket.replace('_', ' '),
+        nilai: totalScore,
+        jumlahBenar: benar,
+        jumlahSalah: salah,
+        status: statusLulus,
+        nilai_agama: nilaiAgama,
+        nilai_bahasa: nilaiBahasa,
+        nilai_matematika: nilaiMatematika,
+        nilai_informatika: nilaiInformatika,
+        nilai_ips: nilaiIps,
+        jawabanSiswa: JSON.stringify(logJawaban)
+      };
+
+      // Kirim via POST ke Google Apps Script
+      fetch(GAS_URL, {
+        method: "POST",
+        mode: "no-cors", 
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        isSubmitted = true;
+        document.getElementById('loading-overlay').classList.add('hidden');
+        showResultPage(totalScore, benar, salah, statusLulus, {
+          agama: nilaiAgama,
+          bahasa: nilaiBahasa,
+          matematika: nilaiMatematika,
+          informatika: nilaiInformatika,
+          ips: nilaiIps
+        });
+      })
+      .catch(error => {
+        console.error("Error submitting database:", error);
+        isSubmitted = true;
+        document.getElementById('loading-overlay').classList.add('hidden');
+        showResultPage(totalScore, benar, salah, statusLulus, {
+          agama: nilaiAgama,
+          bahasa: nilaiBahasa,
+          matematika: nilaiMatematika,
+          informatika: nilaiInformatika,
+          ips: nilaiIps
+        });
+        showModal("Masalah Sinkronisasi", "Koneksi terputus. Lembar ujian dinilai lokal, namun gagal sinkronisasi Cloud. Harap unduh sertifikat hasil Anda di bawah sebagai bukti otentik.", "warning");
+      });
+    }
+
+    // ==========================================
+    // MENAMPILKAN HALAMAN HASIL & INFOGRAFIS
+    // ==========================================
+    function showResultPage(nilai, benar, salah, status, mapelScores) {
+      document.getElementById('screen-exam').classList.add('hidden');
+      document.getElementById('screen-result').classList.remove('hidden');
+
+      // Set Ringkasan Sidebar Kiri
+      const paketDisplay = currentUser.paket.replace('_', ' ');
+      document.getElementById('res-paket').innerText = paketDisplay;
+      document.getElementById('res-benar').innerText = benar;
+      document.getElementById('res-salah').innerText = salah;
+      document.getElementById('res-persentase').innerText = `${((benar / 50) * 100).toFixed(0)}%`;
+
+      // Set Konten Infografis Utama
+      const noPesertaBaru = "PPDB-" + (2026000 + Math.floor(Math.random() * 9000));
+      document.getElementById('info-no-peserta').innerText = noPesertaBaru;
+      
+      // Nama dan Sekolah diubah ke HURUF KAPITAL secara presisi
+      document.getElementById('info-nama').innerText = currentUser.nama.toUpperCase();
+      document.getElementById('info-sekolah').innerText = currentUser.sekolah.toUpperCase();
+      
+      document.getElementById('info-paket').innerText = paketDisplay;
+      document.getElementById('info-nilai').innerText = nilai.toFixed(2);
+      document.getElementById('info-benar').innerText = benar;
+      document.getElementById('info-salah').innerText = salah;
+      document.getElementById('info-status').innerText = status;
+      
+      const optionsDate = { year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('info-tanggal').innerText = new Date().toLocaleDateString('id-ID', optionsDate);
+
+      // Render Visual Progress 5 Kategori Pendidikan
+      document.getElementById('score-agama').innerText = mapelScores.agama;
+      document.getElementById('bar-agama').style.width = `${mapelScores.agama}%`;
+
+      document.getElementById('score-bahasa').innerText = mapelScores.bahasa;
+      document.getElementById('bar-bahasa').style.width = `${mapelScores.bahasa}%`;
+
+      document.getElementById('score-matematika').innerText = mapelScores.matematika;
+      document.getElementById('bar-matematika').style.width = `${mapelScores.matematika}%`;
+
+      document.getElementById('score-informatika').innerText = mapelScores.informatika;
+      document.getElementById('bar-informatika').style.width = `${mapelScores.informatika}%`;
+
+      document.getElementById('score-ips').innerText = mapelScores.ips;
+      document.getElementById('bar-ips').style.width = `${mapelScores.ips}%`;
+
+      // Render QR Code Validasi Keaslian Sertifikat
+      const qrContainer = document.getElementById("qrcode-container");
+      qrContainer.innerHTML = '';
+      new QRCode(qrContainer, {
+        text: `MANUHA1_KUDUS|PPDB2026|REG:${noPesertaBaru}|NAMA:${currentUser.nama}|SKOR:${nilai}|STATUS:${status}`,
+        width: 64,
+        height: 64,
+        colorDark: "#022c22",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      // Render Chart Mini (Chart.js)
+      const ctx = document.getElementById('chart-mini-hasil').getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Benar', 'Salah'],
+          datasets: [{
+            data: [benar, salah],
+            backgroundColor: ['#10b981', '#f43f5e'],
+            borderColor: ['#047857', '#be123c'],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: true }
+          },
+          cutout: '75%'
+        }
+      });
+    }
+
+    // ==========================================
+    // DOWNLOAD INFOGRAFIS (HTML2CANVAS) - GUARD-RAILS TERPASANG
+    // ==========================================
+    function downloadSertifikat() {
+      const element = document.getElementById('infografis-sertifikat');
+      
+      const downloadBtn = event.currentTarget;
+      const textAsli = downloadBtn.innerHTML;
+      downloadBtn.disabled = true;
+      downloadBtn.innerHTML = `<svg class="animate-spin h-5 w-5 text-slate-950 mr-2" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses Gambar...`;
+
+      // Ekspor element ke PNG berkualitas tinggi tanpa offset akibat scroll halaman
+      html2canvas(element, {
+        scale: 2.5, // Menjamin teks dan grafik sangat tajam
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: "#021812",
+        width: 620, // Lebar statis agar rendering konsisten
+        height: element.offsetHeight,
+        scrollX: 0,
+        scrollY: -window.scrollY // Mencegah pergeseran vertikal akibat posisi scroll
+      }).then(canvas => {
+        const image = canvas.toDataURL("image/png");
+        const link = document.createElement('a');
+        link.download = `Hasil_PPDB_${currentUser.nama.replace(/\s+/g, '_')}.png`;
+        link.href = image;
+        link.click();
+
+        downloadBtn.disabled = false;
+        downloadBtn.innerHTML = textAsli;
+        
+        showModal("Unduhan Berhasil", "Sertifikat berbingkai batik emas premium Anda sukses disimpan ke galeri perangkat Anda. Silakan tunjukkan bukti gambar ini ke panitia PPDB.", "success");
+      }).catch(err => {
+        console.error("Gagal mengunduh infografis:", err);
+        downloadBtn.disabled = false;
+        downloadBtn.innerHTML = textAsli;
+        showModal("Gagal Download", "Sistem gagal mengonversi gambar. Silakan lakukan screenshot layar penuh pada bagian sertifikat di atas.", "error");
+      });
+    }
+  </script>
+</body>
+</html>
