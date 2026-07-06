@@ -1,810 +1,824 @@
+:Aplikasi Canvas Kurikulum Informatika AI:index.html
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canvas Kurikulum Gemini -SMA/MA</title>
+    <title>Informatika Gemini Canvas Curriculum SMA/MA</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome untuk Icon -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: #0b0f19;
-            color: #f3f4f6;
         }
-        .gemini-gradient {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #8b5cf6 100%);
-        }
-        .gemini-border {
-            border-image: linear-gradient(to right, #3b82f6, #8b5cf6) 1;
-        }
-        .glass-panel {
-            background: rgba(17, 24, 39, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .text-gradient {
-            background: linear-gradient(to right, #60a5fa, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .font-header {
+            font-family: 'Space Grotesk', sans-serif;
         }
         /* Custom scrollbar */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #0b0f19;
+            background: #0f172a;
         }
         ::-webkit-scrollbar-thumb {
-            background: #1f2937;
-            border-radius: 4px;
+            background: #334155;
+            border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #3b82f6;
+            background: #475569;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between">
+<body class="text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
-    <!-- HEADER / NAVIGATION -->
-    <header class="glass-panel sticky top-0 z-50 border-b border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl gemini-gradient flex items-center justify-center shadow-lg shadow-blue-500/30">
-                    <i class="fa-solid fa-wand-magic-sparkles text-white text-lg"></i>
-                </div>
-                <div>
-                    <h1 class="font-extrabold text-lg tracking-tight flex items-center gap-2">
-                        GEMINI <span class="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">SMA/MA</span>
-                    </h1>
-                    <p class="text-xs text-gray-400">Canvas Kurikulum & Pameran Karya AI</p>
-                </div>
+    <!-- HEADER -->
+    <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-4 lg:px-8 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white p-2.5 rounded-xl shadow-lg flex items-center justify-center">
+                <i class="fa-solid fa-wand-magic-sparkles text-xl animate-pulse"></i>
             </div>
-            <nav class="hidden md:flex space-x-1 bg-gray-900/80 p-1 rounded-xl border border-gray-800">
-                <button onclick="switchTab('curriculum')" id="tab-curriculum" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 bg-blue-600 text-white">
-                    <i class="fa-solid fa-map-location-dot mr-2"></i>Kurikulum & Proyek
-                </button>
-                <button onclick="switchTab('simulator')" id="tab-simulator" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-gray-400 hover:text-white">
-                    <i class="fa-solid fa-laptop-code mr-2"></i>Lab Simulator Gemini
-                </button>
-                <button onclick="switchTab('exhibition')" id="tab-exhibition" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-gray-400 hover:text-white">
-                    <i class="fa-solid fa-people-roof mr-2"></i>Panduan Pameran Ortu
-                </button>
-            </nav>
-            <div class="flex items-center space-x-2">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                    Kurikulum 2026/2027
-                </span>
+            <div>
+                <h1 class="text-base lg:text-lg font-bold font-header tracking-tight text-white flex items-center gap-2">
+                    KIK-GEMINI <span class="bg-indigo-500/20 text-indigo-300 text-[10px] px-2 py-0.5 rounded-full font-sans font-semibold border border-indigo-500/30">SMA/MA</span>
+                </h1>
+                <p class="text-[10px] lg:text-xs text-slate-400">Kurikulum Informatika Interaktif Berbasis Canvas & AI</p>
             </div>
         </div>
-        <!-- Mobile Nav Bar -->
-        <div class="md:hidden flex justify-around bg-gray-950 border-t border-gray-900 py-2">
-            <button onclick="switchTab('curriculum')" id="m-tab-curriculum" class="flex flex-col items-center text-xs font-semibold text-blue-500">
-                <i class="fa-solid fa-map-location-dot text-base mb-1"></i>Kurikulum
-            </button>
-            <button onclick="switchTab('simulator')" id="m-tab-simulator" class="flex flex-col items-center text-xs font-semibold text-gray-500">
-                <i class="fa-solid fa-laptop-code text-base mb-1"></i>Lab Gemini
-            </button>
-            <button onclick="switchTab('exhibition')" id="m-tab-exhibition" class="flex flex-col items-center text-xs font-semibold text-gray-500">
-                <i class="fa-solid fa-people-roof text-base mb-1"></i>Pameran
+
+        <div class="flex items-center gap-3">
+            <span class="hidden md:inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> PWA & Pameran Terintegrasi
+            </span>
+            <button onclick="resetSkenario()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-rotate-left"></i> Reset Peta
             </button>
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- MAIN BODY -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <!-- HERO BANNER -->
-        <div class="relative overflow-hidden rounded-3xl mb-8 p-8 md:p-12 gemini-gradient shadow-2xl shadow-blue-900/20">
-            <div class="absolute -right-10 -bottom-10 opacity-10 text-[200px] pointer-events-none">
-                <i class="fa-solid fa-brain"></i>
-            </div>
-            <div class="relative z-10 max-w-3xl">
-                <span class="bg-white/20 text-white text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">Integrasi AI dalam Pendidikan Menengah</span>
-                <h2 class="text-3xl md:text-5xl font-extrabold text-white mt-4 leading-tight">Membangun Kreator AI Masa Depan</h2>
-                <p class="text-blue-100 text-base md:text-lg mt-3 font-light leading-relaxed">
-                    Kurikulum praktis berbasis proyek untuk siswa kelas X, XI, & XII SMA/MA. Memanfaatkan kecerdasan buatan **Google Gemini API** untuk melatih logika, etika teknologi, dan kemampuan problem solving nyata yang siap dipamerkan di hadapan orang tua.
-                </p>
-                <div class="flex flex-wrap gap-3 mt-6">
-                    <span class="bg-gray-950/40 text-white text-xs font-medium px-4 py-2 rounded-xl backdrop-blur-sm flex items-center gap-2">
-                        <i class="fa-solid fa-microchip text-blue-300"></i> No-Code, Low-Code, & Agentic AI
-                    </span>
-                    <span class="bg-gray-950/40 text-white text-xs font-medium px-4 py-2 rounded-xl backdrop-blur-sm flex items-center gap-2">
-                        <i class="fa-solid fa-chalkboard-user text-purple-300"></i> Pameran Interaktif Wali Murid
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- VIEW: CURRICULUM & PROYEK -->
-        <section id="view-curriculum" class="space-y-8">
-            
-            <!-- FILTER KONTROL -->
-            <div class="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center space-x-2 w-full sm:w-auto">
-                    <span class="text-sm font-semibold text-gray-400">Pilih Jenjang:</span>
-                    <div class="inline-flex rounded-xl p-1 bg-gray-900 border border-gray-800 w-full sm:w-auto overflow-x-auto">
-                        <button onclick="setFilterGrade('10')" id="btn-grade-10" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white whitespace-nowrap">
-                            Kelas X (10)
-                        </button>
-                        <button onclick="setFilterGrade('11')" id="btn-grade-11" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">
-                            Kelas XI (11)
-                        </button>
-                        <button onclick="setFilterGrade('12')" id="btn-grade-12" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap">
-                            Kelas XII (12)
-                        </button>
+        <!-- COLUMN LEFT: INTERACTIVE CANVAS MAP (7 COLS) -->
+        <section class="lg:col-span-7 flex flex-col gap-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4 flex flex-col gap-3 shadow-2xl relative overflow-hidden">
+                <div class="absolute -top-24 -left-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl"></div>
+                
+                <div class="flex justify-between items-center z-10">
+                    <div>
+                        <h2 class="text-sm font-bold font-header text-indigo-400 uppercase tracking-widest flex items-center gap-2">
+                            <i class="fa-solid fa-circle-nodes text-xs"></i> Interactive Roadmap Canvas
+                        </h2>
+                        <p class="text-xs text-slate-400">Silakan klik lingkaran kelas & semester langsung pada canvas di bawah ini:</p>
+                    </div>
+                    <div class="text-[11px] text-slate-400 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
+                        Status: <span class="text-indigo-400 font-bold" id="canvas-status">Siap Eksplorasi</span>
                     </div>
                 </div>
 
-                <div class="flex items-center space-x-2 w-full sm:w-auto">
-                    <span class="text-sm font-semibold text-gray-400">Semester:</span>
-                    <div class="inline-flex rounded-xl p-1 bg-gray-900 border border-gray-800 w-full sm:w-auto">
-                        <button onclick="setFilterSemester('all')" id="btn-sem-all" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white">
-                            Semua
-                        </button>
-                        <button onclick="setFilterSemester('1')" id="btn-sem-1" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all">
-                            Semester 1
-                        </button>
-                        <button onclick="setFilterSemester('2')" id="btn-sem-2" class="flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all">
-                            Semester 2
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CURRICULUM CARDS CONTAINER -->
-            <div id="curriculum-container" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Dynamically generated cards go here -->
-            </div>
-        </section>
-
-        <!-- VIEW: LAB SIMULATOR -->
-        <section id="view-simulator" class="hidden space-y-8">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- PANEL INSTALASI SIMULATOR -->
-                <div class="lg:col-span-1 glass-panel p-6 rounded-2xl border border-gray-800 space-y-6">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-400">
-                            <i class="fa-solid fa-gears"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-lg text-white">Konfigurasi Lab</h3>
-                            <p class="text-xs text-gray-400">Setup simulasi API Gemini</p>
-                        </div>
-                    </div>
+                <!-- CANVAS CONTAINER -->
+                <div class="relative bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-center">
+                    <canvas id="curriculumCanvas" width="650" height="420" class="w-full h-auto cursor-pointer block"></canvas>
                     
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">PILIH PROYEK SIMULATOR</label>
-                            <select id="sim-project-selector" class="w-full bg-gray-900 border border-gray-800 rounded-xl px-3 py-2.5 text-sm text-gray-200 focus:outline-none focus:border-blue-500" onchange="updateSimulatorPlaceholder()">
-                                <option value="smart-tutor">Kelas X/S1: Smart Tutor Mapel (Bahasa & Sejarah)</option>
-                                <option value="career-buddy">Kelas X/S2: Career Buddy (Analisis Minat Bakat)</option>
-                                <option value="eco-vision">Kelas XI/S1: Eco-Vision (Klasifikasi Sampah & Solusi)</option>
-                                <option value="smart-home">Kelas XI/S2: Smart Home & Automation Logic</option>
-                                <option value="gemini-agent">Kelas XII/S1: Gemini Personal Assistant Agent</option>
-                                <option value="capstone-startup">Kelas XII/S2: Startup AI Solusi Komunitas (Capstone)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">API KEY (Simulasi)</label>
-                            <div class="relative">
-                                <input type="password" id="sim-api-key" placeholder="Tidak perlu diisi (Auto-Simulated)" disabled class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 pl-10 text-xs text-gray-500 focus:outline-none" />
-                                <i class="fa-solid fa-key absolute left-3.5 top-3.5 text-gray-600 text-xs"></i>
-                            </div>
-                            <span class="text-[10px] text-emerald-400 mt-1 block"><i class="fa-solid fa-circle-check mr-1"></i> Menggunakan Gemini 2.5 Flash (Mode Sandbox)</span>
-                        </div>
-
-                        <div class="pt-4 border-t border-gray-800">
-                            <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Panduan Pengujian Wali Murid</h4>
-                            <p class="text-xs text-gray-500 leading-relaxed">
-                                Di hari pameran, orang tua dapat mengetikkan pertanyaan bebas di panel kanan sesuai topik proyek yang dipilih siswa. Proyek ini membuktikan pemahaman siswa dalam merekayasa instruksi sistem (*System Instruction*) agar AI tidak memberikan jawaban di luar batas etika dan kurikulum sekolah.
-                            </p>
-                        </div>
+                    <!-- Floating instructions overlay -->
+                    <div class="absolute bottom-3 left-3 right-3 bg-slate-900/90 border border-slate-800 p-2 rounded-xl flex items-center justify-between text-[10px] text-slate-300 backdrop-blur-sm pointer-events-none">
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-mouse-pointer text-indigo-400"></i> Klik Node untuk membuka modul</span>
+                        <span class="text-slate-500">Garis menyala menunjukkan progres kurikulum</span>
                     </div>
                 </div>
 
-                <!-- PANEL INTERAKTIF CHAT/SIMULATOR -->
-                <div class="lg:col-span-2 flex flex-col glass-panel rounded-2xl border border-gray-800 overflow-hidden min-h-[500px]">
-                    <!-- Top bar -->
-                    <div class="bg-gray-950 px-6 py-4 border-b border-gray-800 flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-ping"></div>
-                            <span class="text-xs font-bold tracking-wider text-blue-400 uppercase" id="sim-badge">KARYA SISWA: SMART TUTOR</span>
+                <!-- PWA & Exhibition Checklist Shortcut -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center gap-3">
+                        <div class="bg-indigo-500/10 text-indigo-400 p-2 rounded-lg text-sm shrink-0">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
                         </div>
-                        <button onclick="resetSimulator()" class="text-xs text-gray-400 hover:text-white transition-all">
-                            <i class="fa-solid fa-rotate-left mr-1"></i> Reset Percobaan
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-200">Kriteria PWA Wajib</h4>
+                            <p class="text-[10px] text-slate-500">Service worker, Offline caching & Web Manifest.</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center gap-3">
+                        <div class="bg-cyan-500/10 text-cyan-400 p-2 rounded-lg text-sm shrink-0">
+                            <i class="fa-solid fa-users-rectangle"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-200">Showcase Orang Tua</h4>
+                            <p class="text-[10px] text-slate-500">Scan QR-code stand, instalasi instan & live demo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROMPT SANDBOX PREVIEW -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-3 shadow-2xl">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-sm font-bold font-header text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-play text-indigo-500"></i> Simulator Gemini AI Code Generator
+                    </h3>
+                    <span class="text-[10px] bg-slate-950 text-slate-400 border border-slate-800 px-2.5 py-1 rounded-full font-mono">live_canvas_render.js</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                    <!-- Sandbox Prompt -->
+                    <div class="md:col-span-5 space-y-2">
+                        <p class="text-[11px] text-slate-400">Prompt optimasi Gemini untuk kode Canvas:</p>
+                        <textarea id="promptBox" readonly class="w-full h-[150px] p-2.5 bg-slate-950 text-slate-300 font-mono text-[10px] rounded-xl border border-slate-800 focus:outline-none resize-none leading-relaxed"></textarea>
+                        <button onclick="runSimulation()" class="w-full bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-700 hover:to-cyan-600 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-md shadow-indigo-900/30 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play"></i> Jalankan Simulasi Target
                         </button>
                     </div>
 
-                    <!-- Chat area -->
-                    <div id="sim-chat-area" class="flex-grow p-6 overflow-y-auto space-y-4 max-h-[360px]">
-                        <!-- System Message -->
-                        <div class="bg-blue-950/20 border border-blue-900/30 rounded-xl p-4 flex gap-3 text-xs text-blue-300">
-                            <i class="fa-solid fa-circle-info text-base mt-0.5"></i>
-                            <div>
-                                <strong class="font-bold">Konfigurasi Aktif:</strong> Aplikasi ini menjalankan simulasi logika berpikir model **Gemini 2.5 Flash** dengan batasan instruksi khusus yang didefinisikan oleh siswa dalam tugas akhir semester mereka.
-                            </div>
+                    <!-- Sandbox Output Frame -->
+                    <div class="md:col-span-7 border border-slate-800 bg-slate-950 rounded-xl overflow-hidden flex flex-col min-h-[190px]">
+                        <div class="bg-slate-900/80 px-3 py-1.5 border-b border-slate-800 flex items-center justify-between">
+                            <span class="text-[9px] text-slate-400 font-mono flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span> Live Interactive View
+                            </span>
+                            <span class="text-[9px] text-slate-500">Interactive Canvas Target</span>
                         </div>
-
-                        <!-- Bot Message -->
-                        <div class="flex items-start space-x-3" id="initial-bot-msg">
-                            <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs shrink-0 font-bold">
-                                AI
-                            </div>
-                            <div class="bg-gray-900 rounded-2xl px-4 py-3 text-sm text-gray-300 max-w-[85%] border border-gray-800/80">
-                                Halo bapak/ibu wali murid! Saya adalah prototype AI Tutor belajar ciptaan siswa Kelas X SMA. Bapak/Ibu bisa menanyakan tentang rumus fisika, fakta sejarah, atau kuis cepat bahasa inggris. Silakan coba tanyakan sesuatu kepada saya!
-                            </div>
+                        <div class="flex-1 bg-slate-950 relative flex items-center justify-center p-2">
+                            <iframe id="previewFrame" class="w-full h-full min-h-[150px] border-none rounded" sandbox="allow-scripts"></iframe>
                         </div>
-                    </div>
-
-                    <!-- Input area -->
-                    <div class="p-4 bg-gray-950 border-t border-gray-800">
-                        <form id="sim-form" onsubmit="handleSimulate(event)" class="flex gap-2">
-                            <input type="text" id="sim-input" placeholder="Tanyakan: Kenapa langit berwarna biru? atau Beri saya kuis sejarah..." class="flex-grow bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-xl text-sm transition-all flex items-center gap-2 shrink-0">
-                                <span>Kirim</span> <i class="fa-solid fa-paper-plane"></i>
-                            </button>
-                        </form>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- VIEW: PANDUAN PAMERAN WALI MURID -->
-        <section id="view-exhibition" class="hidden space-y-8">
-            <div class="max-w-4xl mx-auto glass-panel p-8 rounded-3xl border border-gray-800 space-y-8">
-                <div class="text-center space-y-3">
-                    <div class="inline-flex p-3 rounded-2xl bg-violet-500/10 text-violet-400 text-3xl mb-2">
-                        <i class="fa-solid fa-school-flag"></i>
-                    </div>
-                    <h2 class="text-3xl font-extrabold text-white">Panduan Sukses Pameran Wali Murid</h2>
-                    <p class="text-sm text-gray-400 max-w-xl mx-auto">Format presentasi portofolio projek AI agar orang tua memahami nilai tambah pembelajaran teknologi Gemini yang adaptif di sekolah.</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-                    <!-- Card Langkah 1 -->
-                    <div class="bg-gray-900/60 p-5 rounded-2xl border border-gray-800 space-y-3">
-                        <div class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-sm">
-                            1
+        <!-- COLUMN RIGHT: SEMESTER MODULE DETAILS (5 COLS) -->
+        <section class="lg:col-span-5 flex flex-col gap-4">
+            
+            <!-- DETAIL BOARD CARD -->
+            <div id="detailBoard" class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl flex-1 flex flex-col justify-between">
+                <div>
+                    <!-- Active Semester Header -->
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div>
+                            <span class="bg-indigo-500/10 text-indigo-300 text-[10px] font-bold px-2.5 py-1 rounded-md border border-indigo-500/20" id="detail-tag-grade">KELAS X</span>
+                            <h3 class="text-lg font-bold font-header text-white mt-2" id="detail-title">Inisialisasi Peta Kurikulum</h3>
                         </div>
-                        <h4 class="font-bold text-white text-base">Persiapan Demo Stand</h4>
-                        <p class="text-xs text-gray-400 leading-relaxed">
-                            Setiap siswa/kelompok wajib menyediakan laptop/tablet yang sudah membuka **Lab Simulator** atau aplikasi rancangan mereka sendiri. Hias meja dengan poster alur berpikir AI (*System Prompting*) dan lembar umpan balik untuk orang tua.
+                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-center shrink-0">
+                            <div class="text-[9px] text-slate-500 uppercase font-semibold">Semester</div>
+                            <div class="text-lg font-bold font-header text-cyan-400" id="detail-sem-number">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Syllabus Focus -->
+                    <div class="mt-4 space-y-2">
+                        <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-graduation-cap text-indigo-400"></i> Fokus & Pemanfaatan AI Gemini
+                        </h4>
+                        <p class="text-xs text-slate-400 leading-relaxed bg-slate-950 p-3 rounded-xl border border-slate-800" id="detail-focus-desc">
+                            Silakan klik salah satu node semester di Canvas interaktif untuk memuat modul kurikulum ini. Anda akan mendapatkan visualisasi target secara instan.
                         </p>
                     </div>
 
-                    <!-- Card Langkah 2 -->
-                    <div class="bg-gray-900/60 p-5 rounded-2xl border border-gray-800 space-y-3">
-                        <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm">
-                            2
+                    <!-- Target Projects: 2 Apps + 2 Games -->
+                    <div class="mt-5 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                                <i class="fa-solid fa-layer-group text-cyan-400"></i> Target Proyek Semester
+                            </h4>
+                            <span class="text-[9px] text-slate-500">2 Apps & 2 Games</span>
                         </div>
-                        <h4 class="font-bold text-white text-base">Teknik Pitching 3 Menit</h4>
-                        <p class="text-xs text-gray-400 leading-relaxed">
-                            Siswa menjelaskan karyanya menggunakan skema: <br>
-                            <strong>Masalah nyata</strong> &rarr; <strong>Bagaimana AI Gemini menyelesaikannya</strong> &rarr; <strong>Demonstrasi langsung oleh orang tua</strong> &rarr; <strong>Dampak positif / etika AI</strong>.
-                        </p>
-                    </div>
-
-                    <!-- Card Langkah 3 -->
-                    <div class="bg-gray-900/60 p-5 rounded-2xl border border-gray-800 space-y-3">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm">
-                            3
+                        
+                        <div class="space-y-2" id="targets-list-container">
+                            <!-- Selected targets injected here dynamically -->
+                            <div class="text-center py-6 text-xs text-slate-600">
+                                <i class="fa-solid fa-hand-pointer text-lg animate-bounce mb-2 block"></i>
+                                Klik salah satu node Semester di dalam Canvas untuk melihat data
+                            </div>
                         </div>
-                        <h4 class="font-bold text-white text-base">Uji Coba oleh Orang Tua</h4>
-                        <p class="text-xs text-gray-400 leading-relaxed">
-                            Biarkan orang tua menguji kepintaran AI buatan anaknya. Contohnya: Mencoba mengurai instruksi belajar jangka panjang di proyek kelas XII atau memprediksi minat bakat kuliah di proyek kelas X.
-                        </p>
-                    </div>
-
-                    <!-- Card Langkah 4 -->
-                    <div class="bg-gray-900/60 p-5 rounded-2xl border border-gray-800 space-y-3">
-                        <div class="w-8 h-8 rounded-lg bg-pink-500/20 text-pink-400 flex items-center justify-center font-bold text-sm">
-                            4
-                        </div>
-                        <h4 class="font-bold text-white text-base">Aspek Penilaian (Rubrik)</h4>
-                        <p class="text-xs text-gray-400 leading-relaxed">
-                            Penilaian pameran dihitung dari: Kejelasan komunikasi siswa (40%), Orisinalitas skenario prompt/agen (30%), fungsionalitas aplikasi di Lab Simulator (20%), dan pemahaman aspek etika AI (10%).
-                        </p>
                     </div>
                 </div>
 
-                <div class="bg-gray-950 p-6 rounded-2xl border border-blue-900/30 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div class="space-y-1">
-                        <h4 class="font-bold text-white text-sm">Ingin Mencetak Brosur Kurikulum?</h4>
-                        <p class="text-xs text-gray-400">Dapatkan versi ringkasan (termasuk kelas X, XI, XII) untuk dibagikan saat pembagian rapor / pameran kelas.</p>
+                <!-- Parents Exhibition / Pameran Section -->
+                <div class="mt-6 pt-4 border-t border-slate-800 space-y-3">
+                    <h4 class="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-users"></i> Pameran Orang Tua (Parent Showcase)
+                    </h4>
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs text-slate-400 flex flex-col gap-2">
+                        <p id="detail-exhibition">Setiap akhir semester, siswa merancang stand pameran fisik, menempelkan kode QR dari PWA mereka untuk dipindai dan dicoba langsung oleh orang tua mereka.</p>
+                        <button onclick="openParentModal()" class="w-full bg-slate-900 hover:bg-slate-850 text-slate-300 text-[10px] font-bold py-1.5 rounded-lg border border-slate-800 flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-comments"></i> Simulasi Input Umpan Balik Orang Tua
+                        </button>
                     </div>
-                    <button onclick="window.print()" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
-                        <i class="fa-solid fa-print"></i> Cetak Dokumen Kurikulum
-                    </button>
                 </div>
+
             </div>
+
         </section>
 
     </main>
 
-    <!-- FOOTER -->
-    <footer class="bg-gray-950 border-t border-gray-950/80 py-8 text-center text-xs text-gray-500">
-        <div class="max-w-7xl mx-auto px-4 space-y-3">
-            <p>&copy; 2026 Canvas Kurikulum & Karya AI Gemini SMA/MA Indonesia. Dikembangkan untuk Guru & Siswa Hebat.</p>
-            <div class="flex justify-center space-x-4">
-                <a href="#" class="hover:text-gray-300">Hubungi Pengembang</a>
-                <span>&bull;</span>
-                <a href="#" class="hover:text-gray-300">Dokumentasi Gemini API</a>
-                <span>&bull;</span>
-                <a href="#" class="hover:text-gray-300">Panduan Kemendikbudristek</a>
+    <!-- FLOATING PARENTS FEEDBACK MODAL -->
+    <div id="parentModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl relative">
+            <div class="absolute -right-12 -top-12 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl"></div>
+            
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="font-bold font-header text-base text-white flex items-center gap-2">
+                    <i class="fa-solid fa-users text-rose-500"></i> Umpan Balik Orang Tua / Wali
+                </h3>
+                <button onclick="closeParentModal()" class="text-slate-400 hover:text-slate-200 text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
+
+            <form id="feedbackForm" onsubmit="submitFeedback(event)" class="space-y-3 text-xs text-slate-300">
+                <div>
+                    <label class="block mb-1 text-[11px] font-bold text-slate-400">Nama Orang Tua / Wali:</label>
+                    <input type="text" id="parentName" required class="w-full p-2 bg-slate-950 border border-slate-800 rounded-lg text-white text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none" placeholder="Contoh: Ibu Ani / Bpk. Rudi">
+                </div>
+                <div>
+                    <label class="block mb-1 text-[11px] font-bold text-slate-400">Orang Tua dari Siswa:</label>
+                    <input type="text" id="studentName" required class="w-full p-2 bg-slate-950 border border-slate-800 rounded-lg text-white text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none" placeholder="Contoh: Budi Santoso">
+                </div>
+                <div>
+                    <label class="block mb-1 text-[11px] font-bold text-slate-400">Berikan Skor Penilaian Karya:</label>
+                    <div class="flex gap-2 text-base text-amber-400 py-1" id="starContainer">
+                        <button type="button" onclick="setRating(1)" class="hover:scale-115 transition-transform"><i class="fa-solid fa-star"></i></button>
+                        <button type="button" onclick="setRating(2)" class="hover:scale-115 transition-transform"><i class="fa-solid fa-star"></i></button>
+                        <button type="button" onclick="setRating(3)" class="hover:scale-115 transition-transform"><i class="fa-solid fa-star"></i></button>
+                        <button type="button" onclick="setRating(4)" class="hover:scale-115 transition-transform"><i class="fa-solid fa-star"></i></button>
+                        <button type="button" onclick="setRating(5)" class="hover:scale-115 transition-transform"><i class="fa-solid fa-star"></i></button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block mb-1 text-[11px] font-bold text-slate-400">Komentar / Apresiasi:</label>
+                    <textarea id="parentComment" required rows="3" class="w-full p-2 bg-slate-950 border border-slate-800 rounded-lg text-white text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none" placeholder="Tuliskan apresiasi Anda terhadap aplikasi / game buatan anak Anda..."></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-rose-600 to-indigo-600 text-white font-bold py-2.5 rounded-xl text-xs hover:from-rose-700 hover:to-indigo-700 transition-all shadow-md">
+                    Kirim & Cetak Formulir Umpan Balik
+                </button>
+            </form>
         </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-900 bg-slate-950 py-4 px-4 text-center text-slate-500 text-[10px]">
+        <p>&copy; 2026 Kurikulum Informatika Terpadu SMA/MA. Semua Kode Canvas & PWA digenerasikan oleh asisten cerdas Gemini AI.</p>
     </footer>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- INTERACTIVE SCRIPT -->
     <script>
-        // DATA KURIKULUM LENGKAP KELAS 10, 11, & 12 (SEMESTER 1 & 2)
-        const curriculumData = [
-            {
-                id: "c10s1",
-                grade: "10",
-                semester: "1",
-                title: "Dasar AI Generatif & Rekayasa Perintah (Prompt Engineering)",
-                summary: "Siswa belajar memahami dasar cara kerja model bahasa besar (LLM) Google Gemini dan teknik memandu AI dengan tepat.",
-                topics: [
-                    "Pengenalan Kecerdasan Buatan (AI) & LLM",
-                    "Etika Penggunaan AI di Sekolah",
-                    "Teknik Prompting: Few-Shot, Role-Prompting, & Constraints",
-                    "Dasar Integrasi Gemini API Menggunakan Platform Tanpa Kode (No-Code)"
-                ],
-                project: {
-                    name: "Smart Tutor Mapel (Pribadi)",
-                    desc: "Asisten belajar interaktif untuk salah satu mata pelajaran (Bahasa Inggris, Sejarah, atau Fisika) yang dipandu agar hanya memberikan kuis interaktif tanpa membocorkan jawaban secara langsung.",
-                    exhibitTarget: "Siswa mengundang orang tua untuk menguji sejauh mana asisten belajar buatan mereka bisa mengajarkan topik sulit dengan cara yang seru dan menantang."
-                },
-                color: "blue"
+        // Data Kurikulum untuk setiap Grade & Semester
+        const dataKurikulum = {
+            "10_1": {
+                grade: "KELAS X",
+                sem: "1",
+                title: "Logika Komputasi & Dasar Elemen Canvas 2D",
+                focus: "Pengenalan struktur logika pemrograman melalui API menggambar 2D di Canvas. Siswa belajar koordinat X-Y, garis, dan warna, didukung asisten Gemini untuk konseptualisasi kode.",
+                exhibition: "Siswa menyiapkan stand bertema retro game, memajang poster visualisasi cara AI membantu proses coding, dan orang tua akan mencoba bermain langsung.",
+                targets: [
+                    { id: "app1", name: "AI Drawing Pad Sederhana", type: "app", desc: "Aplikasi menggambar neon dengan pilihan kuas & sensor sentuh.", prompt: "Buat kode Canvas HTML5 mandiri: papan gambar sentuh (drawing pad) responsif dengan 4 tombol pilihan warna neon (hijau, merah, biru, kuning) dan tombol 'Clear All' menggunakan Tailwind CSS." },
+                    { id: "app2", name: "Kalkulator Fungsi Linear Grafis", type: "app", desc: "Kalkulator visualisasi persamaan garis matematika y=mx+c pada layar.", prompt: "Buat visualisator garis matematika interaktif di Canvas. Pengguna memasukkan variabel gradien m dan c, lalu Canvas otomatis menggambar grafik kartesian dan garisnya." },
+                    { id: "game1", name: "Catching Star Game", type: "game", desc: "Game menampung bintang jatuh dengan kontrol seret layar.", prompt: "Buat game menangkap objek jatuh (bintang) menggunakan keranjang di bagian bawah canvas. Keranjang digerakkan lewat sentuhan jari kiri/kanan. Desain berlatar luar angkasa gelap." },
+                    { id: "game2", name: "Tic-Tac-Toe Smart Bot", type: "game", desc: "Game asah otak legendaris melawan AI sederhana minimax.", prompt: "Buat game Tic-Tac-Toe grid 3x3 di HTML Canvas. Pemain X melawan Bot Komputer O. Tambahkan pesan penentu kemenangan yang menarik." }
+                ]
             },
-            {
-                id: "c10s2",
-                grade: "10",
-                semester: "2",
-                title: "Analisis Data & AI Pendukung Keputusan",
-                summary: "Fokus pada pemrosesan informasi terstruktur dan logika pengkondisian untuk mengarahkan Gemini menghasilkan keputusan objektif.",
-                topics: [
-                    "Pengolahan Data Berbasis Teks dengan AI",
-                    "Konsep 'System Instruction' pada Gemini",
-                    "Memetakan Minat, Bakat, & Karir",
-                    "Merancang Alur Logika Rekomendasi Karir"
-                ],
-                project: {
-                    name: "Career Buddy App",
-                    desc: "Sebuah program panduan karir digital sederhana yang menganalisis kepribadian, hobi, dan nilai akademik siswa untuk merumuskan saran jurusan kuliah terbaik berbasis Gemini.",
-                    exhibitTarget: "Orang tua memasukkan data kepribadian anak mereka, dan sistem rancangan siswa akan memberikan ulasan prospek studi lengkap yang dianalisis secara real-time oleh Gemini."
-                },
-                color: "indigo"
+            "10_2": {
+                grade: "KELAS X",
+                sem: "2",
+                title: "DOM Manipulation & Kerangka PWA Dasar",
+                focus: "Menghubungkan kontrol interface HTML dengan elemen Canvas. Mulai memahami Service Worker statis dan mendaftarkan manifest.json agar aplikasi bisa diunduh gratis.",
+                exhibition: "Fokus pameran adalah instalasi PWA di HP orang tua. Stand pameran berisi tutorial scan barcode untuk instalasi instan di layar utama HP.",
+                targets: [
+                    { id: "app1", name: "Flashcard Animasi Belajar", type: "app", desc: "Kartu pintar interaktif dengan efek balik 3D untuk kuis.", prompt: "Buat kartu belajar interaktif (flashcard) dengan HTML/CSS/JS. Ketika kartu diklik, ia berputar halus (3D flip animation) untuk menunjukkan jawaban rumus di baliknya." },
+                    { id: "app2", name: "Scoreboard Futsal & Basket", type: "app", desc: "Papan skor dinamis dengan timer countdown terintegrasi suara.", prompt: "Buat aplikasi scoreboard olahraga serba guna di HTML. Terdapat pengatur waktu mundur (timer), penambah poin, tombol peluit yang menghasilkan suara synth." },
+                    { id: "game1", name: "Retro Snake Classic", type: "game", desc: "Game ular klasik dengan tombol kontrol sentuh besar di layar.", prompt: "Buat game Snake klasik di HTML Canvas berukuran 300x300 dengan grid neon. Berikan kontrol tombol virtual besar di bawah kanvas untuk kemudahan ponsel pintar." },
+                    { id: "game2", name: "Memory Match Emoji", type: "game", desc: "Game mencocokkan pasangan emoji yang disembunyikan.", prompt: "Buat Memory Match Card Game grid 4x4 berisi emoji. Sediakan efek kartu terbuka dan penilai skor kecerdasan ingatan." }
+                ]
             },
-            {
-                id: "c11s1",
-                grade: "11",
-                semester: "1",
-                title: "Kecerdasan Multimodal & Analisis Visual",
-                summary: "Siswa mengeksplorasi kemampuan Gemini dalam memahami gambar, pola, serta video (Visi Komputer) untuk menyelesaikan masalah lingkungan.",
-                topics: [
-                    "Pengenalan Pemrosesan Multimodal (Teks + Gambar)",
-                    "Memanfaatkan Kamera & Gambar Input untuk Gemini API",
-                    "Analisis Pola Visual dan Klasifikasi Objek",
-                    "Etika AI dalam Privasi Data dan Pengenalan Gambar"
-                ],
-                project: {
-                    name: "Eco-Vision (Pendeteksi Jenis Sampah)",
-                    desc: "Sistem cerdas di mana pengguna dapat mengunggah foto sampah, lalu AI mendeteksi jenisnya (organik/anorganik) dan merekomendasikan cara daur ulang yang kreatif.",
-                    exhibitTarget: "Siswa membawa contoh sampah kering di meja pameran, memfotonya menggunakan kamera laptop/tablet, lalu aplikasi buatan mereka langsung menganalisis dan menampilkan cara pengolahannya kepada orang tua."
-                },
-                color: "emerald"
+            "11_1": {
+                grade: "KELAS XI",
+                sem: "1",
+                title: "Asynchronous JS & Gemini API Companion",
+                focus: "Melakukan request asinkronous (async-await) menuju API cerdas eksternal. Siswa memanfaatkan Gemini AI untuk melatih chatbot pribadi dalam game mereka.",
+                exhibition: "Siswa memamerkan asisten chat pintar mereka. Orang tua ditantang untuk menguji kecerdasan asisten buatan anak mereka.",
+                targets: [
+                    { id: "app1", name: "AI Chat Companion Mini", type: "app", desc: "Sistem chat pintar asisten belajar yang merespon masukan teks.", prompt: "Buat antarmuka chat AI minimalis responsif dengan Tailwind CSS. Tampilkan gelembung teks yang mensimulasikan balasan asisten pembelajaran instan." },
+                    { id: "app2", name: "Weather Outfit Planner AI", type: "app", desc: "Rekomendasi pakaian sesuai suhu cuaca menggunakan logika visual.", prompt: "Buat perencana busana sesuai kondisi cuaca (panas/hujan) yang divisualisasikan dalam bentuk ikon canvas dan kartu ringkasan teks." },
+                    { id: "game1", name: "AI Trivia Generator Quiz", type: "game", desc: "Kuis trivia berwaktu di mana soal dibuat bervariasi.", prompt: "Buat aplikasi kuis pilihan ganda interaktif dengan bar indikator waktu mundur yang berkurang setiap detik." },
+                    { id: "game2", name: "Space Invader Galaxy", type: "game", desc: "Game pesawat luar angkasa menghalau serangan formasi alien.", prompt: "Buat game pesawat luar angkasa klasik (Space Invader) di Canvas. Pesawat menembakkan peluru untuk meledakkan barisan alien yang berbaris rapi." }
+                ]
             },
-            {
-                id: "c11s2",
-                grade: "11",
-                semester: "2",
-                title: "Logika Otomasi & Desain Sistem Terintegrasi",
-                summary: "Mengintegrasikan Gemini API dengan logika percabangan, API eksternal pihak ketiga, atau alat Internet of Things (IoT) virtual.",
-                topics: [
-                    "Pengenalan Function Calling (Fungsi Eksternal)",
-                    "Menghubungkan Gemini dengan Cuaca, Waktu, & Kalkulator",
-                    "Otomasi Rumah Pintar (Smart Home) Berbasis Bahasa Natural",
-                    "Pembuatan Dashboard Antarmuka Pengguna (UI) Interaktif"
-                ],
-                project: {
-                    name: "Smart Home & Automation Logic Interface",
-                    desc: "Siswa merancang simulator kontrol rumah pintar di mana pengguna bisa mengetik perintah kasual seperti 'Aku kedinginan dan ingin tidur', lalu AI menerjemahkannya menjadi matikan AC dan redupkan lampu.",
-                    exhibitTarget: "Wali murid menguji dengan mengetikkan berbagai kalimat perintah acak di dashboard, dan melihat visualisasi rumah pintar bereaksi sesuai perintah bahasa sehari-hari yang diterjemahkan AI."
-                },
-                color: "violet"
+            "11_2": {
+                grade: "KELAS XI",
+                sem: "2",
+                title: "State Management & Caching Offline Canggih",
+                focus: "Mengelola status permainan yang kompleks (skor tertinggi, slot simpanan). Mengoptimasi Service Worker agar seluruh resource dapat diakses luring 100%.",
+                exhibition: "Demo mode luring! Guru akan mencabut koneksi wifi, dan siswa membuktikan aplikasi PWA mereka tetap berjalan sempurna di hadapan wali murid.",
+                targets: [
+                    { id: "app1", name: "Smart Finance Pie Chart", type: "app", desc: "Aplikasi pengelola keuangan harian dengan grafik lingkaran.", prompt: "Buat aplikasi manajemen keuangan sederhana. Masukkan angka pengeluaran, lalu otomatis gambar grafik lingkaran (Pie Chart) di Canvas." },
+                    { id: "app2", name: "AI Speech Translation Notes", type: "app", desc: "Pengubah suara menjadi teks dan menerjemahkannya.", prompt: "Buat antarmuka perekam suara (Speech-to-Text) sederhana menggunakan Web Speech API dengan simulasi visual gelombang suara di Canvas." },
+                    { id: "game1", name: "Flappy Bird Clone", type: "game", desc: "Klon game Flappy Bird legendaris dengan akselerasi gravitasi halus.", prompt: "Buat game Flappy Bird di HTML Canvas dengan kontrol klik/sentuh layar untuk melompat. Berikan deteksi tabrakan pipa hijau yang presisi." },
+                    { id: "game2", name: "Pong Arcade Challenge", type: "game", desc: "Game tenis klasik dua pemain dengan tingkat kepintaran musuh.", prompt: "Buat game Pong 2D klasik di Canvas. Pemain menggunakan kursor/jari untuk memantulkan bola melawan bot komputer." }
+                ]
             },
-            {
-                id: "c12s1",
-                grade: "12",
-                semester: "1",
-                title: "Sistem Agen AI Mandiri (Agentic AI) & Integrasi Web",
-                summary: "Siswa belajar merancang Agen AI pintar yang mampu melakukan dekomposisi masalah kompleks menjadi langkah-langkah terstruktur tanpa intervensi manual berkelanjutan.",
-                topics: [
-                    "Konsep Agen AI Cerdas (AI Agents) & Perencana Mandiri",
-                    "Rantai Pemikiran (Chain of Thought / Reasoning) pada Gemini",
-                    "Teknik Penanganan Data & Memori Percakapan Jangka Panjang",
-                    "Dasar Deploy Aplikasi Web AI Menggunakan Platform Cloud Ringan"
-                ],
-                project: {
-                    name: "Gemini Personal Assistant Agent",
-                    desc: "Asisten virtual multi-langkah yang mampu menganalisis jadwal kalender ujian sekolah, mengurai topik tugas besar menjadi materi harian, dan merangkum jurnal belajar secara sistematis.",
-                    exhibitTarget: "Orang tua mengetikkan target belajar jangka panjang anak mereka (misal: persiapan UTBK dalam 3 bulan), lalu Agen AI akan memecah instruksi tersebut menjadi jadwal aksi harian yang logis dan runtut."
-                },
-                color: "blue"
+            "12_1": {
+                grade: "KELAS XII",
+                sem: "1",
+                title: "Vektor Fisika & Multi-touch Mobile Input",
+                focus: "Membuat game interaktif berbasis simulasi fisika nyata (gaya gravitasi, tumbukan lenting, akselerasi) dan melatih fungsionalitas multi sentuh jari.",
+                exhibition: "Stand interaktif berbasis simulasi fisik. Orang tua diajak berinteraksi dengan simulasi fisika gravitasi dan menjatuhkan objek.",
+                targets: [
+                    { id: "app1", name: "AI Mind Map Canvas", type: "app", desc: "Diagram pembuat mind map dinamis yang nodenya bisa ditarik.", prompt: "Buat aplikasi pembuat peta pikiran (Mind-Map) di Canvas di mana node-nodenya bisa diklik, digeser (drag and drop), dan saling terhubung." },
+                    { id: "app2", name: "Workout Stickman Animator", type: "app", desc: "Instruktur olahraga virtual animasi stickman dengan timer.", prompt: "Buat simulator gerak olahraga stickman animasi di Canvas yang memperagakan gerakan squat sesuai detik timer." },
+                    { id: "game1", name: "Platformer Physics Level", type: "game", desc: "Game petualangan melewati rintangan dengan kalkulasi gravitasi.", prompt: "Buat game platformer sederhana di Canvas. Karakter kotak merah bisa berjalan, melompat dengan efek gravitasi, dan berdiri di atas pijakan kayu." },
+                    { id: "game2", name: "Sandbox Peluru Cannon", type: "game", desc: "Menembakkan meriam penghancur tumpukan balok bersusun.", prompt: "Buat game menembakkan bola meriam ke arah tumpukan balok vertikal dengan efek hancur jatuh secara realistis." }
+                ]
             },
-            {
-                id: "c12s2",
-                grade: "12",
-                semester: "2",
-                title: "Proyek Akhir AI (Capstone) & Sosioteknologi",
-                summary: "Tahap kolaborasi puncak di mana siswa mendesain, membuat, dan memvalidasi solusi teknologi kecerdasan buatan untuk memecahkan isu riil di komunitas lokal.",
-                topics: [
-                    "Metodologi Design Thinking untuk Solusi Berbasis AI",
-                    "Keamanan Siber, Bias Data, & Tata Kelola Etis AI",
-                    "Analisis Dampak Sosial-Ekonomi AI di Industri Menengah",
-                    "Teknik Presentasi Elevator Pitch & Desain Portofolio Karya"
-                ],
-                project: {
-                    name: "Startup AI Solusi Komunitas (Capstone Project)",
-                    desc: "Solusi perangkat lunak fungsional yang mengatasi masalah lokal, misalnya bot pendeteksi hoax berita lingkungan sekolah, pendeteksi hama tanaman pangan daerah, atau sistem kalkulasi gizi kantin pintar.",
-                    exhibitTarget: "Siswa melakukan presentasi produk secara profesional di hadapan orang tua dan penilai tamu. Orang tua menguji fungsionalitas solusi sosial ini langsung pada dashboard demo interaktif."
-                },
-                color: "indigo"
+            "12_2": {
+                grade: "KELAS XII",
+                sem: "2",
+                title: "Capstone Project & Portfolio Pameran Akbar",
+                focus: "Penggabungan seluruh kompetensi menjadi satu aplikasi Capstone mandiri berkualitas tinggi, siap rilis publik di hosting gratis, dan siap uji publik.",
+                exhibition: "Pameran Akbar Akhir Tahun! Sekolah mengundang dinas pendidikan, juri industri, serta seluruh wali murid untuk memberikan apresiasi nilai rapor karya.",
+                targets: [
+                    { id: "app1", name: "Virtual Smart Home Board", type: "app", desc: "Papan simulasi kontrol kelistrikan rumah pintar.", prompt: "Buat dashboard rumah pintar visual di Canvas. Klik tombol saklar virtual untuk menyalakan animasi cahaya neon pada area denah rumah." },
+                    { id: "app2", name: "AI Business Model Canvas", type: "app", desc: "Pembuat bagan bisnis BMC 9 elemen terstruktur.", prompt: "Buat form generator Business Model Canvas (BMC) 9 blok yang interaktif, rapi, dan memiliki fitur untuk diekspor ke gambar canvas." },
+                    { id: "game1", name: "Retro Galaxy Shooter Wave", type: "game", desc: "Game tembak galaksi dengan pergantian babak (wave).", prompt: "Buat game Space Shooter tingkat lanjut dengan rintangan meteor raksasa, gelombang musuh bervariasi, dan efek ledakan bintang." },
+                    { id: "game2", name: "Visual Novel Story Choice", type: "game", desc: "Game cerita pilihan bercabang dengan ilustrasi visual.", prompt: "Buat kerangka game visual novel interaktif dengan kotak percakapan di bawah, pilihan tombol keputusan, dan pergantian gambar latar." }
+                ]
             }
-        ];
-
-        // STATE MANAGEMENT
-        let currentGrade = "10";
-        let currentSemester = "all";
-
-        // DOM ELEMENTS FOR TABS
-        const tabs = {
-            curriculum: document.getElementById('view-curriculum'),
-            simulator: document.getElementById('view-simulator'),
-            exhibition: document.getElementById('view-exhibition')
-        };
-        const tabBtns = {
-            curriculum: [document.getElementById('tab-curriculum'), document.getElementById('m-tab-curriculum')],
-            simulator: [document.getElementById('tab-simulator'), document.getElementById('m-tab-simulator')],
-            exhibition: [document.getElementById('tab-exhibition'), document.getElementById('m-tab-exhibition')]
         };
 
-        // NAVIGASI TAB
-        function switchTab(activeTab) {
-            Object.keys(tabs).forEach(tab => {
-                if (tab === activeTab) {
-                    tabs[tab].classList.remove('hidden');
-                } else {
-                    tabs[tab].classList.add('hidden');
+        // CANVAS INTERACTIVE INITIALIZATION & DRAWING
+        const canvas = document.getElementById('curriculumCanvas');
+        const ctx = canvas.getContext('2d');
+        const canvasStatus = document.getElementById('canvas-status');
+
+        // State & Interaction Nodes
+        let nodes = [];
+        let activeNodeId = null;
+        let hoveredNodeId = null;
+
+        // Inisialisasi struktur node kurikulum di Canvas
+        function initNodes() {
+            nodes = [
+                // CENTER NODE (AI GEMINI CORE)
+                { id: "core", x: 325, y: 210, radius: 45, label: "AI GEMINI", isCore: true, color: "#4f46e5", glowColor: "rgba(79, 70, 229, 0.4)" },
+
+                // KELAS X NODES
+                { id: "10_1", x: 120, y: 120, radius: 30, label: "Kelas X - Sem 1", code: "10_1", color: "#6366f1", glowColor: "rgba(99, 102, 241, 0.3)" },
+                { id: "10_2", x: 120, y: 300, radius: 30, label: "Kelas X - Sem 2", code: "10_2", color: "#6366f1", glowColor: "rgba(99, 102, 241, 0.3)" },
+
+                // KELAS XI NODES
+                { id: "11_1", x: 325, y: 70, radius: 32, label: "Kelas XI - Sem 1", code: "11_1", color: "#06b6d4", glowColor: "rgba(6, 182, 212, 0.3)" },
+                { id: "11_2", x: 325, y: 350, radius: 32, label: "Kelas XI - Sem 2", code: "11_2", color: "#06b6d4", glowColor: "rgba(6, 182, 212, 0.3)" },
+
+                // KELAS XII NODES
+                { id: "12_1", x: 530, y: 120, radius: 30, label: "Kelas XII - Sem 1", code: "12_1", color: "#ec4899", glowColor: "rgba(236, 72, 153, 0.3)" },
+                { id: "12_2", x: 530, y: 300, radius: 30, label: "Kelas XII - Sem 2", code: "12_2", color: "#ec4899", glowColor: "rgba(236, 72, 153, 0.3)" },
+            ];
+        }
+
+        // Draw Canvas Elements
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Draw Grid Lines Background (Sci-fi Aesthetic)
+            ctx.strokeStyle = "#0f172a";
+            ctx.lineWidth = 1;
+            for(let i=0; i<canvas.width; i+=25) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+            }
+            for(let j=0; j<canvas.height; j+=25) {
+                ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke();
+            }
+
+            // 2. Draw Connection Lines between Nodes
+            ctx.lineWidth = 3;
+            nodes.forEach(node => {
+                if(!node.isCore) {
+                    // Create gradient for lines
+                    let grad = ctx.createLinearGradient(325, 210, node.x, node.y);
+                    grad.addColorStop(0, "#4f46e5");
+                    grad.addColorStop(1, node.color);
+                    ctx.strokeStyle = grad;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(325, 210);
+                    ctx.lineTo(node.x, node.y);
+                    ctx.stroke();
+
+                    // Draw animated pulse dot on the line
+                    let time = Date.now() * 0.002;
+                    let ratio = (time % 1);
+                    let pulseX = 325 + (node.x - 325) * ratio;
+                    let pulseY = 210 + (node.y - 210) * ratio;
+                    ctx.beginPath();
+                    ctx.arc(pulseX, pulseY, 4, 0, Math.PI*2);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = "#ffffff";
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
                 }
             });
 
-            Object.keys(tabBtns).forEach(tab => {
-                const isCurrent = tab === activeTab;
-                // Desktop Button style
-                tabBtns[tab][0].className = isCurrent 
-                    ? "px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 bg-blue-600 text-white"
-                    : "px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 text-gray-400 hover:text-white";
-                
-                // Mobile Button style
-                tabBtns[tab][1].className = isCurrent
-                    ? "flex flex-col items-center text-xs font-semibold text-blue-500"
-                    : "flex flex-col items-center text-xs font-semibold text-gray-500";
+            // 3. Draw Nodes (Circles & Texts)
+            nodes.forEach(node => {
+                let isHovered = (node.id === hoveredNodeId);
+                let isActive = (node.id === activeNodeId);
+
+                // Glow Effect
+                ctx.shadowBlur = (isActive || isHovered) ? 25 : 12;
+                ctx.shadowColor = node.glowColor;
+
+                // Outer Ring
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.radius + (isHovered ? 4 : 0), 0, Math.PI * 2);
+                ctx.fillStyle = node.color;
+                ctx.fill();
+                ctx.shadowBlur = 0; // reset
+
+                // Inner Circle
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.radius - (isActive ? 3 : 6), 0, Math.PI * 2);
+                ctx.fillStyle = "#0b0f19";
+                ctx.fill();
+
+                // Core branding star effect
+                if(node.isCore) {
+                    ctx.fillStyle = "#ffffff";
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, 8, 0, Math.PI*2);
+                    ctx.fill();
+                }
+
+                // Node Labels
+                ctx.fillStyle = (isActive || isHovered) ? "#ffffff" : "#94a3b8";
+                ctx.font = node.isCore ? "bold 11px Space Grotesk" : "600 10px Space Grotesk";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(node.label, node.x, node.y);
             });
         }
 
-        // FILTER HANDLING
-        function setFilterGrade(grade) {
-            currentGrade = grade;
-            ['10', '11', '12'].forEach(g => {
-                const btn = document.getElementById(`btn-grade-${g}`);
-                if (btn) {
-                    btn.className = grade === g
-                        ? "flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white whitespace-nowrap" 
-                        : "flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all whitespace-nowrap";
+        // Mouse Move Interaction Handler
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            let foundHover = null;
+            nodes.forEach(node => {
+                let dist = Math.sqrt((mouseX - node.x)**2 + (mouseY - node.y)**2);
+                if (dist < node.radius) {
+                    foundHover = node.id;
                 }
             });
-            renderCurriculum();
-        }
 
-        function setFilterSemester(sem) {
-            currentSemester = sem;
-            ['all', '1', '2'].forEach(s => {
-                document.getElementById(`btn-sem-${s}`).className = sem === s
-                    ? "flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white" 
-                    : "flex-1 sm:flex-none px-4 py-1.5 rounded-lg text-xs font-bold text-gray-400 hover:text-white transition-all";
+            if(hoveredNodeId !== foundHover) {
+                hoveredNodeId = foundHover;
+                canvas.style.cursor = foundHover ? 'pointer' : 'default';
+                drawCanvas();
+            }
+        });
+
+        // Click Handler for Canvas Nodes
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            nodes.forEach(node => {
+                let dist = Math.sqrt((mouseX - node.x)**2 + (mouseY - node.y)**2);
+                if (dist < node.radius) {
+                    if (node.isCore) {
+                        canvasStatus.innerText = "Tekan Node Semester";
+                        return;
+                    }
+                    activeNodeId = node.id;
+                    canvasStatus.innerText = `Memuat ${node.label}`;
+                    drawCanvas();
+                    loadSemesterData(node.code);
+                }
             });
-            renderCurriculum();
-        }
+        });
 
-        // GENERATE CURRICULUM CARDS HTML
-        function renderCurriculum() {
-            const container = document.getElementById('curriculum-container');
+        // Load curriculum details into sidebar & prompt box
+        let activeTargets = [];
+        let selectedTargetIndex = 0;
+
+        function loadSemesterData(code) {
+            const data = dataKurikulum[code];
+            if (!data) return;
+
+            // Injeksi Konten Detail Sidebar
+            document.getElementById('detail-tag-grade').innerText = data.grade;
+            document.getElementById('detail-title').innerText = data.title;
+            document.getElementById('detail-sem-number').innerText = data.sem;
+            document.getElementById('detail-focus-desc').innerText = data.focus;
+
+            activeTargets = data.targets;
+            selectedTargetIndex = 0; // Default load first target prompt to Sandbox
+
+            // Render daftar target 4 proyek
+            const container = document.getElementById('targets-list-container');
             container.innerHTML = '';
 
-            const filteredData = curriculumData.filter(item => {
-                const matchGrade = item.grade === currentGrade;
-                const matchSem = currentSemester === 'all' || item.semester === currentSemester;
-                return matchGrade && matchSem;
-            });
-
-            if (filteredData.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full py-12 text-center text-gray-500">
-                        <i class="fa-solid fa-folder-open text-4xl mb-3"></i>
-                        <p>Tidak ada modul pembelajaran yang sesuai dengan filter terpilih.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            filteredData.forEach(item => {
-                let badgeColor = '';
-                let borderGlow = '';
-                if(item.color === 'blue') {
-                    badgeColor = 'bg-blue-500/15 text-blue-400 border-blue-500/30';
-                    borderGlow = 'hover:border-blue-500/40';
-                } else if (item.color === 'indigo') {
-                    badgeColor = 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30';
-                    borderGlow = 'hover:border-indigo-500/40';
-                } else if (item.color === 'emerald') {
-                    badgeColor = 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30';
-                    borderGlow = 'hover:border-emerald-500/40';
-                } else {
-                    badgeColor = 'bg-violet-500/15 text-violet-400 border-violet-500/30';
-                    borderGlow = 'hover:border-violet-500/40';
-                }
-
-                const cardHTML = `
-                    <div class="glass-panel p-6 rounded-2xl flex flex-col justify-between transition-all duration-300 ${borderGlow} group relative">
-                        <div class="absolute top-4 right-4 text-xs font-extrabold tracking-wider px-3 py-1 rounded-full ${badgeColor} border">
-                            SEMESTER ${item.semester}
-                        </div>
-
+            data.targets.forEach((target, index) => {
+                const item = document.createElement('div');
+                const isApp = target.type === 'app';
+                item.className = "p-3 bg-slate-950 border border-slate-800 rounded-xl hover:border-indigo-500/50 transition-all cursor-pointer flex justify-between items-center";
+                item.setAttribute('onclick', `selectTarget(${index})`);
+                
+                item.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-xs shrink-0 p-2 rounded-lg ${isApp ? 'bg-indigo-500/10 text-indigo-400' : 'bg-cyan-500/10 text-cyan-400'}">
+                            <i class="${isApp ? 'fa-solid fa-mobile-screen' : 'fa-solid fa-gamepad'}"></i>
+                        </span>
                         <div>
-                            <!-- Header Info -->
-                            <div class="mb-4">
-                                <span class="text-xs font-bold text-gray-400 uppercase tracking-widest block mb-1">Mata Pelajaran AI (Kelas ${item.grade})</span>
-                                <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">${item.title}</h3>
-                            </div>
-
-                            <!-- Summary -->
-                            <p class="text-xs text-gray-400 leading-relaxed mb-6">${item.summary}</p>
-
-                            <!-- Pembahasan Utama -->
-                            <div class="mb-6 space-y-2">
-                                <h4 class="text-xs font-bold text-gray-300 uppercase tracking-wider">Topik Pembelajaran Utama:</h4>
-                                <ul class="space-y-1.5">
-                                    ${item.topics.map(t => `
-                                        <li class="text-xs text-gray-400 flex items-start gap-2">
-                                            <i class="fa-solid fa-chevron-right text-blue-500 text-[10px] mt-1"></i>
-                                            <span>${t}</span>
-                                        </li>
-                                    `).join('')}
-                                </ul>
-                            </div>
-                        </div>
-
-                        <!-- Target Praktik & Pameran Wali Murid -->
-                        <div class="border-t border-gray-800/80 pt-5 mt-4 space-y-4">
-                            <div class="bg-gray-900/50 p-4 rounded-xl border border-gray-800/60">
-                                <div class="flex items-center space-x-2 text-xs font-bold text-blue-300 mb-1">
-                                    <i class="fa-solid fa-puzzle-piece"></i>
-                                    <span>NAMA PROYEK PRAKTIK</span>
-                                </div>
-                                <h5 class="font-bold text-sm text-white mb-1">${item.project.name}</h5>
-                                <p class="text-xs text-gray-400 leading-relaxed">${item.project.desc}</p>
-                            </div>
-
-                            <div class="bg-purple-950/20 p-4 rounded-xl border border-purple-900/30">
-                                <div class="flex items-center space-x-2 text-xs font-bold text-purple-300 mb-1">
-                                    <i class="fa-solid fa-people-roof"></i>
-                                    <span>TARGET PAMERAN ORANG TUA</span>
-                                </div>
-                                <p class="text-xs text-gray-300 italic leading-relaxed">"${item.project.exhibitTarget}"</p>
-                            </div>
-
-                            <button onclick="activateSimulatorFor('${item.id}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-xl text-xs transition-all flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-flask"></i> Uji Coba Simulasi Proyek Ini
-                            </button>
+                            <h5 class="text-xs font-bold text-slate-100">${target.name}</h5>
+                            <p class="text-[10px] text-slate-400">${target.desc}</p>
                         </div>
                     </div>
+                    <span class="text-[9px] bg-slate-900 border border-slate-800 px-2 py-0.5 rounded text-slate-400 font-semibold uppercase">Pilih</span>
                 `;
-                container.innerHTML += cardHTML;
+                container.appendChild(item);
             });
+
+            // Set Prompt default
+            selectTarget(0);
         }
 
-        // SIMULATOR LAB PROCESSOR
-        function activateSimulatorFor(curriculumId) {
-            const selector = document.getElementById('sim-project-selector');
-            if (curriculumId === 'c10s1') selector.value = 'smart-tutor';
-            if (curriculumId === 'c10s2') selector.value = 'career-buddy';
-            if (curriculumId === 'c11s1') selector.value = 'eco-vision';
-            if (curriculumId === 'c11s2') selector.value = 'smart-home';
-            if (curriculumId === 'c12s1') selector.value = 'gemini-agent';
-            if (curriculumId === 'c12s2') selector.value = 'capstone-startup';
-
-            updateSimulatorPlaceholder();
-            switchTab('simulator');
+        // Handle Project Target Selection
+        function selectTarget(index) {
+            if (activeTargets.length === 0) return;
+            selectedTargetIndex = index;
+            const target = activeTargets[index];
+            document.getElementById('promptBox').value = target.prompt;
+            
+            // Highlight selected target in visual styling
+            const items = document.getElementById('targets-list-container').children;
+            for (let i = 0; i < items.length; i++) {
+                if (i === index) {
+                    items[i].className = "p-3 bg-indigo-950/20 border border-indigo-500 rounded-xl flex justify-between items-center";
+                } else {
+                    items[i].className = "p-3 bg-slate-950 border border-slate-800 rounded-xl hover:border-indigo-500/50 transition-all cursor-pointer flex justify-between items-center";
+                }
+            }
+            
+            // Run preview for this newly selected target
+            runSimulation();
         }
 
-        function updateSimulatorPlaceholder() {
-            const proj = document.getElementById('sim-project-selector').value;
-            const inputField = document.getElementById('sim-input');
-            const badge = document.getElementById('sim-badge');
-            const chatArea = document.getElementById('sim-chat-area');
+        // Run Simulation (Injecting real running code to frame simulator)
+        function runSimulation() {
+            if (activeTargets.length === 0) return;
+            const target = activeTargets[selectedTargetIndex];
+            const iframe = document.getElementById('previewFrame');
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            
+            let simulatedCode = "";
 
-            // Clear chat to init state
-            chatArea.innerHTML = `
-                <div class="bg-blue-950/20 border border-blue-900/30 rounded-xl p-4 flex gap-3 text-xs text-blue-300">
-                    <i class="fa-solid fa-circle-info text-base mt-0.5"></i>
-                    <div>
-                        <strong class="font-bold">Konfigurasi Aktif:</strong> Aplikasi ini menjalankan simulasi logika berpikir model **Gemini 2.5 Flash** dengan batasan instruksi khusus yang didefinisikan oleh siswa dalam tugas akhir semester mereka.
-                    </div>
-                </div>
-            `;
-
-            let initBotMsg = '';
-
-            if (proj === 'smart-tutor') {
-                badge.innerText = "KARYA SISWA: SMART TUTOR";
-                inputField.placeholder = "Contoh: Mengapa bumi berputar? / Berikan kuis fisika dasar...";
-                initBotMsg = "Halo Bapak/Ibu Wali Murid! Saya adalah bot asisten belajar. Di sini saya dikondisikan agar membimbing dengan cara memberikan penjelasan sederhana atau kuis interaktif tanpa membocorkan jawabannya langsung. Silakan coba tanyakan konsep ilmu sains atau bahasa!";
-            } else if (proj === 'career-buddy') {
-                badge.innerText = "KARYA SISWA: CAREER BUDDY";
-                inputField.placeholder = "Contoh: Saya suka menggambar dan matematika. Cocok masuk jurusan apa?";
-                initBotMsg = "Selamat datang di Career Buddy! Masukkan preferensi hobi, nilai pelajaran favorit, atau impian karir Anda, dan saya akan merekomendasikan opsi program studi universitas serta profesi yang prospektif menggunakan analisis cerdas Gemini.";
-            } else if (proj === 'eco-vision') {
-                badge.innerText = "KARYA SISWA: ECO-VISION (VISI KOMPUTER)";
-                inputField.placeholder = "Contoh: Bot, [FOTO BOTOL PLASTIK BEKAS] - Ini termasuk sampah apa?";
-                initBotMsg = "Halo! Di pameran fisik, Anda bisa menggunakan kamera tablet untuk menganalisis sampah secara langsung. Di simulator ini, cobalah ketikkan benda sampah apa yang ingin dianalisis (misal: botol air mineral, sisa buah, karton susu), dan saya akan merespon cara mendaur ulangnya!";
-            } else if (proj === 'smart-home') {
-                badge.innerText = "KARYA SISWA: SMART HOME LOGIC";
-                inputField.placeholder = "Contoh: Aku mau tidur sekarang, lampunya tolong diatur...";
-                initBotMsg = "Sistem Kontrol Rumah Pintar siap! Cobalah beri instruksi bahasa santai/natural seperti 'panas banget di luar' atau 'saya mau nonton film bioskop', dan saya akan menerjemahkannya menjadi parameter status AC, TV, tirai, dan lampu otomatis.";
-            } else if (proj === 'gemini-agent') {
-                badge.innerText = "KARYA SISWA: GEMINI ASSISTANT AGENT (KELAS XII)";
-                inputField.placeholder = "Contoh: Buat jadwal belajar UTBK mandiri untuk 3 bulan ke depan...";
-                initBotMsg = "Halo bapak/ibu wali murid! Saya adalah Asisten Agen Cerdas Kelas XII. Di sini saya menggunakan perencanaan multi-langkah (*Chain of Thought*) untuk memecahkan rencana belajar jangka panjang yang rumit menjadi jadwal aksi mingguan yang mendetail dan masuk akal. Silakan uji saya!";
-            } else if (proj === 'capstone-startup') {
-                badge.innerText = "KARYA SISWA: CAPSTONE STARTUP (KELAS XII)";
-                inputField.placeholder = "Contoh: Ada berita beredar kalau besok sekolah diliburkan total karena meteor, apakah ini hoaks?";
-                initBotMsg = "Selamat datang di demonstrasi Capstone Project Siswa Kelas XII! Di sini saya disimulasikan sebagai prototipe bot 'Kawal Hoaks Komunitas Sekolah'. Saya menganalisis tingkat kebenaran berita atau mendesain solusi UMKM lokal dengan model kognitif Gemini. Silakan ujikan berita yang beredar!";
+            if (target.id === "app1" && activeNodeId.startsWith("10")) {
+                // Drawing App Kelas 10
+                simulatedCode = `
+                    <html>
+                    <body style="margin:0; background:#020617; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; color:white;">
+                        <span style="font-size:10px; color:#64748b; margin-bottom:5px;">AI Drawing Pad (Kelas X)</span>
+                        <canvas id="c" width="220" height="90" style="border:1px solid #1e293b; background:#0f172a; border-radius:8px; cursor:crosshair;"></canvas>
+                        <div style="margin-top:6px; display:flex; gap:6px;">
+                            <button onclick="changeCol('#22d3ee')" style="background:#22d3ee; width:16px; height:16px; border:none; border-radius:50%; cursor:pointer;"></button>
+                            <button onclick="changeCol('#ec4899')" style="background:#ec4899; width:16px; height:16px; border:none; border-radius:50%; cursor:pointer;"></button>
+                            <button onclick="changeCol('#22c55e')" style="background:#22c55e; width:16px; height:16px; border:none; border-radius:50%; cursor:pointer;"></button>
+                            <button onclick="clearCanvas()" style="background:#334155; border:none; color:white; font-size:8px; padding:2px 8px; border-radius:4px; cursor:pointer;">Hapus</button>
+                        </div>
+                        <script>
+                            const canvas = document.getElementById('c');
+                            const ctx = canvas.getContext('2d');
+                            let active = false;
+                            let color = '#22d3ee';
+                            
+                            function getPos(e) {
+                                const rect = canvas.getBoundingClientRect();
+                                return { x: (e.clientX || e.touches[0].clientX) - rect.left, y: (e.clientY || e.touches[0].clientY) - rect.top };
+                            }
+                            function start(e) { active = true; draw(e); }
+                            function end() { active = false; ctx.beginPath(); }
+                            function draw(e) {
+                                if(!active) return;
+                                ctx.lineWidth = 3;
+                                ctx.lineCap = 'round';
+                                ctx.strokeStyle = color;
+                                const pos = getPos(e);
+                                ctx.lineTo(pos.x, pos.y);
+                                ctx.stroke();
+                                ctx.beginPath();
+                                ctx.moveTo(pos.x, pos.y);
+                            }
+                            canvas.onmousedown = start; canvas.onmouseup = end; canvas.onmousemove = draw;
+                            canvas.ontouchstart = (e) => { e.preventDefault(); start(e); }; canvas.ontouchend = end; canvas.ontouchmove = (e) => { e.preventDefault(); draw(e); };
+                            function changeCol(c) { color = c; }
+                            function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+                        <\/script>
+                    </body>
+                    </html>
+                `;
+            } else if (target.type === "game" && activeNodeId.startsWith("10")) {
+                // Game Catcher / Tic Tac Toe Kelas 10
+                simulatedCode = `
+                    <html>
+                    <body style="margin:0; background:#020617; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; color:white;">
+                        <span style="font-size:10px; color:#64748b; margin-bottom:5px;">Game Retro: Ketuk Kotak (Kelas X)</span>
+                        <div id="score" style="font-size:11px; margin-bottom:4px;">Skor: 0</div>
+                        <div id="targetBox" onclick="hit()" style="width:35px; height:35px; background:#f43f5e; border-radius:6px; cursor:pointer; position:relative; transition:all 0.1s;"></div>
+                        <script>
+                            let score = 0;
+                            const box = document.getElementById('targetBox');
+                            function hit() {
+                                score++;
+                                document.getElementById('score').innerText = 'Skor: ' + score;
+                                box.style.background = 'hsl(' + Math.random() * 360 + ', 80%, 50%)';
+                                let rx = Math.random() * 120 - 60;
+                                let ry = Math.random() * 40 - 20;
+                                box.style.transform = 'translate(' + rx + 'px, ' + ry + 'px)';
+                            }
+                        <\/script>
+                    </body>
+                    </html>
+                `;
+            } else if (activeNodeId.startsWith("11")) {
+                // Weather / AI Chat Companion Kelas 11
+                simulatedCode = `
+                    <html>
+                    <body style="margin:0; background:#020617; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; color:white; padding:10px;">
+                        <div style="background:#0f172a; border:1px solid #1e293b; padding:8px; border-radius:10px; width:90%; max-width:230px; font-size:10px;">
+                            <div style="color:#06b6d4; font-weight:bold; margin-bottom:5px;">Asisten Pintar Gemini</div>
+                            <div style="background:#1e293b; padding:6px; border-radius:6px; margin-bottom:5px; min-height:35px;" id="botRes">Tanyakan apa saja kepada saya tentang Informatika...</div>
+                            <input type="text" id="inp" placeholder="Ketik pesan..." style="width:100%; border:none; background:#020617; color:white; font-size:10px; padding:4px; border-radius:4px; box-sizing:border-box;">
+                        </div>
+                        <script>
+                            document.getElementById('inp').onkeydown = function(e) {
+                                if(e.key === 'Enter' && this.value) {
+                                    document.getElementById('botRes').innerText = 'Gemini AI: "Kerangka PWA buatanmu sudah optimal untuk diakses tanpa internet!"';
+                                    this.value = '';
+                                }
+                            }
+                        <\/script>
+                    </body>
+                    </html>
+                `;
+            } else {
+                // Physics / Smart Home simulator Kelas 12
+                simulatedCode = `
+                    <html>
+                    <body style="margin:0; background:#020617; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; color:white;">
+                        <span style="font-size:10px; color:#64748b; margin-bottom:5px;">Simulasi Fisika Gravitasi (Kelas XII)</span>
+                        <canvas id="c" width="220" height="90" style="border:1px solid #334155; background:#0f172a; border-radius:8px;"></canvas>
+                        <script>
+                            const canvas = document.getElementById('c');
+                            const ctx = canvas.getContext('2d');
+                            let y = 10, vy = 0, g = 0.4, r = 8;
+                            function step() {
+                                vy += g;
+                                y += vy;
+                                if(y + r > canvas.height) {
+                                    y = canvas.height - r;
+                                    vy = -vy * 0.7; // bounce
+                                }
+                                ctx.clearRect(0,0,220,90);
+                                ctx.fillStyle = '#ec4899';
+                                ctx.beginPath(); ctx.arc(110, y, r, 0, Math.PI*2); ctx.fill();
+                                requestAnimationFrame(step);
+                            }
+                            canvas.onclick = () => { y = 15; vy = 0; };
+                            step();
+                        <\/script>
+                    </body>
+                    </html>
+                `;
             }
 
-            // Append initial bot message
-            chatArea.innerHTML += `
-                <div class="flex items-start space-x-3">
-                    <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white text-xs shrink-0 font-bold">
-                        AI
-                    </div>
-                    <div class="bg-gray-900 rounded-2xl px-4 py-3 text-sm text-gray-300 max-w-[85%] border border-gray-800/80">
-                        ${initBotMsg}
-                    </div>
+            doc.open();
+            doc.write(simulatedCode);
+            doc.close();
+        }
+
+        // Reset All Interactive state
+        function resetSkenario() {
+            activeNodeId = null;
+            hoveredNodeId = null;
+            canvasStatus.innerText = "Siap Eksplorasi";
+            drawCanvas();
+            
+            // Clear sidebar
+            document.getElementById('detail-tag-grade').innerText = "KELAS -";
+            document.getElementById('detail-title').innerText = "Inisialisasi Peta Kurikulum";
+            document.getElementById('detail-sem-number').innerText = "0";
+            document.getElementById('detail-focus-desc').innerText = "Silakan klik salah satu node semester di Canvas interaktif untuk memuat modul kurikulum ini. Anda akan mendapatkan visualisasi target secara instan.";
+            document.getElementById('targets-list-container').innerHTML = `
+                <div class="text-center py-6 text-xs text-slate-600">
+                    <i class="fa-solid fa-hand-pointer text-lg animate-bounce mb-2 block"></i>
+                    Klik salah satu node Semester di dalam Canvas untuk melihat data
                 </div>
             `;
-            chatArea.scrollTop = chatArea.scrollHeight;
+            document.getElementById('promptBox').value = '';
+            
+            // Clear preview iframe
+            const iframe = document.getElementById('previewFrame');
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            doc.open();
+            doc.write('<html><body style="background:#020617;"></body></html>');
+            doc.close();
         }
 
-        function resetSimulator() {
-            updateSimulatorPlaceholder();
+        // PARENT SHOWCASE / FEEDBACK MODAL LOGIC
+        let userRating = 5;
+
+        function openParentModal() {
+            document.getElementById('parentModal').classList.remove('hidden');
         }
 
-        // LOGIKA RESPONS SIMULASI SEDERHANA (SANDBOX MODE)
-        function handleSimulate(event) {
-            event.preventDefault();
-            const proj = document.getElementById('sim-project-selector').value;
-            const inputField = document.getElementById('sim-input');
-            const chatArea = document.getElementById('sim-chat-area');
-            const query = inputField.value.trim();
+        function closeParentModal() {
+            document.getElementById('parentModal').classList.add('hidden');
+        }
 
-            if (!query) return;
-
-            // Tambahkan user message ke UI
-            chatArea.innerHTML += `
-                <div class="flex items-start space-x-3 justify-end">
-                    <div class="bg-blue-600 rounded-2xl px-4 py-3 text-sm text-white max-w-[85%]">
-                        ${query}
-                    </div>
-                    <div class="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center text-gray-300 text-xs shrink-0 font-bold">
-                        U
-                    </div>
-                </div>
-            `;
-
-            inputField.value = '';
-            chatArea.scrollTop = chatArea.scrollHeight;
-
-            // Generate Simulated Response Gemini
-            setTimeout(() => {
-                let reply = '';
-                const lowerQuery = query.toLowerCase();
-
-                if (proj === 'smart-tutor') {
-                    if (lowerQuery.includes('jawab') || lowerQuery.includes('solusi') || lowerQuery.includes('apa itu') || lowerQuery.includes('kenapa')) {
-                        reply = "💡 **Penjelasan Konsep:** Pertanyaan yang bagus sekali! Alih-alih memberikan jawaban instan, mari kita bedah bersama. Tahukah Anda apa faktor utama yang menyebabkannya? Coba bayangkan jika kita berada di ruang hampa. Coba tebak jawabannya, atau ingin saya berikan petunjuk pertama?";
-                    } else if (lowerQuery.includes('kuis') || lowerQuery.includes('soal')) {
-                        reply = "📝 **Kuis Pintar:** Baik, mari kita asah otak! Ini kuis untuk Anda: *'Manakah yang jatuh lebih cepat di ruang hampa udara: bulu ayam seberat 10 gram, atau besi bulat seberat 1 kg?'* <br><br>Ketik jawaban Anda di bawah!";
-                    } else {
-                        reply = "Saya mengerti pertanyaan Anda! Sebagai asisten belajar, mari kita diskusikan topik ini secara interaktif. Apa yang paling menarik perhatian Anda dari bagian ini?";
-                    }
-                } 
-                
-                else if (proj === 'career-buddy') {
-                    if (lowerQuery.includes('gambar') || lowerQuery.includes('seni') || lowerQuery.includes('desain')) {
-                        reply = "🎨 **Analisis Minat & Bakat:** Berdasarkan kesukaan Anda pada seni visual/desain, Gemini merekomendasikan: <br><br>1. **S1 Desain Komunikasi Visual (DKV)** - Cocok untuk karir Desainer UI/UX atau Animator.<br>2. **S1 Arsitektur** - Jika Anda juga menyukai struktur logika bangunan.<br>3. **S1 Game Design** - Menyatukan hobi seni dengan pemrograman.";
-                    } else if (lowerQuery.includes('matematika') || lowerQuery.includes('hitung') || lowerQuery.includes('komputer')) {
-                        reply = "💻 **Analisis Minat & Bakat:** Kombinasi kemampuan berhitung dan ketertarikan teknologi sangat kuat! Rekomendasi terbaik: <br><br>1. **S1 Ilmu Komputer / Teknik Informatika** - Karir sebagai AI Engineer atau Data Scientist.<br>2. **S1 Aktuaria** - Untuk Anda yang menyukai statistik dan matematika murni dalam industri keuangan.";
-                    } else {
-                        reply = "Analisis awal menunjukkan Anda memiliki profil belajar yang seimbang. Cobalah sebutkan 2 mata pelajaran yang paling Anda nikmati di sekolah agar saya bisa memberikan saran yang lebih tajam dan akurat!";
-                    }
-                } 
-                
-                else if (proj === 'eco-vision') {
-                    if (lowerQuery.includes('botol') || lowerQuery.includes('plastik') || lowerQuery.includes('kaleng')) {
-                        reply = "♻️ **Klasifikasi: Anorganik (Daur Ulang Tinggi)**<br><br>Sistem mendeteksi objek plastik/kaleng. Benda ini membutuhkan waktu ratusan tahun untuk terurai di alam. <br><br>**Solusi Kreatif Siswa:** Ubah botol ini menjadi pot tanaman hidroponik gantung atau kumpulkan ke bank sampah digital sekolah untuk ditukar dengan poin apresiasi lingkungan.";
-                    } else if (lowerQuery.includes('apel') || lowerQuery.includes('buah') || lowerQuery.includes('nasi') || lowerQuery.includes('sayur') || lowerQuery.includes('makanan')) {
-                        reply = "🍂 **Klasifikasi: Organik (Mudah Membusuk)**<br><br>Sampah sisa bahan pangan terdeteksi. <br><br>**Solusi Kreatif Siswa:** Jangan dibuang ke TPA! Buat menjadi pupuk kompos organik cair menggunakan wadah ember komposter biopori yang telah disiapkan di taman sekolah.";
-                    } else {
-                        reply = "Sistem Visi Gemini siap mendeteksi. Sebutkan jenis benda (misal: kertas bekas, styrofoam, baju lama) dan saya akan mengidentifikasi bahan materialnya serta memberikan langkah penanganan yang berwawasan lingkungan.";
-                    }
-                } 
-                
-                else if (proj === 'smart-home') {
-                    if (lowerQuery.includes('tidur') || lowerQuery.includes('malam') || lowerQuery.includes('gelap')) {
-                        reply = "🏠 **Aksi Otomasi Sistem:** <br>[STATUS: MODUS TIDUR DIAKTIFKAN]<br><br>⚙️ **Sistem melakukan:**<br>- Mematikan Lampu Utama (0% kecerahan)<br>- Menyalakan Lampu Tidur LED (Warm Orange, 10%)<br>- Mengatur AC kamar ke suhu optimal 24°C demi hemat energi.<br><br>*Selamat beristirahat bapak/ibu!*";
-                    } else if (lowerQuery.includes('panas') || lowerQuery.includes('gerah')) {
-                        reply = "🏠 **Aksi Otomasi Sistem:** <br>[STATUS: PENYESUAIAN SUHU KAMAR]<br><br>⚙️ **Sistem melakukan:**<br>- Mengubah mode AC menjadi 'Cooling Mode' ke suhu 20°C.<br>- Menutup gorden jendela utama sebesar 80% untuk memblokir sinar matahari terik langsung.";
-                    } else {
-                        reply = "Suhu saat ini di dalam ruangan adalah 25°C dengan pencahayaan normal. Katakan apa yang ingin Anda rasakan (misalnya: 'ingin menonton TV', 'suasana membaca buku'), dan saya akan sesuaikan perangkat virtual di rumah ini!";
-                    }
+        function setRating(rating) {
+            userRating = rating;
+            const stars = document.getElementById('starContainer').children;
+            for (let i = 0; i < stars.length; i++) {
+                if (i < rating) {
+                    stars[i].innerHTML = `<i class="fa-solid fa-star"></i>`;
+                } else {
+                    stars[i].innerHTML = `<i class="fa-regular fa-star"></i>`;
                 }
+            }
+        }
 
-                else if (proj === 'gemini-agent') {
-                    if (lowerQuery.includes('jadwal') || lowerQuery.includes('utbk') || lowerQuery.includes('belajar') || lowerQuery.includes('rencana')) {
-                        reply = "🤖 **Rencana Aksi Multi-Langkah Agen AI:**<br><br>Mengurai permintaan belajar jangka panjang Anda menggunakan metode *Reasoning*:<br><br>🔍 **Langkah 1: Pemetaan Target (Bulan 1)**<br>- Fokus pada pendalaman konsep materi dasar Saintek/Soshum.<br>- Evaluasi mingguan dengan kuis mini berdurasi 30 menit.<br><br>🛠️ **Langkah 2: Latihan Soal Intensif (Bulan 2)**<br>- Penyelesaian 10 soal literasi bahasa inggris dan penalaran matematika per hari.<br>- Analisis kesalahan menggunakan asisten tutor otomatis.<br><br>📈 **Langkah 3: Simulasi Realistis (Bulan 3)**<br>- Try out penuh setiap akhir pekan.<br>- Manajemen waktu pengerjaan soal.<br><br>*Rencana terstruktur ini berhasil kami formulasikan secara dinamis untuk mengoptimalkan kesiapan putra/putri Anda!*";
-                    } else {
-                        reply = "Perintah kompleks terdeteksi. Sebagai Agen AI Kelas XII, saya akan mendekomposisi instruksi Anda menjadi target logis yang runtut. Silakan berikan instruksi tugas belajar atau manajemen materi ujian yang ingin Anda urai!";
-                    }
-                }
+        function submitFeedback(e) {
+            e.preventDefault();
+            const parentName = document.getElementById('parentName').value;
+            const studentName = document.getElementById('studentName').value;
+            const comment = document.getElementById('parentComment').value;
 
-                else if (proj === 'capstone-startup') {
-                    if (lowerQuery.includes('hoaks') || lowerQuery.includes('meteor') || lowerQuery.includes('libur') || lowerQuery.includes('berita')) {
-                        reply = "🛡️ **Analisis Kebenaran Informasi (Kawal Hoaks Komunitas):**<br><br>📰 *Klaim:* 'Sekolah diliburkan besok karena ancaman meteor.'<br><br>❌ **Status Analisis Gemini: HOAKS / TIDAK VALID**<br><br>📌 **Hasil Verifikasi Sistem:**<br>1. Tidak ada pengumuman resmi dari portal Kementerian Pendidikan atau Dinas Pendidikan setempat.<br>2. Data BMKG/NASA menunjukkan tidak ada ancaman benda langit luar biasa pada tanggal tersebut.<br>3. Pola kalimat menggunakan kata bombastis yang bertujuan memicu kepanikan.<br><br>*Rekomendasi Startup Siswa: Aplikasi menyarankan agar berita ini tidak disebarluaskan di grup belajar sekolah.*";
-                    } else {
-                        reply = "Sistem Validasi Solusi Capstone siap. Masukkan desas-desus berita sekolah atau tantangan bisnis lokal yang ingin dianalisis, dan sistem buatan siswa kami akan mengulasnya berdasarkan model kognitif terintegrasi Gemini.";
-                    }
-                }
-
-                chatArea.innerHTML += `
-                    <div class="flex items-start space-x-3">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 flex items-center justify-center text-white text-xs shrink-0 font-bold">
-                            AI
-                        </div>
-                        <div class="bg-gray-900 rounded-2xl px-4 py-3 text-sm text-gray-300 max-w-[85%] border border-gray-800/80">
-                            ${reply}
+            // Generate physical printable sheet simulation
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Formulir Penilaian Hasil Karya Informatika</title>
+                    <style>
+                        body { font-family: 'Courier New', monospace; padding: 40px; color: #111; line-height: 1.6; }
+                        .ticket { border: 2px dashed #000; padding: 30px; border-radius: 10px; max-width: 600px; margin: auto; }
+                        h1 { text-align: center; font-size: 20px; border-bottom: 2px solid #000; padding-bottom: 15px; margin-top: 0; }
+                        .stars { font-size: 24px; text-align: center; margin: 15px 0; }
+                        .footer { text-align: center; font-size: 11px; margin-top: 30px; border-top: 1px dashed #ccc; padding-top: 15px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="ticket">
+                        <h1>BUKTI APRESIASI PAMERAN WALI MURID</h1>
+                        <p><strong>Nama Wali Murid :</strong> ${parentName}</p>
+                        <p><strong>Orang Tua dari  :</strong> ${studentName}</p>
+                        <p><strong>Karya Dicoba   :</strong> Aplikasi & Game Canvas PWA Terintegrasi</p>
+                        <p><strong>Rapor Penilaian:</strong></p>
+                        <div class="stars">${'★'.repeat(userRating)}${'☆'.repeat(5-userRating)}</div>
+                        <p><strong>Kesan & Pesan  :</strong></p>
+                        <p style="background: #f9f9f9; padding: 15px; border-left: 3px solid #000; font-style: italic;">"${comment}"</p>
+                        <div class="footer">
+                            <p>Dicetak otomatis melalui platform pembelajaran kolaborasi Gemini AI SMA/MA</p>
+                            <p>Siswa Kreatif, Indonesia Unggul.</p>
                         </div>
                     </div>
-                `;
-                chatArea.scrollTop = chatArea.scrollHeight;
-            }, 800);
+                    <script>window.print();<\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+
+            // Reset form & close modal
+            document.getElementById('feedbackForm').reset();
+            setRating(5);
+            closeParentModal();
         }
 
-        // INITIALIZATION ON LOAD
-        window.onload = function() {
-            renderCurriculum();
-            updateSimulatorPlaceholder();
-        }
+        // Initialize Canvas map on load
+        initNodes();
+        drawCanvas();
+
+        // Autoload Kelas X Sem 1 on Start
+        loadSemesterData("10_1");
+        activeNodeId = "10_1";
+        drawCanvas();
     </script>
 </body>
 </html>
+
+
+### Kelebihan Utama Kurikulum Berbentuk Aplikasi Canvas Ini:
+1. **Peta Kurikulum Interaktif Berbasis Canvas**: Dibangun sepenuhnya menggunakan rendering HTML5 Canvas 2D kontekstual. User dapat berinteraksi (menggerakkan mouse, mengeklik node tingkat kelas dan semester) langsung di dalam Canvas.
+2. **Koneksi Dinamis**: Peta Canvas menampilkan animasi aliran data (*pulse dot navigation*) yang menggambarkan transfer pengetahuan dari Core Engine AI Gemini ke target-target semester.
+3. **Pemuatan Target Instan**: Setelah mengklik node, modul visual target (2 Aplikasi, 2 Game) untuk semester yang dipilih akan langsung diinjeksikan beserta contoh *prompting* Gemini orisinal.
+4. **Simulator Sandbox Terpadu**: Di bagian bawah terdapat frame eksekusi kode yang responsif, sehingga Anda dapat melihat fungsionalitas aplikasi target secara langsung tanpa harus keluar dari program.
+5. **Formulir Testimoni Orang Tua Terintegrasi**: Membantu memfasilitasi sesi pameran secara nyata dengan modul cetak fisik tiket apresiasi secara langsung saat wali murid mencoba aplikasi karya anak mereka.
