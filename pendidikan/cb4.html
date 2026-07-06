@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informatika Gemini Canvas Curriculum SMA/MA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0f19;
+        }
+        .font-header {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+    <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-4 lg:px-8 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-indigo-600 to-cyan-500 text-white p-2.5 rounded-xl shadow-lg flex items-center justify-center">
+                <i class="fa-solid fa-wand-magic-sparkles text-xl animate-pulse"></i>
+            </div>
+            <div>
+                <h1 class="text-base lg:text-lg font-bold font-header tracking-tight text-white flex items-center gap-2">
+                    KIK-GEMINI <span class="bg-indigo-500/20 text-indigo-300 text-[10px] px-2 py-0.5 rounded-full font-sans font-semibold border border-indigo-500/30">SMA/MA</span>
+                </h1>
+                <p class="text-[10px] lg:text-xs text-slate-400">Kurikulum Informatika Interaktif Berbasis Canvas & AI</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <span class="hidden md:inline-flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> PWA & Pameran Terintegrasi
+            </span>
+            <button onclick="resetSkenario()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-rotate-left"></i> Reset Peta
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <section class="lg:col-span-7 flex flex-col gap-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-4 flex flex-col gap-3 shadow-2xl relative overflow-hidden">
+                <div class="absolute -top-24 -left-24 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl"></div>
+                
+                <div class="flex justify-between items-center z-10">
+                    <div>
+                        <h2 class="text-sm font-bold font-header text-indigo-400 uppercase tracking-widest flex items-center gap-2">
+                            <i class="fa-solid fa-circle-nodes text-xs"></i> Interactive Roadmap Canvas
+                        </h2>
+                        <p class="text-xs text-slate-400">Silakan klik lingkaran kelas & semester langsung pada canvas di bawah ini:</p>
+                    </div>
+                    <div class="text-[11px] text-slate-400 bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800">
+                        Status: <span class="text-indigo-400 font-bold" id="canvas-status">Siap Eksplorasi</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex items-center justify-center">
+                    <canvas id="curriculumCanvas" width="650" height="420" class="w-full h-auto cursor-pointer block"></canvas>
+                </div>
+
+                <div class="bg-slate-950/80 border border-slate-800/60 p-2.5 rounded-xl flex items-center justify-between text-xs text-slate-300">
+                    <span class="flex items-center gap-1.5 text-slate-400"><i class="fa-solid fa-mouse-pointer text-indigo-400"></i> Ketuk lingkaran pada peta untuk memuat target proyek</span>
+                    <span class="text-[11px] text-slate-500 hidden sm:inline">Garis menyala menunjukkan alur kompetensi</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center gap-3">
+                        <div class="bg-indigo-500/10 text-indigo-400 p-2 rounded-lg text-sm shrink-0">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-200">Kriteria PWA Wajib</h4>
+                            <p class="text-[10px] text-slate-500">Service worker, Offline caching & Web Manifest.</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center gap-3">
+                        <div class="bg-cyan-500/10 text-cyan-400 p-2 rounded-lg text-sm shrink-0">
+                            <i class="fa-solid fa-users-rectangle"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-200">Showcase Orang Tua</h4>
+                            <p class="text-[10px] text-slate-500">Scan QR-code stand, instalasi instan & live demo.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-3 shadow-2xl">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-sm font-bold font-header text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-play text-indigo-500"></i> Simulator Gemini AI Code Generator
+                    </h3>
+                    <span class="text-[10px] bg-slate-950 text-slate-400 border border-slate-800 px-2.5 py-1 rounded-full font-mono">live_canvas_render.js</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                    <div class="md:col-span-5 space-y-2">
+                        <p class="text-[11px] text-slate-400">Prompt optimasi Gemini untuk kode Canvas:</p>
+                        <textarea id="promptBox" readonly class="w-full h-[150px] p-2.5 bg-slate-950 text-slate-300 font-mono text-[10px] rounded-xl border border-slate-800 focus:outline-none resize-none leading-relaxed"></textarea>
+                        <button onclick="runSimulation()" class="w-full bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-700 hover:to-cyan-600 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all shadow-md shadow-indigo-900/30 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play"></i> Jalankan Simulasi Target
+                        </button>
+                    </div>
+
+                    <div class="md:col-span-7 border border-slate-800 bg-slate-950 rounded-xl overflow-hidden flex flex-col min-h-[190px]">
+                        <div class="bg-slate-900/80 px-3 py-1.5 border-b border-slate-800 flex items-center justify-between">
+                            <span class="text-[9px] text-slate-400 font-mono flex items-center gap-1">
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span> Live Interactive View
+                            </span>
+                            <span class="text-[9px] text-slate-500">Interactive Canvas Target</span>
+                        </div>
+                        <div class="flex-1 bg-slate-950 relative flex items-center justify-center p-2">
+                            <iframe id="previewFrame" class="w-full h-full min-h-[150px] border-none rounded" sandbox="allow-scripts"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="lg:col-span-5 flex flex-col gap-4">
+            
+            <div id="detailBoard" class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl flex-1 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <div>
+                            <span class="bg-indigo-500/10 text-indigo-300 text-[10px] font-bold px-2.5 py-1 rounded-md border border-indigo-500/20" id="detail-tag-grade">KELAS X</span>
+                            <h3 class="text-lg font-bold font-header text-white mt-2" id="detail-title">Inisialisasi Peta Kurikulum</h3>
+                        </div>
+                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-center shrink-0">
+                            <div class="text-[9px] text-slate-500 uppercase font-semibold">Semester</div>
+                            <div class="text-lg font-bold font-header text-cyan-400" id="detail-sem-number">0</div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 space-y-2">
+                        <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-graduation-cap text-indigo-400"></i> Fokus & Pemanfaatan AI Gemini
+                        </h4>
+                        <p class="text-xs text-slate-400 leading-relaxed bg-slate-950 p-3 rounded-xl border border-slate-800" id="detail-focus-desc">
+                            Silakan klik salah satu node semester di Canvas interaktif untuk memuat modul kurikulum ini. Anda akan mendapatkan visualisasi target secara instan.
+                        </p>
+                    </div>
+
+                    <div class="mt-5 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                                <i class="fa-solid fa-layer-group text-cyan-400"></i> Target Proyek Semester
+                            </h4>
+                            <span class="text-[9px] text-slate-500">2 Apps & 2 Games</span>
+                        </div>
+                        
+                        <div class="space-y-2" id="targets-list-container">
+                            <div class="text-center py-6 text-xs text-slate-600">
+                                <i class="fa-solid fa-hand-pointer text-lg animate-bounce mb-2 block"></i>
+                                Klik salah satu node Semester di dalam Canvas untuk melihat data
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-800 space-y-3">
+                    <h4 class="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-users"></i> Pameran Orang Tua (Parent Showcase)
+                    </h4>
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs text-slate-400 flex flex-col gap-2">
+                        <p id="detail-exhibition">Setiap akhir semester, siswa merancang stand pameran fisik, menempelkan kode QR dari PWA mereka untuk dipindai dan dicoba langsung oleh orang tua mereka.</p>
+                        <button onclick="openParentModal()" class="w-full bg-slate-900 hover:bg-slate-850 text-slate-300 text-[10px] font-bold py-1.5 rounded-lg border border-slate-800 flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-comments"></i> Simulasi Input Umpan Balik Orang Tua
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <div id="parentModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl relative">
+            <div class="absolute -right-12 -top-12 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl"></div>
+            
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="font-bold font-header text-base text-white flex items-center gap-2">
+                    <i class="fa-solid fa-users text-rose-500"></i> Umpan Balik Orang Tua / Wali
+                </h3>
+                <button onclick="closeParentModal()" class="text-slate-400 hover:text-slate-200 text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="feedbackForm" onsubmit="submitFeedback(event)" class="space-y-3 text-xs text-slate-300">
+                <div>
+                    <label class="block mb-1 text-[11px] font-bold text-slate-400">Nama Orang Tua / Wali:</label>
+                    <input type="text" id="parentName" required class="w-full p-2 bg-slate-950 border border-slate-800 rounded-lg text-white text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none" placeholder="Contoh: Ibu Ani / Bpk. Rudi">
+                </div>
+                <div>
+                    <label class="block mb-1 text-[11px] font-bold text-slate-400">Orang Tua dari Siswa:</label>
+                    <input type="text" id="studentName" required class="w-full p-2 bg-slate-950 border border-slate-800 rounded-lg text-white text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none" placeholder="Contoh: Budi Santoso">
+                </div>
+                <div>
+                    <label class="block mb-1 text-[11px] font-bold text-slate-400">Berikan Skor Penilaian Karya:</label>
+                    <div class="flex gap-2 text-base text-amber-400 py-1" id="starContainer">
+                        <button type="button" onclick="setRating(1)" class="hover:scale-115 transition-transform"><i class="fa-solid fa-star"></i></button>
+                        <button type="button" onclick="setRating(2)" class="hover:scale-115 transition-transform"><i class="fa-solid fa-star"></i></button>
+                        <button type="button" onclick="setRating(3)" class="hover:scale-115 transition-transform"><i class="fa-solid fa-star"></i></button>
+                        <button type="button" onclick="setRating(4)" class="hover:scale-115 transition-transform"><i class="fa-solid fa-star"></i></button>
+                        <button type="button" onclick="setRating(5)" class="hover:scale-115 transition-transform"><i class="fa-solid fa-star"></i></button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block mb-1 text-[11px] font-bold text-slate-400">Komentar / Apresiasi:</label>
+                    <textarea id="parentComment" required rows="3" class="w-full p-2 bg-slate-950 border border-slate-800 rounded-lg text-white text-xs focus:ring-1 focus:ring-indigo-500 focus:outline-none" placeholder="Tuliskan apresiasi Anda terhadap aplikasi / game buatan anak Anda..."></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-rose-600 to-indigo-600 text-white font-bold py-2.5 rounded-xl text-xs hover:from-rose-700 hover:to-indigo-700 transition-all shadow-md">
+                    Kirim & Cetak Formulir Umpan Balik
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="border-t border-slate-900 bg-slate-950 py-4 px-4 text-center text-slate-500 text-[10px]">
+        <p>&copy; 2026 Kurikulum Informatika Terpadu SMA/MA. Semua Kode Canvas & PWA digenerasikan oleh asisten cerdas Gemini AI.</p>
+    </footer>
+
+    <script>
+        // Data Kurikulum untuk setiap Grade & Semester
+        const dataKurikulum = {
+            "10_1": {
+                grade: "KELAS X",
+                sem: "1",
+                title: "Logika Komputasi & Dasar Elemen Canvas 2D",
+                focus: "Pengenalan struktur logika pemrograman melalui API menggambar 2D di Canvas. Siswa belajar koordinat X-Y, garis, dan warna, didukung asisten Gemini untuk konseptualisasi kode.",
+                exhibition: "Siswa menyiapkan stand bertema retro game, memajang poster visualisasi cara AI membantu proses coding, dan orang tua akan mencoba bermain langsung.",
+                targets: [
+                    { id: "app1", name: "AI Drawing Pad Sederhana", type: "app", desc: "Aplikasi menggambar neon dengan pilihan kuas & sensor sentuh.", prompt: "Buat kode Canvas HTML5 mandiri: papan gambar sentuh (drawing pad) responsif dengan 4 tombol pilihan warna neon (hijau, merah, biru, kuning) dan tombol 'Clear All' menggunakan Tailwind CSS." },
+                    { id: "app2", name: "Kalkulator Fungsi Linear Grafis", type: "app", desc: "Kalkulator visualisasi persamaan garis matematika y=mx+c pada layar.", prompt: "Buat visualisator garis matematika interaktif di Canvas. Pengguna memasukkan variabel gradien m dan c, lalu Canvas otomatis menggambar grafik kartesian dan garisnya." },
+                    { id: "game1", name: "Catching Star Game", type: "game", desc: "Game menampung bintang jatuh dengan kontrol seret layar.", prompt: "Buat game menangkap objek jatuh (bintang) menggunakan keranjang di bagian bawah canvas. Keranjang digerakkan lewat sentuhan jari kiri/kanan. Desain berlatar luar angkasa gelap." },
+                    { id: "game2", name: "Tic-Tac-Toe Smart Bot", type: "game", desc: "Game asah otak legendaris melawan AI sederhana minimax.", prompt: "Buat game Tic-Tac-Toe grid 3x3 di HTML Canvas. Pemain X melawan Bot Komputer O. Tambahkan pesan penentu kemenangan yang menarik." }
+                ]
+            },
+            "10_2": {
+                grade: "KELAS X",
+                sem: "2",
+                title: "DOM Manipulation & Kerangka PWA Dasar",
+                focus: "Menghubungkan kontrol interface HTML dengan elemen Canvas. Mulai memahami Service Worker statis dan mendaftarkan manifest.json agar aplikasi bisa diunduh gratis.",
+                exhibition: "Fokus pameran adalah instalasi PWA di HP orang tua. Stand pameran berisi tutorial scan barcode untuk instalasi instan di layar utama HP.",
+                targets: [
+                    { id: "app1", name: "Flashcard Animasi Belajar", type: "app", desc: "Kartu pintar interaktif dengan efek balik 3D untuk kuis.", prompt: "Buat kartu belajar interaktif (flashcard) dengan HTML/CSS/JS. Ketika kartu diklik, ia berputar halus (3D flip animation) untuk menunjukkan jawaban rumus di baliknya." },
+                    { id: "app2", name: "Scoreboard Futsal & Basket", type: "app", desc: "Papan skor dinamis dengan timer countdown terintegrasi suara.", prompt: "Buat aplikasi scoreboard olahraga serba guna di HTML. Terdapat pengatur waktu mundur (timer), penambah poin, tombol peluit yang menghasilkan suara synth." },
+                    { id: "game1", name: "Retro Snake Classic", type: "game", desc: "Game ular klasik dengan tombol kontrol sentuh besar di layar.", prompt: "Buat game Snake klasik di HTML Canvas berukuran 300x300 dengan grid neon. Berikan kontrol tombol virtual besar di bawah kanvas untuk kemudahan ponsel pintar." },
+                    { id: "game2", name: "Memory Match Emoji", type: "game", desc: "Game mencocokkan pasangan emoji yang disembunyikan.", prompt: "Buat Memory Match Card Game grid 4x4 berisi emoji. Sediakan efek kartu terbuka dan penilai skor kecerdasan ingatan." }
+                ]
+            },
+            "11_1": {
+                grade: "KELAS XI",
+                sem: "1",
+                title: "Asynchronous JS & Gemini API Companion",
+                focus: "Melakukan request asinkronous (async-await) menuju API cerdas eksternal. Siswa memanfaatkan Gemini AI untuk melatih chatbot pribadi dalam game mereka.",
+                exhibition: "Siswa memamerkan asisten chat pintar mereka. Orang tua ditantang untuk menguji kecerdasan asisten buatan anak mereka.",
+                targets: [
+                    { id: "app1", name: "AI Chat Companion Mini", type: "app", desc: "Sistem chat pintar asisten belajar yang merespon masukan teks.", prompt: "Buat antarmuka chat AI minimalis responsif dengan Tailwind CSS. Tampilkan gelembung teks yang mensimulasikan balasan asisten pembelajaran instan." },
+                    { id: "app2", name: "Weather Outfit Planner AI", type: "app", desc: "Rekomendasi pakaian sesuai suhu cuaca menggunakan logika visual.", prompt: "Buat perencana busana sesuai kondisi cuaca (panas/hujan) yang divisualisasikan dalam bentuk ikon canvas dan kartu ringkasan teks." },
+                    { id: "game1", name: "AI Trivia Generator Quiz", type: "game", desc: "Kuis trivia berwaktu di mana soal dibuat bervariasi.", prompt: "Buat aplikasi kuis pilihan ganda interaktif dengan bar indikator waktu mundur yang berkurang setiap detik." },
+                    { id: "game2", name: "Space Invader Galaxy", type: "game", desc: "Game pesawat luar angkasa menghalau serangan formasi alien.", prompt: "Buat game pesawat luar angkasa klasik (Space Invader) di Canvas. Pesawat menembakkan peluru untuk meledakkan barisan alien yang berbaris rapi." }
+                ]
+            },
+            "11_2": {
+                grade: "KELAS XI",
+                sem: "2",
+                title: "State Management & Caching Offline Canggih",
+                focus: "Mengelola status permainan yang kompleks (skor tertinggi, slot simpanan). Mengoptimasi Service Worker agar seluruh resource dapat diakses luring 100%.",
+                exhibition: "Demo mode luring! Guru akan mencabut koneksi wifi, dan siswa membuktikan aplikasi PWA mereka tetap berjalan sempurna di hadapan wali murid.",
+                targets: [
+                    { id: "app1", name: "Smart Finance Pie Chart", type: "app", desc: "Aplikasi pengelola keuangan harian dengan grafik lingkaran.", prompt: "Buat aplikasi manajemen keuangan sederhana. Masukkan angka pengeluaran, lalu otomatis gambar grafik lingkaran (Pie Chart) di Canvas." },
+                    { id: "app2", name: "AI Speech Translation Notes", type: "app", desc: "Pengubah suara menjadi teks dan menerjemahkannya.", prompt: "Buat antarmuka perekam suara (Speech-to-Text) sederhana menggunakan Web Speech API dengan simulasi visual gelombang suara di Canvas." },
+                    { id: "game1", name: "Flappy Bird Clone", type: "game", desc: "Klon game Flappy Bird legendaris dengan akselerasi gravitasi halus.", prompt: "Buat game Flappy Bird di HTML Canvas dengan kontrol klik/sentuh layar untuk melompat. Berikan deteksi tabrakan pipa hijau yang presisi." },
+                    { id: "game2", name: "Pong Arcade Challenge", type: "game", desc: "Game tenis klasik dua pemain dengan tingkat kepintaran musuh.", prompt: "Buat game Pong 2D klasik di Canvas. Pemain menggunakan kursor/jari untuk memantulkan bola melawan bot komputer." }
+                ]
+            },
+            "12_1": {
+                grade: "KELAS XII",
+                sem: "1",
+                title: "Vektor Fisika & Multi-touch Mobile Input",
+                focus: "Membuat game interaktif berbasis simulasi fisika nyata (gaya gravitasi, tumbukan lenting, akselerasi) dan melatih fungsionalitas multi sentuh jari.",
+                exhibition: "Stand interaktif berbasis simulasi fisik. Orang tua diajak berinteraksi dengan simulasi fisika gravitasi dan menjatuhkan objek.",
+                targets: [
+                    { id: "app1", name: "AI Mind Map Canvas", type: "app", desc: "Diagram pembuat mind map dinamis yang nodenya bisa ditarik.", prompt: "Buat aplikasi pembuat peta pikiran (Mind-Map) di Canvas di mana node-nodenya bisa diklik, digeser (drag and drop), dan saling terhubung." },
+                    { id: "app2", name: "Workout Stickman Animator", type: "app", desc: "Instruktur olahraga virtual animasi stickman dengan timer.", prompt: "Buat simulator gerak olahraga stickman animasi di Canvas yang memperagakan gerakan squat sesuai detik timer." },
+                    { id: "game1", name: "Platformer Physics Level", type: "game", desc: "Game petualangan melewati rintangan dengan kalkulasi gravitasi.", prompt: "Buat game platformer sederhana di Canvas. Karakter kotak merah bisa berjalan, melompat dengan efek gravitasi, dan berdiri di atas pijakan kayu." },
+                    { id: "game2", name: "Sandbox Peluru Cannon", type: "game", desc: "Menembakkan meriam penghancur tumpukan balok bersusun.", prompt: "Buat game menembakkan bola meriam ke arah tumpukan balok vertikal dengan efek hancur jatuh secara realistis." }
+                ]
+            },
+            "12_2": {
+                grade: "KELAS XII",
+                sem: "2",
+                title: "Capstone Project & Portfolio Pameran Akbar",
+                focus: "Penggabungan seluruh kompetensi menjadi satu aplikasi Capstone mandiri berkualitas tinggi, siap rilis publik di hosting gratis, dan siap uji publik.",
+                exhibition: "Pameran Akbar Akhir Tahun! Sekolah mengundang dinas pendidikan, juri industri, serta seluruh wali murid untuk memberikan apresiasi nilai rapor karya.",
+                targets: [
+                    { id: "app1", name: "Virtual Smart Home Board", type: "app", desc: "Papan simulasi kontrol kelistrikan rumah pintar.", prompt: "Buat dashboard rumah pintar visual di Canvas. Klik tombol saklar virtual untuk menyalakan animasi cahaya neon pada area denah rumah." },
+                    { id: "app2", name: "AI Business Model Canvas", type: "app", desc: "Pembuat bagan bisnis BMC 9 elemen terstruktur.", prompt: "Buat form generator Business Model Canvas (BMC) 9 blok yang interaktif, rapi, dan memiliki fitur untuk diekspor ke gambar canvas." },
+                    { id: "game1", name: "Retro Galaxy Shooter Wave", type: "game", desc: "Game tembak galaksi dengan pergantian babak (wave).", prompt: "Buat game Space Shooter tingkat lanjut dengan rintangan meteor raksasa, gelombang musuh bervariasi, dan efek ledakan bintang." },
+                    { id: "game2", name: "Visual Novel Story Choice", type: "game", desc: "Game cerita pilihan bercabang dengan ilustrasi visual.", prompt: "Buat kerangka game visual novel interaktif dengan kotak percakapan di bawah, pilihan tombol keputusan, dan pergantian gambar latar." }
+                ]
+            }
+        };
+
+        // CANVAS INTERACTIVE INITIALIZATION & DRAWING
+        const canvas = document.getElementById('curriculumCanvas');
+        const ctx = canvas.getContext('2d');
+        const canvasStatus = document.getElementById('canvas-status');
+
+        // State & Interaction Nodes
+        let nodes = [];
+        let activeNodeId = null;
+        let hoveredNodeId = null;
+
+        // Inisialisasi struktur node kurikulum di Canvas
+        function initNodes() {
+            nodes = [
+                // CENTER NODE (AI GEMINI CORE)
+                { id: "core", x: 325, y: 210, radius: 45, label: "AI GEMINI", isCore: true, color: "#4f46e5", glowColor: "rgba(79, 70, 229, 0.4)" },
+
+                // KELAS X NODES
+                { id: "10_1", x: 120, y: 120, radius: 30, label: "Kelas X - Sem 1", code: "10_1", color: "#6366f1", glowColor: "rgba(99, 102, 241, 0.3)" },
+                { id: "10_2", x: 120, y: 300, radius: 30, label: "Kelas X - Sem 2", code: "10_2", color: "#6366f1", glowColor: "rgba(99, 102, 241, 0.3)" },
+
+                // KELAS XI NODES
+                { id: "11_1", x: 325, y: 70, radius: 32, label: "Kelas XI - Sem 1", code: "11_1", color: "#06b6d4", glowColor: "rgba(6, 182, 212, 0.3)" },
+                { id: "11_2", x: 325, y: 340, radius: 32, label: "Kelas XI - Sem 2", code: "11_2", color: "#06b6d4", glowColor: "rgba(6, 182, 212, 0.3)" },
+
+                // KELAS XII NODES
+                { id: "12_1", x: 530, y: 120, radius: 30, label: "Kelas XII - Sem 1", code: "12_1", color: "#ec4899", glowColor: "rgba(236, 72, 153, 0.3)" },
+                { id: "12_2", x: 530, y: 300, radius: 30, label: "Kelas XII - Sem 2", code: "12_2", color: "#ec4899", glowColor: "rgba(236, 72, 153, 0.3)" },
+            ];
+        }
+
+        // Draw Canvas Elements
+        function drawCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. Draw Grid Lines Background (Sci-fi Aesthetic)
+            ctx.strokeStyle = "#0f172a";
+            ctx.lineWidth = 1;
+            for(let i=0; i<canvas.width; i+=25) {
+                ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+            }
+            for(let j=0; j<canvas.height; j+=25) {
+                ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke();
+            }
+
+            // 2. Draw Connection Lines between Nodes
+            ctx.lineWidth = 3;
+            nodes.forEach(node => {
+                if(!node.isCore) {
+                    // Create gradient for lines
+                    let grad = ctx.createLinearGradient(325, 210, node.x, node.y);
+                    grad.addColorStop(0, "#4f46e5");
+                    grad.addColorStop(1, node.color);
+                    ctx.strokeStyle = grad;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(325, 210);
+                    ctx.lineTo(node.x, node.y);
+                    ctx.stroke();
+
+                    // Draw animated pulse dot on the line
+                    let time = Date.now() * 0.002;
+                    let ratio = (time % 1);
+                    let pulseX = 325 + (node.x - 325) * ratio;
+                    let pulseY = 210 + (node.y - 210) * ratio;
+                    ctx.beginPath();
+                    ctx.arc(pulseX, pulseY, 4, 0, Math.PI*2);
+                    ctx.fillStyle = "#ffffff";
+                    ctx.shadowBlur = 8;
+                    ctx.shadowColor = "#ffffff";
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+            });
+
+            // 3. Draw Nodes (Circles & Texts)
+            nodes.forEach(node => {
+                let isHovered = (node.id === hoveredNodeId);
+                let isActive = (node.id === activeNodeId);
+
+                // Glow Effect
+                ctx.shadowBlur = (isActive || isHovered) ? 25 : 12;
+                ctx.shadowColor = node.glowColor;
+
+                // Outer Ring
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.radius + (isHovered ? 4 : 0), 0, Math.PI * 2);
+                ctx.fillStyle = node.color;
+                ctx.fill();
+                ctx.shadowBlur = 0; // reset
+
+                // Inner Circle
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.radius - (isActive ? 3 : 6), 0, Math.PI * 2);
+                ctx.fillStyle = "#0b0f19";
+                ctx.fill();
+
+                // Core branding star effect
+                if(node.isCore) {
+                    ctx.fillStyle = "#ffffff";
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, 8, 0, Math.PI*2);
+                    ctx.fill();
+                }
+
+                // Node Labels
+                ctx.fillStyle = (isActive || isHovered) ? "#ffffff" : "#94a3b8";
+                ctx.font = node.isCore ? "bold 11px Space Grotesk" : "600 10px Space Grotesk";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(node.label, node.x, node.y);
+            });
+        }
+
+        // Mouse Move Interaction Handler
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            let foundHover = null;
+            nodes.forEach(node => {
+                let dist = Math.sqrt((mouseX - node.x)**2 + (mouseY - node.y)**2);
+                if (dist < node.radius) {
+                    foundHover = node.id;
+                }
+            });
+
+            if(hoveredNodeId !== foundHover) {
+                hoveredNodeId = foundHover;
+                canvas.style.cursor = foundHover ? 'pointer' : 'default';
+                drawCanvas();
+            }
+        });
+
+        // Click Handler for Canvas Nodes
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            nodes.forEach(node => {
+                let dist = Math.sqrt((mouseX - node.x)**2 + (mouseY - node.y)**2);
+                if (dist < node.radius) {
+                    if (node.isCore) {
+                        canvasStatus.innerText = "Tekan Node Semester";
+                        return;
+                    }
+                    activeNodeId = node.id;
+                    canvasStatus.innerText = `Memuat ${node.label}`;
+                    drawCanvas();
+                    loadSemesterData(node.code);
+                }
+            });
+        });
+
+        // Load curriculum details into sidebar & prompt box
+        let activeTargets = [];
+        let selectedTargetIndex = 0;
+
+        function loadSemesterData(code) {
+            const data = dataKurikulum[code];
+            if (!data) return;
+
+            // Injeksi Konten Detail Sidebar
+            document.getElementById('detail-tag-grade').innerText = data.grade;
+            document.getElementById('detail-title').innerText = data.title;
+            document.getElementById('detail-sem-number').innerText = data.sem;
+            document.getElementById('detail-focus-desc').innerText = data.focus;
+
+            activeTargets = data.targets;
+            selectedTargetIndex = 0; // Default load first target prompt to Sandbox
+
+            // Render daftar target 4 proyek
+            const container = document.getElementById('targets-list-container');
+            container.innerHTML = '';
+
+            data.targets.forEach((target, index) => {
+                const item = document.createElement('div');
+                const isApp = target.type === 'app';
+                item.className = "p-3 bg-slate-950 border border-slate-800 rounded-xl hover:border-indigo-500/50 transition-all cursor-pointer flex justify-between items-center";
+                item.setAttribute('onclick', `selectTarget(${index})`);
+                
+                item.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <span class="text-xs shrink-0 p-2 rounded-lg ${isApp ? 'bg-indigo-500/10 text-indigo-400' : 'bg-cyan-500/10 text-cyan-400'}">
+                            <i class="${isApp ? 'fa-solid fa-mobile-screen' : 'fa-solid fa-gamepad'}"></i>
+                        </span>
+                        <div>
+                            <h5 class="text-xs font-bold text-slate-100">${target.name}</h5>
+                            <p class="text-[10px] text-slate-400">${target.desc}</p>
+                        </div>
+                    </div>
+                    <span class="text-[9px] bg-slate-900 border border-slate-800 px-2 py-0.5 rounded text-slate-400 font-semibold uppercase">Pilih</span>
+                `;
+                container.appendChild(item);
+            });
+
+            // Set Prompt default
+            selectTarget(0);
+        }
+
+        // Handle Project Target Selection
+        function selectTarget(index) {
+            if (activeTargets.length === 0) return;
+            selectedTargetIndex = index;
+            const target = activeTargets[index];
+            document.getElementById('promptBox').value = target.prompt;
+            
+            // Highlight selected target in visual styling
+            const items = document.getElementById('targets-list-container').children;
+            for (let i = 0; i < items.length; i++) {
+                if (i === index) {
+                    items[i].className = "p-3 bg-indigo-950/20 border border-indigo-500 rounded-xl flex justify-between items-center";
+                } else {
+                    items[i].className = "p-3 bg-slate-950 border border-slate-800 rounded-xl hover:border-indigo-500/50 transition-all cursor-pointer flex justify-between items-center";
+                }
+            }
+            
+            // Run preview for this newly selected target
+            runSimulation();
+        }
+
+        // Run Simulation (Injecting real running code to frame simulator)
+        function runSimulation() {
+            if (activeTargets.length === 0) return;
+            const target = activeTargets[selectedTargetIndex];
+            const iframe = document.getElementById('previewFrame');
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            
+            let simulatedCode = "";
+
+            if (target.id === "app1" && activeNodeId.startsWith("10")) {
+                simulatedCode = `
+                    <html>
+                    <body style="margin:0; background:#020617; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; color:white;">
+                        <span style="font-size:10px; color:#64748b; margin-bottom:5px;">AI Drawing Pad (Kelas X)</span>
+                        <canvas id="c" width="220" height="90" style="border:1px solid #1e293b; background:#0f172a; border-radius:8px; cursor:crosshair;"></canvas>
+                        <div style="margin-top:6px; display:flex; gap:6px;">
+                            <button onclick="changeCol('#22d3ee')" style="background:#22d3ee; width:16px; height:16px; border:none; border-radius:50%; cursor:pointer;"></button>
+                            <button onclick="changeCol('#ec4899')" style="background:#ec4899; width:16px; height:16px; border:none; border-radius:50%; cursor:pointer;"></button>
+                            <button onclick="changeCol('#22c55e')" style="background:#22c55e; width:16px; height:16px; border:none; border-radius:50%; cursor:pointer;"></button>
+                            <button onclick="clearCanvas()" style="background:#334155; border:none; color:white; font-size:8px; padding:2px 8px; border-radius:4px; cursor:pointer;">Hapus</button>
+                        </div>
+                        <script>
+                            const canvas = document.getElementById('c');
+                            const ctx = canvas.getContext('2d');
+                            let active = false;
+                            let color = '#22d3ee';
+                            
+                            function getPos(e) {
+                                const rect = canvas.getBoundingClientRect();
+                                return { x: (e.clientX || e.touches[0].clientX) - rect.left, y: (e.clientY || e.touches[0].clientY) - rect.top };
+                            }
+                            function start(e) { active = true; draw(e); }
+                            function end() { active = false; ctx.beginPath(); }
+                            function draw(e) {
+                                if(!active) return;
+                                ctx.lineWidth = 3;
+                                ctx.lineCap = 'round';
+                                ctx.strokeStyle = color;
+                                const pos = getPos(e);
+                                ctx.lineTo(pos.x, pos.y);
+                                ctx.stroke();
+                                ctx.beginPath();
+                                ctx.moveTo(pos.x, pos.y);
+                            }
+                            canvas.onmousedown = start; canvas.onmouseup = end; canvas.onmousemove = draw;
+                            canvas.ontouchstart = (e) => { e.preventDefault(); start(e); }; canvas.ontouchend = end; canvas.ontouchmove = (e) => { e.preventDefault(); draw(e); };
+                            function changeCol(c) { color = c; }
+                            function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+                        <\/script>
+                    </body>
+                    </html>
+                `;
+            } else if (target.type === "game" && activeNodeId.startsWith("10")) {
+                simulatedCode = `
+                    <html>
+                    <body style="margin:0; background:#020617; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; color:white;">
+                        <span style="font-size:10px; color:#64748b; margin-bottom:5px;">Game Retro: Ketuk Kotak (Kelas X)</span>
+                        <div id="score" style="font-size:11px; margin-bottom:4px;">Skor: 0</div>
+                        <div id="targetBox" onclick="hit()" style="width:35px; height:35px; background:#f43f5e; border-radius:6px; cursor:pointer; position:relative; transition:all 0.1s;"></div>
+                        <script>
+                            let score = 0;
+                            const box = document.getElementById('targetBox');
+                            function hit() {
+                                score++;
+                                document.getElementById('score').innerText = 'Skor: ' + score;
+                                box.style.background = 'hsl(' + Math.random() * 360 + ', 80%, 50%)';
+                                let rx = Math.random() * 120 - 60;
+                                let ry = Math.random() * 40 - 20;
+                                box.style.transform = 'translate(' + rx + 'px, ' + ry + 'px)';
+                            }
+                        <\/script>
+                    </body>
+                    </html>
+                `;
+            } else if (activeNodeId.startsWith("11")) {
+                simulatedCode = `
+                    <html>
+                    <body style="margin:0; background:#020617; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; color:white; padding:10px;">
+                        <div style="background:#0f172a; border:1px solid #1e293b; padding:8px; border-radius:10px; width:90%; max-width:230px; font-size:10px;">
+                            <div style="color:#06b6d4; font-weight:bold; margin-bottom:5px;">Asisten Pintar Gemini</div>
+                            <div style="background:#1e293b; padding:6px; border-radius:6px; margin-bottom:5px; min-height:35px;" id="botRes">Tanyakan apa saja kepada saya tentang Informatika...</div>
+                            <input type="text" id="inp" placeholder="Ketik pesan..." style="width:100%; border:none; background:#020617; color:white; font-size:10px; padding:4px; border-radius:4px; box-sizing:border-box;">
+                        </div>
+                        <script>
+                            document.getElementById('inp').onkeydown = function(e) {
+                                if(e.key === 'Enter' && this.value) {
+                                    document.getElementById('botRes').innerText = 'Gemini AI: "Kerangka PWA buatanmu sudah optimal untuk diakses tanpa internet!"';
+                                    this.value = '';
+                                }
+                            }
+                        <\/script>
+                    </body>
+                    </html>
+                `;
+            } else {
+                simulatedCode = `
+                    <html>
+                    <body style="margin:0; background:#020617; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; color:white;">
+                        <span style="font-size:10px; color:#64748b; margin-bottom:5px;">Simulasi Fisika Gravitasi (Kelas XII)</span>
+                        <canvas id="c" width="220" height="90" style="border:1px solid #334155; background:#0f172a; border-radius:8px;"></canvas>
+                        <script>
+                            const canvas = document.getElementById('c');
+                            const ctx = canvas.getContext('2d');
+                            let y = 10, vy = 0, g = 0.4, r = 8;
+                            function step() {
+                                vy += g;
+                                y += vy;
+                                if(y + r > canvas.height) {
+                                    y = canvas.height - r;
+                                    vy = -vy * 0.7; // bounce
+                                }
+                                ctx.clearRect(0,0,220,90);
+                                ctx.fillStyle = '#ec4899';
+                                ctx.beginPath(); ctx.arc(110, y, r, 0, Math.PI*2); ctx.fill();
+                                requestAnimationFrame(step);
+                            }
+                            canvas.onclick = () => { y = 15; vy = 0; };
+                            step();
+                        <\/script>
+                    </body>
+                    </html>
+                `;
+            }
+
+            doc.open();
+            doc.write(simulatedCode);
+            doc.close();
+        }
+
+        // Reset All Interactive state
+        function resetSkenario() {
+            activeNodeId = null;
+            hoveredNodeId = null;
+            canvasStatus.innerText = "Siap Eksplorasi";
+            drawCanvas();
+            
+            document.getElementById('detail-tag-grade').innerText = "KELAS -";
+            document.getElementById('detail-title').innerText = "Inisialisasi Peta Kurikulum";
+            document.getElementById('detail-sem-number').innerText = "0";
+            document.getElementById('detail-focus-desc').innerText = "Silakan klik salah satu node semester di Canvas interaktif untuk memuat modul kurikulum ini. Anda akan mendapatkan visualisasi target secara instan.";
+            document.getElementById('targets-list-container').innerHTML = `
+                <div class="text-center py-6 text-xs text-slate-600">
+                    <i class="fa-solid fa-hand-pointer text-lg animate-bounce mb-2 block"></i>
+                    Klik salah satu node Semester di dalam Canvas untuk melihat data
+                </div>
+            `;
+            document.getElementById('promptBox').value = '';
+            
+            const iframe = document.getElementById('previewFrame');
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            doc.open();
+            doc.write('<html><body style="background:#020617;"></body></html>');
+            doc.close();
+        }
+
+        // PARENT SHOWCASE / FEEDBACK MODAL LOGIC
+        let userRating = 5;
+
+        function openParentModal() {
+            document.getElementById('parentModal').classList.remove('hidden');
+        }
+
+        function closeParentModal() {
+            document.getElementById('parentModal').classList.add('hidden');
+        }
+
+        function setRating(rating) {
+            userRating = rating;
+            const stars = document.getElementById('starContainer').children;
+            for (let i = 0; i < stars.length; i++) {
+                if (i < rating) {
+                    stars[i].innerHTML = `<i class="fa-solid fa-star"></i>`;
+                } else {
+                    stars[i].innerHTML = `<i class="fa-regular fa-star"></i>`;
+                }
+            }
+        }
+
+        function submitFeedback(e) {
+            e.preventDefault();
+            const parentName = document.getElementById('parentName').value;
+            const studentName = document.getElementById('studentName').value;
+            const comment = document.getElementById('parentComment').value;
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Formulir Penilaian Hasil Karya Informatika</title>
+                    <style>
+                        body { font-family: 'Courier New', monospace; padding: 40px; color: #111; line-height: 1.6; }
+                        .ticket { border: 2px dashed #000; padding: 30px; border-radius: 10px; max-width: 600px; margin: auto; }
+                        h1 { text-align: center; font-size: 20px; border-bottom: 2px solid #000; padding-bottom: 15px; margin-top: 0; }
+                        .stars { font-size: 24px; text-align: center; margin: 15px 0; }
+                        .footer { text-align: center; font-size: 11px; margin-top: 30px; border-top: 1px dashed #ccc; padding-top: 15px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="ticket">
+                        <h1>BUKTI APRESIASI PAMERAN WALI MURID</h1>
+                        <p><strong>Nama Wali Murid :</strong> ${parentName}</p>
+                        <p><strong>Orang Tua dari  :</strong> ${studentName}</p>
+                        <p><strong>Karya Dicoba   :</strong> Aplikasi & Game Canvas PWA Terintegrasi</p>
+                        <p><strong>Rapor Penilaian:</strong></p>
+                        <div class="stars">${'★'.repeat(userRating)}${'☆'.repeat(5-userRating)}</div>
+                        <p><strong>Kesan & Pesan  :</strong></p>
+                        <p style="background: #f9f9f9; padding: 15px; border-left: 3px solid #000; font-style: italic;">"${comment}"</p>
+                        <div class="footer">
+                            <p>Dicetak otomatis melalui platform pembelajaran kolaborasi Gemini AI SMA/MA</p>
+                            <p>Siswa Kreatif, Indonesia Unggul.</p>
+                        </div>
+                    </div>
+                    <script>window.print();<\/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+
+            document.getElementById('feedbackForm').reset();
+            setRating(5);
+            closeParentModal();
+        }
+
+        // Initialize Canvas map on load
+        initNodes();
+        drawCanvas();
+
+        // Autoload Kelas X Sem 1 on Start
+        loadSemesterData("10_1");
+        activeNodeId = "10_1";
+        drawCanvas();
+    </script>
+</body>
+</html>
