@@ -1,1 +1,943 @@
-.
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CanvaEdu - Kurikulum Informatika SMA/MA</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        canvaPurple: '#7d2ae8',
+                        canvaBlue: '#00c4cc',
+                        canvaMagenta: '#ff007f',
+                        darkBg: '#0f172a',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .canva-gradient {
+            background: linear-gradient(135deg, #7d2ae8 0%, #00c4cc 100%);
+        }
+        .canva-gradient-hover {
+            background: linear-gradient(135deg, #6c1fd1 0%, #00b0b8 100%);
+        }
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <header class="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm px-4 lg:px-8 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl canva-gradient flex items-center justify-center text-white shadow-lg shadow-purple-200">
+                    <i class="fa-solid fa-graduation-cap text-xl animate-pulse"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-canvaPurple to-canvaBlue bg-clip-text text-transparent">CanvaEdu SMA/MA</h1>
+                    <p class="text-xs text-slate-500 font-medium">Kurikulum Informatika berbasis Desain & Karya Nyata</p>
+                </div>
+            </div>
+            
+            <!-- Main Navigation Tabs (Top) -->
+            <div class="flex flex-wrap bg-slate-100 p-1.5 rounded-2xl gap-1">
+                <button onclick="switchTab('curriculum')" id="tab-curriculum" class="nav-tab px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 bg-white text-slate-800 shadow-sm">
+                    <i class="fa-solid fa-book-open mr-2"></i>Kurikulum & Proyek
+                </button>
+                <button onclick="switchTab('editor')" id="tab-editor" class="nav-tab px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 text-slate-600 hover:text-slate-800">
+                    <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Mini Canva Simulator
+                </button>
+                <button onclick="switchTab('exhibition')" id="tab-exhibition" class="nav-tab px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 text-slate-600 hover:text-slate-800">
+                    <i class="fa-solid fa-users-viewfinder mr-2"></i>Pameran Wali Murid
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-8 py-8">
+        
+        <!-- SECTION 1: CURRICULUM & PROJECTS MAP -->
+        <div id="section-curriculum" class="space-y-8">
+            <!-- Filter Header -->
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-800">Pilih Kelas & Semester</h2>
+                    <p class="text-slate-500 text-sm">Pilih jenjang kelas untuk melihat silabus, target, dan 6 karya praktik wajib.</p>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <!-- Class Selector -->
+                    <div class="flex bg-slate-100 p-1 rounded-xl">
+                        <button onclick="selectClass(10)" id="btn-class-10" class="class-btn px-4 py-2 text-sm font-bold rounded-lg transition-all duration-200 bg-canvaPurple text-white shadow-sm">
+                            Kelas 10
+                        </button>
+                        <button onclick="selectClass(11)" id="btn-class-11" class="class-btn px-4 py-2 text-sm font-bold rounded-lg transition-all duration-200 text-slate-600 hover:bg-slate-200">
+                            Kelas 11
+                        </button>
+                        <button onclick="selectClass(12)" id="btn-class-12" class="class-btn px-4 py-2 text-sm font-bold rounded-lg transition-all duration-200 text-slate-600 hover:bg-slate-200">
+                            Kelas 12
+                        </button>
+                    </div>
+
+                    <!-- Semester Selector -->
+                    <div class="flex bg-slate-100 p-1 rounded-xl">
+                        <button onclick="selectSemester(1)" id="btn-sem-1" class="sem-btn px-4 py-2 text-sm font-bold rounded-lg transition-all duration-200 bg-canvaBlue text-white shadow-sm">
+                            Semester 1
+                        </button>
+                        <button onclick="selectSemester(2)" id="btn-sem-2" class="sem-btn px-4 py-2 text-sm font-bold rounded-lg transition-all duration-200 text-slate-600 hover:bg-slate-200">
+                            Semester 2
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Target Capaian Banner -->
+            <div class="bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-3xl p-6 lg:p-8 shadow-xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-canvaPurple/20 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-canvaBlue/10 rounded-full blur-3xl -ml-16 -mb-16"></div>
+                
+                <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="space-y-3 max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-canvaBlue border border-white/10">
+                            <i class="fa-solid fa-bullseye"></i> Target Pembelajaran Semester
+                        </div>
+                        <h3 id="curriculum-target-title" class="text-2xl lg:text-3xl font-bold tracking-tight">Dasar Komunikasi Visual & Computational Thinking</h3>
+                        <p id="curriculum-target-desc" class="text-slate-300 text-sm lg:text-base leading-relaxed">Siswa menguasai prinsip tata letak dasar, psikologi warna, branding personal, serta mampu menyajikan visualisasi data informatika dalam bentuk infografis edukatif.</p>
+                    </div>
+                    
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-5 min-w-[240px] text-center">
+                        <div class="text-xs text-slate-400 font-semibold mb-1">Misi Kelulusan Semester</div>
+                        <div class="text-4xl font-extrabold text-canvaBlue mb-1">6 / 6</div>
+                        <div class="text-xs text-white">Praktik Karya Wajib Selesai</div>
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-white/10 h-2 rounded-full mt-3 overflow-hidden">
+                            <div id="semester-progress-bar" class="bg-gradient-to-r from-canvaPurple to-canvaBlue h-full rounded-full" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Cards Grid -->
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800">6 Karya Praktik Wajib (Silakan Selesaikan)</h3>
+                        <p class="text-sm text-slate-500">Karya nyata yang wajib dibuat menggunakan Canva dan diunggah untuk pameran.</p>
+                    </div>
+                    <span class="px-3 py-1 text-xs font-bold text-canvaPurple bg-purple-50 border border-purple-200 rounded-full">Progres Belajar</span>
+                </div>
+
+                <div id="project-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Project Cards Will Be Loaded Dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Certificate of Completion Preview (Gamification) -->
+            <div id="completion-certificate-banner" class="hidden bg-emerald-50 border border-emerald-200 rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all duration-300">
+                <div class="flex items-center gap-4 text-center sm:text-left flex-col sm:flex-row">
+                    <div class="h-14 w-14 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                        <i class="fa-solid fa-award text-3xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-extrabold text-lg text-emerald-900">Selamat! Semua Karya Semester Ini Selesai</h4>
+                        <p class="text-emerald-700 text-sm">Anda siap memamerkan 6 hasil karya terbaik ini ke hadapan Orang Tua/Wali Murid!</p>
+                    </div>
+                </div>
+                <button onclick="switchTab('exhibition')" class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition shadow-md shadow-emerald-200 flex items-center gap-2">
+                    Buka Stan Pameran <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- SECTION 2: MINI CANVA SIMULATOR -->
+        <div id="section-editor" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+                    <div>
+                        <span class="px-3 py-1 text-xs font-bold text-canvaPurple bg-purple-50 border border-purple-200 rounded-full">Canvas Simulator</span>
+                        <h2 class="text-2xl font-extrabold text-slate-800 mt-2">Simulasi Workspace Canva</h2>
+                        <p class="text-slate-500 text-sm">Latihan menyusun tata letak (layout) digital dasar dengan memilih template, menambahkan elemen, serta mengatur teks.</p>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="clearCanvas()" class="px-4 py-2 text-sm font-semibold border border-slate-200 rounded-xl hover:bg-slate-50 transition flex items-center gap-2">
+                            <i class="fa-solid fa-rotate-left"></i> Reset Design
+                        </button>
+                        <button onclick="captureMockCanvas()" class="px-4 py-2 text-sm font-bold text-white canva-gradient hover:canva-gradient-hover rounded-xl shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-download"></i> Simpan Karya
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Toolbox (Left Side) -->
+                    <div class="lg:col-span-4 bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-5">
+                        <h3 class="font-bold text-sm text-slate-600 uppercase tracking-wider">Aset & Elemen Desain</h3>
+                        
+                        <!-- Select Template Category -->
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-500">Pilih Tema Template:</label>
+                            <select id="canvas-theme-select" onchange="applyCanvasTemplate()" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-canvaPurple">
+                                <option value="it-history">Infografis Sejarah Komputer (Tema Biru)</option>
+                                <option value="cyber-safety">Sosialisasi Cyber Safety (Tema Merah)</option>
+                                <option value="personal-brand">Brand Kit Informatika (Tema Ungu)</option>
+                                <option value="coding-notes">Poster Kelas Pemrograman (Tema Hijau)</option>
+                            </select>
+                        </div>
+
+                        <!-- Add Elements Sticker Section -->
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-500">Tambahkan Stiker Informatika:</label>
+                            <div class="grid grid-cols-4 gap-2">
+                                <button onclick="addSticker('💻')" class="p-3 bg-white hover:bg-indigo-50 border border-slate-200 rounded-xl text-2xl transition shadow-sm" title="Laptop">💻</button>
+                                <button onclick="addSticker('🔐')" class="p-3 bg-white hover:bg-indigo-50 border border-slate-200 rounded-xl text-2xl transition shadow-sm" title="Security">🔐</button>
+                                <button onclick="addSticker('🚀')" class="p-3 bg-white hover:bg-indigo-50 border border-slate-200 rounded-xl text-2xl transition shadow-sm" title="Launch">🚀</button>
+                                <button onclick="addSticker('📊')" class="p-3 bg-white hover:bg-indigo-50 border border-slate-200 rounded-xl text-2xl transition shadow-sm" title="Chart">📊</button>
+                                <button onclick="addSticker('🤖')" class="p-3 bg-white hover:bg-indigo-50 border border-slate-200 rounded-xl text-2xl transition shadow-sm" title="AI Robot">🤖</button>
+                                <button onclick="addSticker('💡')" class="p-3 bg-white hover:bg-indigo-50 border border-slate-200 rounded-xl text-2xl transition shadow-sm" title="Idea">💡</button>
+                                <button onclick="addSticker('🌍')" class="p-3 bg-white hover:bg-indigo-50 border border-slate-200 rounded-xl text-2xl transition shadow-sm" title="Internet">🌍</button>
+                                <button onclick="addSticker('🎨')" class="p-3 bg-white hover:bg-indigo-50 border border-slate-200 rounded-xl text-2xl transition shadow-sm" title="Canva Art">🎨</button>
+                            </div>
+                        </div>
+
+                        <!-- Edit Text Area -->
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-500">Sunting Judul Utama:</label>
+                            <input type="text" id="canvas-text-input" oninput="updateCanvasText()" value="BELAJAR INFORMATIKA" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-canvaPurple font-bold">
+                        </div>
+
+                        <!-- Color Palette Options -->
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slate-500">Ubah Warna Latar Belakang:</label>
+                            <div class="flex gap-2">
+                                <button onclick="changeCanvasBg('from-slate-900 to-indigo-950')" class="w-8 h-8 rounded-full bg-slate-900 border-2 border-white shadow-sm ring-1 ring-slate-300"></button>
+                                <button onclick="changeCanvasBg('from-purple-800 to-indigo-900')" class="w-8 h-8 rounded-full bg-purple-800 border-2 border-white shadow-sm ring-1 ring-slate-300"></button>
+                                <button onclick="changeCanvasBg('from-cyan-900 to-blue-900')" class="w-8 h-8 rounded-full bg-cyan-900 border-2 border-white shadow-sm ring-1 ring-slate-300"></button>
+                                <button onclick="changeCanvasBg('from-emerald-900 to-teal-950')" class="w-8 h-8 rounded-full bg-emerald-900 border-2 border-white shadow-sm ring-1 ring-slate-300"></button>
+                                <button onclick="changeCanvasBg('from-rose-950 to-red-900')" class="w-8 h-8 rounded-full bg-rose-950 border-2 border-white shadow-sm ring-1 ring-slate-300"></button>
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex gap-2">
+                            <i class="fa-solid fa-circle-info text-base"></i>
+                            <p>Karya digital yang Anda buat di sini dapat langsung ditautkan ke panel Pameran Wali Murid untuk dipamerkan.</p>
+                        </div>
+                    </div>
+
+                    <!-- Digital Canvas (Center/Right Side) -->
+                    <div class="lg:col-span-8 flex flex-col items-center justify-center p-6 bg-slate-100 border border-slate-200 rounded-2xl">
+                        <div id="canva-canvas-body" class="w-full max-w-lg aspect-[4/3] bg-gradient-to-r from-slate-900 to-indigo-950 rounded-2xl shadow-xl p-8 relative overflow-hidden flex flex-col justify-between text-white transition-all duration-300">
+                            <!-- Background elements style -->
+                            <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/5 rounded-full"></div>
+                            <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-white/5 rounded-full"></div>
+                            
+                            <!-- Header / Metadata -->
+                            <div class="flex justify-between items-center relative z-10">
+                                <span class="text-[10px] tracking-widest font-bold text-canvaBlue uppercase" id="canvas-card-subtitle">SMA INFORMATIKA PROJECT</span>
+                                <span class="text-[10px] font-bold text-white/40">CANVA DESIGN v1.0</span>
+                            </div>
+
+                            <!-- Mid Design Content -->
+                            <div class="my-auto space-y-4 relative z-10 text-center py-4">
+                                <h2 id="canvas-main-title" class="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-200 bg-clip-text text-transparent drop-shadow-md">
+                                    BELAJAR INFORMATIKA
+                                </h2>
+                                <p id="canvas-sub-desc" class="text-slate-300 text-xs md:text-sm max-w-sm mx-auto">
+                                    Menjelajahi sejarah penemuan komputer, sirkuit digital, dan evolusi teknologi global.
+                                </p>
+                                
+                                <!-- Rendered Stickers Area -->
+                                <div id="canvas-stickers-container" class="flex flex-wrap justify-center gap-4 py-2 min-h-[48px]">
+                                    <span class="text-3xl animate-bounce">💻</span>
+                                    <span class="text-3xl animate-pulse">💡</span>
+                                </div>
+                            </div>
+
+                            <!-- Footer / Student Watermark -->
+                            <div class="flex justify-between items-end border-t border-white/10 pt-4 relative z-10">
+                                <div>
+                                    <p class="text-[9px] text-slate-400 font-medium">Karya Praktik Siswa:</p>
+                                    <p class="text-xs font-bold text-white" id="canvas-designer-name">Siswa Kelas 10-Informatika</p>
+                                </div>
+                                <div class="bg-white/10 px-3 py-1 rounded-full text-[9px] font-bold border border-white/20 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-check text-canvaBlue"></i> 100% Praktik
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: PARENTS EXHIBITION & FEEDBACK -->
+        <div id="section-exhibition" class="hidden space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Left: Control Panel & Invitation Maker -->
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex items-center gap-2 text-canvaPurple">
+                            <i class="fa-solid fa-envelope-open-text text-xl"></i>
+                            <h3 class="font-bold text-lg text-slate-800">Undangan Orang Tua</h3>
+                        </div>
+                        <p class="text-slate-500 text-xs">Atur nama wali murid dan bagikan undangan pameran karya informatika.</p>
+                        
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Nama Wali Murid:</label>
+                                <input type="text" id="parent-name-input" oninput="updateInvitation()" value="Bapak/Ibu Orang Tua Wali" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-canvaPurple outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Waktu Pameran:</label>
+                                <input type="text" id="exhibit-time-input" oninput="updateInvitation()" value="Sabtu, 12 Desember 2026 pukul 09.00 WIB" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-canvaPurple outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-600 mb-1">Ruang / Stan Kelas:</label>
+                                <input type="text" id="exhibit-room-input" oninput="updateInvitation()" value="Laboratorium Komputer Terpadu SMA" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-canvaPurple outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Invitation Preview Box -->
+                        <div class="p-4 bg-purple-50 rounded-2xl border border-purple-100 text-purple-950 space-y-2 text-xs">
+                            <span class="font-extrabold text-canvaPurple tracking-wider uppercase text-[9px] block">Draft Undangan Digital</span>
+                            <p class="leading-relaxed">
+                                Yth. <strong id="invite-parent-name" class="underline">Bapak/Ibu Orang Tua Wali</strong>,<br>
+                                Kami mengundang Anda menghadiri <strong class="text-canvaPurple">Informatics & Canva Exhibition</strong>. Siswa akan mempresentasikan 6 portofolio karya nyata yang telah diselesaikan.
+                            </p>
+                            <p class="text-[10px] text-slate-500 font-medium">
+                                <i class="fa-solid fa-clock"></i> <span id="invite-time">Sabtu, 12 Desember 2026 pukul 09.00 WIB</span><br>
+                                <i class="fa-solid fa-location-dot"></i> <span id="invite-room">Laboratorium Komputer Terpadu SMA</span>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Exhibition Checklist progress -->
+                    <div class="bg-gradient-to-br from-indigo-900 to-slate-900 text-white p-6 rounded-3xl space-y-4 shadow-lg">
+                        <h4 class="font-bold text-base flex items-center gap-2 text-canvaBlue">
+                            <i class="fa-solid fa-list-check"></i> Kesiapan Stan Pameran
+                        </h4>
+                        <div class="space-y-3 text-xs">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                                <span>6 Karya Utama Wajib di Canva (Telah Siap)</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                                <span>Laptop demo & QR Code tautan portofolio</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                                <span>Undangan Digital Terkirim</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-slate-400">
+                                <span class="h-4 w-4 rounded-full border border-slate-600 flex items-center justify-center text-[8px] font-bold">4</span>
+                                <span>Papan Umpan Balik / Sticky Notes Orang Tua</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Interactive Parent's Wall & Gallery Exhibition -->
+                <div class="lg:col-span-2 space-y-6">
+                    
+                    <!-- Virtual Exhibition Wall Mock -->
+                    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                        <div>
+                            <span class="px-3 py-1 text-xs font-bold text-canvaBlue bg-cyan-50 border border-cyan-200 rounded-full">Virtual Gallery</span>
+                            <h2 class="text-2xl font-extrabold text-slate-800 mt-2">Display Karya di Monitor Kelas</h2>
+                            <p class="text-slate-500 text-sm">Berikut adalah preview karya aktif yang saat ini dipasang di monitor stan pameran Anda:</p>
+                        </div>
+
+                        <!-- Active Projected Art Card -->
+                        <div class="relative bg-slate-900 rounded-2xl p-4 border-4 border-slate-800 shadow-xl overflow-hidden aspect-[16/9] flex items-center justify-center text-white">
+                            <!-- Background Grid simulation -->
+                            <div class="absolute inset-0 bg-grid opacity-10"></div>
+                            
+                            <div class="relative z-10 text-center space-y-3 p-4">
+                                <div id="projected-badge" class="inline-block px-3 py-1 bg-canvaPurple text-[10px] font-bold tracking-widest uppercase rounded-full">
+                                    PROYEK TERKINI: INFOGRAFIS SEJARAH KOMPUTER
+                                </div>
+                                <h3 id="projected-title" class="text-xl md:text-3xl font-extrabold text-white">PELOPOR INFRASTRUKTUR IT GLOBAL</h3>
+                                <p id="projected-desc" class="text-xs text-slate-300 max-w-md mx-auto">Siswa memadukan prinsip berpikir komputasional dengan kreativitas media Canva untuk edukasi publik.</p>
+                                
+                                <div class="flex justify-center gap-4 text-xs pt-2">
+                                    <span class="px-2.5 py-1 bg-white/10 rounded border border-white/20"><i class="fa-solid fa-user"></i> Siswa Kelas 10</span>
+                                    <span class="px-2.5 py-1 bg-white/10 rounded border border-white/20"><i class="fa-solid fa-microchip"></i> Informatika</span>
+                                    <span class="px-2.5 py-1 bg-white/10 rounded border border-white/20"><i class="fa-solid fa-paintbrush"></i> Canva Pro</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Frame glow -->
+                            <div class="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-canvaPurple via-canvaBlue to-canvaMagenta"></div>
+                        </div>
+
+                        <!-- Parent's Sticky Notes Box -->
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between border-t border-slate-100 pt-6">
+                                <div>
+                                    <h3 class="font-bold text-slate-800 text-lg">Papan Tanggapan & Harapan Orang Tua</h3>
+                                    <p class="text-xs text-slate-500">Tinggalkan umpan balik digital saat mengunjungi stan anak Anda.</p>
+                                </div>
+                                <button onclick="openAddFeedbackModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition flex items-center gap-1.5 shadow-sm shadow-indigo-100">
+                                    <i class="fa-solid fa-plus"></i> Beri Catatan
+                                </button>
+                            </div>
+
+                            <!-- Interactive Sticky Notes Grid -->
+                            <div id="sticky-notes-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <!-- Stickies inserted dynamically here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Feedback Modal Dialog (Overlay) -->
+    <div id="feedback-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
+            <div class="flex justify-between items-center">
+                <h3 class="font-extrabold text-lg text-slate-800">Tulis Catatan Wali Murid</h3>
+                <button onclick="closeAddFeedbackModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Nama Bapak/Ibu:</label>
+                    <input type="text" id="modal-parent-name" placeholder="Budi Santoso (Orang Tua Susi)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-canvaPurple outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Pilih Warna Sticky Note:</label>
+                    <div class="flex gap-2">
+                        <button onclick="selectStickyColor('bg-yellow-100 text-yellow-900 border-yellow-200')" class="w-8 h-8 rounded-full bg-yellow-100 border border-yellow-300 ring-2 ring-transparent" id="color-yellow"></button>
+                        <button onclick="selectStickyColor('bg-pink-100 text-pink-900 border-pink-200')" class="w-8 h-8 rounded-full bg-pink-100 border border-pink-300 ring-2 ring-transparent" id="color-pink"></button>
+                        <button onclick="selectStickyColor('bg-emerald-100 text-emerald-900 border-emerald-200')" class="w-8 h-8 rounded-full bg-emerald-100 border border-emerald-300 ring-2 ring-transparent" id="color-emerald"></button>
+                        <button onclick="selectStickyColor('bg-cyan-100 text-cyan-900 border-cyan-200')" class="w-8 h-8 rounded-full bg-cyan-100 border border-cyan-300 ring-2 ring-transparent" id="color-cyan"></button>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Pesan Tanggapan / Harapan:</label>
+                    <textarea id="modal-message" rows="3" placeholder="Sangat bangga melihat kreativitas anak dalam memadukan IT dan Canva..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-canvaPurple outline-none"></textarea>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeAddFeedbackModal()" class="px-4 py-2 text-sm font-semibold border border-slate-200 rounded-xl hover:bg-slate-50">Batal</button>
+                <button onclick="submitFeedback()" class="px-4 py-2 text-sm font-bold text-white canva-gradient rounded-xl shadow-md">Kirim Tanggapan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky Notification Box -->
+    <div id="toast-notification" class="fixed bottom-6 right-6 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 transform translate-y-24 opacity-0 transition-all duration-300 z-50">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toast-message" class="text-sm font-medium">Notifikasi sukses!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 mt-12">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p>© 2026 CanvaEdu Informatics SMA/MA. Semua Hak Cipta Dilindungi.</p>
+            <div class="flex gap-4">
+                <a href="#" class="hover:underline">Panduan Pendidik</a>
+                <a href="#" class="hover:underline">Kebijakan Privasi</a>
+                <a href="#" class="hover:underline">Kontak Dukungan</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Data Store for Syllabus Informatics-Canva Grade 10, 11, 12 Semester 1 & 2
+        const curriculumData = {
+            10: {
+                1: {
+                    title: "Dasar Desain Grafis &Computational Thinking",
+                    desc: "Siswa menguasai prinsip estetika tata letak, psikologi warna, branding personal, serta menyajikan visualisasi data informatika dalam format infografis edukatif yang dinamis.",
+                    projects: [
+                        { id: 1011, title: "Infografis Sejarah Komputer", category: "Informatics History", desc: "Mendesain infografis linimasa perkembangan generasi komputer dari masa ke masa dengan visualisasi data numerik yang akurat.", tools: "Canva Charts, Elements, Grid", icon: "fa-solid fa-timeline" },
+                        { id: 1012, title: "Poster Edukasi 'Bijak Bermedia Sosial'", category: "Cyber Ethics", desc: "Membuat kampanye visual pencegahan berita hoax dan perlindungan data pribadi dengan teknik typography yang persuasif.", tools: "Canva Text, Shadows, Background Remover", icon: "fa-solid fa-shield-halved" },
+                        { id: 1013, title: "Logo Personal Brand & Brand Kit", category: "Digital Identity", desc: "Menentukan warna estetis kepribadian, font favorit, dan merancang logo profesional sebagai portofolio diri awal.", tools: "Brand Kit, Canva Shapes, Transparent Background", icon: "fa-solid fa-id-badge" },
+                        { id: 1014, title: "Kartu Nama Bisnis Kreatif", category: "Design Print", desc: "Mendesain kartu nama interaktif yang memuat QR Code profil LinkedIn atau portofolio pribadi siswa.", tools: "Canva QR Code Generator, Layouting, Canva Print", icon: "fa-solid fa-address-card" },
+                        { id: 1015, title: "Kolase Foto Perangkat Keras", category: "Hardware Intro", desc: "Menggabungkan foto-foto komponen komputer (CPU, RAM, Motherboard) dalam grid terstruktur dengan label keterangan fungsional.", tools: "Frames, Grids, Canva Borders", icon: "fa-solid fa-microchip" },
+                        { id: 1016, title: "Feed Instagram Edukatif (3 Grid)", category: "Social Media Campaign", desc: "Menyusun konten edukatif mini tentang tips keamanan komputer yang tersambung rapi antar grid.", tools: "Grid Slicing, Canva Templates, Custom Dimensions", icon: "fa-brands fa-instagram" }
+                    ]
+                },
+                2: {
+                    title: "Komunikasi Visual Data & Interaktivitas",
+                    desc: "Siswa mampu mengolah presentasi taktis sistem komputer, memetakan logika pemrograman menggunakan mindmap kreatif, serta memproduksi video kampanye sosial.",
+                    projects: [
+                        { id: 1021, title: "Presentasi Interaktif 'Sistem Komputer'", category: "Computer Science", desc: "Mendesain slide presentasi profesional dengan slide transitions dinamis yang menjelaskan siklus pemrosesan data.", tools: "Presentation Mode, Transition Animations, Canva Magic", icon: "fa-solid fa-display" },
+                        { id: 1022, title: "Mind Map 'Algoritma Pemrograman'", category: "Logika Dasar", desc: "Memetakan diagram alur logika pemrograman (Percabangan & Perulangan) dengan bantuan elemen garis dan panah yang presisi.", tools: "Canva Connectors, Mindmap Elements", icon: "fa-solid fa-diagram-project" },
+                        { id: 1023, title: "Brosur Promosi Jurusan/Sekolah", category: "Design Print", desc: "Merancang pamflet lipat tiga yang memuat detail prestasi, fasilitas lab komputer, dan visi misi jurusan.", tools: "Three-fold Grid, Canva Print, Rulers", icon: "fa-solid fa-file-invoice" },
+                        { id: 1024, title: "Video Pendek 'Anti Cyberbullying'", category: "Video Editing", desc: "Merakit video edukasi durasi 60 detik lengkap dengan transisi suara, text-to-speech, dan stiker bergerak.", tools: "Canva Video Editor, Audio Tracks, Text Animations", icon: "fa-solid fa-video" },
+                        { id: 1025, title: "Desain CV/Resume Profesional Siswa", category: "Career Prep", desc: "Menyusun profil kompetensi keahlian informatika secara visual agar siap menghadapi dunia magang atau perkuliahan.", tools: "Canva Resume Templates, Typography Alignment", icon: "fa-solid fa-file-signature" },
+                        { id: 1026, title: "Sertifikat Penghargaan Acara Sekolah", category: "Exhibition Event", desc: "Membuat template sertifikat bernilai estetika tinggi lengkap dengan tanda tangan digital guru.", tools: "Canva Templates, Bulk Create (Data input)", icon: "fa-solid fa-medal" }
+                    ]
+                }
+            },
+            11: {
+                1: {
+                    title: "Branding, UI/UX, & Website Builder",
+                    desc: "Siswa mengeksplorasi pembuatan antarmuka aplikasi digital (UI/UX) dan meluncurkan website interaktif sederhana langsung menggunakan fitur publikasi domain Canva.",
+                    projects: [
+                        { id: 1111, title: "Mockup Website Sekolah Sederhana", category: "Web Design", desc: "Merancang tata letak halaman beranda website sekolah interaktif lengkap dengan navigasi menu fiktif.", tools: "Canva Website Feature, Responsive Design Mode", icon: "fa-solid fa-globe" },
+                        { id: 1112, title: "Landing Page Produk Wirausaha", category: "Digital Marketing", desc: "Membuat landing page promosi produk teknologi lokal lengkap dengan fitur form pengumpulan prospek.", tools: "Canva Sites, Embed Code, CTA Buttons", icon: "fa-solid fa-rocket" },
+                        { id: 1113, title: "UI/UX Mobile App Prototype", category: "UI/UX Design", desc: "Membuat prototipe aplikasi seluler pengelola sampah digital dengan interaktivitas tombol navigasi antar halaman.", tools: "Link inside Canva, Mobile Frame Mockups", icon: "fa-solid fa-mobile-screen-button" },
+                        { id: 1114, title: "E-Newsletter Bulanan Kelas", category: "Communication", desc: "Menyusun majalah digital bulanan yang merangkum pencapaian belajar serta dokumentasi aktivitas praktikum.", tools: "Canva Docs, Multi-page Document Layouts", icon: "fa-solid fa-newspaper" },
+                        { id: 1115, title: "Header Banner LinkedIn Profesional", category: "Branding", desc: "Merancang spanduk header personal di LinkedIn yang mendemonstrasikan keahlian jaringan dan pemrograman.", tools: "Custom Sizes, Profile Integration Mock", icon: "fa-brands fa-linkedin" },
+                        { id: 1116, title: "Video Animasi 'Cara Kerja Internet'", category: "Animation", desc: "Memvisualisasikan proses lalu lintas paket data dari klien menuju server menggunakan animasi transisi Canva.", tools: "Match and Move Animation, Canva Voiceover", icon: "fa-solid fa-network-wired" }
+                    ]
+                },
+                2: {
+                    title: "Visualisasi Data Lanjut & Publikasi Digital",
+                    desc: "Siswa memproses visualisasi statistik komputer, merancang manual book pemrograman Python, serta menyusun dashboard data analisis visual berkinerja tinggi.",
+                    projects: [
+                        { id: 1121, title: "Dashboard Visual Analisis Data", category: "Data Science", desc: "Menyajikan grafik interaktif pertumbuhan pengguna internet dan tren siber global menggunakan bagan dinamis Canva.", tools: "Canva Interactive Charts, Tables Integrations", icon: "fa-solid fa-chart-column" },
+                        { id: 1122, title: "Flowchart Algoritma Pemecahan Masalah", category: "Computational Logic", desc: "Membuat bagan alur komprehensif penanganan bug/error pada sistem jaringan LAN sekolah.", tools: "Canva Connectors, Flowchart Stencils", icon: "fa-solid fa-network-wired" },
+                        { id: 1123, title: "E-Book Panduan Praktis 'Python 101'", category: "Programming Docs", desc: "Merancang desain tata letak e-book panduan coding Python ramah pemula dengan highlight baris kode yang estetik.", tools: "Canva Docs, Code Block Styling, PDF Export", icon: "fa-solid fa-book" },
+                        { id: 1124, title: "Mockup Kemasan Produk Teknologi", category: "Industrial Design", desc: "Merancang grafis luar kemasan (box packaging) USB flashdisk atau mouse gaming ramah lingkungan.", tools: "Canva 3D Mockups, SmartMockup integration", icon: "fa-solid fa-box" },
+                        { id: 1125, title: "Poster Studi Kasus Dampak Sosial IT", category: "Ethics In Tech", desc: "Menganalisis dampak kecerdasan buatan (AI) terhadap tenaga kerja global melalui poster riset saintifik.", tools: "Research Poster Templates, Data Blocks", icon: "fa-solid fa-users" },
+                        { id: 1126, title: "Pitch Deck Proposal Bisnis Start-Up", category: "Digital Business", desc: "Mempresentasikan ide bisnis rintisan siber di hadapan investor menggunakan dek presentasi visual kelas dunia.", tools: "Magic Presentation, Canva AI Writing Assistant", icon: "fa-solid fa-lightbulb" }
+                    ]
+                }
+            },
+            12: {
+                1: {
+                    title: "Personal Branding Tingkat Lanjut & Portofolio",
+                    desc: "Persiapan karir pasca-sekolah. Siswa merangkum seluruh karyanya ke dalam website portofolio interaktif dan proposal rekayasa piranti lunak (RPL).",
+                    projects: [
+                        { id: 1211, title: "Website Portofolio Interaktif Siswa", category: "Professional Brand", desc: "Membangun website portofolio pribadi multi-halaman yang mengompilasi seluruh karya terbaik Canva sejak kelas 10.", tools: "Canva Website Builder, Custom Subdomain", icon: "fa-solid fa-briefcase" },
+                        { id: 1212, title: "Proposal Rekayasa Perangkat Lunak", category: "Software Engineering", desc: "Mendesain naskah proposal proyek pengembangan aplikasi mobile sekolah dengan layout formal dan rapi.", tools: "Canva Docs to Decks, Custom Grid Styling", icon: "fa-solid fa-file-code" },
+                        { id: 1213, title: "Desain Company Profile Start-Up Siswa", category: "Corporate Design", desc: "Merancang buklet company profile perusahaan perangkat lunak fiktif bentukan kelompok belajar siswa.", tools: "Multi-page Booklets, Brand Presets", icon: "fa-solid fa-building" },
+                        { id: 1214, title: "Merchandise Promosi Inovasi IT", category: "Product Branding", desc: "Merancang visual kaos komunitas IT, mug kopi, dan stiker laptop yang merepresentasikan kultur programmer.", tools: "Canva Product Mockups, Vector Exports", icon: "fa-solid fa-shirt" },
+                        { id: 1215, title: "Laporan Visual Kerja Praktik (PKL)", category: "Field Report", desc: "Menyusun presentasi naratif visual hasil laporan kerja lapangan di industri digital/software house.", tools: "Dynamic Graphs, Photo Collage, Slides", icon: "fa-solid fa-chart-line" },
+                        { id: 1216, title: "Video Resume Kreatif (Video Portofolio)", category: "Career Marketing", desc: "Membuat video pendek perkenalan diri bernada profesional yang menunjukkan minat bakat siber.", tools: "Canva Video Recorder, Audio Mixing, Captions", icon: "fa-solid fa-circle-user" }
+                    ]
+                },
+                2: {
+                    title: "Puncak Portofolio (Capstone) & Pameran Wali Murid",
+                    desc: "Mempersiapkan pameran fisik dan digital akhir tahun ajaran. Siswa mendesain seluruh media promosi, katalog, undangan pameran, dan menyajikannya ke hadapan orang tua.",
+                    projects: [
+                        { id: 1221, title: "Poster Saintifik Capstone Project", category: "Capstone Project", desc: "Mendesain poster pameran proyek akhir informatika (misal: sistem IoT sederhana atau program web siber).", tools: "Infographic Templates, High-Res Printing Options", icon: "fa-solid fa-flask" },
+                        { id: 1222, title: "Backdrop & X-Banner Stan Pameran", category: "Physical Printout", desc: "Merancang banner vertikal promosi stan kelompok sebagai panduan informasi bagi pengunjung/orang tua.", tools: "Custom Dimensions (60x160cm), High-Res Export", icon: "fa-solid fa-image" },
+                        { id: 1223, title: "E-Katalog Karya Portofolio Siswa", category: "Compilation Booklet", desc: "Menghimpun seluruh hasil karya praktis teman sekelas dalam bentuk katalog digital yang dapat di-scan via QR.", tools: "Digital Catalog Layout, Canva Embed Links", icon: "fa-solid fa-book-open" },
+                        { id: 1224, title: "Undangan Pameran Interaktif Wali Murid", category: "Event Management", desc: "Mendesain kartu undangan fisik-digital elegan yang disematkan kode peta lokasi stan pameran kelas.", tools: "Canva Custom Elements, RSVP Forms Links", icon: "fa-solid fa-envelope" },
+                        { id: 1225, title: "Video Teaser Pameran Kreatif", category: "Cinematic Reel", desc: "Membuat video cinematic teaser berdurasi 30 detik untuk diunggah di Instagram Reels & TikTok sekolah.", tools: "Canva Video Editor, Fast Cuts, Trending Music", icon: "fa-solid fa-clapperboard" },
+                        { id: 1226, title: "Buku Kenangan Digital Informatika", category: "Yearbook Art", desc: "Menyusun halaman kenangan digital per kelompok siber lengkap dengan kesan pesan selama masa sekolah.", tools: "Collaborative Design (Teamwork)", icon: "fa-solid fa-graduation-cap" }
+                    ]
+                }
+            }
+        };
+
+        // UI State Variables
+        let currentClass = 10;
+        let currentSemester = 1;
+        let selectedStickyColorClass = 'bg-yellow-100 text-yellow-900 border-yellow-200';
+        
+        // Progress tracker from Local Storage or Default
+        let completedProjects = JSON.parse(localStorage.getItem('canvaEdu_completed_projects')) || {};
+
+        // Default Sticky Notes Mock Data
+        let feedbackList = JSON.parse(localStorage.getItem('canvaEdu_feedback')) || [
+            { id: 1, author: "Ibu Hartati (Wali Murid Susi)", message: "Luar biasa! Sangat bangga melihat anak saya bisa merancang web siber dan desain visual yang bagus di Canva.", colorClass: "bg-pink-100 text-pink-900 border-pink-200" },
+            { id: 2, author: "Bapak Gunawan (Wali Murid Rian)", message: "Materi informatika sekarang sangat praktis dan modern. Presentasi tentang cyberbullying Rian keren sekali.", colorClass: "bg-cyan-100 text-cyan-900 border-cyan-200" }
+        ];
+
+        // On App Load
+        window.onload = function() {
+            renderCurriculum();
+            renderStickyNotes();
+            highlightSelectedStickyColor();
+        };
+
+        // Switch Main Tabs
+        function switchTab(tabName) {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('bg-white', 'text-slate-800', 'shadow-sm');
+                tab.classList.add('text-slate-600', 'hover:text-slate-800');
+            });
+            
+            document.getElementById('section-curriculum').classList.add('hidden');
+            document.getElementById('section-editor').classList.add('hidden');
+            document.getElementById('section-exhibition').classList.add('hidden');
+
+            document.getElementById(`tab-${tabName}`).classList.remove('text-slate-600', 'hover:text-slate-800');
+            document.getElementById(`tab-${tabName}`).classList.add('bg-white', 'text-slate-800', 'shadow-sm');
+            document.getElementById(`section-${tabName}`).classList.remove('hidden');
+
+            if (tabName === 'editor') {
+                applyCanvasTemplate(); // Load default editor simulation template
+            }
+        }
+
+        // Change Active Class Filter
+        function selectClass(classNum) {
+            currentClass = classNum;
+            document.querySelectorAll('.class-btn').forEach(btn => {
+                btn.classList.remove('bg-canvaPurple', 'text-white', 'shadow-sm');
+                btn.classList.add('text-slate-600', 'hover:bg-slate-200');
+            });
+            document.getElementById(`btn-class-${classNum}`).classList.add('bg-canvaPurple', 'text-white', 'shadow-sm');
+            document.getElementById(`btn-class-${classNum}`).classList.remove('text-slate-600', 'hover:bg-slate-200');
+            renderCurriculum();
+        }
+
+        // Change Active Semester Filter
+        function selectSemester(semNum) {
+            currentSemester = semNum;
+            document.querySelectorAll('.sem-btn').forEach(btn => {
+                btn.classList.remove('bg-canvaBlue', 'text-white', 'shadow-sm');
+                btn.classList.add('text-slate-600', 'hover:bg-slate-200');
+            });
+            document.getElementById(`btn-sem-${semNum}`).classList.add('bg-canvaBlue', 'text-white', 'shadow-sm');
+            document.getElementById(`btn-sem-${semNum}`).classList.remove('text-slate-600', 'hover:bg-slate-200');
+            renderCurriculum();
+        }
+
+        // Render Curriculum Section based on Filter selection
+        function renderCurriculum() {
+            const currentData = curriculumData[currentClass][currentSemester];
+            
+            // Render Target & Descs
+            document.getElementById('curriculum-target-title').innerText = currentData.title;
+            document.getElementById('curriculum-target-desc').innerText = currentData.desc;
+
+            // Render Progress Indicator
+            const currentSemesterProjectIds = currentData.projects.map(p => p.id);
+            const totalProjects = currentSemesterProjectIds.length;
+            const completedCount = currentSemesterProjectIds.filter(id => completedProjects[id]).length;
+            
+            const progressPercentage = (completedCount / totalProjects) * 100;
+            document.getElementById('semester-progress-bar').style.width = `${progressPercentage}%`;
+
+            const completionBanner = document.getElementById('completion-certificate-banner');
+            if (completedCount === totalProjects) {
+                completionBanner.classList.remove('hidden');
+            } else {
+                completionBanner.classList.add('hidden');
+            }
+
+            // Render Cards
+            const container = document.getElementById('project-cards-container');
+            container.innerHTML = '';
+
+            currentData.projects.forEach((proj, idx) => {
+                const isCompleted = !!completedProjects[proj.id];
+                const card = document.createElement('div');
+                card.className = `bg-white rounded-2xl border ${isCompleted ? 'border-emerald-200 ring-2 ring-emerald-500/10' : 'border-slate-200'} p-5 flex flex-col justify-between shadow-sm hover:shadow-md hover:scale-[1.01] transition-all duration-200`;
+                
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-start">
+                            <span class="px-2.5 py-0.5 bg-slate-100 border border-slate-200 text-slate-600 font-extrabold text-[10px] tracking-wide uppercase rounded-md">Proyek 0${idx + 1}</span>
+                            <button onclick="toggleProjectCompletion(${proj.id})" class="h-8 w-8 rounded-full ${isCompleted ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-100 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50'} flex items-center justify-center transition" title="${isCompleted ? 'Tandai belum selesai' : 'Tandai sudah selesai'}">
+                                <i class="fa-solid ${isCompleted ? 'fa-circle-check text-lg' : 'fa-check'}"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="flex gap-3 items-start">
+                            <div class="h-10 w-10 shrink-0 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-canvaPurple text-lg">
+                                <i class="${proj.icon}"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 tracking-wider uppercase">${proj.category}</span>
+                                <h4 class="font-extrabold text-slate-800 leading-tight">${proj.title}</h4>
+                            </div>
+                        </div>
+                        
+                        <p class="text-xs text-slate-500 leading-relaxed">${proj.desc}</p>
+                    </div>
+
+                    <div class="border-t border-slate-100 pt-4 mt-4 space-y-3">
+                        <div>
+                            <span class="text-[10px] font-bold text-slate-400 block mb-1">Fitur Utama Canva:</span>
+                            <div class="flex flex-wrap gap-1">
+                                ${proj.tools.split(', ').map(tool => `<span class="bg-indigo-50 text-indigo-700 text-[10px] px-2 py-0.5 rounded font-medium">${tool}</span>`).join('')}
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button onclick="simulateInEditor('${proj.title}', '${proj.desc}')" class="flex-1 text-center py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition">
+                                <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Edit Simulasi
+                            </button>
+                            <button onclick="projectToExhibition('${proj.title}', '${proj.desc}')" class="px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold transition" title="Kirim ke Monitor Pameran">
+                                <i class="fa-solid fa-chalkboard-user"></i> Pajang
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Toggle project check/uncheck
+        function toggleProjectCompletion(projId) {
+            if (completedProjects[projId]) {
+                delete completedProjects[projId];
+                showToast("Progres karya dibatalkan!");
+            } else {
+                completedProjects[projId] = true;
+                showToast("Selamat! Karya berhasil diselesaikan 🎉");
+            }
+            localStorage.setItem('canvaEdu_completed_projects', JSON.stringify(completedProjects));
+            renderCurriculum();
+        }
+
+        // Direct simulator routing from a project card
+        function simulateInEditor(title, desc) {
+            switchTab('editor');
+            document.getElementById('canvas-text-input').value = title.toUpperCase();
+            document.getElementById('canvas-main-title').innerText = title.toUpperCase();
+            document.getElementById('canvas-sub-desc').innerText = desc;
+        }
+
+        // Direct projection of cards to the Virtual Exhibition Wall
+        function projectToExhibition(title, desc) {
+            document.getElementById('projected-badge').innerText = `PROYEK AKTIF: ${title.toUpperCase()}`;
+            document.getElementById('projected-title').innerText = title.toUpperCase();
+            document.getElementById('projected-desc').innerText = desc;
+            
+            showToast("Karya berhasil diproyeksikan ke stan pameran!");
+            switchTab('exhibition');
+        }
+
+        // TOAST NOTIFICATION HELPERS
+        function showToast(message) {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-message').innerText = message;
+            
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+
+        // MINI CANVA SIMULATOR SCRIPTING
+        function applyCanvasTemplate() {
+            const theme = document.getElementById('canvas-theme-select').value;
+            const titleElement = document.getElementById('canvas-main-title');
+            const descElement = document.getElementById('canvas-sub-desc');
+            const bgElement = document.getElementById('canva-canvas-body');
+            const subTitleElement = document.getElementById('canvas-card-subtitle');
+
+            // Reset Stickers
+            document.getElementById('canvas-stickers-container').innerHTML = '';
+
+            if (theme === 'it-history') {
+                titleElement.innerText = "INFOGRAFIS SEJARAH IT";
+                descElement.innerText = "Menelusuri evolusi perangkat keras dan perangkat lunak dari mesin mekanis hingga era modern.";
+                bgElement.className = "w-full max-w-lg aspect-[4/3] bg-gradient-to-r from-slate-900 to-indigo-950 rounded-2xl shadow-xl p-8 relative overflow-hidden flex flex-col justify-between text-white transition-all duration-300";
+                subTitleElement.innerText = "SMA INFORMATIKA KELAS 10";
+                addSticker('💻');
+                addSticker('💡');
+            } else if (theme === 'cyber-safety') {
+                titleElement.innerText = "KAMPANYE AMAN DI INTERNET";
+                descElement.innerText = "Hindari jebakan phishing, amankan sandi Anda, dan jangan menyebar data pribadi.";
+                bgElement.className = "w-full max-w-lg aspect-[4/3] bg-gradient-to-r from-rose-950 to-red-900 rounded-2xl shadow-xl p-8 relative overflow-hidden flex flex-col justify-between text-white transition-all duration-300";
+                subTitleElement.innerText = "CYBER SECURITY CAMPAIGN";
+                addSticker('🔐');
+                addSticker('🤖');
+            } else if (theme === 'personal-brand') {
+                titleElement.innerText = "BRAND KIT PORTFOLIO";
+                descElement.innerText = "Identitas personal branding desain visual siber, mencakup palet warna unik dan portofolio profesional.";
+                bgElement.className = "w-full max-w-lg aspect-[4/3] bg-gradient-to-r from-purple-800 to-indigo-900 rounded-2xl shadow-xl p-8 relative overflow-hidden flex flex-col justify-between text-white transition-all duration-300";
+                subTitleElement.innerText = "IDENTITY BRAND KIT CREATIVE";
+                addSticker('🎨');
+                addSticker('🚀');
+            } else if (theme === 'coding-notes') {
+                titleElement.innerText = "ALGORITMA & PYTHON";
+                descElement.innerText = "Belajar dasar-dasar computational thinking dan pemrograman Python dengan cepat dan asyik.";
+                bgElement.className = "w-full max-w-lg aspect-[4/3] bg-gradient-to-r from-emerald-900 to-teal-950 rounded-2xl shadow-xl p-8 relative overflow-hidden flex flex-col justify-between text-white transition-all duration-300";
+                subTitleElement.innerText = "KODE PROGRAM KELAS 11";
+                addSticker('💻');
+                addSticker('📊');
+            }
+
+            document.getElementById('canvas-text-input').value = titleElement.innerText;
+        }
+
+        function updateCanvasText() {
+            const inputVal = document.getElementById('canvas-text-input').value;
+            document.getElementById('canvas-main-title').innerText = inputVal.toUpperCase();
+        }
+
+        function changeCanvasBg(bgClass) {
+            const canvas = document.getElementById('canva-canvas-body');
+            canvas.className = `w-full max-w-lg aspect-[4/3] bg-gradient-to-r ${bgClass} rounded-2xl shadow-xl p-8 relative overflow-hidden flex flex-col justify-between text-white transition-all duration-300`;
+        }
+
+        function addSticker(emoji) {
+            const container = document.getElementById('canvas-stickers-container');
+            if (container.children.length >= 6) {
+                showToast("Workspace penuh! Maksimal 6 elemen.");
+                return;
+            }
+            const sticker = document.createElement('span');
+            sticker.className = "text-3xl animate-pulse cursor-pointer hover:scale-125 transition transform duration-200";
+            sticker.innerText = emoji;
+            sticker.onclick = function() {
+                sticker.remove();
+            };
+            container.appendChild(sticker);
+        }
+
+        function clearCanvas() {
+            document.getElementById('canvas-stickers-container').innerHTML = '';
+            document.getElementById('canvas-text-input').value = "WORKSPACE KOSONG";
+            document.getElementById('canvas-main-title').innerText = "WORKSPACE KOSONG";
+            document.getElementById('canvas-sub-desc').innerText = "Mulailah menyusun teks dan stiker baru di sini.";
+        }
+
+        function captureMockCanvas() {
+            // Simulated Save
+            const currentTitle = document.getElementById('canvas-main-title').innerText;
+            const currentDesc = document.getElementById('canvas-sub-desc').innerText;
+            
+            document.getElementById('projected-badge').innerText = `KARYA SIMULATOR DIKIRIM`;
+            document.getElementById('projected-title').innerText = currentTitle;
+            document.getElementById('projected-desc').innerText = currentDesc;
+
+            showToast("Karya tersimpan & berhasil dipajang di stan pameran!");
+            switchTab('exhibition');
+        }
+
+        // EXHIBITION & PARENT INVITATION SCRIPTING
+        function updateInvitation() {
+            const pName = document.getElementById('parent-name-input').value;
+            const eTime = document.getElementById('exhibit-time-input').value;
+            const eRoom = document.getElementById('exhibit-room-input').value;
+
+            document.getElementById('invite-parent-name').innerText = pName || 'Bapak/Ibu Orang Tua Wali';
+            document.getElementById('invite-time').innerText = eTime;
+            document.getElementById('invite-room').innerText = eRoom;
+        }
+
+        // STICKY NOTES INTERACTIONS
+        function renderStickyNotes() {
+            const container = document.getElementById('sticky-notes-container');
+            container.innerHTML = '';
+
+            feedbackList.forEach(note => {
+                const noteElement = document.createElement('div');
+                noteElement.className = `${note.colorClass} p-4 rounded-2xl border shadow-sm relative transform rotate-1 space-y-2`;
+                noteElement.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <p class="font-extrabold text-xs text-slate-700 underline">${note.author}</p>
+                        <button onclick="deleteFeedback(${note.id})" class="text-slate-400 hover:text-red-600 transition text-[10px]"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <p class="text-xs italic leading-relaxed">"${note.message}"</p>
+                    <div class="text-[9px] text-slate-400 text-right font-medium">Pengunjung Terverifikasi</div>
+                `;
+                container.appendChild(noteElement);
+            });
+        }
+
+        function openAddFeedbackModal() {
+            document.getElementById('feedback-modal').classList.remove('hidden');
+        }
+
+        function closeAddFeedbackModal() {
+            document.getElementById('feedback-modal').classList.add('hidden');
+            // Reset modal values
+            document.getElementById('modal-parent-name').value = '';
+            document.getElementById('modal-message').value = '';
+        }
+
+        function selectStickyColor(colorClass) {
+            selectedStickyColorClass = colorClass;
+            highlightSelectedStickyColor();
+        }
+
+        function highlightSelectedStickyColor() {
+            // Reset borders of all color selectors
+            document.getElementById('color-yellow').className = document.getElementById('color-yellow').className.replace('ring-purple-600', 'ring-transparent');
+            document.getElementById('color-pink').className = document.getElementById('color-pink').className.replace('ring-purple-600', 'ring-transparent');
+            document.getElementById('color-emerald').className = document.getElementById('color-emerald').className.replace('ring-purple-600', 'ring-transparent');
+            document.getElementById('color-cyan').className = document.getElementById('color-cyan').className.replace('ring-purple-600', 'ring-transparent');
+
+            if (selectedStickyColorClass.includes('yellow')) {
+                document.getElementById('color-yellow').className = document.getElementById('color-yellow').className.replace('ring-transparent', 'ring-purple-600');
+            } else if (selectedStickyColorClass.includes('pink')) {
+                document.getElementById('color-pink').className = document.getElementById('color-pink').className.replace('ring-transparent', 'ring-purple-600');
+            } else if (selectedStickyColorClass.includes('emerald')) {
+                document.getElementById('color-emerald').className = document.getElementById('color-emerald').className.replace('ring-transparent', 'ring-purple-600');
+            } else if (selectedStickyColorClass.includes('cyan')) {
+                document.getElementById('color-cyan').className = document.getElementById('color-cyan').className.replace('ring-transparent', 'ring-purple-600');
+            }
+        }
+
+        function submitFeedback() {
+            const author = document.getElementById('modal-parent-name').value || "Wali Murid Tamu";
+            const message = document.getElementById('modal-message').value;
+
+            if (!message) {
+                showToast("Pesan tanggapan tidak boleh kosong!");
+                return;
+            }
+
+            const newNote = {
+                id: Date.now(),
+                author: author,
+                message: message,
+                colorClass: selectedStickyColorClass
+            };
+
+            feedbackList.push(newNote);
+            localStorage.setItem('canvaEdu_feedback', JSON.stringify(feedbackList));
+            
+            renderStickyNotes();
+            closeAddFeedbackModal();
+            showToast("Tanggapan berhasil dipasang di papan pameran! 📌");
+        }
+
+        function deleteFeedback(noteId) {
+            feedbackList = feedbackList.filter(note => note.id !== noteId);
+            localStorage.setItem('canvaEdu_feedback', JSON.stringify(feedbackList));
+            renderStickyNotes();
+            showToast("Umpan balik telah dihapus.");
+        }
+    </script>
+</body>
+</html>
