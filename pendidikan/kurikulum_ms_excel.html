@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Kurikulum Informatika - Fokus Microsoft Excel (SMA/MA)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .excel-green {
+            color: #107c41;
+        }
+        .bg-excel {
+            background-color: #107c41;
+        }
+        .bg-excel-light {
+            background-color: #f1f9f3;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Header / Navbar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-emerald-100 rounded-lg text-emerald-700">
+                    <i data-lucide="file-spreadsheet" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900 leading-tight">ExcelCanvas</h1>
+                    <p class="text-xs text-slate-500 font-medium">Kurikulum & Portofolio Informatika SMA/MA</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex space-x-1">
+                <button onclick="switchTab('kurikulum')" id="nav-kurikulum" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-emerald-50 text-emerald-700">
+                    <span class="flex items-center gap-2"><i data-lucide="book-open" class="w-4 h-4"></i> Kurikulum & Target</span>
+                </button>
+                <button onclick="switchTab('proyek')" id="nav-proyek" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                    <span class="flex items-center gap-2"><i data-lucide="award" class="w-4 h-4"></i> 6 Karya Praktik</span>
+                </button>
+                <button onclick="switchTab('simulator')" id="nav-simulator" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                    <span class="flex items-center gap-2"><i data-lucide="terminal" class="w-4 h-4"></i> Simulator Rumus</span>
+                </button>
+                <button onclick="switchTab('pameran')" id="nav-pameran" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                    <span class="flex items-center gap-2"><i data-lucide="users" class="w-4 h-4"></i> Panduan Pameran</span>
+                </button>
+            </nav>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                    K-Merdeka
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Bottom Navigation for Mobile -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-50 flex justify-around py-2">
+        <button onclick="switchTab('kurikulum')" class="mobile-tab-btn flex flex-col items-center gap-1 text-emerald-700" id="mob-kurikulum">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+            <span class="text-[10px] font-semibold">Kurikulum</span>
+        </button>
+        <button onclick="switchTab('proyek')" class="mobile-tab-btn flex flex-col items-center gap-1 text-slate-500" id="mob-proyek">
+            <i data-lucide="award" class="w-5 h-5"></i>
+            <span class="text-[10px] font-semibold">Karya</span>
+        </button>
+        <button onclick="switchTab('simulator')" class="mobile-tab-btn flex flex-col items-center gap-1 text-slate-500" id="mob-simulator">
+            <i data-lucide="terminal" class="w-5 h-5"></i>
+            <span class="text-[10px] font-semibold">Simulator</span>
+        </button>
+        <button onclick="switchTab('pameran')" class="mobile-tab-btn flex flex-col items-center gap-1 text-slate-500" id="mob-pameran">
+            <i data-lucide="users" class="w-5 h-5"></i>
+            <span class="text-[10px] font-semibold">Pameran</span>
+        </button>
+    </div>
+
+    <!-- Main Content Grid -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 mb-16 md:mb-0">
+        
+        <!-- Jumbotron / Hero Info -->
+        <div class="bg-gradient-to-r from-emerald-800 to-teal-950 rounded-2xl p-6 md:p-8 text-white mb-8 shadow-md">
+            <div class="max-w-3xl">
+                <h2 class="text-2xl md:text-4xl font-extrabold mb-3">Rancang Masa Depan dengan Data</h2>
+                <p class="text-emerald-100 text-sm md:text-base mb-4 leading-relaxed">
+                    Framework Kurikulum Excel yang komprehensif untuk jenjang SMA/MA Kelas X, XI, & XII. Menghubungkan teori informatika, analisis data real-world, serta penciptaan portofolio nyata yang siap dipamerkan di hadapan orang tua/wali murid pada akhir tahun ajaran.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                    <div class="flex items-center gap-1.5 bg-emerald-900/50 border border-emerald-700 px-3 py-1.5 rounded-full text-xs font-medium">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> 6 Proyek Portofolio
+                    </div>
+                    <div class="flex items-center gap-1.5 bg-emerald-900/50 border border-emerald-700 px-3 py-1.5 rounded-full text-xs font-medium">
+                        <i data-lucide="users" class="w-4 h-4 text-emerald-400"></i> Ready-to-Show Parent Exhibition
+                    </div>
+                    <div class="flex items-center gap-1.5 bg-emerald-900/50 border border-emerald-700 px-3 py-1.5 rounded-full text-xs font-medium">
+                        <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i> Progresif & Aplikatif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 1: KURIKULUM & TARGET -->
+        <div id="tab-kurikulum" class="content-section space-y-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-5">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">Peta Kurikulum & Alur Pembelajaran</h3>
+                    <p class="text-slate-500 text-sm">Pilih jenjang kelas untuk melihat fokus kompetensi, sebaran materi tiap semester, dan milestone belajar.</p>
+                </div>
+                <div class="inline-flex rounded-lg border border-slate-200 p-1 bg-white shadow-sm">
+                    <button onclick="filterClass(10)" id="btn-class-10" class="class-filter-btn px-4 py-2 text-sm font-semibold rounded-md bg-emerald-600 text-white shadow-sm">
+                        Kelas X
+                    </button>
+                    <button onclick="filterClass(11)" id="btn-class-11" class="class-filter-btn px-4 py-2 text-sm font-semibold rounded-md text-slate-600 hover:text-slate-900">
+                        Kelas XI
+                    </button>
+                    <button onclick="filterClass(12)" id="btn-class-12" class="class-filter-btn px-4 py-2 text-sm font-semibold rounded-md text-slate-600 hover:text-slate-900">
+                        Kelas XII
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kurikulum Cards Container -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8" id="kurikulum-content">
+                <!-- Data will be dynamically injected here depending on the selected class -->
+            </div>
+        </div>
+
+        <!-- TAB 2: 6 KARYA PRAKTIK UTAMA (PORTOFOLIO) -->
+        <div id="tab-proyek" class="content-section hidden space-y-6">
+            <div class="border-b border-slate-200 pb-5">
+                <h3 class="text-xl font-bold text-slate-900">6 Mahakarya Portofolio Siswa (6 Projects for Parent Exhibition)</h3>
+                <p class="text-slate-500 text-sm">Setiap semester menghasilkan 1 karya autentik berstandar industri yang siap dipresentasikan di depan orang tua.</p>
+            </div>
+
+            <!-- Progress Tracker Simulator -->
+            <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm mb-6">
+                <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i data-lucide="trending-up" class="text-emerald-600 w-4 h-4"></i> Simulasi Progres Portofolio Angkatan
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <span class="text-xs text-slate-500 block mb-1">Rata-rata Kelengkapan Portofolio</span>
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl font-extrabold text-slate-900" id="progress-percent">83%</span>
+                            <div class="w-full bg-slate-100 rounded-full h-2">
+                                <div class="bg-emerald-600 h-2 rounded-full" style="width: 83%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-500 block mb-1">Total Karya Siap Pamer</span>
+                        <span class="text-2xl font-extrabold text-emerald-700">6 Dokumen / Siswa</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-slate-500 block mb-1">Status Persiapan Pameran</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 mt-1">
+                            <span class="w-1.5 h-1.5 mr-1.5 bg-blue-600 rounded-full animate-ping"></span> Tahap Kurasi
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="projects-container">
+                <!-- Projects injected by JS -->
+            </div>
+        </div>
+
+        <!-- TAB 3: SIMULATOR RUMUS EXCEL INTERAKTIF -->
+        <div id="tab-simulator" class="content-section hidden space-y-6">
+            <div class="border-b border-slate-200 pb-5">
+                <h3 class="text-xl font-bold text-slate-900">Excel Playground & Formula Simulator</h3>
+                <p class="text-slate-500 text-sm">Uji coba langsung rumus-rumus esensial Excel yang diajarkan di kelas. Manipulasi data di bawah untuk melihat output kalkulasi dinamis secara langsung.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left: Interactive Table -->
+                <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
+                        <span class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                            <i data-lucide="table" class="w-4 h-4 text-emerald-600"></i> Tabel Data Nilai Siswa (Mock Data)
+                        </span>
+                        <span class="text-xs text-slate-500 font-medium">Klik sel manapun untuk mengedit nilai</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600 font-semibold border-b border-slate-200">
+                                    <th class="p-3 text-center w-12">Sel</th>
+                                    <th class="p-3">Nama Siswa</th>
+                                    <th class="p-3 text-center">Tugas (A)</th>
+                                    <th class="p-3 text-center">UTS (B)</th>
+                                    <th class="p-3 text-center">UAS (C)</th>
+                                    <th class="p-3 text-center">Predikat (D)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="interactive-table-body">
+                                <!-- Table rows injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right: Formula Builder & Outputs -->
+                <div class="space-y-6">
+                    <!-- Rumus Box -->
+                    <div class="bg-slate-900 text-slate-100 rounded-xl p-6 shadow-md border border-slate-800">
+                        <h4 class="text-sm font-bold text-emerald-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i data-lucide="cpu" class="w-4 h-4"></i> Pilih Rumus & Lihat Logika
+                        </h4>
+                        <div class="space-y-3 mb-6">
+                            <button onclick="runSimulator('SUM')" class="formula-btn w-full text-left px-4 py-3 rounded-lg bg-emerald-800/40 border border-emerald-600/50 hover:bg-emerald-800/60 transition flex justify-between items-center text-sm font-mono">
+                                <span>=SUM(Tugas_A1:A5)</span>
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="runSimulator('AVERAGE')" class="formula-btn w-full text-left px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-750 transition flex justify-between items-center text-sm font-mono">
+                                <span>=AVERAGE(UTS_B1:B5)</span>
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="runSimulator('IF')" class="formula-btn w-full text-left px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-750 transition flex justify-between items-center text-sm font-mono">
+                                <span>=IF(Rata2>=75, "LULUS", "REMIDI")</span>
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <!-- Result Display -->
+                        <div class="bg-slate-950 p-4 rounded-lg border border-slate-800 text-center">
+                            <span class="text-xs text-slate-400 block mb-1">Hasil Output Simulasi</span>
+                            <span id="simulator-output-val" class="text-3xl font-mono font-extrabold text-emerald-400">397</span>
+                            <span id="simulator-output-desc" class="text-[11px] text-slate-400 block mt-2">Menjumlahkan total seluruh nilai Tugas siswa</span>
+                        </div>
+                    </div>
+
+                    <!-- Keterangan Belajar -->
+                    <div class="bg-emerald-50 rounded-xl border border-emerald-100 p-5">
+                        <h4 class="font-bold text-emerald-800 text-sm mb-2 flex items-center gap-1.5">
+                            <i data-lucide="info" class="w-4.5 h-4.5"></i> Tips untuk Siswa
+                        </h4>
+                        <p class="text-xs text-emerald-700 leading-relaxed">
+                            Logika matematika yang baik adalah fondasi analisis data. Kuasai operator aritmatika sebelum menggunakan fungsi kompleks. Setiap proyek membutuhkan akurasi rumus 100%!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: PANDUAN PAMERAN WALI MURID -->
+        <div id="tab-pameran" class="content-section hidden space-y-8">
+            <div class="border-b border-slate-200 pb-5">
+                <h3 class="text-xl font-bold text-slate-900">Panduan Pameran Portofolio (Parent Showcase Day)</h3>
+                <p class="text-slate-500 text-sm">Bagaimana menyulap hasil tugas praktis Excel menjadi pameran interaktif yang membuat orang tua bangga.</p>
+            </div>
+
+            <!-- Expo Phases Timeline -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Tahap 1 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-emerald-600"></div>
+                    <span class="inline-flex items-center justify-center bg-emerald-100 text-emerald-800 font-extrabold w-8 h-8 rounded-full mb-4">1</span>
+                    <h4 class="font-bold text-slate-950 mb-2">Persiapan & Kurasi File</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                        Setiap siswa mengkurasi 6 file Excel terbaik yang telah dikoreksi guru. File diletakkan di satu Google Drive Folder khusus dengan nama format "Nama_Kelas_Portofolio_Excel".
+                    </p>
+                    <span class="text-[10px] font-bold text-emerald-700 flex items-center gap-1">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i> Output: QR Code Portofolio
+                    </span>
+                </div>
+
+                <!-- Tahap 2 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-sky-500"></div>
+                    <span class="inline-flex items-center justify-center bg-sky-100 text-sky-800 font-extrabold w-8 h-8 rounded-full mb-4">2</span>
+                    <h4 class="font-bold text-slate-950 mb-2">Desain Infografis Booth</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                        Membuat cetakan/brosur mini berisi "Executive Summary" dari Proyek 4, 5, atau 6. Menyediakan laptop di meja agar orang tua bisa berinteraksi langsung memencet filter dashboard buatan siswa.
+                    </p>
+                    <span class="text-[10px] font-bold text-sky-700 flex items-center gap-1">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i> Output: Poster Analisis Data
+                    </span>
+                </div>
+
+                <!-- Tahap 3 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-purple-600"></div>
+                    <span class="inline-flex items-center justify-center bg-purple-100 text-purple-800 font-extrabold w-8 h-8 rounded-full mb-4">3</span>
+                    <h4 class="font-bold text-slate-950 mb-2">Sesi Interaktif Orang Tua</h4>
+                    <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                        Siswa mendemonstrasikan keahlian mereka di depan orang tua dengan cara menunjukkan simulasi kalkulator finansial (Proyek 5) atau analisis data (Proyek 6). Orang tua memberikan testimoni tertulis.
+                    </p>
+                    <span class="text-[10px] font-bold text-purple-700 flex items-center gap-1">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i> Output: Lembar Feedback Orang Tua
+                    </span>
+                </div>
+            </div>
+
+            <!-- Checklist Board & Interactive Testimonial Simulator -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Checklist Guru/Siswa -->
+                <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+                    <h4 class="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="clipboard-check" class="text-emerald-600 w-5 h-5"></i> Lembar Kendali Persiapan Pameran
+                    </h4>
+                    <div class="space-y-3" id="checklist-container">
+                        <!-- Checklists injected dynamically -->
+                    </div>
+                </div>
+
+                <!-- Live Testimonial / Simulator Aspirasi Orang Tua -->
+                <div class="bg-gradient-to-br from-slate-900 to-slate-950 text-slate-100 rounded-xl p-6 shadow-md flex flex-col justify-between">
+                    <div>
+                        <h4 class="font-bold text-emerald-400 mb-2 flex items-center gap-2">
+                            <i data-lucide="message-square" class="w-5 h-5"></i> Dinding Aspirasi Orang Tua (Live Simulation)
+                        </h4>
+                        <p class="text-xs text-slate-400 mb-4 leading-relaxed">Simulasikan pengisian umpan balik yang diberikan orang tua murid setelah melihat hasil karya Excel anak-anak mereka di pameran.</p>
+                        
+                        <div class="space-y-3 mb-6 max-h-48 overflow-y-auto pr-2" id="testimonial-list">
+                            <div class="bg-slate-800/75 p-3 rounded-lg border border-slate-700/50">
+                                <p class="text-xs italic text-slate-200">"Sangat kagum anak kelas 10 sudah bisa bikin tabel rekap keuangan kas sendiri secara otomatis. Sangat aplikatif!"</p>
+                                <span class="text-[10px] font-semibold text-emerald-400 block mt-1.5">— Ibu Ratna (Wali dari Rian, X-A)</span>
+                            </div>
+                            <div class="bg-slate-800/75 p-3 rounded-lg border border-slate-700/50">
+                                <p class="text-xs italic text-slate-200">"Terharu melihat anak saya kelas XII bisa bikin studi kelayakan bisnis pakai simulator pinjaman bank di Excel. Luar biasa program sekolah ini."</p>
+                                <span class="text-[10px] font-semibold text-emerald-400 block mt-1.5">— Bpk. Hermawan (Wali dari Nayla, XII-IPS 1)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-800 pt-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+                            <input id="input-parent-name" type="text" placeholder="Nama Orang Tua (Contoh: Bpk. Budi)" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                            <input id="input-child-info" type="text" placeholder="Wali Dari (Contoh: Susi, XI-IPA 2)" class="bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                        </div>
+                        <div class="flex gap-2">
+                            <input id="input-parent-msg" type="text" placeholder="Ketik umpan balik/apresiasi Anda..." class="flex-grow bg-slate-800 border border-slate-700 rounded p-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                            <button onclick="addTestimonial()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded text-xs font-bold flex items-center gap-1">
+                                Kirim <i data-lucide="send" class="w-3 h-3"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <p class="text-sm font-bold text-slate-100">Informatika Excel Canvas SMA/MA v1.2</p>
+                <p class="text-xs text-slate-500 mt-1">Disusun sebagai panduan praktis asesmen berbasis unjuk kerja (performance-based assessment).</p>
+            </div>
+            <div class="text-xs text-slate-500">
+                &copy; 2026 Kurikulum Merdeka Informatika. Powered by ExcelCanvas.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Data and Logic -->
+    <script>
+        // Data Kurikulum untuk Kelas X, XI, XII
+        const kurikulumData = {
+            10: [
+                {
+                    semester: 1,
+                    judul: "Konsep Dasar & Formula Aritmatika",
+                    fokus: "Pemahaman worksheet, inputting data secara efisien, operator matematika dasar (+, -, *, /), fungsi dasar, serta visualisasi sederhana.",
+                    kompetensi: [
+                        "Menjelaskan anatomi spreadsheet dan navigasi sel cepat.",
+                        "Menggunakan fungsi logika dasar (SUM, AVERAGE, MIN, MAX).",
+                        "Mendesain tabel data yang bersih, konsisten, dan rapi.",
+                        "Membuat diagram batang/garis yang representatif terhadap data."
+                    ],
+                    targetKarya: "Proyek 1: Buku Kas Harian Mandiri (Digital Financial Ledger)",
+                    tingkatKesulitan: "Mudah",
+                    alokasiWaktu: "12 Jam Pelajaran (JP)"
+                },
+                {
+                    semester: 2,
+                    judul: "Logika Dasar & Referensi Sel",
+                    fokus: "Konsep Referensi Sel Mutlak ($), Fungsi Logika kondisional tunggal, dan pengelolaan data berukuran sedang.",
+                    kompetensi: [
+                        "Menguasai referensi sel absolut ($A$1) vs relatif.",
+                        "Mengimplementasikan fungsi logika IF tunggal dan bercabang sederhana.",
+                        "Menerapkan Conditional Formatting untuk mendeteksi anomali data.",
+                        "Melakukan sorting dan filtering database dasar."
+                    ],
+                    targetKarya: "Proyek 2: Dashboard Nilai & Analisis Kelulusan Siswa",
+                    tingkatKesulitan: "Sedang",
+                    alokasiWaktu: "14 Jam Pelajaran (JP)"
+                }
+            ],
+            11: [
+                {
+                    semester: 1,
+                    judul: "Data Lookup & Relasi Tabel",
+                    fokus: "Menghubungkan data antar tabel menggunakan fungsi lookup referensial untuk menyelesaikan kasus operasional.",
+                    kompetensi: [
+                        "Menguasai fungsi VLOOKUP dan HLOOKUP secara presisi.",
+                        "Mengembangkan pemahaman fungsi modern XLOOKUP atau kombinasi INDEX & MATCH.",
+                        "Melakukan pembersihan data kotor (Data Cleansing) dengan teks fungsi (LEFT, RIGHT, MID, CONCATENATE).",
+                        "Membuat relasi database sederhana di excel."
+                    ],
+                    targetKarya: "Proyek 3: Kasir Toko & Sistem Pencetakan Nota Otomatis",
+                    tingkatKesulitan: "Sedang-Tinggi",
+                    alokasiWaktu: "16 Jam Pelajaran (JP)"
+                },
+                {
+                    semester: 2,
+                    judul: "Pivot Table & Analisis Data Lanjutan",
+                    fokus: "Meringkas, menyusun ulang, dan mengeksplorasi ribuan baris data transaksi untuk kebutuhan bisnis.",
+                    kompetensi: [
+                        "Membangun Pivot Table dari sekumpulan dataset besar.",
+                        "Menggunakan Pivot Chart, Slicers, dan Timeline untuk interaktivitas data.",
+                        "Melakukan analisis tren bulanan dan kontribusi persentase.",
+                        "Merancang infografis data interaktif satu halaman."
+                    ],
+                    targetKarya: "Proyek 4: Dashboard Interaktif Analisis Penjualan UMKM",
+                    tingkatKesulitan: "Tinggi",
+                    alokasiWaktu: "16 Jam Pelajaran (JP)"
+                }
+            ],
+            12: [
+                {
+                    semester: 1,
+                    judul: "Matematika Finansial & Forecasting",
+                    fokus: "Mempelajari kalkulasi nilai uang terhadap waktu, simulasi bunga pinjaman, serta peramalan data masa depan.",
+                    kompetensi: [
+                        "Mengaplikasikan fungsi finansial PMT, PV, FV, dan rate bunga.",
+                        "Membuat tabel amortisasi pinjaman yang dinamis.",
+                        "Memanfaatkan fitur Goal Seek dan Scenario Manager untuk analisis kelayakan bisnis.",
+                        "Membuat garis tren (linear forecasting) untuk prediksi penjualan."
+                    ],
+                    targetKarya: "Proyek 5: Kalkulator Finansial & Studi Kelayakan Bisnis",
+                    tingkatKesulitan: "Tinggi",
+                    alokasiWaktu: "18 Jam Pelajaran (JP)"
+                },
+                {
+                    semester: 2,
+                    judul: "Sistem Manajemen Informasi Berbasis Macro/VBA",
+                    fokus: "Pengenalan otomatisasi Excel dengan Macro perekam maupun scripting VBA dasar untuk alur kerja yang efisien.",
+                    kompetensi: [
+                        "Merekam dan menjalankan Macro untuk tugas berulang.",
+                        "Membuat tombol interaktif (Form Controls) pada spreadsheet.",
+                        "Menulis kode VBA dasar untuk validasi input formulir otomatis.",
+                        "Menggabungkan seluruh keahlian (Lookup, Logic, Amortisasi) dalam satu program utuh."
+                    ],
+                    targetKarya: "Proyek 6: Aplikasi Manajemen Inventaris Gudang Terotomatisasi",
+                    tingkatKesulitan: "Sangat Tinggi",
+                    alokasiWaktu: "18 Jam Pelajaran (JP)"
+                }
+            ]
+        };
+
+        // Data 6 Proyek Utama
+        const proyekData = [
+            {
+                id: 1,
+                kelas: "X",
+                semester: "1",
+                judul: "Buku Kas Harian Mandiri (Digital Financial Ledger)",
+                deskripsi: "Siswa merancang sistem pencatatan keuangan pribadi harian. Aplikasi ini melatih ketertiban mencatat arus kas (pemasukan & pengeluaran).",
+                kriteria: [
+                    "Penjumlahan kumulatif sisa saldo otomatis.",
+                    "Sistem penandaan kategori (Uang jajan, Buku, Transportasi) dengan dropdown.",
+                    "Diagram donat (Donut Chart) pembagian persentase alokasi pengeluaran bulanan.",
+                    "Penerapan warna baris otomatis (hijau untuk masuk, merah untuk keluar)."
+                ],
+                tag: "Finansial Pribadi"
+            },
+            {
+                id: 2,
+                kelas: "X",
+                semester: "2",
+                judul: "Dashboard Nilai & Analisis Kelulusan Siswa",
+                deskripsi: "Mengolah basis data nilai rapor sebuah kelas secara otomatis untuk menentukan peringkat, kelulusan, dan peta kelemahan akademik.",
+                kriteria: [
+                    "Penggunaan fungsi IF bertingkat untuk konversi nilai angka ke huruf (A, B, C, D, E).",
+                    "Rata-rata kelas otomatis, nilai tertinggi, terendah per mata pelajaran.",
+                    "Siswa yang mendapat nilai di bawah KKM langsung tersorot warna merah secara otomatis.",
+                    "Sistem pencarian nilai siswa menggunakan formula dinamis."
+                ],
+                tag: "Sistem Akademik"
+            },
+            {
+                id: 3,
+                kelas: "XI",
+                semester: "1",
+                judul: "Kasir Toko & Sistem Cetak Nota Otomatis",
+                deskripsi: "Sistem POS (Point of Sales) mini. Siswa menginput ID barang, lalu secara ajaib deskripsi barang dan harga satuan langsung terisi dan nota langsung terbuat otomatis.",
+                kriteria: [
+                    "Database barang master di sheet terpisah terhubung dengan sheet transaksi.",
+                    "Formula VLOOKUP/XLOOKUP dengan kombinasi IFERROR agar nota tampak bersih jika kode kosong.",
+                    "Sistem kalkulasi diskon bertingkat (misal belanja > 100rb diskon 5%).",
+                    "Tombol reset form transaksi (opsional) atau format nota siap cetak."
+                ],
+                tag: "Aplikasi Kasir"
+            },
+            {
+                id: 4,
+                kelas: "XI",
+                semester: "2",
+                judul: "Dashboard Interaktif Analisis Penjualan UMKM",
+                deskripsi: "Menganalisis ribuan baris data penjualan toko kelontong fiktif. Siswa menyajikan visualisasi data interaktif layaknya analis bisnis profesional.",
+                kriteria: [
+                    "Pengelompokan data transaksi berdasarkan kategori produk dan wilayah penjualan dengan Pivot Table.",
+                    "Pemasangan Slicer (filter tombol sekali klik) untuk mempermudah orang tua saat mencoba.",
+                    "Top 5 produk paling laris dalam bentuk chart horizontal.",
+                    "Tampilan dashboard rapi dan bernuansa clean, tanpa gridlines."
+                ],
+                tag: "Business Intelligence"
+            },
+            {
+                id: 5,
+                kelas: "XII",
+                semester: "1",
+                judul: "Kalkulator Finansial & Studi Kelayakan Bisnis",
+                deskripsi: "Simulasi pengajuan kredit usaha mikro atau perencanaan tabungan masa depan. Membantu orang tua mendiskusikan simulasi keuangan nyata.",
+                kriteria: [
+                    "Form input nominal pinjaman, tenor waktu (bulan), dan persentase bunga tahunan.",
+                    "Penerapan fungsi PMT untuk mengukur cicilan bulanan wajib.",
+                    "Tabel amortisasi lengkap yang menunjukkan penurunan sisa utang tiap bulan.",
+                    "Analisis sensitivitas kelayakan bisnis: 'Berapa maksimal pinjaman jika cicilan per bulan maksimal 1,5 Juta?' menggunakan Goal Seek."
+                ],
+                tag: "Perencanaan Finansial"
+            },
+            {
+                id: 6,
+                kelas: "XII",
+                semester: "2",
+                judul: "Aplikasi Manajemen Inventaris Gudang Terotomatisasi",
+                deskripsi: "Aplikasi gudang yang memantau sirkulasi barang masuk-keluar secara real-time. Dilengkapi peringatan otomatis jika stok barang di bawah limit aman.",
+                kriteria: [
+                    "Otomatisasi pengisian tanggal input menggunakan tombol macro buatan siswa.",
+                    "Sistem peringatan (Stok Kritis / Restock) menggunakan formula IF dikombinasikan Conditional Formatting.",
+                    "Laporan stok akhir yang terupdate otomatis saat ada log barang masuk atau keluar baru.",
+                    "Antarmuka yang ramah pengguna dengan tombol navigasi antar sheet."
+                ],
+                tag: "Sistem Informasi Manajemen"
+            }
+        ];
+
+        // Checklist Pameran
+        const checklistPameran = [
+            { id: 1, task: "Guru membagikan kriteria penilaian akhir semester.", checked: true },
+            { id: 2, task: "Siswa menata file Excel 1 sampai 6 dalam satu folder cloud.", checked: true },
+            { id: 3, task: "Siswa membuat QR Code cetak yang mengarah langsung ke folder karya.", checked: false },
+            { id: 4, task: "Siswa merancang poster penjelasan ringkas dari proyek unggulannya.", checked: false },
+            { id: 5, task: "Laptop/Tablet telah disiapkan di meja booth pameran dengan file Excel terbuka.", checked: false },
+            { id: 6, task: "Undangan pameran fisik atau digital telah terkirim kepada wali murid.", checked: false }
+        ];
+
+        // State Aplikasi
+        let selectedClass = 10;
+
+        // Inisialisasi Aplikasi saat Load
+        window.onload = function() {
+            lucide.createIcons();
+            renderKurikulum();
+            renderProyek();
+            renderInteractiveTable();
+            renderChecklist();
+            runSimulator('SUM');
+        }
+
+        // Switch Tab Logic
+        function switchTab(tabName) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(sec => {
+                sec.classList.add('hidden');
+            });
+            // Show active section
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+            // Update Desktop Nav Button Styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100";
+            });
+            const activeBtn = document.getElementById(`nav-${tabName}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-emerald-50 text-emerald-700";
+            }
+
+            // Update Mobile Nav Button Styles
+            document.querySelectorAll('.mobile-tab-btn').forEach(btn => {
+                btn.classList.replace('text-emerald-700', 'text-slate-500');
+            });
+            const activeMobileBtn = document.getElementById(`mob-${tabName}`);
+            if (activeMobileBtn) {
+                activeMobileBtn.classList.replace('text-slate-500', 'text-emerald-700');
+            }
+        }
+
+        // Filter Kelas Kurikulum
+        function filterClass(classNum) {
+            selectedClass = classNum;
+            
+            // Update active button state
+            document.querySelectorAll('.class-filter-btn').forEach(btn => {
+                btn.className = "class-filter-btn px-4 py-2 text-sm font-semibold rounded-md text-slate-600 hover:text-slate-900";
+            });
+            document.getElementById(`btn-class-${classNum}`).className = "class-filter-btn px-4 py-2 text-sm font-semibold rounded-md bg-emerald-600 text-white shadow-sm";
+
+            renderKurikulum();
+        }
+
+        // Render Kurikulum Section
+        function renderKurikulum() {
+            const container = document.getElementById('kurikulum-content');
+            container.innerHTML = '';
+
+            const data = kurikulumData[selectedClass];
+            data.forEach((sem, idx) => {
+                let kompetensiListHTML = sem.kompetensi.map(komp => `
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600 mt-1 flex-shrink-0"></i>
+                        <span class="text-sm text-slate-700">${komp}</span>
+                    </li>
+                `).join('');
+
+                container.innerHTML += `
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden transition duration-300 hover:shadow-md">
+                        <div class="bg-gradient-to-r from-emerald-700 to-emerald-800 p-4 text-white flex justify-between items-center">
+                            <div>
+                                <span class="text-xs uppercase tracking-wider font-bold text-emerald-200">SEMESTER ${sem.semester}</span>
+                                <h4 class="text-lg font-bold">${sem.judul}</h4>
+                            </div>
+                            <span class="bg-emerald-900/40 border border-emerald-600 px-3 py-1 rounded text-xs font-semibold">
+                                ${sem.alokasiWaktu}
+                            </span>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <div>
+                                <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Fokus Pembelajaran</h5>
+                                <p class="text-sm text-slate-600 leading-relaxed">${sem.fokus}</p>
+                            </div>
+
+                            <div>
+                                <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Kompetensi Inti</h5>
+                                <ul class="space-y-2">
+                                    ${kompetensiListHTML}
+                                </ul>
+                            </div>
+
+                            <div class="bg-slate-50 p-4 rounded-lg border border-slate-100 flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2 bg-emerald-100 text-emerald-800 rounded-md">
+                                        <i data-lucide="folder-archive" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block">Target Karya Portofolio</span>
+                                        <span class="text-sm font-bold text-slate-900">${sem.targetKarya}</span>
+                                    </div>
+                                </div>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${sem.tingkatKesulitan === 'Mudah' ? 'bg-green-100 text-green-800' : sem.tingkatKesulitan === 'Sedang' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}">
+                                    ${sem.tingkatKesulitan}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        // Render 6 Portofolio Projects
+        function renderProyek() {
+            const container = document.getElementById('projects-container');
+            container.innerHTML = '';
+
+            proyekData.forEach(p => {
+                let kriteriaHTML = p.kriteria.map(krit => `
+                    <li class="flex items-start gap-2 text-xs text-slate-600">
+                        <i data-lucide="corner-down-right" class="w-3.5 h-3.5 text-slate-400 mt-0.5 flex-shrink-0"></i>
+                        <span>${krit}</span>
+                    </li>
+                `).join('');
+
+                container.innerHTML += `
+                    <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
+                                    Kelas ${p.kelas} - Semester ${p.semester}
+                                </span>
+                                <span class="text-xs text-slate-400 font-medium">Proyek #${p.id}</span>
+                            </div>
+
+                            <div>
+                                <h4 class="font-bold text-slate-900 mb-1 leading-snug">${p.judul}</h4>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-wider font-extrabold block mb-2">${p.tag}</span>
+                                <p class="text-xs text-slate-600 leading-relaxed">${p.deskripsi}</p>
+                            </div>
+
+                            <div class="border-t border-slate-100 pt-3">
+                                <span class="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider block mb-2">Kriteria Harus Dicapai</span>
+                                <ul class="space-y-1.5">
+                                    ${kriteriaHTML}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+                            <div class="flex items-center gap-1.5 text-[11px] text-slate-500">
+                                <i data-lucide="eye" class="w-4 h-4 text-emerald-600"></i> Untuk Orang Tua
+                            </div>
+                            <span class="text-[11px] font-semibold text-emerald-700">Dapat Didemokan &rarr;</span>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        // Interactive Simulator Data Table
+        let mockStudents = [
+            { id: 1, nama: "Ahmad Fauzi", tugas: 85, uts: 80, uas: 88, predikat: "A" },
+            { id: 2, nama: "Budi Santoso", tugas: 72, uts: 68, uas: 75, predikat: "C" },
+            { id: 3, nama: "Citra Lestari", tugas: 90, uts: 92, uas: 95, predikat: "A" },
+            { id: 4, nama: "Dimas Adit", tugas: 60, uts: 55, uas: 65, predikat: "D" },
+            { id: 5, nama: "Eka Wahyuni", tugas: 78, uts: 85, uas: 80, predikat: "B" }
+        ];
+
+        function renderInteractiveTable() {
+            const tbody = document.getElementById('interactive-table-body');
+            tbody.innerHTML = '';
+
+            mockStudents.forEach(st => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-200 hover:bg-slate-50 transition">
+                        <td class="p-3 text-center text-slate-400 font-mono text-xs">${st.id}</td>
+                        <td class="p-3 font-semibold text-slate-900">${st.nama}</td>
+                        <td class="p-3 text-center">
+                            <input type="number" value="${st.tugas}" onchange="updateValue(${st.id}, 'tugas', this.value)" class="w-16 text-center border border-slate-200 rounded p-1 focus:outline-none focus:border-emerald-600 bg-slate-50 font-mono text-xs">
+                        </td>
+                        <td class="p-3 text-center">
+                            <input type="number" value="${st.uts}" onchange="updateValue(${st.id}, 'uts', this.value)" class="w-16 text-center border border-slate-200 rounded p-1 focus:outline-none focus:border-emerald-600 bg-slate-50 font-mono text-xs">
+                        </td>
+                        <td class="p-3 text-center">
+                            <input type="number" value="${st.uas}" onchange="updateValue(${st.id}, 'uas', this.value)" class="w-16 text-center border border-slate-200 rounded p-1 focus:outline-none focus:border-emerald-600 bg-slate-50 font-mono text-xs">
+                        </td>
+                        <td class="p-3 text-center">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ${st.predikat === 'A' ? 'bg-green-100 text-green-800' : st.predikat === 'B' ? 'bg-blue-100 text-blue-800' : st.predikat === 'C' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'}">
+                                ${st.predikat}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // Update database table internally
+        function updateValue(id, key, val) {
+            const intVal = parseInt(val) || 0;
+            const student = mockStudents.find(s => s.id === id);
+            if (student) {
+                student[key] = intVal;
+                
+                // Recalculate predikat
+                const average = (student.tugas + student.uts + student.uas) / 3;
+                if (average >= 85) student.predikat = 'A';
+                else if (average >= 75) student.predikat = 'B';
+                else if (average >= 65) student.predikat = 'C';
+                else student.predikat = 'D';
+
+                renderInteractiveTable();
+                
+                // Re-run the currently selected active formula in simulator
+                const currentActiveFormula = document.querySelector('.formula-btn.bg-emerald-800\\/40');
+                if (currentActiveFormula) {
+                    if (currentActiveFormula.innerHTML.includes('SUM')) runSimulator('SUM');
+                    else if (currentActiveFormula.innerHTML.includes('AVERAGE')) runSimulator('AVERAGE');
+                    else if (currentActiveFormula.innerHTML.includes('IF')) runSimulator('IF');
+                }
+            }
+        }
+
+        // Run Simulator Formulas
+        function runSimulator(type) {
+            const outVal = document.getElementById('simulator-output-val');
+            const outDesc = document.getElementById('simulator-output-desc');
+
+            // Reset styles on all buttons
+            document.querySelectorAll('.formula-btn').forEach(btn => {
+                btn.className = "formula-btn w-full text-left px-4 py-3 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-750 transition flex justify-between items-center text-sm font-mono";
+            });
+
+            // Highlight active button & calculate
+            if (type === 'SUM') {
+                const totalTugas = mockStudents.reduce((sum, s) => sum + s.tugas, 0);
+                outVal.innerText = totalTugas;
+                outDesc.innerText = "Fungsi sum menjumlahkan seluruh nilai kolom 'Tugas' siswa.";
+                event ? event.currentTarget.className = "formula-btn w-full text-left px-4 py-3 rounded-lg bg-emerald-800/40 border border-emerald-600/50 hover:bg-emerald-800/60 transition flex justify-between items-center text-sm font-mono" : null;
+            } else if (type === 'AVERAGE') {
+                const totalUts = mockStudents.reduce((sum, s) => sum + s.uts, 0);
+                const avgUts = (totalUts / mockStudents.length).toFixed(1);
+                outVal.innerText = avgUts;
+                outDesc.innerText = "Fungsi average membagi total jumlah nilai kolom 'UTS' dengan jumlah siswa.";
+                event ? event.currentTarget.className = "formula-btn w-full text-left px-4 py-3 rounded-lg bg-emerald-800/40 border border-emerald-600/50 hover:bg-emerald-800/60 transition flex justify-between items-center text-sm font-mono" : null;
+            } else if (type === 'IF') {
+                const totalTugas = mockStudents.reduce((sum, s) => sum + s.tugas, 0);
+                const avgTugas = totalTugas / mockStudents.length;
+                const status = avgTugas >= 75 ? "LULUS" : "REMIDI";
+                outVal.innerText = `"${status}"`;
+                outDesc.innerText = `Rata-rata kelas untuk Tugas adalah ${avgTugas.toFixed(1)}. Sehingga kondisi >=75 menghasilkan output "${status}".`;
+                event ? event.currentTarget.className = "formula-btn w-full text-left px-4 py-3 rounded-lg bg-emerald-800/40 border border-emerald-600/50 hover:bg-emerald-800/60 transition flex justify-between items-center text-sm font-mono" : null;
+            }
+        }
+
+        // Render Checklist
+        function renderChecklist() {
+            const container = document.getElementById('checklist-container');
+            container.innerHTML = '';
+
+            checklistPameran.forEach(item => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:bg-slate-50">
+                        <label class="flex items-center gap-3 cursor-pointer select-none">
+                            <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleCheck(${item.id})" class="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500">
+                            <span class="text-xs font-semibold ${item.checked ? 'line-through text-slate-400' : 'text-slate-700'}">${item.task}</span>
+                        </label>
+                        <span class="text-[10px] font-medium text-slate-400">${item.checked ? 'Selesai' : 'Tertunda'}</span>
+                    </div>
+                `;
+            });
+        }
+
+        // Toggle Checklist Item
+        function toggleCheck(id) {
+            const item = checklistPameran.find(c => c.id === id);
+            if (item) {
+                item.checked = !item.checked;
+                renderChecklist();
+            }
+        }
+
+        // Add Testimonial
+        function addTestimonial() {
+            const nameInput = document.getElementById('input-parent-name');
+            const childInput = document.getElementById('input-child-info');
+            const msgInput = document.getElementById('input-parent-msg');
+
+            const name = nameInput.value.trim();
+            const child = childInput.value.trim();
+            const msg = msgInput.value.trim();
+
+            if (!name || !child || !msg) {
+                return; // Simple guard, no browser alert used.
+            }
+
+            const testimonialList = document.getElementById('testimonial-list');
+            const newElem = document.createElement('div');
+            newElem.className = "bg-slate-800/75 p-3 rounded-lg border border-slate-700/50 animate-fade-in";
+            newElem.innerHTML = `
+                <p class="text-xs italic text-slate-200">"${msg}"</p>
+                <span class="text-[10px] font-semibold text-emerald-400 block mt-1.5">— ${name} (Wali dari ${child})</span>
+            `;
+
+            testimonialList.appendChild(newElem);
+            // Auto scroll to bottom
+            testimonialList.scrollTop = testimonialList.scrollHeight;
+
+            // Reset inputs
+            nameInput.value = '';
+            childInput.value = '';
+            msgInput.value = '';
+        }
+    </script>
+</body>
+</html>
