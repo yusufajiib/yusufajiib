@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Belajar Spreadsheet - Semester 1 (12 JP)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .cell-input:focus {
+            outline: 2px solid #10b981;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800">
+
+    <header class="bg-emerald-600 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-file-excel text-3xl text-emerald-100"></i>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Canvas Belajar Spreadsheet</h1>
+                    <p class="text-xs text-emerald-100">Target: Pemula (Sangat Mudah Dipahami) • 12 JP</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-2 text-sm">
+                <button onclick="switchTab('materi')" id="btn-materi" class="px-4 py-2 rounded-lg font-medium transition bg-emerald-700 text-white shadow">
+                    <i class="fa-solid fa-book-open mr-1"></i> Materi & Modul
+                </button>
+                <button onclick="switchTab('lab')" id="btn-lab" class="px-4 py-2 rounded-lg font-medium transition hover:bg-emerald-500 text-emerald-100">
+                    <i class="fa-solid fa-table mr-1"></i> Sandbox Simulator
+                </button>
+                <button onclick="switchTab('proyek')" id="btn-proyek" class="px-4 py-2 rounded-lg font-medium transition hover:bg-emerald-500 text-emerald-100">
+                    <i class="fa-solid fa-project-diagram mr-1"></i> Proyek Akhir
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-6">
+
+        <section id="tab-materi" class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="lg:col-span-1 bg-white p-4 rounded-xl shadow-sm border border-gray-100 h-fit sticky top-20">
+                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 px-2">Daftar Pertemuan</h3>
+                <nav class="space-y-1">
+                    <button onclick="showPertemuan(1)" id="nav-p1" class="w-full text-left px-3 py-2.5 rounded-lg font-medium text-sm transition bg-emerald-50 text-emerald-700 border-l-4 border-emerald-600">
+                        Pertemuan 1: Mengenal Spreadsheet
+                    </button>
+                    <button onclick="showPertemuan(2)" id="nav-p2" class="w-full text-left px-3 py-2.5 rounded-lg font-medium text-sm text-gray-600 hover:bg-gray-50 transition border-l-4 border-transparent">
+                        Pertemuan 2: Input Data Efisien
+                    </button>
+                    <button onclick="showPertemuan(3)" id="nav-p3" class="w-full text-left px-3 py-2.5 rounded-lg font-medium text-sm text-gray-600 hover:bg-gray-50 transition border-l-4 border-transparent">
+                        Pertemuan 3: Operator Matematika
+                    </button>
+                    <button onclick="showPertemuan(4)" id="nav-p4" class="w-full text-left px-3 py-2.5 rounded-lg font-medium text-sm text-gray-600 hover:bg-gray-50 transition border-l-4 border-transparent">
+                        Pertemuan 4: Fungsi Dasar (SUM/AVG)
+                    </button>
+                    <button onclick="showPertemuan(5)" id="nav-p5" class="w-full text-left px-3 py-2.5 rounded-lg font-medium text-sm text-gray-600 hover:bg-gray-50 transition border-l-4 border-transparent">
+                        Pertemuan 5: Merapikan Tabel
+                    </button>
+                    <button onclick="showPertemuan(6)" id="nav-p6" class="w-full text-left px-3 py-2.5 rounded-lg font-medium text-sm text-gray-600 hover:bg-gray-50 transition border-l-4 border-transparent">
+                        Pertemuan 6: Membuat Diagram
+                    </button>
+                </nav>
+            </div>
+
+            <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                
+                <div id="konten-p1" class="content-pertemuan block">
+                    <div class="flex items-center justify-between border-b pb-4 mb-4">
+                        <div>
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded">Pertemuan 1 (2 JP)</span>
+                            <h2 class="text-2xl font-bold text-gray-800 mt-1">Mengenal Spreadsheet</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-4 mb-6 rounded-r-lg">
+                        <h4 class="font-semibold text-amber-900"><i class="fa-solid fa-bullseye mr-1"></i> Tujuan Pembelajaran:</h4>
+                        <ul class="list-disc list-inside text-sm text-amber-800 mt-1">
+                            <li>Mengenal Microsoft Excel / Google Sheets</li>
+                            <li>Membuka dan membuat workbook baru</li>
+                            <li>Mengenal bagian utama spreadsheet serta fungsi baris, kolom, dan sel</li>
+                        </ul>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-emerald-700 mb-2">A. Apa itu Spreadsheet?</h3>
+                    <p class="mb-3 text-gray-600 leading-relaxed">Spreadsheet adalah aplikasi lembar kerja digital yang sangat ampuh digunakan untuk:</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+                        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm font-medium"><i class="fa-solid fa-calculator text-emerald-500 mr-2"></i> Mengolah Angka</div>
+                        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm font-medium"><i class="fa-solid fa-table text-emerald-500 mr-2"></i> Membuat Tabel</div>
+                        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm font-medium"><i class="fa-solid fa-wand-magic-sparkles text-emerald-500 mr-2"></i> Hitung Otomatis</div>
+                        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm font-medium"><i class="fa-solid fa-chart-pie text-emerald-500 mr-2"></i> Membuat Grafik</div>
+                        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200 text-sm font-medium"><i class="fa-solid fa-file-invoice text-emerald-500 mr-2"></i> Buku Kas & Nilai</div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-emerald-700 mb-2">B. Mengenal Anatomi Tampilan Excel</h3>
+                    <div class="space-y-3 mb-6">
+                        <div class="p-3 border rounded-lg bg-gray-50"><span class="font-bold text-emerald-600">1. Title Bar:</span> Menampilkan nama file dokumen aktif (Contoh: <code class="bg-gray-200 px-1.5 py-0.5 rounded">Buku Kas.xlsx</code>).</div>
+                        <div class="p-3 border rounded-lg bg-gray-50"><span class="font-bold text-emerald-600">2. Ribbon:</span> Kumpulan tombol menu utama (<code class="text-xs bg-gray-200 p-1 rounded">Home</code>, <code class="text-xs bg-gray-200 p-1 rounded">Insert</code>, <code class="text-xs bg-gray-200 p-1 rounded">Formula</code>, dll).</div>
+                        <div class="p-3 border rounded-lg bg-gray-50"><span class="font-bold text-emerald-600">3. Name Box:</span> Menunjukkan alamat kotak/sel yang sedang aktif (Contoh: <code class="bg-gray-200 px-1.5 py-0.5 rounded">A1</code>).</div>
+                        <div class="p-3 border rounded-lg bg-gray-50"><span class="font-bold text-emerald-600">4. Formula Bar:</span> Tempat untuk mengetik teks, isi data, atau rumus matematika.</div>
+                        <div class="p-3 border rounded-lg bg-gray-50"><span class="font-bold text-emerald-600">5. Worksheet & Sheet:</span> Lembar kerja utama yang terdiri dari grid kotak-kotak.</div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-emerald-700 mb-2">C. Baris, Kolom, dan Sel</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl text-center">
+                            <span class="font-bold block text-blue-700 text-lg">KOLOM (Column)</span>
+                            <span class="text-sm text-blue-600">Berjalan Vertikal. Diwakili oleh <b>HURUF</b></span>
+                            <div class="mt-2 text-xl font-black text-blue-400">A, B, C, D...</div>
+                        </div>
+                        <div class="p-4 bg-orange-50 border border-orange-200 rounded-xl text-center">
+                            <span class="font-bold block text-orange-700 text-lg">BARIS (Row)</span>
+                            <span class="text-sm text-orange-600">Berjalan Horizontal. Diwakili oleh <b>ANGKA</b></span>
+                            <div class="mt-2 text-xl font-black text-orange-400">1, 2, 3, 4...</div>
+                        </div>
+                        <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-center">
+                            <span class="font-bold block text-emerald-700 text-lg">SEL (Cell)</span>
+                            <span class="text-sm text-emerald-600">Pertemuan Baris & Kolom</span>
+                            <div class="mt-2 text-xl font-black text-emerald-500">A1, B2, C3</div>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-emerald-700 mb-2">D. Navigasi Cepat (Pintasan Keyboard)</h3>
+                    <table class="w-full text-left border-collapse border border-gray-200 text-sm rounded-lg overflow-hidden mb-6">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-3 border-b font-semibold">Tombol</th>
+                                <th class="p-3 border-b font-semibold">Fungsi Gerakan Sel</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="p-3 border-b font-mono font-bold text-emerald-600">Tab</td><td class="p-3 border-b">Geser satu sel ke KANAN</td></tr>
+                            <tr class="bg-gray-50"><td class="p-3 border-b font-mono font-bold text-emerald-600">Enter</td><td class="p-3 border-b">Geser satu sel ke BAWAH</td></tr>
+                            <tr><td class="p-3 border-b font-mono font-bold text-emerald-600">Shift + Tab</td><td class="p-3 border-b">Geser satu sel ke KIRI</td></tr>
+                            <tr class="bg-gray-50"><td class="p-3 border-b font-mono font-bold text-emerald-600">Shift + Enter</td><td class="p-3 border-b">Geser satu sel ke ATAS</td></tr>
+                        </tbody>
+                    </table>
+
+                    <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                        <h4 class="font-bold text-emerald-800 mb-2"><i class="fa-solid fa-laptop-code mr-1"></i> Tugas Praktik Mandiri:</h4>
+                        <p class="text-sm text-emerald-700 mb-3">Buka Tab <b>Sandbox Simulator</b> di atas, coba ketikkan biodata 10 teman sekelasmu menggunakan navigasi keyboard cepat.</p>
+                        <button onclick="switchTab('lab')" class="bg-emerald-600 text-white text-xs px-3 py-2 rounded font-semibold hover:bg-emerald-700 transition">Buka Simulator Sekarang &rarr;</button>
+                    </div>
+                </div>
+
+                <div id="konten-p2" class="content-pertemuan hidden">
+                    <div class="flex items-center justify-between border-b pb-4 mb-4">
+                        <div>
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded">Pertemuan 2 (2 JP)</span>
+                            <h2 class="text-2xl font-bold text-gray-800 mt-1">Input Data Secara Efisien & AutoFill</h2>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-emerald-700 mb-2">A. 3 Jenis Data Utama</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+                        <div class="p-3 border rounded-lg"><span class="block font-bold text-gray-700">1. Teks (String)</span><span class="text-xs text-gray-500">Rata Kiri secara otomatis.</span><p class="font-mono bg-gray-100 p-1 rounded text-sm mt-1">Andi, Matematika</p></div>
+                        <div class="p-3 border rounded-lg"><span class="block font-bold text-gray-700">2. Angka (Numeric)</span><span class="text-xs text-gray-500">Rata Kanan. Bisa dihitung matematika.</span><p class="font-mono bg-gray-100 p-1 rounded text-sm mt-1">200, 35000, 1000</p></div>
+                        <div class="p-3 border rounded-lg"><span class="block font-bold text-gray-700">3. Tanggal (Date)</span><span class="text-xs text-gray-500">Format waktu standar teratur.</span><p class="font-mono bg-gray-100 p-1 rounded text-sm mt-1">1/1/2026</p></div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-emerald-700 mb-2">B. Keajaiban AutoFill & Fill Number</h3>
+                    <p class="text-sm text-gray-600 mb-3">Anda tidak perlu mengetik semua urutan data secara manual. Cukup gunakan fitur **AutoFill** dengan menarik kotak kecil (handle) di ujung kanan bawah sel yang dipilih.</p>
+                    <div class="bg-gray-50 p-4 border rounded-xl grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                            <h4 class="font-bold text-sm text-emerald-800 mb-1">AutoFill Teks Berurutan:</h4>
+                            <p class="text-xs text-gray-600 mb-2">Ketik <code class="bg-gray-200 px-1 rounded">Senin</code> &rarr; Tarik kotak ujung kanan bawah ke bawah &rarr; Otomatis menjadi: <i>Selasa, Rabu, Kamis...</i></p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-emerald-800 mb-1">Fill Number (Penomoran Urut):</h4>
+                            <p class="text-xs text-gray-600 mb-2">Ketik <code class="bg-gray-200 px-1 rounded">1</code> di sel pertama, ketik <code class="bg-gray-200 px-1 rounded">2</code> di bawahnya &rarr; Blok keduanya &rarr; Tarik ke bawah &rarr; Otomatis menghasilkan urutan angka: <i>3, 4, 5...</i></p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-emerald-700 mb-2">C. Pintasan Dasar Esensial</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-center text-xs font-mono mb-6">
+                        <div class="p-2 border bg-gray-50 rounded"><b>Ctrl + C</b><span class="block text-[10px] text-gray-500">Salin (Copy)</span></div>
+                        <div class="p-2 border bg-gray-50 rounded"><b>Ctrl + V</b><span class="block text-[10px] text-gray-500">Tempel (Paste)</span></div>
+                        <div class="p-2 border bg-gray-50 rounded"><b>Ctrl + X</b><span class="block text-[10px] text-gray-500">Potong (Cut)</span></div>
+                        <div class="p-2 border bg-gray-50 rounded text-amber-700 bg-amber-50 font-bold"><b>Ctrl + Z</b><span class="block text-[10px] text-gray-500">Batal (Undo)</span></div>
+                        <div class="p-2 border bg-gray-50 rounded text-blue-700 bg-blue-50 font-bold"><b>Ctrl + Y</b><span class="block text-[10px] text-gray-500">Ulangi (Redo)</span></div>
+                    </div>
+                </div>
+
+                <div id="konten-p3" class="content-pertemuan hidden">
+                    <div class="flex items-center justify-between border-b pb-4 mb-4">
+                        <div>
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded">Pertemuan 3 (2 JP)</span>
+                            <h2 class="text-2xl font-bold text-gray-800 mt-1">Operator Matematika Dasar</h2>
+                        </div>
+                    </div>
+                    <div class="bg-red-50 text-red-800 text-sm p-3 rounded-lg font-medium mb-4">
+                        <i class="fa-solid fa-triangle-exclamation mr-1"></i> <b>INGAT:</b> Setiap menulis rumus di Excel/Google Sheets, wajib diawali dengan tanda sama dengan (<code class="bg-red-200 font-bold px-1 rounded">=</code>).
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <div class="p-3 border text-center rounded-xl bg-gray-50">
+                            <span class="text-xl font-bold block text-emerald-600">+</span>
+                            <span class="text-xs font-bold text-gray-500 block">Penjumlahan</span>
+                            <code class="text-xs bg-gray-200 px-1 rounded">=5+5</code> <span class="text-xs">&rarr; 10</span>
+                        </div>
+                        <div class="p-3 border text-center rounded-xl bg-gray-50">
+                            <span class="text-xl font-bold block text-emerald-600">-</span>
+                            <span class="text-xs font-bold text-gray-500 block">Pengurangan</span>
+                            <code class="text-xs bg-gray-200 px-1 rounded">=20-10</code> <span class="text-xs">&rarr; 10</span>
+                        </div>
+                        <div class="p-3 border text-center rounded-xl bg-gray-50">
+                            <span class="text-xl font-bold block text-emerald-600">*</span>
+                            <span class="text-xs font-bold text-gray-500 block">Perkalian (Bintang)</span>
+                            <code class="text-xs bg-gray-200 px-1 rounded">=10*5</code> <span class="text-xs">&rarr; 50</span>
+                        </div>
+                        <div class="p-3 border text-center rounded-xl bg-gray-50">
+                            <span class="text-xl font-bold block text-emerald-600">/</span>
+                            <span class="text-xs font-bold text-gray-500 block">Pembagian (Garis Miring)</span>
+                            <code class="text-xs bg-gray-200 px-1 rounded">=100/4</code> <span class="text-xs">&rarr; 25</span>
+                        </div>
+                    </div>
+
+                    <h3 class="text-lg font-semibold text-emerald-700 mb-2">Menggunakan Referensi Alamat Sel</h3>
+                    <p class="text-sm text-gray-600 mb-3">Daripada mengetik angka manual, sangat disarankan menggunakan alamat sel agar hasil dinamis jika angka diubah.</p>
+                    <div class="bg-emerald-50 p-3 border border-emerald-200 rounded-lg font-mono text-sm">
+                        Contoh: <span class="text-blue-600 font-bold">=A2*B2</span>
+                    </div>
+                </div>
+
+                <div id="konten-p4" class="content-pertemuan hidden">
+                    <div class="flex items-center justify-between border-b pb-4 mb-4">
+                        <div>
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded">Pertemuan 4 (2 JP)</span>
+                            <h2 class="text-2xl font-bold text-gray-800 mt-1">Fungsi Dasar Statistik Lembar Kerja</h2>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="p-4 border rounded-xl flex gap-4 items-start bg-white shadow-sm">
+                            <div class="bg-blue-100 text-blue-600 p-3 rounded-lg font-bold font-mono">SUM</div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">SUM: Menjumlahkan Sekumpulan Data</h4>
+                                <p class="text-xs text-gray-500">Menghitung total keseluruhan nilai dalam rentang/range tertentu.</p>
+                                <code class="text-sm bg-gray-100 p-1 rounded text-emerald-700 block mt-1 font-mono">=SUM(B2:B10)</code>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border rounded-xl flex gap-4 items-start bg-white shadow-sm">
+                            <div class="bg-orange-100 text-orange-600 p-3 rounded-lg font-bold font-mono">AVERAGE</div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">AVERAGE: Menghitung Nilai Rata-rata</h4>
+                                <p class="text-xs text-gray-500">Membagi jumlah total nilai dengan banyaknya data.</p>
+                                <code class="text-sm bg-gray-100 p-1 rounded text-emerald-700 block mt-1 font-mono">=AVERAGE(B2:B10)</code>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border rounded-xl flex gap-4 items-start bg-white shadow-sm">
+                            <div class="bg-red-100 text-red-600 p-3 rounded-lg font-bold font-mono">MAX</div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">MAX: Mencari Nilai Tertinggi / Terbesar</h4>
+                                <p class="text-xs text-gray-500">Menampilkan angka paling besar dari rentang data.</p>
+                                <code class="text-sm bg-gray-100 p-1 rounded text-emerald-700 block mt-1 font-mono">=MAX(B2:B10)</code>
+                            </div>
+                        </div>
+
+                        <div class="p-4 border rounded-xl flex gap-4 items-start bg-white shadow-sm">
+                            <div class="bg-purple-100 text-purple-600 p-3 rounded-lg font-bold font-mono">MIN</div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">MIN: Mencari Nilai Terendah / Terkecil</h4>
+                                <p class="text-xs text-gray-500">Menampilkan angka paling kecil dari rentang data.</p>
+                                <code class="text-sm bg-gray-100 p-1 rounded text-emerald-700 block mt-1 font-mono">=MIN(B2:B10)</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="konten-p5" class="content-pertemuan hidden">
+                    <div class="flex items-center justify-between border-b pb-4 mb-4">
+                        <div>
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded">Pertemuan 5 (2 JP)</span>
+                            <h2 class="text-2xl font-bold text-gray-800 mt-1">Membuat Format Tabel yang Rapi</h2>
+                        </div>
+                    </div>
+
+                    <p class="text-sm text-gray-600 mb-4">Gunakan alat format di menu toolbar untuk mengubah data mentah agar sedap dipandang mata.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 border rounded-xl bg-gray-50">
+                            <h4 class="font-bold text-gray-700 mb-2"><i class="fa-solid fa-arrows-left-right mr-1 text-emerald-500"></i> 1. Mengatur Lebar Kolom</h4>
+                            <p class="text-xs text-gray-600">Arahkan kursor mouse ke batas antara dua huruf kolom di bagian atas, lalu lakukan <b>Double Klik</b>. Kolom otomatis melebar pas dengan tulisan terpanjang.</p>
+                        </div>
+                        <div class="p-4 border rounded-xl bg-gray-50">
+                            <h4 class="font-bold text-gray-700 mb-2"><i class="fa-solid fa-border-all mr-1 text-emerald-500"></i> 2. Memberi Garis Border</h4>
+                            <p class="text-xs text-gray-600">Blok seluruh tabel &rarr; Klik menu <b>Border</b> di Tab Home &rarr; Pilih opsi <b>All Borders</b> agar tabel memiliki garis nyata saat dicetak.</p>
+                        </div>
+                        <div class="p-4 border rounded-xl bg-gray-50">
+                            <h4 class="font-bold text-gray-700 mb-2"><i class="fa-solid fa-fill-drip mr-1 text-emerald-500"></i> 3. Memberi Warna Isi (Fill Color)</h4>
+                            <p class="text-xs text-gray-600">Gunakan perkakas ikon kaleng cat tumpah untuk mewarnai baris kepala tabel (header) agar mencolok dan rapi.</p>
+                        </div>
+                        <div class="p-4 border rounded-xl bg-gray-50">
+                            <h4 class="font-bold text-gray-700 mb-2"><i class="fa-solid fa-align-center mr-1 text-emerald-500"></i> 4. Perataan Posisi (Alignment)</h4>
+                            <p class="text-xs text-gray-600">Gunakan perataan teks sesuai jenis data: <b>Left</b> untuk teks teks biasa, <b>Center</b> untuk nomor urut, dan <b>Right</b> khusus kolom angka keuangan.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="konten-p6" class="content-pertemuan hidden">
+                    <div class="flex items-center justify-between border-b pb-4 mb-4">
+                        <div>
+                            <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded">Pertemuan 6 (2 JP)</span>
+                            <h2 class="text-2xl font-bold text-gray-800 mt-1">Membuat Visualisasi Diagram / Chart</h2>
+                        </div>
+                    </div>
+                    
+                    <p class="text-sm text-gray-600 mb-4">Diagram membantu pembaca melihat tren naik turun data dengan sangat cepat tanpa pusing melihat barisan angka.</p>
+
+                    <h4 class="font-bold text-sm text-gray-700 mb-2">Langkah Mudah Membuat Grafik di Excel:</h4>
+                    <ol class="list-decimal list-inside text-xs text-gray-600 space-y-2 mb-6 bg-gray-50 p-4 rounded-xl">
+                        <li><b>Blok Sel Data:</b> Sorot tabel berisi data (misalnya data bulan dan hasil penjualan).</li>
+                        <li><b>Masuk Menu Insert:</b> Klik menu tab <code class="bg-gray-200 px-1 rounded">Insert</code> di bagian atas jendela ribbon.</li>
+                        <li><b>Pilih Chart:</b> Klik pada tipe diagram yang diinginkan (Contoh: <b>Column Chart</b> atau <b>Pie Chart</b>).</li>
+                        <li>Selesai! Grafik otomatis melompat keluar di layar kerja Anda.</li>
+                    </ol>
+
+                    <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                        <span class="text-xs font-bold text-emerald-800 uppercase tracking-wide block mb-2">Simulasi Mandiri Berhadiah Ilmu</span>
+                        <p class="text-xs text-emerald-700">Yuk coba langsung membuat tabel, mengedit data, mewarnai, serta melihat grafik otomatis berubah secara *live* melalui menu <b>Sandbox Simulator</b> di tab navigasi atas!</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <section id="tab-lab" class="hidden space-y-6">
+            <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-3 items-center justify-between">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button onclick="applyFormat('bold')" class="p-2 border rounded hover:bg-gray-100 font-bold text-sm min-w-[36px]" title="Tebal (Ctrl+B)">B</button>
+                    <div class="h-6 w-px bg-gray-300 mx-1"></div>
+                    <button onclick="applyFormat('align-left')" class="p-2 border rounded hover:bg-gray-100 text-sm" title="Rata Kiri"><i class="fa-solid fa-align-left"></i></button>
+                    <button onclick="applyFormat('align-center')" class="p-2 border rounded hover:bg-gray-100 text-sm" title="Rata Tengah"><i class="fa-solid fa-align-center"></i></button>
+                    <button onclick="applyFormat('align-right')" class="p-2 border rounded hover:bg-gray-100 text-sm" title="Rata Kanan"><i class="fa-solid fa-align-right"></i></button>
+                    <div class="h-6 w-px bg-gray-300 mx-1"></div>
+                    <button onclick="applyFormat('bg-yellow')" class="p-2 border rounded bg-amber-100 text-xs font-semibold" title="Warna Kuning">Fill Kuning</button>
+                    <button onclick="applyFormat('bg-green')" class="p-2 border rounded bg-emerald-100 text-xs font-semibold" title="Warna Hijau">Fill Hijau</button>
+                    <button onclick="applyFormat('border')" class="p-2 border rounded hover:bg-gray-100 text-xs font-semibold" title="Beri Garis Tepi">All Borders</button>
+                    <div class="h-6 w-px bg-gray-300 mx-1"></div>
+                    <button onclick="triggerAutoFill()" class="p-2 border border-emerald-500 text-emerald-700 bg-emerald-50 rounded text-xs font-bold hover:bg-emerald-100" title="Simulasi Pengisian Angka Berurutan">Simulasi AutoFill No</button>
+                </div>
+                <div class="text-xs bg-gray-100 px-3 py-1.5 rounded-lg text-gray-500 font-mono">
+                    Formula didukung: <span class="font-bold text-gray-700">=SUM(), =AVERAGE(), =MAX(), =MIN()</span> serta operator aritmatika biasa.
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 overflow-x-auto">
+                <div class="mb-2 flex items-center gap-2">
+                    <span class="text-xs font-bold text-gray-400 w-10 text-center uppercase">Sel:</span>
+                    <input type="text" id="active-cell-indicator" readonly value="A1" class="bg-gray-100 font-mono text-xs p-1 px-2 rounded border w-16 text-center text-emerald-700 font-bold">
+                    <span class="text-xs font-bold text-gray-400 uppercase ml-2">Formula Bar:</span>
+                    <input type="text" id="formula-bar-input" placeholder="Masukkan angka atau rumus seperti =SUM(B2:B5) lalu tekan Enter" class="flex-1 font-mono text-xs p-1.5 px-3 rounded border border-gray-300 focus:outline-emerald-500">
+                </div>
+
+                <table class="w-full border-collapse border border-gray-300 text-sm font-mono" id="spreadsheet-table">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="border border-gray-300 w-10 text-center text-xs text-gray-400 py-1"></th>
+                            <th class="border border-gray-300 text-center text-xs text-gray-600 font-bold w-1/5">A</th>
+                            <th class="border border-gray-300 text-center text-xs text-gray-600 font-bold w-1/5">B</th>
+                            <th class="border border-gray-300 text-center text-xs text-gray-600 font-bold w-1/5">C</th>
+                            <th class="border border-gray-300 text-center text-xs text-gray-600 font-bold w-1/5">D</th>
+                            <th class="border border-gray-300 text-center text-xs text-gray-600 font-bold w-1/5">E</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+                <p class="text-[11px] text-gray-400 mt-2"><i class="fa-solid fa-circle-info"></i> Tip: Klik ganda sel manapun untuk mengisi data secara manual. Gunakan huruf kapital besar untuk mengetik rumus formula.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-1 bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                    <div>
+                        <h4 class="font-bold text-gray-800 text-sm mb-2"><i class="fa-solid fa-play text-emerald-500 mr-1"></i> Muat Template Praktik</h4>
+                        <p class="text-xs text-gray-500 mb-4">Malas mengetik data dari awal? Pilih skenario kasus di bawah ini untuk mengisi simulasi otomatis.</p>
+                    </div>
+                    <div class="space-y-2">
+                        <button onclick="loadTemplate('nilai')" class="w-full py-2 bg-gray-50 border hover:bg-gray-100 rounded text-xs font-semibold text-left px-3 block transition">&rarr; Kasus Nilai Siswa (P4 & P5)</button>
+                        <button onclick="loadTemplate('jual')" class="w-full py-2 bg-gray-50 border hover:bg-gray-100 rounded text-xs font-semibold text-left px-3 block transition">&rarr; Kasus Penjualan Toko (P6 Grafik)</button>
+                        <button onclick="clearSandbox()" class="w-full py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded text-xs font-bold text-center block transition"><i class="fa-solid fa-trash-can mr-1"></i> Bersihkan Sel Kosong</button>
+                    </div>
+                </div>
+                <div class="md:col-span-2 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <h4 class="font-bold text-gray-800 text-sm mb-3"><i class="fa-solid fa-chart-simple text-emerald-500 mr-1"></i> Live Visualisasi Grafik (Otomatis Membaca Kolom B)</h4>
+                    <div class="h-48 flex items-center justify-center">
+                        <canvas id="liveSandboxChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="tab-proyek" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-6 rounded-2xl shadow-sm">
+                <span class="text-xs font-bold bg-emerald-500/50 px-2 py-0.5 rounded uppercase tracking-wider">Tugas Portofolio Mandiri Kelulusan</span>
+                <h2 class="text-2xl font-bold mt-1">Buku Kas Harian Mandiri</h2>
+                <p class="text-sm text-emerald-100 mt-2 max-w-2xl">Sebagai bukti kelulusan capaian kompetensi dasar semester satu, siswa wajib merakit laporan keuangan kas harian secara rapi menggunakan kalkulasi saldo berjalan otomatis.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white p-5 rounded-xl shadow-sm border border-gray-100 space-y-4">
+                    <h3 class="font-bold text-gray-800 text-lg border-b pb-2"><i class="fa-solid fa-list-check text-emerald-500 mr-1"></i> Panduan Langkah Struktur Data</h3>
+                    
+                    <p class="text-xs text-gray-600">Susun struktur tabel laporan di lembar kerja Excel dengan kolom susunan kepala berikut:</p>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left border font-mono">
+                            <tr class="bg-gray-100">
+                                <th class="p-2 border">Baris/Sel</th>
+                                <th class="p-2 border">A (Tanggal)</th>
+                                <th class="p-2 border">B (Keterangan)</th>
+                                <th class="p-2 border">C (Masuk)</th>
+                                <th class="p-2 border">D (Keluar)</th>
+                                <th class="p-2 border">E (Saldo)</th>
+                            </tr>
+                            <tr>
+                                <td class="p-2 border font-bold bg-gray-50">Baris 2</td>
+                                <td class="p-2 border">1 Jan</td>
+                                <td class="p-2 border">Uang Saku</td>
+                                <td class="p-2 border text-right">50000</td>
+                                <td class="p-2 border text-right">0</td>
+                                <td class="p-2 border bg-yellow-50 text-emerald-700 font-bold">=C2-D2</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 border font-bold bg-gray-50">Baris 3</td>
+                                <td class="p-2 border">1 Jan</td>
+                                <td class="p-2 border">Jajan</td>
+                                <td class="p-2 border text-right">0</td>
+                                <td class="p-2 border text-right">10000</td>
+                                <td class="p-2 border bg-emerald-50 text-emerald-700 font-bold">=E2+C3-D3</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2 border font-bold bg-gray-50">Baris 4</td>
+                                <td class="p-2 border">2 Jan</td>
+                                <td class="p-2 border">Transport</td>
+                                <td class="p-2 border text-right">0</td>
+                                <td class="p-2 border text-right">5000</td>
+                                <td class="p-2 border bg-emerald-50 text-emerald-700 font-bold text-xs">Tarik Rumus ke Bawah...</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800">
+                        <span class="font-bold block mb-1"><i class="fa-solid fa-circle-exclamation"></i> Rumus Rekapitulasi di Bagian Bawah:</span>
+                        * Guna menghitung <b>Total Pemasukan</b> gunakan: <code class="bg-white p-0.5 rounded border font-mono font-bold">=SUM(C2:C4)</code><br>
+                        * Guna menghitung <b>Total Pengeluaran</b> gunakan: <code class="bg-white p-0.5 rounded border font-mono font-bold">=SUM(D2:D4)</code>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-1 bg-white p-5 rounded-xl shadow-sm border border-gray-100">
+                    <h3 class="font-bold text-gray-800 text-lg border-b pb-2 mb-3"><i class="fa-solid fa-star-half-stroke text-amber-500 mr-1"></i> Rubrik Penilaian</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-gray-700 mb-1"><span>Ketepatan Input Data</span><span>20%</span></div>
+                            <div class="w-full bg-gray-200 h-2 rounded-full"><div class="bg-emerald-500 h-2 rounded-full" style="width: 20%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-gray-700 mb-1"><span>Penggunaan Rumus Otomatis</span><span>30%</span></div>
+                            <div class="w-full bg-gray-200 h-2 rounded-full"><div class="bg-blue-500 h-2 rounded-full" style="width: 30%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-gray-700 mb-1"><span>Kerapian & Format Tabel</span><span>20%</span></div>
+                            <div class="w-full bg-gray-200 h-2 rounded-full"><div class="bg-amber-500 h-2 rounded-full" style="width: 20%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-gray-700 mb-1"><span>Visualisasi Grafik</span><span>15%</span></div>
+                            <div class="w-full bg-gray-200 h-2 rounded-full"><div class="bg-purple-500 h-2 rounded-full" style="width: 15%"></div></div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-gray-700 mb-1"><span>Kreativitas Tampilan Desain</span><span>15%</span></div>
+                            <div class="w-full bg-gray-200 h-2 rounded-full"><div class="bg-pink-500 h-2 rounded-full" style="width: 15%"></div></div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 p-3 bg-gray-50 border border-gray-200 rounded-xl text-center text-xs text-gray-500">
+                        <i class="fa-solid fa-graduation-cap text-lg block text-emerald-600 mb-1"></i>
+                        Siswa dinyatakan lulus kompetensi semester jika total nilai rubrik mencapai minimal kesesuaian bimbingan.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-gray-400 text-xs py-6 mt-12 border-t border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <span class="font-bold text-gray-300 block mb-1">Capaian Akhir Kelulusan Semester 1:</span>
+                <p class="leading-relaxed">Siswa sanggup bernavigasi lincah di spreadsheet, melakukan entri data secara efisien berkat trik AutoFill, menguasai formula aritmatika dasar berserta fungsi statistik (SUM, AVERAGE, MAX, MIN), menata visual tabel rapi, serta menyajikan insight grafik visual yang interaktif.</p>
+            </div>
+            <div class="flex items-center md:justify-end text-[11px]">
+                <span>Canvas Pembelajaran Interaktif Mandiri • Dikembangkan untuk Guru & Siswa Pemula</span>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // Data internal simulator spreadsheet (10 Baris x 5 Kolom)
+        const totalRows = 10;
+        const totalCols = 5; // A to E
+        const colLetters = ['A', 'B', 'C', 'D', 'E'];
+        
+        // Objek state penyimpan data murni sel dan gaya format visual
+        let cellData = {};
+        let cellStyles = {};
+        let activeCell = "A1";
+        let liveChartInstance = null;
+
+        // Inisialisasi awal saat halaman termuat
+        window.onload = function() {
+            buildSpreadsheetGrid();
+            selectCell("A1");
+            initChart();
+        };
+
+        // Membangun tabel baris & kolom dinamis
+        function buildSpreadsheetGrid() {
+            const tbody = document.querySelector("#spreadsheet-table tbody");
+            tbody.innerHTML = "";
+
+            for (let r = 1; r <= totalRows; r++) {
+                let tr = document.createElement("tr");
+                
+                // Judul baris (nomor indeks kiri)
+                let thRow = document.createElement("th");
+                thRow.className = "bg-gray-100 border border-gray-300 text-xs text-gray-500 font-bold py-1 text-center w-10";
+                thRow.innerText = r;
+                tr.appendChild(thRow);
+
+                // Kotak input per kolom sel
+                for (let c = 0; c < totalCols; c++) {
+                    let td = document.createElement("td");
+                    td.className = "border border-gray-200 p-0 relative";
+                    
+                    let cellId = colLetters[c] + r;
+                    let input = document.createElement("input");
+                    input.type = "text";
+                    input.id = "input-" + cellId;
+                    input.className = "cell-input w-full p-1.5 font-mono text-xs border-none bg-transparent focus:ring-0 text-left";
+                    
+                    // Event handler interaktif sel
+                    input.onfocus = () => selectCell(cellId);
+                    input.onchange = (e) => updateCellValue(cellId, e.target.value);
+                    
+                    td.appendChild(input);
+                    tr.appendChild(td);
+                    
+                    // Init data state kosong
+                    cellData[cellId] = "";
+                }
+                tbody.appendChild(tr);
+            }
+        }
+
+        // Jalankan tabulasi antar menu atas
+        function switchTab(tabName) {
+            document.getElementById('tab-materi').classList.add('hidden');
+            document.getElementById('tab-lab').classList.add('hidden');
+            document.getElementById('tab-proyek').classList.add('hidden');
+            
+            document.getElementById('btn-materi').className = "px-4 py-2 rounded-lg font-medium text-emerald-100 hover:bg-emerald-500 transition";
+            document.getElementById('btn-lab').className = "px-4 py-2 rounded-lg font-medium text-emerald-100 hover:bg-emerald-500 transition";
+            document.getElementById('btn-proyek').className = "px-4 py-2 rounded-lg font-medium text-emerald-100 hover:bg-emerald-500 transition";
+
+            if(tabName === 'materi') {
+                document.getElementById('tab-materi').classList.remove('hidden');
+                document.getElementById('btn-materi').className = "px-4 py-2 rounded-lg font-medium bg-emerald-700 text-white shadow";
+            } else if (tabName === 'lab') {
+                document.getElementById('tab-lab').classList.remove('hidden');
+                document.getElementById('btn-lab').className = "px-4 py-2 rounded-lg font-medium bg-emerald-700 text-white shadow";
+                // Render ulang grafik saat tab lab dibuka
+                setTimeout(updateChart, 100);
+            } else if (tabName === 'proyek') {
+                document.getElementById('tab-proyek').classList.remove('hidden');
+                document.getElementById('btn-proyek').className = "px-4 py-2 rounded-lg font-medium bg-emerald-700 text-white shadow";
+            }
+        }
+
+        // Switch tampilan materi pertemuan di sidebar
+        function showPertemuan(num) {
+            document.querySelectorAll('.content-pertemuan').forEach(el => el.classList.add('hidden'));
+            document.getElementById('konten-p' + num).classList.remove('hidden');
+
+            for(let i=1; i<=6; i++) {
+                document.getElementById('nav-p'+i).className = "w-full text-left px-3 py-2.5 rounded-lg font-medium text-sm text-gray-600 hover:bg-gray-50 transition border-l-4 border-transparent";
+            }
+            document.getElementById('nav-p'+num).className = "w-full text-left px-3 py-2.5 rounded-lg font-medium text-sm transition bg-emerald-50 text-emerald-700 border-l-4 border-emerald-600";
+        }
+
+        // Perekam aksi ketika sel diklik aktif
+        function selectCell(cellId) {
+            activeCell = cellId;
+            document.getElementById("active-cell-indicator").value = cellId;
+            
+            // Tampilkan isi data murni (termasuk rumus mentah jika ada) ke formula bar
+            document.getElementById("formula-bar-input").value = cellData[cellId] || "";
+        }
+
+        // Pembaruan nilai sel & kalkulasi mesin rumus otomatis sederhana
+        function updateCellValue(cellId, val) {
+            cellData[cellId] = val;
+            evaluateAllFormulas();
+            updateChart();
+        }
+
+        // Menghubungkan kolom input formula bar agar sinkron ke sel aktif
+        document.getElementById("formula-bar-input").onidles = function() {};
+        document.getElementById("formula-bar-input").addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                let val = this.value;
+                let targetInput = document.getElementById("input-" + activeCell);
+                if (targetInput) {
+                    targetInput.value = val;
+                    updateCellValue(activeCell, val);
+                }
+            }
+        });
+
+        // Mesin hitung rumus mini parser (SUM, AVERAGE, MIN, MAX & Aritmatika sederhana)
+        function evaluateAllFormulas() {
+            for (let r = 1; r <= totalRows; r++) {
+                for (let c = 0; c < totalCols; c++) {
+                    let cellId = colLetters[c] + r;
+                    let formulaOrVal = cellData[cellId] || "";
+                    let inputEl = document.getElementById("input-" + cellId);
+
+                    if (formulaOrVal.startsWith("=")) {
+                        let formula = formulaOrVal.substring(1).toUpperCase().trim();
+                        try {
+                            // Handler Fungsi Statistik Dasar SUM, AVERAGE, MAX, MIN
+                            if (formula.startsWith("SUM") || formula.startsWith("AVERAGE") || formula.startsWith("MAX") || formula.startsWith("MIN")) {
+                                let match = formula.match(/\(([^)]+)\)/);
+                                if (match) {
+                                    let rangeStr = match[1]; // Contoh: B2:B5
+                                    let parts = rangeStr.split(":");
+                                    if(parts.length === 2) {
+                                        let values = getRangeValues(parts[0], parts[1]);
+                                        let res = 0;
+                                        if (formula.startsWith("SUM")) {
+                                            res = values.reduce((a, b) => a + b, 0);
+                                        } else if (formula.startsWith("AVERAGE")) {
+                                            res = values.length ? (values.reduce((a, b) => a + b, 0) / values.length) : 0;
+                                        } else if (formula.startsWith("MAX")) {
+                                            res = values.length ? Math.max(...values) : 0;
+                                        } else if (formula.startsWith("MIN")) {
+                                            res = values.length ? Math.min(...values) : 0;
+                                        }
+                                        inputEl.value = res;
+                                    }
+                                }
+                            } else {
+                                // Handler rumus aritmatika biasa via alamat sel (contoh: =A2+B2)
+                                let evaluatedFormula = formula;
+                                // Cari kecocokan alamat sel di dalam string rumus lalu ganti ke angka murni
+                                for (let key in cellData) {
+                                    if (evaluatedFormula.includes(key)) {
+                                        let numVal = parseFloat(document.getElementById("input-" + key).value) || 0;
+                                        evaluatedFormula = evaluatedFormula.replaceAll(key, numVal);
+                                    }
+                                }
+                                // Eksekusi aman matematika dasar
+                                let result = Function('"use strict";return (' + evaluatedFormula + ')')();
+                                inputEl.value = result;
+                            }
+                        } catch (err) {
+                            inputEl.value = "#VALUE!";
+                        }
+                    } else {
+                        // Jika bukan formula, kembalikan tulisan ketikan murni asli pengguna
+                        inputEl.value = formulaOrVal;
+                    }
+                }
+            }
+        }
+
+        // Pembaca kisaran jangkauan sel data (Range)
+        function getRangeValues(startCell, endCell) {
+            let startCol = startCell.charAt(0);
+            let startRow = parseInt(startCell.substring(1));
+            let endCol = endCell.charAt(0);
+            let endRow = parseInt(endCell.substring(1));
+
+            let startColIdx = colLetters.indexOf(startCol);
+            let endColIdx = colLetters.indexOf(endCol);
+
+            let arrValues = [];
+            for (let c = startColIdx; c <= endColIdx; c++) {
+                for (let r = startRow; r <= endRow; r++) {
+                    let id = colLetters[c] + r;
+                    // Ambil nilai visual yang sedang tampil di kotak layar input terhitung
+                    let el = document.getElementById("input-" + id);
+                    if(el) {
+                        let val = parseFloat(el.value) || 0;
+                        arrValues.push(val);
+                    }
+                }
+            }
+            return arrValues;
+        }
+
+        // Terapkan Gaya Desain Formatting Lembar Kerja
+        function applyFormat(type) {
+            let el = document.getElementById("input-" + activeCell);
+            if (!el) return;
+
+            if (type === 'bold') {
+                el.classList.toggle('font-bold');
+            } else if (type === 'align-left') {
+                el.style.textAlign = 'left';
+            } else if (type === 'align-center') {
+                el.style.textAlign = 'center';
+            } else if (type === 'align-right') {
+                el.style.textAlign = 'right';
+            } else if (type === 'bg-yellow') {
+                el.parentElement.className = "border border-gray-200 p-0 relative bg-amber-100 shadow-inner";
+            } else if (type === 'bg-green') {
+                el.parentElement.className = "border border-gray-200 p-0 relative bg-emerald-100 shadow-inner";
+            } else if (type === 'border') {
+                // Trik visual menebalkan garis pembatas tabel
+                document.getElementById("spreadsheet-table").classList.add("border-2", "border-gray-700");
+                alert("Semua garis tabel border diaktifkan agar rapi!");
+            }
+        }
+
+        // Simulasi Aksi Cepat AutoFill Penomoran Berurutan
+        function triggerAutoFill() {
+            cellData["A1"] = "1"; document.getElementById("input-A1").value = "1";
+            cellData["A2"] = "2"; document.getElementById("input-A2").value = "2";
+            
+            for(let i=3; i<=8; i++) {
+                cellData["A" + i] = i.toString();
+                document.getElementById("input-A" + i).value = i;
+            }
+            evaluateAllFormulas();
+            alert("Simulasi AutoFill Berhasil! Angka 1 sampai 8 otomatis terisi berurutan di Kolom A.");
+        }
+
+        // Bersihkan seluruh papan simulasi spreadsheet kosong melompong
+        function clearSandbox() {
+            cellData = {};
+            for (let r = 1; r <= totalRows; r++) {
+                for (let c = 0; c < totalCols; c++) {
+                    let id = colLetters[c] + r;
+                    let input = document.getElementById("input-" + id);
+                    if(input) {
+                        input.value = "";
+                        input.className = "cell-input w-full p-1.5 font-mono text-xs border-none bg-transparent focus:ring-0 text-left";
+                        input.parentElement.className = "border border-gray-200 p-0 relative";
+                        input.style.textAlign = 'left';
+                    }
+                }
+            }
+            document.getElementById("formula-bar-input").value = "";
+            updateChart();
+        }
+
+        // Memuat Paket Template Kasus Contoh Studi
+        function loadTemplate(type) {
+            clearSandbox();
+            if (type === 'nilai') {
+                // Judul tabel kolom
+                injectData("A1", "Nama"); injectData("B1", "Nilai Ujian");
+                injectData("A2", "Andi"); injectData("B2", "80");
+                injectData("A3", "Budi"); injectData("B3", "75");
+                injectData("A4", "Siti"); injectData("B4", "90");
+                injectData("A5", "Dewi"); injectData("B5", "100");
+                
+                // Masukkan rumus otomatis
+                injectData("A7", "TOTAL"); injectData("B7", "=SUM(B2:B5)");
+                injectData("A8", "RATA2"); injectData("B8", "=AVERAGE(B2:B5)");
+                injectData("A9", "TERTINGGI"); injectData("B9", "=MAX(B2:B5)");
+                injectData("A10", "TERENDAH"); injectData("B10", "=MIN(B2:B5)");
+                
+                // Beri penanda kosmetik warna otomatis kepala tabel
+                document.getElementById("input-A1").classList.add("font-bold");
+                document.getElementById("input-B1").classList.add("font-bold");
+                document.getElementById("input-A1").parentElement.classList.add("bg-emerald-100");
+                document.getElementById("input-B1").parentElement.classList.add("bg-emerald-100");
+                
+            } else if (type === 'jual') {
+                injectData("A1", "Bulan"); injectData("B1", "Penjualan");
+                injectData("A2", "Januari"); injectData("B2", "500");
+                injectData("A3", "Februari"); injectData("B3", "700");
+                injectData("A4", "Maret"); injectData("B4", "600");
+                injectData("A5", "April"); injectData("B5", "800");
+                
+                document.getElementById("input-A1").parentElement.classList.add("bg-amber-100");
+                document.getElementById("input-B1").parentElement.classList.add("bg-amber-100");
+            }
+            evaluateAllFormulas();
+            updateChart();
+        }
+
+        function injectData(cellId, val) {
+            cellData[cellId] = val;
+            document.getElementById("input-" + cellId).value = val;
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('liveSandboxChart').getContext('2d');
+            liveChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Baris 2', 'Baris 3', 'Baris 4', 'Baris 5'],
+                    datasets: [{
+                        label: 'Nilai Infografis (Kolom B)',
+                        data: [0, 0, 0, 0],
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function updateChart() {
+            if(!liveChartInstance) return;
+
+            // Ambil teks label dari Kolom A (Baris 2 sampai Baris 5)
+            let l2 = document.getElementById("input-A2").value || 'Baris 2';
+            let l3 = document.getElementById("input-A3").value || 'Baris 3';
+            let l4 = document.getElementById("input-A4").value || 'Baris 4';
+            let l5 = document.getElementById("input-A5").value || 'Baris 5';
+
+            // Ambil nilai angka hasil kalkulasi dari Kolom B (Baris 2 sampai Baris 5)
+            let v2 = parseFloat(document.getElementById("input-B2").value) || 0;
+            let v3 = parseFloat(document.getElementById("input-B3").value) || 0;
+            let v4 = parseFloat(document.getElementById("input-B4").value) || 0;
+            let v5 = parseFloat(document.getElementById("input-B5").value) || 0;
+
+            liveChartInstance.data.labels = [l2, l3, l4, l5];
+            liveChartInstance.data.datasets[0].data = [v2, v3, v4, v5];
+            liveChartInstance.update();
+        }
+    </script>
+</body>
+</html>
