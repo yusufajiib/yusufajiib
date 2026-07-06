@@ -1,1 +1,252 @@
-.
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informatics Canvas: Microsoft Word Mastery</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans">
+
+    <header class="bg-indigo-600 text-white shadow-md">
+        <div class="container mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight">INFORMATICS CANVAS</h1>
+                <p class="text-indigo-100 mt-1 text-sm md:text-base">Kurikulum Microsoft Word Tingkat SMA/MA (Kelas 10, 11, 12)</p>
+            </div>
+            <div class="mt-4 md:mt-0 bg-indigo-700 px-4 py-2 rounded-lg text-sm flex items-center gap-2 border border-indigo-500">
+                <i class="fa-solid fa-star text-yellow-300"></i>
+                <span>Target: 6 Karya Praktik Utama & Pameran Orang Tua</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        
+        <div class="flex flex-wrap gap-2 justify-center mb-8">
+            <button onclick="switchTab('k10')" id="tab-k10" class="tab-btn px-6 py-3 rounded-full font-bold text-sm transition-all duration-200 bg-indigo-600 text-white shadow-md">
+                <i class="fa-solid fa-graduation-cap mr-2"></i> Kelas 10 (Dasar & Otomatisasi)
+            </button>
+            <button onclick="switchTab('k11')" id="tab-k11" class="tab-btn px-6 py-3 rounded-full font-bold text-sm transition-all duration-200 bg-white text-slate-600 hover:bg-slate-100">
+                <i class="fa-solid fa-user-tie mr-2"></i> Kelas 11 (Akademik & Desain)
+            </button>
+            <button onclick="switchTab('k12')" id="tab-k12" class="tab-btn px-6 py-3 rounded-full font-bold text-sm transition-all duration-200 bg-white text-slate-600 hover:bg-slate-100">
+                <i class="fa-solid fa-rocket mr-2"></i> Kelas 12 (Profesional & Makro)
+            </button>
+            <button onclick="switchTab('exhibit')" id="tab-exhibit" class="tab-btn px-6 py-3 rounded-full font-bold text-sm transition-all duration-200 bg-amber-500 text-white shadow-sm hover:bg-amber-600">
+                <i class="fa-solid fa-users-viewfinder mr-2"></i> Panduan Pameran Wali Murid
+            </button>
+        </div>
+
+        <div id="content-k10" class="tab-content block animate-fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between border-b pb-4 mb-4">
+                        <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-md text-xs">SEMESTER 1</span>
+                        <span class="text-xs text-slate-400"><i class="fa-solid fa-clock"></i> 4-5 Pertemuan</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Layouting & Otomatisasi Dokumen</h3>
+                    <p class="text-sm text-slate-500 mb-4">Siswa difokuskan untuk mampu merapikan dokumen panjang agar konsisten dan otomatis.</p>
+                    <h4 class="font-semibold text-xs text-slate-400 tracking-wider uppercase mb-2">Target Kompetensi:</h4>
+                    <ul class="space-y-2 text-sm text-slate-600 mb-6">
+                        <li><i class="fa-regular fa-circle-check text-indigo-500 mr-2"></i> Memahami Page Setup, Margins, Breaks, & Section</li>
+                        <li><i class="fa-regular fa-circle-check text-indigo-500 mr-2"></i> Penggunaan Heading Styles untuk konsistensi font</li>
+                        <li><i class="fa-regular fa-circle-check text-indigo-500 mr-2"></i> Membuat Daftar Isi (Table of Contents) Otomatis</li>
+                    </ul>
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">KARYA PRAKTIK 1</span>
+                            <span class="text-xs font-semibold text-indigo-900">E-Magazine / Buletin Sekolah</span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">Siswa menyusun majalah dinding digital 3 halaman yang memuat artikel sekolah dengan layout multi-kolom, Drop Cap, pengaturan posisi gambar tingkat lanjut, dan daftar isi otomatis.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between border-b pb-4 mb-4">
+                        <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-md text-xs">SEMESTER 2</span>
+                        <span class="text-xs text-slate-400"><i class="fa-solid fa-clock"></i> 4-5 Pertemuan</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Manajemen Administrasi Massal</h3>
+                    <p class="text-sm text-slate-500 mb-4">Fokus pada efisiensi kerja kantoran/organisasi dengan teknik penggabungan data surat menyurat.</p>
+                    <h4 class="font-semibold text-xs text-slate-400 tracking-wider uppercase mb-2">Target Kompetensi:</h4>
+                    <ul class="space-y-2 text-sm text-slate-600 mb-6">
+                        <li><i class="fa-regular fa-circle-check text-indigo-500 mr-2"></i> Menguasai fitur Mail Merge (Surat Massal)</li>
+                        <li><i class="fa-regular fa-circle-check text-indigo-500 mr-2"></i> Membuat Label Nama Otomatis & Cetak Amplop</li>
+                        <li><i class="fa-regular fa-circle-check text-indigo-500 mr-2"></i> Manajemen tabel kompleks & formula dasar Word</li>
+                    </ul>
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-indigo-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">KARYA PRAKTIK 2</span>
+                            <span class="text-xs font-semibold text-indigo-900">Sistem Administrasi Undangan Event</span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">Membuat satu folder administrasi event yang berisi template surat undangan rapat OSIS, terintegrasi Mail Merge dengan database Excel, lengkap dengan lembar cetak label nama tamu otomatis.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-k11" class="tab-content hidden animate-fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between border-b pb-4 mb-4">
+                        <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-md text-xs">SEMESTER 1</span>
+                        <span class="text-xs text-slate-400"><i class="fa-solid fa-clock"></i> 4-5 Pertemuan</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Standardisasi Dokumen Ilmiah</h3>
+                    <p class="text-sm text-slate-500 mb-4">Mempersiapkan siswa menghadapi tugas akhir, karya ilmiah, atau kebutuhan riset akademis.</p>
+                    <h4 class="font-semibold text-xs text-slate-400 tracking-wider uppercase mb-2">Target Kompetensi:</h4>
+                    <ul class="space-y-2 text-sm text-slate-600 mb-6">
+                        <li><i class="fa-regular fa-circle-check text-emerald-500 mr-2"></i> Mengelola Sitasi (Citations) & Daftar Pustaka (Bibliography)</li>
+                        <li><i class="fa-regular fa-circle-check text-emerald-500 mr-2"></i> Membuat Caption Otomatis untuk Gambar & Tabel</li>
+                        <li><i class="fa-regular fa-circle-check text-emerald-500 mr-2"></i> Menggunakan Footnotes, Endnotes, & Cross-reference</li>
+                    </ul>
+                    <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">KARYA PRAKTIK 3</span>
+                            <span class="text-xs font-semibold text-emerald-900">Proposal Riset / Karya Tulis Ilmiah (KTI)</span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">Menyusun dokumen draf proposal penelitian mini bertema bebas. Dokumen wajib memiliki sitasi otomatis minimal 5 sumber buku/jurnal, Daftar Pustaka APA Style, serta Daftar Gambar otomatis.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between border-b pb-4 mb-4">
+                        <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-md text-xs">SEMESTER 2</span>
+                        <span class="text-xs text-slate-400"><i class="fa-solid fa-clock"></i> 4-5 Pertemuan</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Visualisasi Data & Ilustrasi Dokumen</h3>
+                    <p class="text-sm text-slate-500 mb-4">Menggabungkan estetika visual dan struktur informasi untuk dokumen korporat/bisnis.</p>
+                    <h4 class="font-semibold text-xs text-slate-400 tracking-wider uppercase mb-2">Target Kompetensi:</h4>
+                    <ul class="space-y-2 text-sm text-slate-600 mb-6">
+                        <li><i class="fa-regular fa-circle-check text-emerald-500 mr-2"></i> Membuat diagram alir menggunakan SmartArt</li>
+                        <li><i class="fa-regular fa-circle-check text-emerald-500 mr-2"></i> Integrasi Chart/Grafik dinamis dari Microsoft Excel</li>
+                        <li><i class="fa-regular fa-circle-check text-emerald-500 mr-2"></i> Mendesain Cover Page kustom dan watermark keamanan</li>
+                    </ul>
+                    <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">KARYA PRAKTIK 4</span>
+                            <span class="text-xs font-semibold text-emerald-900">Company Profile Perusahaan Simulasi</span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">Membuat brosur/profil perusahaan simulasi. Berisi halaman sampul estetik buatan sendiri, bagan struktur organisasi (SmartArt), dan grafik performa keuangan yang terhubung dengan Excel.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-k12" class="tab-content hidden animate-fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between border-b pb-4 mb-4">
+                        <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-md text-xs">SEMESTER 1</span>
+                        <span class="text-xs text-slate-400"><i class="fa-solid fa-clock"></i> 4-5 Pertemuan</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Formulir Interaktif & Proteksi</h3>
+                    <p class="text-sm text-slate-500 mb-4">Mempersiapkan siswa untuk dunia kerja nyata melalui pembuatan dokumen yang aman dan fungsional.</p>
+                    <h4 class="font-semibold text-xs text-slate-400 tracking-wider uppercase mb-2">Target Kompetensi:</h4>
+                    <ul class="space-y-2 text-sm text-slate-600 mb-6">
+                        <li><i class="fa-regular fa-circle-check text-purple-500 mr-2"></i> Mengaktifkan & menggunakan Developer Tab</li>
+                        <li><i class="fa-regular fa-circle-check text-purple-500 mr-2"></i> Membuat Form Controls (Checkbox, Dropdown, Date Picker)</li>
+                        <li><i class="fa-regular fa-circle-check text-purple-500 mr-2"></i> Mengunci hak akses edit dokumen (Restricting Editing)</li>
+                    </ul>
+                    <div class="bg-purple-50 border border-purple-100 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">KARYA PRAKTIK 5</span>
+                            <span class="text-xs font-semibold text-purple-900">Formulir Digital & Portofolio CV Kerja</span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">Siswa membuat berkas CV Profesional mereka sendiri dilengkapi berkas formulir pendaftaran kerja digital interaktif, di mana pengisi formulir hanya bisa mengisi bagian text box/dropdown yang disediakan.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between border-b pb-4 mb-4">
+                        <span class="bg-indigo-100 text-indigo-700 font-bold px-3 py-1 rounded-md text-xs">SEMESTER 2</span>
+                        <span class="text-xs text-slate-400"><i class="fa-solid fa-clock"></i> 4-5 Pertemuan</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">Otomatisasi Lanjut (Macro/VBA)</h3>
+                    <p class="text-sm text-slate-500 mb-4">Tingkat mahir: merekam perintah berulang untuk efisiensi mutlak dan penyusunan portofolio final.</p>
+                    <h4 class="font-semibold text-xs text-slate-400 tracking-wider uppercase mb-2">Target Kompetensi:</h4>
+                    <ul class="space-y-2 text-sm text-slate-600 mb-6">
+                        <li><i class="fa-regular fa-circle-check text-purple-500 mr-2"></i> Memahami konsep dasar Macro Word</li>
+                        <li><i class="fa-regular fa-circle-check text-purple-500 mr-2"></i> Merekam & menjalankan Macro untuk otomatisasi format teks</li>
+                        <li><i class="fa-regular fa-circle-check text-purple-500 mr-2"></i> Membuat tombol kustom di Word untuk eksekusi fungsi cepat</li>
+                    </ul>
+                    <div class="bg-purple-50 border border-purple-100 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded">KARYA PRAKTIK 6</span>
+                            <span class="text-xs font-semibold text-purple-900">E-Book Interaktif dengan Tombol Makro Navigasi</span>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">Karya puncak berupa e-book digital ringkas yang merangkum seluruh hasil karya mereka selama 3 tahun. Dilengkapi sistem Macro terautomasi untuk membersihkan dokumen atau mencetak halaman tertentu sekali klik.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-exhibit" class="tab-content hidden animate-fade-in">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 max-w-4xl mx-auto">
+                <div class="text-center mb-8">
+                    <i class="fa-solid fa-laptop-code text-4xl text-amber-500 mb-2"></i>
+                    <h2 class="text-2xl font-bold text-slate-900">Panduan Teknis Pameran (Showcase Day)</h2>
+                    <p class="text-sm text-slate-500 mt-1">Metode memamerkan 6 hasil karya digital siswa di hadapan Orang Tua/Wali Murid.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="border border-slate-100 p-4 rounded-xl bg-slate-50">
+                        <div class="font-bold text-slate-800 text-sm mb-1"><i class="fa-solid fa-display text-blue-500 mr-2"></i> 1. Format Display</div>
+                        <p class="text-xs text-slate-600">Siswa menyiapkan laptop di meja kelas. Membuka 1 dokumen master (E-book Karya 6) yang berisi portofolio gabungan karya 1 sampai 5.</p>
+                    </div>
+                    <div class="border border-slate-100 p-4 rounded-xl bg-slate-50">
+                        <div class="font-bold text-slate-800 text-sm mb-1"><i class="fa-solid fa-comments text-emerald-500 mr-2"></i> 2. Live Demo</div>
+                        <p class="text-xs text-slate-600">Siswa mendemonstrasikan kehebatan Word di depan orang tua mereka, misalnya melakukan klik "Mail Merge" lalu melihat 50 surat berganti nama otomatis dalam 2 detik.</p>
+                    </div>
+                    <div class="border border-slate-100 p-4 rounded-xl bg-slate-50">
+                        <div class="font-bold text-slate-800 text-sm mb-1"><i class="fa-solid fa-qrcode text-purple-500 mr-2"></i> 3. Unduhan Barcode</div>
+                        <p class="text-xs text-slate-600">Siswa menyediakan QR Code (di-generate dari Google Drive tugas) agar orang tua bisa memindai dan menyimpan hasil karya anak mereka langsung di HP masing-masing.</p>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-5">
+                    <h4 class="font-bold text-amber-900 text-sm mb-2"><i class="fa-solid fa-bullhorn mr-2"></i> Rubrik Penilaian & Apresiasi Orang Tua:</h4>
+                    <p class="text-xs text-slate-700 mb-3">Orang tua diberikan selembar "Kuesioner Apresiasi" kecil untuk memberikan bintang (1-5) dan pesan hangat setelah melihat presentasi anaknya. Hal ini meningkatkan rasa percaya diri siswa secara drastis!</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-400 text-center py-6 mt-12 text-xs border-t border-slate-800">
+        <p>© 2026 Aplikasi Informatics Curriculum Canvas. Dibuat untuk Efisiensi Pembelajaran Praktis.</p>
+    </footer>
+
+    <script>
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+                content.classList.remove('block');
+            });
+
+            // Show target content
+            document.getElementById('content-' + tabId).classList.remove('hidden');
+            document.getElementById('content-' + tabId).classList.add('block');
+
+            // Reset all buttons styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-600', 'text-white', 'shadow-md', 'bg-amber-500');
+                btn.classList.add('bg-white', 'text-slate-600');
+            });
+
+            // Set active button style
+            const activeBtn = document.getElementById('tab-' + tabId);
+            if (tabId === 'exhibit') {
+                activeBtn.classList.remove('bg-white', 'text-slate-600');
+                activeBtn.classList.add('bg-amber-500', 'text-white', 'shadow-sm');
+            } else {
+                activeBtn.classList.remove('bg-white', 'text-slate-600');
+                activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
+            }
+        }
+    </script>
+</body>
+</html>
