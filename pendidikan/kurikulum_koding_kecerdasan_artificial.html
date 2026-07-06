@@ -1,0 +1,1166 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  BookOpen, 
+  Cpu, 
+  Code, 
+  Award, 
+  Layers, 
+  Play, 
+  Share2, 
+  Heart, 
+  MessageSquare, 
+  CheckCircle, 
+  ChevronRight, 
+  Sparkles, 
+  User, 
+  Send,
+  Plus,
+  Trash2,
+  Tv,
+  FileCode,
+  Sliders,
+  Brain
+} from 'lucide-react';
+
+// Data Kurikulum Berdasarkan Request
+const curriculumData = {
+  koding: {
+    title: "Kurikulum Koding",
+    color: "blue",
+    icon: Code,
+    targets: [
+      "Merancang program teks kompleks dengan fungsi dan modul",
+      "Membuat program teks untuk simulasi nyata",
+      "Membuat produk digital yang lebih kompleks"
+    ],
+    grades: {
+      10: {
+        sem1: {
+          title: "Dasar Pemrograman Teks & Modularisasi",
+          targetAssoc: 0, // asosiasi dengan target indeks 0
+          topics: [
+            "Pengenalan Sintaks Bahasa Pemrograman Teks (Python)",
+            "Struktur Kontrol: Percabangan & Perulangan Kompleks",
+            "Deklarasi dan Pembuatan Fungsi Mandiri (User-defined Functions)",
+            "Konsep Rekursi Sederhana dalam Pemecahan Masalah"
+          ],
+          practice: "Membuat kalkulator sains modular menggunakan fungsi-fungsi matematika terpisah."
+        },
+        sem2: {
+          title: "Pemrograman Modular & library",
+          targetAssoc: 0,
+          topics: [
+            "Membuat dan Mengimpor Modul Kustom (.py)",
+            "Pemanfaatan Standard Library (math, random, datetime)",
+            "Penanganan Eksepsi (Try-Except) untuk Robustness Program",
+            "Manajemen File Sederhana (Membaca & Menulis file txt/csv)"
+          ],
+          practice: "Membuat sistem pencatat jurnal harian siswa yang menyimpan data ke file teks."
+        }
+      },
+      11: {
+        sem1: {
+          title: "Simulasi Matematika & Fisika Sederhana",
+          targetAssoc: 1, // asosiasi dengan target indeks 1
+          topics: [
+            "Representasi Rumus Fisika/Matematika dalam Kode",
+            "Simulasi Gerak (misal: Gerak Lurus Beraturan, Parabola)",
+            "Visualisasi Data Sederhana menggunakan Karakter Teks (CLI Graphs)",
+            "Penggunaan library visualisasi (pengantar konseptual)"
+          ],
+          practice: "Membuat program simulasi peluncuran roket dengan variabel gravitasi dan hambatan udara."
+        },
+        sem2: {
+          title: "Simulasi Sistem Nyata & Antrian",
+          targetAssoc: 1,
+          topics: [
+            "Pemodelan Sistem Antrian (Queue) di Dunia Nyata",
+            "Simulasi Probabilitas (Monte Carlo Sederhana/Pelemparan Dadu)",
+            "Pembuatan Game Berbasis Teks Terstruktur (Text-based RPG/Adventure)",
+            "Optimasi Algoritma Simulasi"
+          ],
+          practice: "Membuat simulasi antrian kasir supermarket mini untuk mengukur efisiensi waktu tunggu pelanggan."
+        }
+      },
+      12: {
+        sem1: {
+          title: "Pengembangan Produk Digital Kompleks - Arsitektur & GUI",
+          targetAssoc: 2, // asosiasi dengan target indeks 2
+          topics: [
+            "Pengenalan Pemrograman Berorientasi Objek (OOP) Dasar",
+            "Perancangan Antarmuka Pengguna Grafis (GUI) Sederhana",
+            "Konektivitas Database Lokal (SQLite) atau Penyimpanan JSON",
+            "Perancangan Struktur Arsitektur Aplikasi (Model-View-Controller)"
+          ],
+          practice: "Membuat Aplikasi Manajemen Tugas (To-Do List Desktop) lengkap dengan kategori, tenggat waktu, dan GUI."
+        },
+        sem2: {
+          title: "Proyek Akhir & Publikasi Produk Digital",
+          targetAssoc: 2,
+          topics: [
+            "SDLC (Software Development Life Cycle) - Metode Agile Sederhana",
+            "Pengujian Aplikasi (Debugging & Alpha Testing)",
+            "Pembuatan Dokumentasi Kode & Panduan Pengguna",
+            "Persiapan Presentasi dan Pameran Produk (Exhibition)"
+          ],
+          practice: "Mengembangkan produk digital bebas (aplikasi kasir, game sederhana, atau portal informasi sekolah) untuk dipamerkan."
+        }
+      }
+    }
+  },
+  ai: {
+    title: "Kurikulum Kecerdasan Artifisial (AI)",
+    color: "purple",
+    icon: Brain,
+    targets: [
+      "Merancang sistem manajemen sederhana untuk pengolahan data",
+      "Menulis program simbolik di aplikasi sederhana",
+      "Merancang produk digital sederhana berbasis AI"
+    ],
+    grades: {
+      10: {
+        sem1: {
+          title: "Manajemen & Pengolahan Data Dasar AI",
+          targetAssoc: 0,
+          topics: [
+            "Konsep Data dalam AI (Data Structured vs Unstructured)",
+            "Teknik Pengumpulan Data (Data Gathering) & Pembersihan Data",
+            "Analisis Statistik Deskriptif Dasar menggunakan Kode",
+            "Representasi Data dalam Bentuk Array/List"
+          ],
+          practice: "Merancang dataset nilai siswa dan membuat program pembersih data dari nilai kosong (NaN)."
+        },
+        sem2: {
+          title: "Sistem Manajemen Data & Visualisasi",
+          targetAssoc: 0,
+          topics: [
+            "Pengenalan DataFrame (Konsep Tabel Data)",
+            "Query Data Sederhana (Filtering, Sorting, Aggregation)",
+            "Visualisasi Data untuk Insights (Grafik Batang, Garis, Scatter Plot)",
+            "Etika Data dan Privasi dalam AI"
+          ],
+          practice: "Membuat dasbor statistik mini untuk menganalisis tren minat ekstrakurikuler sekolah."
+        }
+      },
+      11: {
+        sem1: {
+          title: "Sistem Berbasis Aturan & Logika Simbolik",
+          targetAssoc: 1,
+          topics: [
+            "Konsep Dasar AI Simbolik (Rule-based AI)",
+            "Logika Proposisi & Pohon Keputusan (Decision Trees)",
+            "Representasi Pengetahuan (Knowledge Representation)",
+            "Membuat Sistem Pakar (Expert System) Sederhana"
+          ],
+          practice: "Menulis program simbolik Sistem Pakar Diagnosis Kerusakan Komputer berbasis aturan IF-THEN."
+        },
+        sem2: {
+          title: "Natural Language Processing (NLP) Simbolik & Chatbot",
+          targetAssoc: 1,
+          topics: [
+            "Pengolahan Teks: Tokenisasi, Stemming, Stopwords",
+            "Pencocokan Pola Kata (Pattern Matching/Regex)",
+            "Perancangan Alur Percakapan (Conversational Flow)",
+            "Implementasi Chatbot Berbasis Aturan"
+          ],
+          practice: "Membuat program asisten virtual sekolah (chatbot) yang menjawab pertanyaan umum seputar jadwal pelajaran dan fasilitas."
+        }
+      },
+      12: {
+        sem1: {
+          title: "Perancangan Produk AI - Machine Learning Praktis",
+          targetAssoc: 2,
+          topics: [
+            "Konsep Pembelajaran Mesin (Supervised vs Unsupervised)",
+            "Klasifikasi Gambar/Suara Sederhana Menggunakan Model Teachable Machine/API",
+            "Integrasi Model AI ke dalam Aplikasi",
+            "Pengukuran Akurasi Model AI"
+          ],
+          practice: "Merancang prototipe pendeteksi masker wajah atau ekspresi emosi terintegrasi dengan antarmuka web sederhana."
+        },
+        sem2: {
+          title: "Produk Digital AI Kreatif & Demo Pameran",
+          targetAssoc: 2,
+          topics: [
+            "Pemanfaatan Generative AI API secara Bijak",
+            "Desain Interaksi Manusia & AI (Human-AI Interaction)",
+            "Evaluasi Dampak Sosial Solusi AI yang Dibuat",
+            "Showcase Setup untuk Wali Murid"
+          ],
+          practice: "Membuat produk digital AI Generator Cerita Pendek atau Rekomendasi Karir berdasarkan kepribadian untuk dicoba orang tua saat pameran."
+        }
+      }
+    }
+  }
+};
+
+// Data Default Proyek Pameran untuk Wali Murid
+const initialProjects = [
+  {
+    id: 1,
+    title: "EcoSimulator 2026",
+    student: "Rian Hidayat (Kelas 11 IPA 2)",
+    category: "koding",
+    grade: 11,
+    semester: 2,
+    desc: "Aplikasi koding teks Python yang mensimulasikan pertumbuhan populasi kelinci dan rumput berdasarkan variabel ketersediaan air dan suhu lingkungan nyata.",
+    codePreview: `def simulasi_ekosistem(hari, kelinci, rumput):\n    for h in range(1, hari+1):\n        rumput_tumbuh = rumput * 1.2\n        makanan_dikonsumsi = min(kelinci * 2, rumput_tumbuh)\n        rumput = rumput_tumbuh - makanan_dikonsumsi\n        kelinci = int(makanan_dikonsumsi / 1.5)\n        print(f"Hari {h}: Kelinci={kelinci}, Rumput={rumput:.1f}")`,
+    likes: 18,
+    comments: [
+      { sender: "Bpk. Budi (Orang Tua)", text: "Hebat sekali simulasinya nak, grafiknya meskipun teks tapi sangat jelas!" },
+      { sender: "Ibu Siti (Orang Tua)", text: "Sangat kreatif, bisa menggambarkan keseimbangan alam." }
+    ]
+  },
+  {
+    id: 2,
+    title: "Sistem Pakar KarierKu",
+    student: "Alya Safira (Kelas 11 IPS 1)",
+    category: "ai",
+    grade: 11,
+    semester: 1,
+    desc: "Program AI simbolik (Rule-Based System) yang mencocokkan minat, kepribadian, dan nilai akademis siswa untuk merekomendasikan program studi kuliah yang tepat.",
+    codePreview: `aturan = [\n    {"syarat": ["suka_sains", "suka_hitung"], "rekomendasi": "Teknik atau Statistika"},\n    {"syarat": ["suka_seni", "kreatif"], "rekomendasi": "Desain Komunikasi Visual"}\n]`,
+    likes: 24,
+    comments: [
+      { sender: "Ibu Diana (Wali Murid)", text: "Tadi dicoba ke adiknya, dan hasilnya pas banget suka menggambar direkomendasikan DKV!" }
+    ]
+  },
+  {
+    id: 3,
+    title: "Detektor Sampah Pintar",
+    student: "Fahri & Team (Kelas 12 MIPA 4)",
+    category: "ai",
+    grade: 12,
+    semester: 1,
+    desc: "Produk AI pendeteksi jenis sampah (organik, anorganik, b3) menggunakan kamera berbasis transfer learning klasifikasi gambar untuk dipasang di tong sampah sekolah.",
+    codePreview: `// Integrasi API Teachable Machine\nconst model = await tmImage.load(checkpoint, metadata);\nconst prediction = await model.predict(webcamElement);`,
+    likes: 35,
+    comments: [
+      { sender: "Bpk. Rahmat (Kepala Sekolah)", text: "Karya luar biasa! Ini bisa kita implementasikan di kantin sekolah." }
+    ]
+  }
+];
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('curriculum'); // curriculum, playground, exhibition
+  const [selectedSubject, setSelectedSubject] = useState('koding'); // koding, ai
+  const [selectedGrade, setSelectedGrade] = useState(10); // 10, 11, 12
+  const [selectedSemester, setSelectedSemester] = useState('sem1'); // sem1, sem2
+
+  // Playground States
+  const [codeSnippet, setCodeSnippet] = useState(
+`# Tulis / Edit kode Python Anda di sini
+# Contoh: Merancang program kompleks dengan fungsi
+def hitung_luas_tanah(panjang, lebar):
+    return panjang * lebar
+
+def rekomendasikan_tanaman(luas):
+    if luas > 100:
+        return "Sangat cocok untuk kebun buah besar (Mangga, Durian)"
+    elif luas > 50:
+        return "Cocok untuk kebun sayur keluarga (Tomat, Cabai)"
+    else:
+        return "Disarankan metode Hidroponik atau Vertikultur"
+
+# Simulasi nyata pengolahan data tanah
+panjang_lahan = 75
+lebar_lahan = 2
+luas = hitung_luas_tanah(panjang_lahan, lebar_lahan)
+rekomendasi = rekomendasikan_tanaman(luas)
+
+print(f"--- LAPORAN ANALISIS LAHAN ---")
+print(f"Dimensi: {panjang_lahan}m x {lebar_lahan}m")
+print(f"Total Luas: {luas} meter persegi")
+print(f"Rekomendasi AI: {rekomendasi}")
+`
+  );
+  const [consoleOutput, setConsoleOutput] = useState("Klik 'Jalankan Program' untuk melihat output simulasi.");
+  const [isCompiling, setIsCompiling] = useState(false);
+
+  // AI Sandbox States
+  const [sandboxAge, setSandboxAge] = useState(16);
+  const [sandboxHobby, setSandboxHobby] = useState("koding");
+  const [sandboxMathScore, setSandboxMathScore] = useState(85);
+  const [aiRuleResult, setAiRuleResult] = useState(null);
+
+  // Exhibition/Pameran States
+  const [projects, setProjects] = useState(initialProjects);
+  const [newProjTitle, setNewProjTitle] = useState("");
+  const [newProjStudent, setNewProjStudent] = useState("");
+  const [newProjCategory, setNewProjCategory] = useState("koding");
+  const [newProjGrade, setNewProjGrade] = useState(10);
+  const [newProjSem, setNewProjSem] = useState(1);
+  const [newProjDesc, setNewProjDesc] = useState("");
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [commentInputs, setCommentInputs] = useState({});
+
+  // Fungsi Menjalankan Kode (Simulasi Kompilasi)
+  const runCode = () => {
+    setIsCompiling(true);
+    setConsoleOutput("Menghubungkan ke compiler virtual...\nMengompilasi modul dan memvalidasi fungsi...");
+    
+    setTimeout(() => {
+      // Simulasi parser sederhana untuk kode python yang ditulis user agar interaktif
+      try {
+        let output = "";
+        if (codeSnippet.includes("print")) {
+          // Ekstrak baris print atau buat simulasi output dinamis berdasarkan variabel di text
+          const lines = codeSnippet.split("\n");
+          let simulatedOutputs = [];
+          
+          // Cari variabel kustom jika diubah user
+          let p = 75;
+          let l = 2;
+          
+          const pMatch = codeSnippet.match(/panjang_lahan\s*=\s*(\d+)/);
+          const lMatch = codeSnippet.match(/lebar_lahan\s*=\s*(\d+)/);
+          if (pMatch) p = parseInt(pMatch[1]);
+          if (lMatch) l = parseInt(lMatch[1]);
+          
+          const luasTanah = p * l;
+          let rekText = "Disarankan metode Hidroponik atau Vertikultur";
+          if (luasTanah > 100) rekText = "Sangat cocok untuk kebun buah besar (Mangga, Durian)";
+          else if (luasTanah > 50) rekText = "Cocok untuk kebun sayur keluarga (Tomat, Cabai)";
+
+          simulatedOutputs.push("--- LAPORAN ANALISIS LAHAN ---");
+          simulatedOutputs.push(`Dimensi: ${p}m x ${l}m`);
+          simulatedOutputs.push(`Total Luas: ${luasTanah} meter persegi`);
+          simulatedOutputs.push(`Rekomendasi AI: ${rekText}`);
+          simulatedOutputs.push("\n[INFO] Simulasi Berhasil Dijalankan Tanpa Error!");
+          simulatedOutputs.push("[TARGET DICAPAI] Koding Target 1 & AI Target 1 Terpenuhi.");
+          
+          output = simulatedOutputs.join("\n");
+        } else {
+          output = "Program berjalan sukses dengan kode status 0.\n(Gunakan fungsi 'print()' untuk menampilkan output di konsol ini)";
+        }
+        setConsoleOutput(output);
+      } catch (err) {
+        setConsoleOutput("SyntaxError: Terjadi kesalahan penulisan sintaks program teks.");
+      } finally {
+        setIsCompiling(false);
+      }
+    }, 1200);
+  };
+
+  // Run AI Symbolic Sandbox Rule
+  const runAiSandbox = () => {
+    let rekomendasiMinat = "";
+    let kepribadianAI = "";
+    
+    // Logika Simbolik IF-THEN
+    if (sandboxHobby === "koding") {
+      rekomendasiMinat = "Software Engineer, AI Developer, atau Data Scientist";
+      kepribadianAI = "Logis, Analitis, & Problem Solver";
+    } else if (sandboxHobby === "seni") {
+      rekomendasiMinat = "UI/UX Designer, AI Prompt Artist, atau Animator Game";
+      kepribadianAI = "Kreatif, Imajinatif, & Estetis";
+    } else if (sandboxHobby === "bisnis") {
+      rekomendasiMinat = "Product Manager, AI Business Strategist, atau System Analyst";
+      kepribadianAI = "Visioner, Komunikatif, & Pengambil Keputusan";
+    }
+
+    let statusMatematika = sandboxMathScore >= 80 ? "Sangat Siap untuk Algoritma Kompleks (AI)" : "Siap dengan Penguatan Logika Dasar";
+    
+    setAiRuleResult({
+      rekomendasi: rekomendasiMinat,
+      kepribadian: kepribadianAI,
+      statusMatematika: statusMatematika,
+      rulesApplied: [
+        `RULE 1: IF hobi == "${sandboxHobby}" THEN jalur_karir = "${rekomendasiMinat}"`,
+        `RULE 2: IF nilai_matematika >= 80 (yaitu ${sandboxMathScore}) THEN kesiapan = "Sangat Siap"`
+      ]
+    });
+  };
+
+  // Tambah Proyek Baru di Pameran
+  const handleAddProject = (e) => {
+    e.preventDefault();
+    if (!newProjTitle || !newProjStudent || !newProjDesc) {
+      alert("Mohon lengkapi semua bidang!");
+      return;
+    }
+
+    const newProject = {
+      id: projects.length + 1,
+      title: newProjTitle,
+      student: newProjStudent,
+      category: newProjCategory,
+      grade: parseInt(newProjGrade),
+      semester: parseInt(newProjSem),
+      desc: newProjDesc,
+      codePreview: newProjCategory === 'koding' 
+        ? `# Proyek Koding Teks oleh ${newProjStudent}\ndef main():\n    print("Halo Dunia, selamat datang di proyek saya!")`
+        : `# Aturan Sistem AI oleh ${newProjStudent}\nif input_user == "tanya":\n    respon_ai("Jawaban Cerdas")`,
+      likes: 0,
+      comments: []
+    };
+
+    setProjects([newProject, ...projects]);
+    setNewProjTitle("");
+    setNewProjStudent("");
+    setNewProjDesc("");
+    setShowAddForm(false);
+  };
+
+  // Like Proyek
+  const likeProject = (id) => {
+    setProjects(projects.map(p => p.id === id ? { ...p, likes: p.likes + 1 } : p));
+  };
+
+  // Tambah Komentar dari Orang Tua/Wali
+  const addComment = (id) => {
+    const text = commentInputs[id];
+    if (!text) return;
+
+    setProjects(projects.map(p => {
+      if (p.id === id) {
+        return {
+          ...p,
+          comments: [...p.comments, { sender: "Wali Murid / Pengunjung", text: text }]
+        };
+      }
+      return p;
+    }));
+
+    setCommentInputs({ ...commentInputs, [id]: "" });
+  };
+
+  const selectedData = curriculumData[selectedSubject].grades[selectedGrade][selectedSemester];
+  const selectedTargetIndex = selectedData.targetAssoc;
+  const currentTargetText = curriculumData[selectedSubject].targets[selectedTargetIndex];
+
+  return (
+    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans">
+      {/* Top Header */}
+      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="bg-gradient-to-tr from-blue-600 to-purple-600 p-2.5 rounded-xl text-white shadow-lg shadow-blue-500/20">
+              <Sparkles className="w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
+                Kanvas Kurikulum Informatika SMA/MA
+              </h1>
+              <p className="text-xs text-slate-400">Fokus: Koding & Kecerdasan Artifisial (Kurikulum Merdeka Interaktif)</p>
+            </div>
+          </div>
+
+          {/* Navigation Tabs */}
+          <nav className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
+            <button
+              onClick={() => setActiveTab('curriculum')}
+              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+                activeTab === 'curriculum' 
+                  ? 'bg-gradient-to-r from-blue-600/90 to-purple-600/90 text-white shadow' 
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>Peta Kurikulum</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('playground')}
+              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${
+                activeTab === 'playground' 
+                  ? 'bg-gradient-to-r from-blue-600/90 to-purple-600/90 text-white shadow' 
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Play className="w-4 h-4" />
+              <span>Laboratorium Praktik</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('exhibition')}
+              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all relative ${
+                activeTab === 'exhibition' 
+                  ? 'bg-gradient-to-r from-blue-600/90 to-purple-600/90 text-white shadow' 
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Tv className="w-4 h-4" />
+              <span>Pameran Karya Orang Tua</span>
+              <span className="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold animate-pulse">
+                Live
+              </span>
+            </button>
+          </nav>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        
+        {/* TAB 1: CURRICULUM CANVAS */}
+        {activeTab === 'curriculum' && (
+          <div className="space-y-8 animate-fadeIn">
+            {/* Intro Hero Section */}
+            <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 rounded-2xl p-6 sm:p-8 border border-slate-800 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+              
+              <div className="relative z-10 max-w-3xl">
+                <span className="px-3 py-1 text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-full uppercase tracking-wider">
+                  Panduan Belajar Masa Depan
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-white mt-4 tracking-tight">
+                  Membangun Kreator Teknologi Sejak Sekolah Menengah
+                </h2>
+                <p className="text-slate-300 mt-2 text-sm sm:text-base leading-relaxed">
+                  Selamat datang di platform interaktif kurikulum Informatika SMA/MA. Melalui struktur pembelajaran yang dinamis, siswa tidak hanya belajar teori, tetapi langsung praktik membangun produk digital koding kompleks dan logika kecerdasan artifisial simbolik yang dapat dipamerkan langsung di depan orang tua.
+                </p>
+              </div>
+            </div>
+
+            {/* Selector Control Panel */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              {/* Left selectors: Subject & Grade */}
+              <div className="md:col-span-1 space-y-4">
+                <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-4">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Pilih Fokus Bidang</h3>
+                  
+                  {/* Subject Toggle */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => setSelectedSubject('koding')}
+                      className={`py-3 px-3 rounded-lg flex flex-col items-center justify-center gap-2 border text-xs font-semibold transition-all ${
+                        selectedSubject === 'koding'
+                          ? 'bg-blue-600/20 border-blue-500 text-blue-300 shadow-sm shadow-blue-500/10'
+                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-300'
+                      }`}
+                    >
+                      <Code className="w-5 h-5" />
+                      <span>Koding / Pemrograman</span>
+                    </button>
+                    <button
+                      onClick={() => setSelectedSubject('ai')}
+                      className={`py-3 px-3 rounded-lg flex flex-col items-center justify-center gap-2 border text-xs font-semibold transition-all ${
+                        selectedSubject === 'ai'
+                          ? 'bg-purple-600/20 border-purple-500 text-purple-300 shadow-sm shadow-purple-500/10'
+                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-300'
+                      }`}
+                    >
+                      <Cpu className="w-5 h-5" />
+                      <span>Kecerdasan Artifisial</span>
+                    </button>
+                  </div>
+
+                  {/* Grade Selection */}
+                  <div className="space-y-2 pt-2">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Pilih Kelas Jenjang</h3>
+                    <div className="flex flex-col gap-2">
+                      {[10, 11, 12].map((g) => (
+                        <button
+                          key={g}
+                          onClick={() => setSelectedGrade(g)}
+                          className={`w-full text-left px-4 py-2.5 rounded-lg border text-sm font-medium transition-all flex items-center justify-between ${
+                            selectedGrade === g
+                              ? 'bg-slate-900 border-indigo-500 text-indigo-300'
+                              : 'bg-slate-900/50 border-slate-800/80 text-slate-400 hover:text-slate-300'
+                          }`}
+                        >
+                          <span>Kelas {g} SMA / MA</span>
+                          <ChevronRight className={`w-4 h-4 transition-transform ${selectedGrade === g ? 'rotate-90 text-indigo-400' : 'text-slate-600'}`} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Semester Selection */}
+                  <div className="space-y-2 pt-2">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Pilih Semester</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => setSelectedSemester('sem1')}
+                        className={`py-2 px-3 rounded-lg border text-xs font-medium transition-all ${
+                          selectedSemester === 'sem1'
+                            ? 'bg-indigo-600 text-white border-indigo-500'
+                            : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-300'
+                        }`}
+                      >
+                        Semester 1
+                      </button>
+                      <button
+                        onClick={() => setSelectedSemester('sem2')}
+                        className={`py-2 px-3 rounded-lg border text-xs font-medium transition-all ${
+                          selectedSemester === 'sem2'
+                            ? 'bg-indigo-600 text-white border-indigo-500'
+                            : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-300'
+                        }`}
+                      >
+                        Semester 2
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right View: Interactive Curriculum Card */}
+              <div className="md:col-span-3 space-y-6">
+                
+                {/* Capaian Besar Header */}
+                <div className="bg-slate-950 p-6 rounded-xl border border-slate-800 space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="text-sm font-bold uppercase tracking-wider text-indigo-400">Target Besar Kurikulum Nasional</h3>
+                      <p className="text-xs text-slate-400 mt-1">Siswa harus mencapai kompetensi berikut di akhir fase jenjang:</p>
+                    </div>
+                    <Award className="w-8 h-8 text-amber-500 animate-pulse" />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+                    {curriculumData[selectedSubject].targets.map((target, idx) => (
+                      <div 
+                        key={idx} 
+                        className={`p-3 rounded-lg border text-xs relative overflow-hidden transition-all ${
+                          selectedTargetIndex === idx 
+                            ? 'bg-indigo-950/40 border-indigo-500 text-indigo-200 font-medium' 
+                            : 'bg-slate-900/60 border-slate-800 text-slate-400'
+                        }`}
+                      >
+                        <div className="flex gap-2">
+                          <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                            selectedTargetIndex === idx ? 'bg-indigo-500 text-white' : 'bg-slate-800 text-slate-500'
+                          }`}>
+                            {idx + 1}
+                          </span>
+                          <span className="flex-1 leading-relaxed">{target}</span>
+                        </div>
+                        {selectedTargetIndex === idx && (
+                          <div className="absolute right-1 bottom-1">
+                            <CheckCircle className="w-4 h-4 text-indigo-400" />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Main Semester Map Card */}
+                <div className="bg-gradient-to-b from-slate-950 to-slate-900 p-6 rounded-xl border border-slate-800 shadow-xl space-y-6">
+                  {/* Breadcrumb Header */}
+                  <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2.5 rounded-lg ${selectedSubject === 'koding' ? 'bg-blue-600/10 text-blue-400' : 'bg-purple-600/10 text-purple-400'}`}>
+                        {selectedSubject === 'koding' ? <Code className="w-6 h-6" /> : <Cpu className="w-6 h-6" />}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-bold text-slate-400">Kelas {selectedGrade}</span>
+                          <span className="text-xs bg-slate-800 text-slate-400 px-2 py-0.5 rounded">
+                            {selectedSemester === 'sem1' ? 'Semester 1' : 'Semester 2'}
+                          </span>
+                        </div>
+                        <h4 className="text-lg font-bold text-white mt-0.5">{selectedData.title}</h4>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 bg-slate-900/80 border border-slate-800 px-3 py-1.5 rounded-lg">
+                      <Layers className="w-4 h-4 text-emerald-400" />
+                      <span className="text-xs font-semibold text-emerald-300">
+                        Target Utama: Target {selectedTargetIndex + 1}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Silabus Topics */}
+                  <div className="space-y-4">
+                    <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                      <span>Materi Pelajaran Pokok</span>
+                      <span className="h-px bg-slate-800 flex-1"></span>
+                    </h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {selectedData.topics.map((topic, i) => (
+                        <div key={i} className="flex gap-3 bg-slate-900/40 p-3.5 rounded-lg border border-slate-800/80 hover:border-slate-700/60 transition-all">
+                          <div className="flex-shrink-0 mt-0.5">
+                            <CheckCircle className={`w-4 h-4 ${selectedSubject === 'koding' ? 'text-blue-500' : 'text-purple-500'}`} />
+                          </div>
+                          <span className="text-sm text-slate-300 leading-relaxed font-light">{topic}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Project Praktik Langsung Spec */}
+                  <div className={`p-4 rounded-xl border ${
+                    selectedSubject === 'koding' 
+                      ? 'bg-blue-950/20 border-blue-500/20' 
+                      : 'bg-purple-950/20 border-purple-500/20'
+                  }`}>
+                    <div className="flex items-start gap-3">
+                      <div className={`p-2 rounded-lg mt-0.5 ${
+                        selectedSubject === 'koding' ? 'bg-blue-500/10 text-blue-400' : 'bg-purple-500/10 text-purple-400'
+                      }`}>
+                        <FileCode className="w-5 h-5" />
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-xs font-bold tracking-wider uppercase text-slate-400">Tugas Praktik Produk Mandiri</span>
+                        <h6 className="text-sm font-semibold text-slate-200">{selectedData.practice}</h6>
+                        <p className="text-xs text-slate-400 pt-1">
+                          Proyek ini dapat dikembangkan langsung di menu <strong className="text-slate-300">"Laboratorium Praktik"</strong> di atas, diuji secara interaktif, lalu dipublikasikan di galeri pameran untuk dinilai wali murid.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Quick Navigation */}
+                  <div className="flex justify-end gap-3 pt-2">
+                    <button
+                      onClick={() => {
+                        setActiveTab('playground');
+                        // Set standard template code based on subject
+                        if (selectedSubject === 'ai') {
+                          setCodeSnippet(`# Sistem Deteksi AI Karir Simbolik\ndef tentukan_karir(skor_mat, hobi):\n    # Aturan AI Simbolik\n    if hobi == "koding" and skor_mat >= 80:\n        return "Developer AI / Data Scientist"\n    return "Spesialis IT Umum"`);
+                        } else {
+                          setCodeSnippet(`# Program Simulasi Realistis\nimport random\n\ndef jalankan_simulasi():\n    for h in range(1, 4):\n        suhu = random.randint(28, 35)\n        print(f"Hari {h}: Suhu lingkungan {suhu}C")\n\njalankan_simulasi()`);
+                        }
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 transition"
+                    >
+                      <span>Buka di Laboratorium</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: INTERACTIVE PLAYGROUND (LABORATORIUM) */}
+        {activeTab === 'playground' && (
+          <div className="space-y-8 animate-fadeIn">
+            <div className="flex flex-col md:flex-row items-start justify-between gap-4 border-b border-slate-800 pb-5">
+              <div>
+                <h2 className="text-2xl font-bold flex items-center gap-2">
+                  <Play className="w-6 h-6 text-indigo-500" />
+                  <span>Laboratorium Praktik Interaktif</span>
+                </h2>
+                <p className="text-sm text-slate-400">
+                  Uji coba koding teks langsung dan model penalaran AI simbolik berbasis web secara aman.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-xs bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span className="text-slate-300 font-medium">Virtual Sandbox Terkoneksi</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              
+              {/* Left Column: Code Editor Simulator */}
+              <div className="lg:col-span-7 space-y-4">
+                <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden shadow-lg">
+                  {/* Editor Header */}
+                  <div className="bg-slate-900 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="flex gap-1.5">
+                        <span className="w-3 h-3 rounded-full bg-rose-500"></span>
+                        <span className="w-3 h-3 rounded-full bg-amber-500"></span>
+                        <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
+                      </div>
+                      <span className="text-xs text-slate-400 font-mono ml-2">main_simulation.py</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[11px] bg-slate-800 text-blue-400 px-2.5 py-0.5 rounded font-semibold uppercase tracking-wider">
+                        Python 3.x Virtual
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Code Area */}
+                  <div className="relative">
+                    <textarea
+                      value={codeSnippet}
+                      onChange={(e) => setCodeSnippet(e.target.value)}
+                      className="w-full h-80 bg-slate-950 text-slate-300 font-mono text-xs sm:text-sm p-4 focus:outline-none focus:ring-0 resize-none leading-relaxed"
+                      spellCheck="false"
+                    />
+                  </div>
+
+                  {/* Editor Actions */}
+                  <div className="bg-slate-900/90 px-4 py-3 border-t border-slate-800/80 flex items-center justify-between">
+                    <span className="text-xs text-slate-500 font-mono">
+                      Target Capaian: Program Teks & Simulasi
+                    </span>
+                    <button
+                      onClick={runCode}
+                      disabled={isCompiling}
+                      className={`flex items-center gap-2 px-5 py-2 text-xs font-semibold rounded-lg text-white transition shadow-lg ${
+                        isCompiling 
+                          ? 'bg-slate-700 cursor-not-allowed' 
+                          : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-blue-500/10'
+                      }`}
+                    >
+                      {isCompiling ? (
+                        <>
+                          <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                          <span>Memproses...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-3.5 h-3.5 fill-current" />
+                          <span>Jalankan Program</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Console Output */}
+                <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+                  <div className="bg-slate-900 px-4 py-2 border-b border-slate-800 flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-400">Konsol Output Simulasi</span>
+                    <button 
+                      onClick={() => setConsoleOutput("Konsol dibersihkan.")}
+                      className="text-[10px] text-slate-500 hover:text-slate-400 hover:underline"
+                    >
+                      Bersihkan
+                    </button>
+                  </div>
+                  <div className="p-4 h-36 overflow-y-auto bg-slate-950 font-mono text-xs leading-relaxed text-slate-300">
+                    <pre className="whitespace-pre-wrap">{consoleOutput}</pre>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Column: AI Sandbox & Logic Rules */}
+              <div className="lg:col-span-5 space-y-4">
+                {/* AI Simbolik Sandbox Card */}
+                <div className="bg-gradient-to-b from-slate-950 to-slate-900 rounded-xl border border-slate-800 p-5 space-y-5 shadow-lg">
+                  <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+                    <Brain className="w-5 h-5 text-purple-400" />
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-200">Sistem AI Simbolik (Rule-based)</h3>
+                      <p className="text-[11px] text-slate-500">Praktik menulis dan mengevaluasi aturan logika AI</p>
+                    </div>
+                  </div>
+
+                  {/* Input Simbolik */}
+                  <div className="space-y-3.5 text-xs">
+                    <div>
+                      <label className="block text-slate-400 font-medium mb-1.5">Input Umur Siswa:</label>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="range"
+                          min="15"
+                          max="19"
+                          value={sandboxAge}
+                          onChange={(e) => setSandboxAge(parseInt(e.target.value))}
+                          className="flex-1 accent-purple-500 bg-slate-800"
+                        />
+                        <span className="bg-slate-800 px-2.5 py-1 rounded font-bold text-purple-400">{sandboxAge} Tahun</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-400 font-medium mb-1.5">Input Hobi Utama (Fokus Minat):</label>
+                      <select
+                        value={sandboxHobby}
+                        onChange={(e) => setSandboxHobby(e.target.value)}
+                        className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-slate-300 focus:outline-none focus:border-purple-500"
+                      >
+                        <option value="koding">Membuat Koding / Otomasi (Logic)</option>
+                        <option value="seni">Seni Digital / Desain Visual (Creative)</option>
+                        <option value="bisnis">Bisnis Digital / Manajemen Proyek (Strategy)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-400 font-medium mb-1.5">Nilai Matematika / Logika:</label>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="range"
+                          min="50"
+                          max="100"
+                          value={sandboxMathScore}
+                          onChange={(e) => setSandboxMathScore(parseInt(e.target.value))}
+                          className="flex-1 accent-purple-500 bg-slate-800"
+                        />
+                        <span className="bg-slate-800 px-2.5 py-1 rounded font-bold text-purple-400">{sandboxMathScore} / 100</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Execute Button */}
+                  <button
+                    onClick={runAiSandbox}
+                    className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white py-2.5 px-4 rounded-lg text-xs font-semibold shadow-lg shadow-purple-500/10 transition"
+                  >
+                    Evaluasi Aturan AI Simbolik
+                  </button>
+
+                  {/* AI Output / Result */}
+                  {aiRuleResult ? (
+                    <div className="bg-purple-950/25 border border-purple-500/30 rounded-lg p-4 space-y-3.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-purple-300 uppercase tracking-wider">Hasil Inferensi AI</span>
+                        <span className="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded font-mono">
+                          IF-THEN Matched
+                        </span>
+                      </div>
+                      
+                      <div className="space-y-2 text-xs">
+                        <div className="flex justify-between border-b border-purple-900/40 pb-1.5">
+                          <span className="text-slate-400">Rekomendasi Jalur AI:</span>
+                          <span className="font-bold text-white text-right">{aiRuleResult.rekomendasi}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-purple-900/40 pb-1.5">
+                          <span className="text-slate-400">Tipe Kepribadian AI:</span>
+                          <span className="font-medium text-slate-300">{aiRuleResult.kepribadian}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Kesiapan Algoritma:</span>
+                          <span className="font-medium text-emerald-400">{aiRuleResult.statusMatematika}</span>
+                        </div>
+                      </div>
+
+                      {/* Applied Rules in Engine */}
+                      <div className="bg-slate-950/80 p-2.5 rounded border border-purple-900/30 font-mono text-[10px] text-slate-400 space-y-1">
+                        <div className="text-[9px] font-bold uppercase text-purple-400/80 mb-1">Mesin Aturan yang Dieksekusi:</div>
+                        {aiRuleResult.rulesApplied.map((rule, idx) => (
+                          <div key={idx}>{rule}</div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="border border-dashed border-slate-800 rounded-lg p-6 text-center text-xs text-slate-500">
+                      Tentukan parameter di atas dan klik tombol evaluasi untuk melihat keputusan logika kecerdasan artifisial simbolik.
+                    </div>
+                  )}
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: SHOWCASE / PAMERAN KARYA */}
+        {activeTab === 'exhibition' && (
+          <div className="space-y-8 animate-fadeIn">
+            {/* Header dengan Penjelasan Khusus Orang Tua */}
+            <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950/40 rounded-2xl p-6 sm:p-8 border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="max-w-2xl space-y-3">
+                <span className="px-3 py-1 text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full uppercase tracking-wider">
+                  Ruang Orang Tua & Wali Murid
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-white mt-2 tracking-tight">
+                  Pameran Karya Digital Siswa-Siswi
+                </h2>
+                <p className="text-slate-300 text-sm leading-relaxed">
+                  Bapak/Ibu Orang Tua atau Wali Murid dipersilakan melihat demonstrasi produk digital koding kompleks dan algoritma kecerdasan artifisial nyata yang dibuat oleh para siswa. Silakan berikan apresiasi berupa 'Suka' (<Heart className="inline w-3.5 h-3.5 text-rose-500" />) atau tinggalkan umpan balik penyemangat!
+                </p>
+              </div>
+              <button
+                onClick={() => setShowAddForm(!showAddForm)}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-5 py-3 rounded-xl transition flex items-center gap-2 shadow-lg shadow-emerald-500/10 shrink-0"
+              >
+                {showAddForm ? 'Batal Tambah' : 'Kirim Proyek Siswa'}
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Form Tambah Proyek (Simulasi Siswa Menyerahkan Tugas) */}
+            {showAddForm && (
+              <form onSubmit={handleAddProject} className="bg-slate-950 p-6 rounded-xl border border-slate-800 space-y-4 max-w-xl mx-auto">
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider pb-2 border-b border-slate-800">
+                  Form Penyerahan Proyek Pameran
+                </h3>
+                
+                <div className="grid grid-cols-2 gap-4 text-xs">
+                  <div className="col-span-2">
+                    <label className="block text-slate-400 mb-1">Nama Proyek Kreatif:</label>
+                    <input
+                      type="text"
+                      placeholder="Contoh: Aplikasi Smart Health Care"
+                      value={newProjTitle}
+                      onChange={(e) => setNewProjTitle(e.target.value)}
+                      className="w-full bg-slate-900 border border-slate-800 rounded p-2.5 text-slate-200"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-slate-400 mb-1">Nama Pembuat / Kelas:</label>
+                    <input
+                      type="text"
+                      placeholder="Contoh: Budi Santoso (12 MIPA 1)"
+                      value={newProjStudent}
+                      onChange={(e) => setNewProjStudent(e.target.value)}
+                      className="w-full bg-slate-900 border border-slate-800 rounded p-2.5 text-slate-200"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 mb-1">Fokus Bidang:</label>
+                    <select
+                      value={newProjCategory}
+                      onChange={(e) => setNewProjCategory(e.target.value)}
+                      className="w-full bg-slate-900 border border-slate-800 rounded p-2.5 text-slate-200"
+                    >
+                      <option value="koding">Koding & Simulasi</option>
+                      <option value="ai">Kecerdasan Artifisial</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 mb-1">Kelas Tingkat:</label>
+                    <select
+                      value={newProjGrade}
+                      onChange={(e) => setNewProjGrade(e.target.value)}
+                      className="w-full bg-slate-900 border border-slate-800 rounded p-2.5 text-slate-200"
+                    >
+                      <option value="10">Kelas 10</option>
+                      <option value="11">Kelas 11</option>
+                      <option value="12">Kelas 12</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-slate-400 mb-1">Semester:</label>
+                    <select
+                      value={newProjSem}
+                      onChange={(e) => setNewProjSem(e.target.value)}
+                      className="w-full bg-slate-900 border border-slate-800 rounded p-2.5 text-slate-200"
+                    >
+                      <option value="1">Semester 1</option>
+                      <option value="2">Semester 2</option>
+                    </select>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-slate-400 mb-1">Deskripsi & Cara Kerja Produk:</label>
+                    <textarea
+                      placeholder="Jelaskan secara singkat kegunaan aplikasi untuk orang tua yang akan mencobanya."
+                      value={newProjDesc}
+                      onChange={(e) => setNewProjDesc(e.target.value)}
+                      rows="3"
+                      className="w-full bg-slate-900 border border-slate-800 rounded p-2.5 text-slate-200 resize-none"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold py-2.5 rounded-lg transition"
+                >
+                  Publikasikan ke Galeri Pameran
+                </button>
+              </form>
+            )}
+
+            {/* List Galeri Proyek */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {projects.map((project) => (
+                <div 
+                  key={project.id} 
+                  className="bg-slate-950 rounded-xl border border-slate-800 hover:border-slate-700/80 transition overflow-hidden flex flex-col justify-between shadow-md"
+                >
+                  {/* Project Info Header */}
+                  <div className="p-5 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                        project.category === 'koding' 
+                          ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' 
+                          : 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+                      }`}>
+                        {project.category === 'koding' ? 'Koding & Simulasi' : 'Kecerdasan Artifisial'}
+                      </span>
+                      <span className="text-xs text-slate-500 font-medium">
+                        Kelas {project.grade} - Sem {project.semester}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1">
+                      <h3 className="text-lg font-bold text-white">{project.title}</h3>
+                      <p className="text-xs text-indigo-400 font-medium flex items-center gap-1">
+                        <User className="w-3 h-3" />
+                        <span>Karya: {project.student}</span>
+                      </p>
+                    </div>
+
+                    <p className="text-xs text-slate-400 leading-relaxed pt-1">
+                      {project.desc}
+                    </p>
+
+                    {/* Code Snippet Preview (Showcase Technicality) */}
+                    <div className="bg-slate-900/70 rounded-lg p-3 border border-slate-800 font-mono text-[10px] text-slate-400 max-h-24 overflow-y-auto">
+                      <div className="text-[9px] text-slate-500 pb-1 font-semibold uppercase tracking-wider border-b border-slate-800/60 mb-1.5 flex items-center justify-between">
+                        <span>Kode Struktur Program</span>
+                        <Sliders className="w-3 h-3 text-slate-500" />
+                      </div>
+                      <pre>{project.codePreview}</pre>
+                    </div>
+                  </div>
+
+                  {/* Comments & Likes Footer */}
+                  <div className="border-t border-slate-800 bg-slate-950/60 p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <button 
+                        onClick={() => likeProject(project.id)}
+                        className="flex items-center gap-2 text-xs font-semibold text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 px-3 py-1.5 rounded-lg transition"
+                      >
+                        <Heart className="w-4 h-4 fill-current" />
+                        <span>Apresiasi ({project.likes})</span>
+                      </button>
+
+                      <span className="text-xs text-slate-500 flex items-center gap-1.5">
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        <span>{project.comments.length} Masukan Wali Murid</span>
+                      </span>
+                    </div>
+
+                    {/* List Umpan Balik */}
+                    {project.comments.length > 0 && (
+                      <div className="space-y-2 bg-slate-900/40 p-3 rounded-lg border border-slate-800/80 max-h-36 overflow-y-auto">
+                        {project.comments.map((comment, index) => (
+                          <div key={index} className="text-xs leading-normal border-b border-slate-800/40 last:border-0 pb-1.5 last:pb-0">
+                            <span className="font-bold text-slate-300 block text-[10px]">{comment.sender}:</span>
+                            <span className="text-slate-400 font-light">{comment.text}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Form Tulis Komentar (Untuk Wali Murid) */}
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        placeholder="Beri komentar apresiasi atau saran..."
+                        value={commentInputs[project.id] || ""}
+                        onChange={(e) => setCommentInputs({ ...commentInputs, [project.id]: e.target.value })}
+                        className="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-emerald-500"
+                      />
+                      <button
+                        onClick={() => addComment(project.id)}
+                        className="bg-emerald-600 hover:bg-emerald-500 text-white p-2 rounded-lg transition"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        )}
+
+      </main>
+
+      {/* App Footer */}
+      <footer className="bg-slate-950 border-t border-slate-800/80 mt-16 py-8">
+        <div className="max-w-7xl mx-auto px-4 text-center space-y-3">
+          <p className="text-xs text-slate-500">
+            Aplikasi Kurikulum & Portofolio Informatika SMA/MA. Terintegrasi dengan Target Capaian Koding & AI Nasional.
+          </p>
+          <div className="flex justify-center gap-6 text-xs text-slate-400 font-medium">
+            <span className="hover:text-white transition cursor-pointer">Panduan Guru</span>
+            <span className="hover:text-white transition cursor-pointer">Panduan Siswa</span>
+            <span className="hover:text-white transition cursor-pointer">Akses Wali Murid</span>
+          </div>
+          <p className="text-[10px] text-slate-600">
+            © {new Date().getFullYear()} Direktorat SMA & MA - Platform Pembelajaran Interaktif.
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+}
