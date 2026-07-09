@@ -495,13 +495,8 @@
                     <!-- Ketua Panitia PPDB (Ihsan Darmawan, M.Pd.) -->
                     <div class="text-center flex flex-col justify-between items-center h-28 w-[210px] overflow-visible shrink-0">
                       <span class="text-slate-300 block mb-1">Ketua Panitia PPDB</span>
-                      <!-- Wadah tanda tangan berlatar belakang putih halus meniru dokumen fisik asli agar aman saat di-render canvas -->
-                      <div class="w-16 h-12 bg-white/95 rounded-lg p-0.5 flex items-center justify-center shadow-sm shrink-0">
-                        <img src="https://raw.githubusercontent.com/yusufajiib/Membuat-Web-Layout/refs/heads/main/af475d85-2980-451b-8f3b-d925c4e9ee91%20pak%20ihsan.png" 
-                             alt="Tanda Tangan Ketua" 
-                             class="max-w-full max-h-full object-contain" 
-                             crossorigin="anonymous">
-                      </div>
+                      <!-- Wadah QR Code E-Signature Ketua Panitia -->
+                      <div id="qrcode-panitia" class="bg-white p-1 rounded-md inline-block shadow-md shrink-0"></div>
                       <div class="mt-1 overflow-visible">
                         <span class="font-bold text-white block leading-normal py-0.5 whitespace-nowrap overflow-visible">Ihsan Darmawan, M.Pd.</span>
                         <span class="text-slate-400 text-[7px] block">PegID: 20317810194001</span>
@@ -511,12 +506,8 @@
                     <!-- Kepala Madrasah (H. Musafak, S.Ag., M.Pd.) -->
                     <div class="text-center flex flex-col justify-between items-center h-28 w-[210px] overflow-visible shrink-0">
                       <span class="text-slate-300 block mb-1">Kepala Madrasah</span>
-                      <div class="w-16 h-12 bg-white/95 rounded-lg p-0.5 flex items-center justify-center shadow-sm shrink-0">
-                        <img src="https://raw.githubusercontent.com/yusufajiib/Membuat-Web-Layout/refs/heads/main/1119ce6c-8638-4866-abba-7e14fa4d1fd5%20pak%20haji.png" 
-                             alt="Tanda Tangan Kamad" 
-                             class="max-w-full max-h-full object-contain" 
-                             crossorigin="anonymous">
-                      </div>
+                      <!-- Wadah QR Code E-Signature Kepala Madrasah -->
+                      <div id="qrcode-kamad" class="bg-white p-1 rounded-md inline-block shadow-md shrink-0"></div>
                       <div class="mt-1 overflow-visible">
                         <span class="font-bold text-white block leading-normal py-0.5 whitespace-nowrap overflow-visible">H. Musafak, S.Ag., M.Pd.</span>
                         <span class="text-slate-400 text-[7px] block">PegID: 91000069136074</span>
@@ -1289,7 +1280,7 @@
       document.getElementById('score-ips').innerText = mapelScores.ips + " %";
       document.getElementById('bar-ips').style.width = `${mapelScores.ips}%`;
 
-      // Render QR Code Validasi Keaslian Sertifikat
+      // Render QR Code Validasi Keaslian Sertifikat (Utama)
       const qrContainer = document.getElementById("qrcode-container");
       qrContainer.innerHTML = '';
       new QRCode(qrContainer, {
@@ -1299,6 +1290,30 @@
         colorDark: "#022c22",
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.H
+      });
+
+      // Render QR Code Tanda Tangan Digital Ketua Panitia
+      const qrPanitia = document.getElementById("qrcode-panitia");
+      qrPanitia.innerHTML = '';
+      new QRCode(qrPanitia, {
+        text: `MANUHA1_KUDUS|PPDB2026|VERIF_KETUA_PANITIA|NAMA:Ihsan Darmawan, M.Pd.|PegID:20317810194001|SISWA:${currentUser.nama}|REG:${noPesertaBaru}`,
+        width: 48,
+        height: 48,
+        colorDark: "#047857",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      // Render QR Code Tanda Tangan Digital Kepala Madrasah
+      const qrKamad = document.getElementById("qrcode-kamad");
+      qrKamad.innerHTML = '';
+      new QRCode(qrKamad, {
+        text: `MANUHA1_KUDUS|PPDB2026|VERIF_KEPALA_MADRASAH|NAMA:H. Musafak, S.Ag., M.Pd.|PegID:91000069136074|SISWA:${currentUser.nama}|REG:${noPesertaBaru}`,
+        width: 48,
+        height: 48,
+        colorDark: "#047857",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
       });
 
       // Render Chart Mini (Chart.js)
