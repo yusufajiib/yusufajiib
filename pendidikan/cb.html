@@ -228,14 +228,14 @@
           <div class="mt-6 pt-4 border-t border-slate-800/80 flex flex-col gap-2.5 text-xs text-slate-400">
             <div class="flex items-center gap-2">
               <span class="w-3.5 h-3.5 rounded-md bg-madrasah-600 border border-madrasah-400/30 block"></span>
-              <span>SudahTerjawab</span>
+              <span>Sudah Terjawab</span>
             </div>
             <div class="flex items-center gap-2">
               <span class="w-3.5 h-3.5 rounded-md bg-slate-800 border border-slate-700 block"></span>
               <span>Belum Terjawab</span>
             </div>
             <div class="flex items-center gap-2">
-              <span class="w-3.5 h-3.5 rounded-md ring-2 ring-gold-400 bg-slate-900 block"></span>
+              <span class="w-3.5 h-3.5 rounded-md bg-gold-600 border border-gold-400/30 block"></span>
               <span>Soal Sedang Aktif</span>
             </div>
           </div>
@@ -253,7 +253,7 @@
             <span id="soal-mapel" class="text-xs font-bold text-slate-300 uppercase tracking-widest bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700/50">Mata Pelajaran</span>
           </div>
           <div class="flex items-center gap-3 text-xs text-slate-400 bg-slate-900/60 p-2 rounded-lg border border-slate-800">
-            <span class="flex items-center gap-1"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500"></i> Auto-Save Aktif</span>
+            <span class="flex items-center gap-1"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-500"></i> Auto-Save &amp; Cloud Aktif</span>
           </div>
         </div>
 
@@ -367,6 +367,8 @@
                         <h2 class="text-[9px] font-black tracking-widest text-[#fbbf24] uppercase">PANITIA PPDB 2026/2027</h2>
                         <h1 class="text-sm font-extrabold text-white tracking-tight">MA NU HASYIM ASY'ARI 1 KUDUS</h1>
                         <p class="text-[8px] text-slate-300">Jl. Mayor H. Basuno No. 17 Sunggingan, Kota, Kudus | Telp. (0291) 4250176</p>
+                        <!-- Informasi Tambahan Email dan Website Resmi -->
+                        <p class="text-[7.5px] text-slate-400 mt-0.5">Email: manuha01kota@gmail.com | Website: www.mahasatukudus.sch.id</p>
                       </div>
                     </div>
                   </div>
@@ -406,7 +408,7 @@
                     <div class="flex flex-col gap-1.5">
                       <div class="flex justify-between text-[9px] leading-tight">
                         <span class="text-slate-300">Pendidikan Agama Islam (Qur'an Hadis, Fikih, Akidah, SKI)</span>
-                        <span id="score-agama" class="font-semibold text-emerald-400">0</span>
+                        <span id="score-agama" class="font-semibold text-emerald-400">0 %</span>
                       </div>
                       <div class="w-full bg-slate-900 rounded-full h-1.5 shadow-inner">
                         <div id="bar-agama" class="bg-emerald-500 h-full w-0 rounded-full transition-all duration-500"></div>
@@ -416,8 +418,8 @@
                     <!-- Bahasa -->
                     <div class="flex flex-col gap-1.5">
                       <div class="flex justify-between text-[9px] leading-tight">
-                        <span class="text-slate-300">Bahasa (Inggris, Arab, Jawa)</span>
-                        <span id="score-bahasa" class="font-semibold text-emerald-400">0</span>
+                        <span class="text-slate-300">Bahasa (Inggris, Arab, Jawa, Indonesia)</span>
+                        <span id="score-bahasa" class="font-semibold text-emerald-400">0 %</span>
                       </div>
                       <div class="w-full bg-slate-900 rounded-full h-1.5 shadow-inner">
                         <div id="bar-bahasa" class="bg-teal-500 h-full w-0 rounded-full transition-all duration-500"></div>
@@ -428,7 +430,7 @@
                     <div class="flex flex-col gap-1.5">
                       <div class="flex justify-between text-[9px] leading-tight">
                         <span class="text-slate-300">Matematika</span>
-                        <span id="score-matematika" class="font-semibold text-emerald-400">0</span>
+                        <span id="score-matematika" class="font-semibold text-emerald-400">0 %</span>
                       </div>
                       <div class="w-full bg-slate-900 rounded-full h-1.5 shadow-inner">
                         <div id="bar-matematika" class="bg-indigo-500 h-full w-0 rounded-full transition-all duration-500"></div>
@@ -439,7 +441,7 @@
                     <div class="flex flex-col gap-1.5">
                       <div class="flex justify-between text-[9px] leading-tight">
                         <span class="text-slate-300">Informatika (Word, Excel, Canva, AI)</span>
-                        <span id="score-informatika" class="font-semibold text-emerald-400">0</span>
+                        <span id="score-informatika" class="font-semibold text-emerald-400">0 %</span>
                       </div>
                       <div class="w-full bg-slate-900 rounded-full h-1.5 shadow-inner">
                         <div id="bar-informatika" class="bg-purple-500 h-full w-0 rounded-full transition-all duration-500"></div>
@@ -450,7 +452,7 @@
                     <div class="flex flex-col gap-1.5">
                       <div class="flex justify-between text-[9px] leading-tight">
                         <span class="text-slate-300">Jurusan IPS (Sejarah, Ekonomi, Geografi, Sosiologi)</span>
-                        <span id="score-ips" class="font-semibold text-emerald-400">0</span>
+                        <span id="score-ips" class="font-semibold text-emerald-400">0 %</span>
                       </div>
                       <div class="w-full bg-slate-900 rounded-full h-1.5 shadow-inner">
                         <div id="bar-ips" class="bg-amber-500 h-full w-0 rounded-full transition-all duration-500"></div>
@@ -493,13 +495,8 @@
                     <!-- Ketua Panitia PPDB (Ihsan Darmawan, M.Pd.) -->
                     <div class="text-center flex flex-col justify-between items-center h-28 w-[210px] overflow-visible shrink-0">
                       <span class="text-slate-300 block mb-1">Ketua Panitia PPDB</span>
-                      <!-- Wadah tanda tangan berlatar belakang putih halus meniru dokumen fisik asli agar aman saat di-render canvas -->
-                      <div class="w-16 h-12 bg-white/95 rounded-lg p-0.5 flex items-center justify-center shadow-sm shrink-0">
-                        <img src="https://raw.githubusercontent.com/yusufajiib/Membuat-Web-Layout/refs/heads/main/af475d85-2980-451b-8f3b-d925c4e9ee91%20pak%20ihsan.png" 
-                             alt="Tanda Tangan Ketua" 
-                             class="max-w-full max-h-full object-contain" 
-                             crossorigin="anonymous">
-                      </div>
+                      <!-- Wadah QR Code E-Signature Ketua Panitia -->
+                      <div id="qrcode-panitia" class="bg-white p-1 rounded-md inline-block shadow-md shrink-0"></div>
                       <div class="mt-1 overflow-visible">
                         <span class="font-bold text-white block leading-normal py-0.5 whitespace-nowrap overflow-visible">Ihsan Darmawan, M.Pd.</span>
                         <span class="text-slate-400 text-[7px] block">PegID: 20317810194001</span>
@@ -509,12 +506,8 @@
                     <!-- Kepala Madrasah (H. Musafak, S.Ag., M.Pd.) -->
                     <div class="text-center flex flex-col justify-between items-center h-28 w-[210px] overflow-visible shrink-0">
                       <span class="text-slate-300 block mb-1">Kepala Madrasah</span>
-                      <div class="w-16 h-12 bg-white/95 rounded-lg p-0.5 flex items-center justify-center shadow-sm shrink-0">
-                        <img src="https://raw.githubusercontent.com/yusufajiib/Membuat-Web-Layout/refs/heads/main/1119ce6c-8638-4866-abba-7e14fa4d1fd5%20pak%20haji.png" 
-                             alt="Tanda Tangan Kamad" 
-                             class="max-w-full max-h-full object-contain" 
-                             crossorigin="anonymous">
-                      </div>
+                      <!-- Wadah QR Code E-Signature Kepala Madrasah -->
+                      <div id="qrcode-kamad" class="bg-white p-1 rounded-md inline-block shadow-md shrink-0"></div>
                       <div class="mt-1 overflow-visible">
                         <span class="font-bold text-white block leading-normal py-0.5 whitespace-nowrap overflow-visible">H. Musafak, S.Ag., M.Pd.</span>
                         <span class="text-slate-400 text-[7px] block">PegID: 91000069136074</span>
@@ -552,7 +545,7 @@
       </p>
       <div id="modal-actions" class="flex justify-end gap-3 pt-2">
         <button id="modal-btn-close" onclick="hideModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold py-2.5 px-4 rounded-xl transition-all">
-          Tutup
+          Tutup / Batal
         </button>
         <button id="modal-btn-confirm" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold py-2.5 px-5 rounded-xl transition-all">
           Lanjutkan
@@ -599,22 +592,22 @@
         { id: 10, mapel: "Fikih", q: "Apabila seseorang melakukan kesalahan atau ragu-ragu dalam jumlah rakaat shalat sebelum salam, maka disunnahkan untuk melakukan...", a: ["Sujud sahwi", "Sujud tilawah", "Sujud syukur", "Sujud rukun", "Sujud wajib"], k: "Sujud sahwi" },
 
         // --- BAHASA (11-20) ---
-        { id: 11, mapel: "Bahasa Inggris", q: "Choose the correct sentence to complete the dialogue. <br><b>A: 'What are you planning to do after graduating from Junior High School?'</b><br><b>B: '...'</b>", a: ["I am planning to enroll in MA NU Hasyim Asy'ari 1 Kudus.", "I went to Kudus yesterday.", "I have graduated last month.", "I would like to sleep all day.", "I don't know where MA NU is."], k: "I am planning to enroll in MA NU Hasyim Asy'ari 1 Kudus." },
-        { id: 12, mapel: "Bahasa Inggris", q: "The passive voice of: 'The student answers the exam question correctly' is...", a: ["The exam question is answered correctly by the student.", "The exam question was answered correctly by the student.", "The exam question has been answered correctly by the student.", "The exam question is being answered correctly by the student.", "The student is answered by the exam question."], k: "The exam question is answered correctly by the student." },
-        { id: 13, mapel: "Bahasa Arab", q: "Kata ganti (Dhomir) untuk orang ketiga perempuan jamak (mereka perempuan) dalam bahasa Arab adalah...", a: ["هُنَّ (Hunna)", "هُمْ (Hum)", "أَنْتُنَّ (Antunna)", "نَحْنُ (Nahnu)", "هِيَ (Hiya)"], k: "هُنَّ (Hunna)" },
-        { id: 14, mapel: "Bahasa Arab", q: "Terjemahan dari kalimat 'أَنَا أَدْرُسُ فِي Mَدْرَسَةِ الثَّانَوِيَّةِ' adalah...", a: ["Saya belajar di sekolah menengah", "Saya bermain di halaman sekolah", "Saya membaca buku di perpustakaan", "Kami belajar di kelas", "Dia mengajar di madrasah"], k: "Saya belajar di sekolah menengah" },
-        { id: 15, mapel: "Bahasa Jawa", q: "Tembung ing ngisor iki sing kalebu basa krama alus sing bener kanggo ukara 'Bapak mangan sego goreng' yaiku...", a: ["Bapak dhahar sekul goreng", "Bapak nedha sekul goreng", "Bapak maem sego goreng", "Bapak nedhi sekul goreng", "Bapak dahar sego goreng"], k: "Bapak dhahar sekul goreng" },
-        { id: 16, mapel: "Bahasa Jawa", q: "Aksara Jawa sing digunakake kanggo nulis jeneng kutha, gelar, utawa paraga penting diarani...", a: ["Aksara Murda", "Aksara Swara", "Aksara Rekan", "Aksara Pasangan", "Aksara Carakan"], k: "Aksara Murda" },
-        { id: 17, mapel: "Bahasa Inggris", q: "Identify the noun in the following sentence: 'Education is the key to a better future.'", a: ["Education", "Is", "The", "Better", "To"], k: "Education" },
-        { id: 18, mapel: "Bahasa Inggris", q: "If we ... (study) hard, we will pass the PPDB selection test easily.", a: ["study", "studied", "studies", "will study", "have studied"], k: "study" },
-        { id: 19, mapel: "Bahasa Arab", q: "Lawan kata (Lafadz Al-Mutaqabilah) dari kata 'كَبِيْرٌ' (Besar) adalah...", a: ["صَغِيْرٌ (Shoghirun)", "جَمِيْلٌ (Jamilun)", "قَصِيْرٌ (Qoshirun)", "قَدِيْمٌ (Qodimun)", "بَعِيْدٌ (Baidun)"], k: "صَغِيْرٌ (Shoghirun)" },
-        { id: 20, mapel: "Bahasa Jawa", q: "Prastawa budaya khas ing kutha Kudus sing dianakake kanggo mapag tekane wulan Ramadhan diarani...", a: ["Dandangan", "Buka Luwur", "Ampyang Maulid", "Syawalan", "Grebeg Suro"], k: "Dandangan" },
+        { id: 11, mapel: "Bahasa Indonesia", q: "Kalimat yang menggunakan ejaan yang benar adalah...", a: ["Saya pergi ke perpustakaan pada hari Senin.", "Saya pergi ke Perpustakaan pada hari senin.", "saya pergi ke perpustakaan pada Hari Senin.", "Saya Pergi ke perpustakaan pada hari senin.", "Saya pergi ke perpustakaan pada Hari senin."], k: "Saya pergi ke perpustakaan pada hari Senin." },
+        { id: 12, mapel: "Bahasa Indonesia", q: "Ide pokok sebuah paragraf adalah...", a: ["Gagasan utama yang menjadi dasar pembahasan paragraf", "Kalimat terakhir dalam paragraf", "Semua kata yang terdapat dalam paragraf", "Contoh yang diberikan penulis", "Judul bacaan"], k: "Gagasan utama yang menjadi dasar pembahasan paragraf" },
+        { id: 13, mapel: "Bahasa Inggris", q: "What is the correct response to the greeting: <b>'How are you today?'</b>", a: ["I'm fine, thank you.", "Good night.", "See you tomorrow.", "Congratulations!", "You're welcome."], k: "I'm fine, thank you." },
+        { id: 14, mapel: "Bahasa Inggris", q: "Choose the correct sentence.", a: ["My father works in a hospital.", "My father work in a hospital.", "My father working in a hospital.", "My father worked in a hospital every day.", "My father is work in a hospital."], k: "My father works in a hospital." },
+        { id: 15, mapel: "Bahasa Arab", q: "Apa arti dari kata <b>'مَكْتَبَةٌ'</b>?", a: ["Perpustakaan", "Sekolah", "Rumah", "Masjid", "Kelas"], k: "Perpustakaan" },
+        { id: 16, mapel: "Bahasa Arab", q: "Terjemahan bahasa Arab yang tepat untuk kalimat <b>'Saya seorang siswa'</b> adalah...", a: ["أَنَا طَالِبٌ", "أَنَا مُدَرِّسٌ", "أَنَا طَبِيْبٌ", "أَنْتَ طَالِبٌ", "هُوَ طَالِبٌ"], k: "أَنَا طَالِبٌ" },
+        { id: 17, mapel: "Bahasa Jawa", q: "Tembung krama inggil saka tembung <b>'mangan'</b> yaiku...", a: ["Dhahar", "Nedha", "Mangan", "Ngombe", "Turu"], k: "Dhahar" },
+        { id: 18, mapel: "Bahasa Jawa", q: "Ukara sing nggunakake basa ngoko yaiku...", a: ["Aku arep menyang pasar.", "Panjenengan badhe tindak pundi?", "Sampeyan kesah dhateng sekolah.", "Kula nyuwun pangapunten.", "Bapak sampun dhahar?"], k: "Aku arep menyang pasar." },
+        { id: 19, mapel: "Bahasa Indonesia", q: "Lawan kata dari kata <b>'rajin'</b> adalah...", a: ["Malas", "Tekun", "Pandai", "Cepat", "Cermat"], k: "Malas" },
+        { id: 20, mapel: "Bahasa Indonesia", q: "Kalimat berikut yang merupakan kalimat tanya adalah...", a: ["Apakah kamu sudah belajar hari ini?", "Saya sudah belajar hari ini.", "Belajarlah dengan sungguh-sungguh.", "Dia sedang membaca buku.", "Belajar membuat kita pintar."], k: "Apakah kamu sudah belajar hari ini?" },
 
         // --- MATEMATIKA (21-30) ---
         { id: 21, mapel: "Matematika", q: "Jika nilai x yang memenuhi persamaan $3x - 7 = 14$ adalah...", a: ["7", "3", "5", "8", "6"], k: "7" },
         { id: 22, mapel: "Matematika", q: "Hasil dari operasi bentuk akar $\\sqrt{48} + 2\\sqrt{12} - \\sqrt{75}$ adalah...", a: ["$3\\sqrt{3}$", "$2\\sqrt{3}$", "$4\\sqrt{3}$", "$5\\sqrt{3}$", "$\\sqrt{3}$"], k: "$3\\sqrt{3}$" },
         { id: 23, mapel: "Matematika", q: "Suatu barisan aritmatika memiliki suku pertama $a = 4$ and beda $b = 3$. Suku ke-15 dari barisan tersebut adalah...", a: ["46", "49", "43", "52", "40"], k: "46" },
-        { id: 24, mapel: "Matematika", q: "Sebuah segitiga siku-siku memiliki panjang hipotenusa 13 cm dan salah satu sisi siku-sikunya 12 cm. Panjang sisi siku-siku lainnya adalah...", a: ["5 cm", "7 cm", "8 cm", "9 cm", "10 cm"], k: "5 cm" },
+        { id: 24, mapel: "Matematika", q: "Sebuah segitiga siku-siku memiliki panjang hipotenusa 13 cm and salah satu sisi siku-sikunya 12 cm. Panjang sisi siku-siku lainnya adalah...", a: ["5 cm", "7 cm", "8 cm", "9 cm", "10 cm"], k: "5 cm" },
         { id: 25, mapel: "Matematika", q: "Persamaan kuadrat $x^2 - 5x + 6 = 0$ memiliki akar-akar $x_1$ dan $x_2$. Nilai dari $x_1 \\cdot x_2$ adalah...", a: ["6", "5", "-5", "-6", "2"], k: "6" },
         { id: 26, mapel: "Matematika", q: "Berapa banyak susunan huruf berbeda yang dapat dibentuk dari kata 'KUDUS'?", a: ["60", "120", "24", "48", "30"], k: "60" },
         { id: 27, mapel: "Matematika", q: "Median dari data berkelompok/tunggal berikut: 5, 8, 3, 6, 7, 8, 9, 10, 4 adalah...", a: ["7", "6", "8", "6.5", "7.5"], k: "7" },
@@ -635,7 +628,68 @@
         { id: 40, mapel: "Informatika", q: "Dalam Canva, apa kegunaan utama dari fitur 'Brand Kit'?", a: ["Menyimpan aset warna logo, palet warna, dan jenis font khas lembaga", "Membuat animasi 3D", "Mengedit video secara otomatis", "Mengonversi file JPG ke Excel", "Mendeteksi plagiarisme gambar"], k: "Menyimpan aset warna logo, palet warna, dan jenis font khas lembaga" },
 
         // --- IPS (41-50) ---
-        { id: 41, mapel: "IPS - Sejarah", q: "Peristiwa penculikan Ir. Soekarno dan Drs. Moh. Hatta oleh golongan muda ke luar kota guna mempercepat proklamasi kemerdekaan dikenal dengan peristiwa...", a: ["Rengasdengklok", "Ambarawa", "Bandung Lautan Api", "Trisakti", "10 November"], k: "Rengasdengklok" },
+        { id: 41, mapel: "IPS - Sejarah", q: "Peristiwa penculikan Ir. Soekarno dan Drs. Moh. Hatta oleh golongan muda ke luar kota guna mempercepat proklamasi kemederkaan dikenal dengan peristiwa...", a: ["Rengasdengklok", "Ambarawa", "Bandung Lautan Api", "Trisakti", "10 November"], k: "Rengasdengklok" },
+        { id: 42, mapel: "IPS - Ekonomi", q: "Faktor produksi alam utama yang melimpah và menjadi unggulan di daerah pesisir pantai adalah...", a: ["Hasil laut dan garam", "Padi dan jagung", "Kayu jati", "Batu bara", "Teh dan kopi"], k: "Hasil laut dan garam" },
+        { id: 43, mapel: "IPS - Geografi", q: "Secara astronomis, wilayah Indonesia terletak di daerah beriklim tropis. Hal ini dipengaruhi oleh garis khayal bumi yang membelah utara dan selatan yaitu...", a: ["Garis Khatulistiwa (Ekuator)", "Garis Bujur Timur", "Garis Balik Utara", "Garis Balik Selatan", "Garis Meridian Utama"], k: "Garis Khatulistiwa (Ekuator)" },
+        { id: 44, mapel: "IPS - Sosiologi", q: "Proses interaksi sosial yang mengarah pada kesatuan pandangan, kerja sama, dan penyatuan kebudayaan disebut interaksi...", a: ["Asosiatif", "Disosiatif", "Akulturasi", "Akomodasi", "Asimilasi"], k: "Asosiatif" },
+        { id: 45, mapel: "IPS - Sejarah", q: "Sidang pertama BPUPKI pada tanggal 29 Mei - 1 Juni 1945 fokus membahas tentang...", a: ["Rumusan dasar negara Indonesia", "Rancangan Undang-Undang Dasar", "Pembagian wilayah provinsi", "Pemilihan Presiden dan Wakil Presiden", "Pembentukan Tentara Keamanan Rakyat"], k: "Rumusan dasar negara Indonesia" },
+        { id: 46, mapel: "IPS - Ekonomi", q: "Jenis pasar di mana hanya terdapat satu penjual tunggal yang menguasai seluruh pasokan barang atau jasa tanpa adanya pesaing dekat dinamakan pasar...", a: ["Monopoli", "Oligopoli", "Persaingan Sempurna", "Monopsoni", "Kartel"], k: "Monopoli" },
+        { id: 47, mapel: "IPS - Geografi", q: "Kudus dikenal sebagai kota penghasil rokok kretek terbesar di Jawa Tengah. Berdasarkan letak geografisnya, kota Kudus berbatasan langsung di sebelah utara dengan kabupaten...", a: ["Jepara", "Pati", "Demak", "Grobogan", "Semarang"], k: "Jepara" },
+        { id: 48, mapel: "IPS - Sosiologi", q: "Norma sosial yang memiliki sanksi paling tegas berupa hukuman kurungan penjara atau denda materiil dari lembaga peradilan negara adalah norma...", a: ["Hukum", "Agama", "Kesopanan", "Kesusilaan", "Adat istiadat"], k: "Hukum" },
+        { id: 49, mapel: "IPS - Sejarah", q: "Tokoh Walisongo yang terkenal menyebarkan Islam di wilayah Kudus dengan pendekatan toleransi budaya yang sangat tinggi, termasuk melarang menyembelih sapi demi menghormati umat Hindu, adalah...", a: ["Sunan Kudus", "Sunan Muria", "Sunan Kalijaga", "Sunan Ampel", "Sunan Bonang"], k: "Sunan Kudus" },
+        { id: 50, mapel: "IPS - Ekonomi", q: "Kegiatan menyalurkan barang dan jasa dari produsen agar sampai ke tangan konsumen akhir disebut...", a: ["Distribusi", "Produksi", "Konsumsi", "Investasi", "Eksplorasi"], k: "Distribusi" }
+      ],
+      Paket_B: [
+        // --- AGAMA (1-10) ---
+        { id: 1, mapel: "Al-Qur'an Hadis", q: "Al-Qur'an diturunkan secara berangsur-angsur (Tadarruj). Salah satu hikmah utama diturunkannya secara berangsur-angsur adalah...", a: ["Memudahan penghafalan dan pemahaman bagi umat Muslim", "Agar cepat selesai dibukukan", "Mengikuti keinginan para sahabat nabi", "Menyesuaikan dengan musim dagang Quraisy", "Sebagai strategi perang"], k: "Memudahan penghafalan dan pemahaman bagi umat Muslim" },
+        { id: 2, mapel: "Al-Qur'an Hadis", q: "Hadis Muallaq adalah hadis yang gugur sanadnya dari awal tingkatan. Berdasarkan keabsahan kualitasnya, hadis dikategorikan menjadi 3, kecuali...", a: ["Muttasil", "Shahih", "Hasan", "Dhaif", "Maudhu'"], k: "Muttasil" },
+        { id: 3, mapel: "Fikih", q: "Manakah di bawah ini yang merupakan rukun wudhu secara berurutan yang benar menurut Mazhab Syafi'i?", a: ["Niat, membasuh wajah, membasuh kedua tangan, mengusap sebagian kepala, membasuh kedua kaki, tertib", "Niat, berkumur, membasuh wajah, membasuh tangan, mengusap kepala, membasuh kaki", "Membasuh telinga, niat, membasuh wajah, membasuh tangan, mengusap kepala, tertib", "Niat, membasuh wajah, membasuh tangan hingga siku, membasuh kaki hingga mata kaki", "Membasuh wajah, membasuh tangan, membasuh kaki, tertib"], k: "Niat, membasuh wajah, membasuh kedua tangan, mengusap sebagian kepala, membasuh kedua kaki, tertib" },
+        { id: 4, mapel: "Fikih", q: "Jenis shalat sunnah yang dikerjakan secara khusus untuk memohon diturunkannya hujan ketika terjadi kemarau panjang disebut...", a: ["Shalat Istisqa'", "Shalat Istikharah", "Shalat Khusuf", "Shalat Kusuf", "Shalat Tahajjud"], k: "Shalat Istisqa'" },
+        { id: 5, mapel: "Akidah Akhlak", q: "Sikap pertengahan antara berserah diri secara pasrah tanpa usaha dan berusaha keras tanpa berdoa disebut...", a: ["Tawakal", "Ikhtiar", "Qana'ah", "Sabar", "Syukur"], k: "Tawakal" },
+        { id: 6, mapel: "Akidah Akhlak", q: "Sikap menghargai perbedaan keyakinan, pendapat, dan kebiasaan orang lain tanpa melanggar prinsip aqidah diri sendiri adalah...", a: ["Tasamuh (Toleransi)", "Tawadhu' (Rendah Hati)", "Ta'awun (Tolong-menonlong)", "Siddiq (Jujur)", "Amanah (Dapat Dipercaya)"], k: "Tasamuh (Toleransi)" },
+        { id: 7, mapel: "Sejarah Kebudayaan Islam", q: "Piagam Madinah yang disusun oleh Nabi Muhammad SAW merupakan dokumen tertulis penting yang mengatur...", a: ["Kerukunan umat beragama dan pertahanan bersama kota Madinah", "Tata cara perdagangan internasional", "Hukum waris bagi kaum Muhajirin", "Strategi penyerangan kota Makkah", "Pemilihan khalifah setelah Nabi wafat"], k: "Kerukunan umat beragama dan pertahanan bersama kota Madinah" },
+        { id: 8, mapel: "Sejarah Kebudayaan Islam", q: "Dinasti besar pertama dalam sejarah Islam setelah era Khulafaur Rasyidin yang berpusat di kota Damaskus adalah...", a: ["Bani Umayyah", "Bani Abbasiyah", "Bani Fatimiyah", "Kesultanan Utsmaniyah", "Bani Seljuk"], k: "Bani Umayyah" },
+        { id: 9, mapel: "Al-Qur'an Hadis", q: "Sikap orang mukmin ketika mendengarkan bacaan Al-Qur'an sesuai tuntunan surah Al-A'raf ayat 204 adalah...", a: ["Diam dan mendengarkannya dengan khidmat", "Ikut membaca dengan keras", "Meninggalkan tempat tersebut", "Melakukan sujud syukur langsung", "Membaca salahwat nabi berulang kali"], k: "Diam dan mendengarkannya dengan khidmat" },
+        { id: 10, mapel: "Fikih", q: "Apabila air tidak ditemukan atau seseorang sedang sakit yang dilarang terkena air, maka bersuci dilakukan dengan...", a: ["Tayammum menggunakan debu suci", "Wudhu menggunakan air kelapa", "Mengusap tubuh dengan kain basah", "Mandi menggunakan sabun antiseptik", "Tidak perlu bersuci cukup shalat langsung"], k: "Tayammum menggunakan debu suci" },
+
+        // --- BAHASA (11-20) ---
+        { id: 11, mapel: "Bahasa Inggris", q: "What is the antonym of the word <b>'Expensive'</b>?", a: ["Cheap", "Large", "Heavy", "Beautiful", "Strong"], k: "Cheap" },
+        { id: 12, mapel: "Bahasa Inggris", q: "They ... football every Sunday.", a: ["play", "plays", "playing", "played", "is playing"], k: "play" },
+        { id: 13, mapel: "Bahasa Arab", q: "Angka Arab dari bilangan <b>'Sepuluh'</b> adalah...", a: ["١٠", "١١", "٩", "٢٠", "٥"], k: "١٠" },
+        { id: 14, mapel: "Bahasa Arab", q: "Apa arti kata <b>'قَلَمٌ'</b>?", a: ["Pulpen", "Buku", "Meja", "Kursi", "Tas"], k: "Pulpen" },
+        { id: 15, mapel: "Bahasa Jawa", q: "Tembung <b>'bocah'</b> ing basa krama yaiku...", a: ["Lare", "Anak", "Bocah", "Cah", "Putra"], k: "Lare" },
+        { id: 16, mapel: "Bahasa Jawa", q: "Unggah-ungguh basa Jawa digunakake kanggo...", a: ["Ngurmati wong liya nalika sesrawungan", "Nggawe geguritan", "Nulis layang resmi", "Ngapalake tembang", "Sinau aksara Latin"], k: "Ngurmati wong liya nalika sesrawungan" },
+        { id: 17, mapel: "Bahasa Indonesia", q: "Kalimat efektif adalah kalimat yang...", a: ["Jelas, singkat, dan mudah dipahami", "Sangat panjang", "Menggunakan banyak kata asing", "Selalu terdiri dari dua paragraf", "Memiliki lebih dari lima kalimat"], k: "Jelas, singkat, dan mudah dipahami" },
+        { id: 18, mapel: "Bahasa Inggris", q: "Complete the sentence: <b>'Rina ____ a new bicycle yesterday.'</b>", a: ["bought", "buy", "buys", "buying", "has buy"], k: "bought" },
+        { id: 19, mapel: "Bahasa Arab", q: "Lawan kata (antonim) dari <b>'كَبِيْرٌ'</b> adalah...", a: ["صَغِيْرٌ", "طَوِيْلٌ", "جَمِيْلٌ", "سَرِيْعٌ", "قَرِيْبٌ"], k: "صَغِيْرٌ" },
+        { id: 20, mapel: "Bahasa Jawa", q: "Peribasan Jawa <b>'Ajining diri saka lathi'</b> nduweni teges...", a: ["Ajining wong gumantung saka omongane", "Wong kudu sregep nyambut gawe", "Aja seneng padu", "Urip kudu hemat", "Aja seneng utang"], k: "Ajining wong gumantung saka omongane" },
+
+        // --- MATEMATIKA (21-30) ---
+        { id: 21, mapel: "Matematika", q: "Nilai dari $(2^3 \\times 2^4) \\div 2^5$ adalah...", a: ["4", "2", "8", "16", "1"], k: "4" },
+        { id: 22, mapel: "Matematika", q: "Sebuah peta dibuat dengan skala $1 : 250.000$. Jika jarak dua kota pada peta adalah 6 cm, maka jarak sebenarnya adalah...", a: ["15 km", "25 km", "150 km", "2.5 km", "12 km"], k: "15 km" },
+        { id: 23, mapel: "Matematika", q: "Jumlah 10 suku pertama dari barisan geometri $2, 4, 8, 16, ...$ adalah...", a: ["2046", "1023", "2048", "512", "1024"], k: "2046" },
+        { id: 24, mapel: "Matematika", q: "Diketahui fungsi $f(x) = ax + b$. Jika $f(2) = 7$ dan $f(-1) = 1$, maka nilai $a$ and $b$ berturut-turut adalah...", a: ["2 dan 3", "3 dan 2", "1 dan 5", "2 dan 5", "3 dan 1"], k: "2 dan 3" },
+        { id: 25, mapel: "Matematika", q: "Faktorisasi prima dari angka 120 adalah...", a: ["$2^3 \\times 3 \\times 5$", "$2^2 \\times 3^2 \\times 5$", "$2 \\times 3 \\times 5$", "$2^4 \\times 3 \\times 5$", "$2^3 \\times 5^2$"], k: "$2^3 \\times 3 \\times 5$" },
+        { id: 26, mapel: "Matematika", q: "Dalam sebuah kantong terdapat 5 kelereng merah dan 3 kelereng biru. Peluang terambilnya 1 kelereng biru secara acak adalah...", a: ["$3/8$", "$5/8$", "$1/3$", "$1/8$", "$3/5$"], k: "$3/8$" },
+        { id: 27, mapel: "Matematika", q: "Volume tabung yang memiliki jari-jari alas 7 cm dan tinggi 10 cm adalah... (gunakan $\\pi = 22/7$)", a: ["1540 cm³", "154 cm³", "770 cm³", "3080 cm³", "2200 cm³"], k: "1540 cm³" },
+        { id: 28, mapel: "Matematika", q: "Jika $x_1$ dan $x_2$ adalah akar-akar dari $x^2 - 7x + 10 = 0$, maka nilai dari $x_1 + x_2$ adalah...", a: ["7", "10", "-7", "-10", "5"], k: "7" },
+        { id: 29, mapel: "Matematika", q: "Nilai rata-rata (mean) dari data: 7, 6, 8, 9, 8, 7, 8, 10 adalah...", a: ["7.75", "8.0", "7.5", "8.25", "7.875"], k: "7.875" },
+        { id: 30, mapel: "Matematika", q: "Sudut yang besarnya lebih dari $90^\\circ$ tetapi kurang dari $180^\\circ$ dinamakan sudut...", a: ["Tumpul", "Lancip", "Siku-siku", "Refleks", "Lurus"], k: "Tumpul" },
+
+        // --- INFORMATIKA (31-40) ---
+        { id: 31, mapel: "Informatika", q: "Aplikasi pengolah presentasi interaktif yang tergabung dalam rangkaian Microsoft Office adalah...", a: ["Microsoft PowerPoint", "Microsoft Publisher", "Microsoft Access", "Microsoft Word", "Microsoft Excel"], k: "Microsoft PowerPoint" },
+        { id: 32, mapel: "Informatika", q: "Di Microsoft Excel, rumus matematika yang tepat untuk menjumpulan sekumpulan data numerik pada suatu range sel adalah...", a: ["SUM", "AVERAGE", "COUNT", "MAX", "TOTAL"], k: "SUM" },
+        { id: 33, mapel: "Informatika", q: "Gemini AI merupakan kecerdasan buatan berbasis Large Language Model (LLM) yang dikembangkan oleh...", a: ["Google", "Microsoft", "OpenAI", "Meta", "Apple"], k: "Google" },
+        { id: 34, mapel: "Informatika", q: "Canva merupakan platform desain grafis online. Format file unduhan terbaik untuk cetakan fisik berkualitas tinggi di Canva adalah...", a: ["Cetak PDF (PDF Print)", "PNG", "JPG", "MP4", "SVG"], k: "Cetak PDF (PDF Print)" },
+        { id: 35, mapel: "Informatika", q: "Jenis jaringan komputer yang memiliki cakupan geografis paling luas seperti antar negara atau benua disebut...", a: ["WAN", "LAN", "MAN", "PAN", "WLAN"], k: "WAN" },
+        { id: 36, mapel: "Informatika", q: "Apakah kepanjangan dari AI dalam dunia teknologi informasi modern?", a: ["Artificial Intelligence", "Automated Information", "Advanced Integration", "Algorithm Instruction", "Analysis Interactive"], k: "Artificial Intelligence" },
+        { id: 37, mapel: "Informatika", q: "Di Excel, hasil dari rumus <b>=IF(85>=80, 'Lulus', 'Remedi')</b> adalah...", a: ["Lulus", "Remedi", "85", "Error", "FALSE"], k: "Lulus" },
+        { id: 38, mapel: "Informatika", q: "Sebutkan fitur di Microsoft Word yang digunakan untuk membuat dokumen massal seperti undangan/surat dengan database nama yang berbeda-beda...", a: ["Mail Merge", "Track Changes", "SmartArt", "Cross-reference", "Page Break"], k: "Mail Merge" },
+        { id: 39, mapel: "Informatika", q: "Layanan penyimpanan awan (cloud storage) yang terintegrasi langsung secara bawaan di ekosistem Google Workspace adalah...", a: ["Google Drive", "OneDrive", "Dropbox", "iCloud", "Mediafire"], k: "Google Drive" },
+        { id: 40, mapel: "Informatika", q: "Dalam Canva, apa kegunaan utama dari fitur 'Brand Kit'?", a: ["Menyimpan aset warna logo, palet warna, dan jenis font khas lembaga", "Membuat animasi 3D", "Mengedit video secara otomatis", "Mengonversi file JPG ke Excel", "Mendeteksi plagiarisme gambar"], k: "Menyimpan aset warna logo, palet warna, dan jenis font khas lembaga" },
+
+        // --- IPS (41-50) ---
+        { id: 41, mapel: "IPS - Sejarah", q: "Peristiwa penculikan Ir. Soekarno dan Drs. Moh. Hatta oleh golongan muda ke luar kota guna mempercepat proklamasi kemederkaan dikenal dengan peristiwa...", a: ["Rengasdengklok", "Ambarawa", "Bandung Lautan Api", "Trisakti", "10 November"], k: "Rengasdengklok" },
         { id: 42, mapel: "IPS - Ekonomi", q: "Faktor produksi alam utama yang melimpah và menjadi unggulan di daerah pesisir pantai adalah...", a: ["Hasil laut dan garam", "Padi dan jagung", "Kayu jati", "Batu bara", "Teh dan kopi"], k: "Hasil laut dan garam" },
         { id: 43, mapel: "IPS - Geografi", q: "Secara astronomis, wilayah Indonesia terletak di daerah beriklim tropis. Hal ini dipengaruhi oleh garis khayal bumi yang membelah utara dan selatan yaitu...", a: ["Garis Khatulistiwa (Ekuator)", "Garis Bujur Timur", "Garis Balik Utara", "Garis Balik Selatan", "Garis Meridian Utama"], k: "Garis Khatulistiwa (Ekuator)" },
         { id: 44, mapel: "IPS - Sosiologi", q: "Proses interaksi sosial yang mengarah pada kesatuan pandangan, kerja sama, dan penyatuan kebudayaan disebut interaksi...", a: ["Asosiatif", "Disosiatif", "Akulturasi", "Akomodasi", "Asimilasi"], k: "Asosiatif" },
@@ -659,12 +713,13 @@
     let timerInterval = null;
     let isSubmitted = false;
 
-    // URL Google Apps Script Web App
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbycodE9foKHxQpLN1zOofOjUnrpqyjs8gFx2pFa2qX1IvVFwgzAihSG85WBl6JRzk2H/exec";
+    // URL Google Apps Script Web App Baru
+    const GAS_URL = "https://script.google.com/macros/s/AKfycby3wLaCEZOkEHDdpLplc53NletMdP-clHnaS55kl4Mjptzy4sdlRYktd22CmSyARqX3/exec";
 
     // Pada saat DOM siap
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
+      checkSavedSession();
     });
 
     // ==========================================
@@ -679,6 +734,96 @@
         array[i] = t;
       }
       return array;
+    }
+
+    // ==========================================
+    // LOCAL STORAGE RESILIENCE ENGINE
+    // ==========================================
+    function saveSessionToLocalStorage() {
+      if (isSubmitted) return;
+      localStorage.setItem('cbt_user', JSON.stringify(currentUser));
+      localStorage.setItem('cbt_questions', JSON.stringify(activeQuestions));
+      localStorage.setItem('cbt_answers', JSON.stringify(activeAnswers));
+      localStorage.setItem('cbt_current_index', currentQuestionIndex.toString());
+      localStorage.setItem('cbt_time_left', examDurationSeconds.toString());
+      localStorage.setItem('cbt_is_submitted', 'false');
+    }
+
+    function checkSavedSession() {
+      const savedUser = localStorage.getItem('cbt_user');
+      const savedIsSubmitted = localStorage.getItem('cbt_is_submitted');
+      
+      if (savedUser && savedIsSubmitted !== 'true') {
+        const userObj = JSON.parse(savedUser);
+        
+        // Memodifikasi tombol Tutup agar dapat digunakan sebagai opsi Batalkan / Mulai Baru
+        const modalBtnClose = document.getElementById('modal-btn-close');
+        modalBtnClose.innerText = "Batal & Mulai Baru";
+        modalBtnClose.onclick = () => {
+          clearSavedSession();
+          hideModal();
+          // Reset tulisan tombol kembali ke default
+          modalBtnClose.innerText = "Tutup";
+          modalBtnClose.onclick = hideModal;
+        };
+
+        showModal(
+          "Lanjutkan Ujian?",
+          `Sistem mendeteksi adanya sesi ujian aktif yang belum selesai atas nama ${userObj.nama.toUpperCase()} dari ${userObj.sekolah.toUpperCase()}. Apakah Anda ingin melanjutkan sisa pengerjaan Anda?`,
+          "warning",
+          () => {
+            // Mengembalikan tombol Tutup ke default
+            modalBtnClose.innerText = "Tutup";
+            modalBtnClose.onclick = hideModal;
+            loadSavedSession();
+          }
+        );
+      }
+    }
+
+    function loadSavedSession() {
+      try {
+        currentUser = JSON.parse(localStorage.getItem('cbt_user'));
+        activeQuestions = JSON.parse(localStorage.getItem('cbt_questions'));
+        activeAnswers = JSON.parse(localStorage.getItem('cbt_answers'));
+        currentQuestionIndex = parseInt(localStorage.getItem('cbt_current_index') || '0');
+        examDurationSeconds = parseInt(localStorage.getItem('cbt_time_left') || (90 * 60).toString());
+
+        // Update Meta UI
+        const namaPaketDisplay = currentUser.paket === 'Paket_A' ? 'Paket A' : 'Paket B';
+        document.getElementById('meta-nama').innerText = currentUser.nama;
+        document.getElementById('meta-paket').innerText = namaPaketDisplay;
+        document.getElementById('header-meta').classList.remove('hidden');
+
+        // Pindah Layar
+        document.getElementById('screen-login').classList.add('hidden');
+        document.getElementById('screen-exam').classList.remove('hidden');
+
+        // Mulai Timer, Render, & Load Soal Terakhir
+        startTimer();
+        renderNavigationGrid();
+        
+        // Update Progress Bar & Progress Text
+        const answeredCount = Object.keys(activeAnswers).length;
+        document.getElementById('progress-text').innerText = `${answeredCount}/50 Terjawab`;
+        document.getElementById('progress-bar').style.width = `${(answeredCount / 50) * 100}%`;
+        
+        loadQuestion(currentQuestionIndex);
+        showModal("Sesi Dipulihkan", `Selamat bekerja kembali, ${currentUser.nama}. Sesi Anda berhasil dipulihkan secara aman.`, "success");
+      } catch (error) {
+        console.error("Gagal memuat sesi:", error);
+        clearSavedSession();
+        showModal("Gagal Memulihkan", "Gagal memulihkan sesi pengerjaan lama Anda. Silakan masuk kembali.", "error");
+      }
+    }
+
+    function clearSavedSession() {
+      localStorage.removeItem('cbt_user');
+      localStorage.removeItem('cbt_questions');
+      localStorage.removeItem('cbt_answers');
+      localStorage.removeItem('cbt_current_index');
+      localStorage.removeItem('cbt_time_left');
+      localStorage.setItem('cbt_is_submitted', 'true');
     }
 
     // ==========================================
@@ -721,6 +866,9 @@
       document.getElementById('screen-login').classList.add('hidden');
       document.getElementById('screen-exam').classList.remove('hidden');
 
+      // Simpan Sesi Pertama kali
+      saveSessionToLocalStorage();
+
       // Mulai Timer & Render Soal Pertama
       startTimer();
       renderNavigationGrid();
@@ -753,6 +901,11 @@
 
         display.innerText = `${hrs}:${mins}:${secs}`;
         
+        // Simpan sisa waktu berkala setiap 5 detik ke local storage
+        if (examDurationSeconds % 5 === 0) {
+          localStorage.setItem('cbt_time_left', examDurationSeconds.toString());
+        }
+
         // Ganti warna teks jika waktu menipis (< 10 menit)
         if (examDurationSeconds < 600) {
           display.className = "text-2xl font-black font-mono text-rose-500 animate-pulse";
@@ -805,6 +958,9 @@
 
       // Beri Efek Ring Aktif pada Navigasi Grid
       updateNavigationGridFocus(index);
+      
+      // Simpan index soal aktif saat ini
+      localStorage.setItem('cbt_current_index', currentQuestionIndex.toString());
     }
 
     // ==========================================
@@ -826,6 +982,9 @@
       if (gridBtn) {
         gridBtn.className = `w-full aspect-square flex items-center justify-center rounded-xl font-bold text-sm transition-all duration-150 bg-madrasah-600 border border-madrasah-400/30 text-white hover:bg-madrasah-500`;
       }
+
+      // Auto-save seluruh jawaban saat ini ke Local Storage
+      saveSessionToLocalStorage();
     }
 
     // ==========================================
@@ -854,8 +1013,8 @@
         const isAnswered = activeAnswers[i] !== undefined;
         
         if (i === activeIdx) {
-          // Sedang fokus aktif
-          btn.className = `w-full aspect-square flex items-center justify-center rounded-xl font-extrabold text-sm transition-all duration-150 ring-2 ring-gold-400 bg-slate-900 text-gold-400`;
+          // Sedang fokus aktif (Sama persis dengan 'Terjawab' namun warna emas)
+          btn.className = `w-full aspect-square flex items-center justify-center rounded-xl font-bold text-sm transition-all duration-150 bg-gold-600 border border-gold-400/30 text-white hover:bg-gold-500`;
         } else if (isAnswered) {
           // Terjawab
           btn.className = `w-full aspect-square flex items-center justify-center rounded-xl font-bold text-sm transition-all duration-150 bg-madrasah-600 border border-madrasah-400/30 text-white hover:bg-madrasah-500`;
@@ -1048,6 +1207,7 @@
       })
       .then(() => {
         isSubmitted = true;
+        clearSavedSession(); // Hapus sesi pencadangan lokal pasca sukses tersubmit ke cloud
         document.getElementById('loading-overlay').classList.add('hidden');
         showResultPage(totalScore, benar, salah, statusLulus, {
           agama: nilaiAgama,
@@ -1060,6 +1220,7 @@
       .catch(error => {
         console.error("Error submitting database:", error);
         isSubmitted = true;
+        clearSavedSession(); // Tetap hapus agar tidak tersangkut loop
         document.getElementById('loading-overlay').classList.add('hidden');
         showResultPage(totalScore, benar, salah, statusLulus, {
           agama: nilaiAgama,
@@ -1104,22 +1265,22 @@
       document.getElementById('info-tanggal').innerText = new Date().toLocaleDateString('id-ID', optionsDate);
 
       // Render Visual Progress 5 Kategori Pendidikan
-      document.getElementById('score-agama').innerText = mapelScores.agama;
+      document.getElementById('score-agama').innerText = mapelScores.agama + " %";
       document.getElementById('bar-agama').style.width = `${mapelScores.agama}%`;
 
-      document.getElementById('score-bahasa').innerText = mapelScores.bahasa;
+      document.getElementById('score-bahasa').innerText = mapelScores.bahasa + " %";
       document.getElementById('bar-bahasa').style.width = `${mapelScores.bahasa}%`;
 
-      document.getElementById('score-matematika').innerText = mapelScores.matematika;
+      document.getElementById('score-matematika').innerText = mapelScores.matematika + " %";
       document.getElementById('bar-matematika').style.width = `${mapelScores.matematika}%`;
 
-      document.getElementById('score-informatika').innerText = mapelScores.informatika;
+      document.getElementById('score-informatika').innerText = mapelScores.informatika + " %";
       document.getElementById('bar-informatika').style.width = `${mapelScores.informatika}%`;
 
-      document.getElementById('score-ips').innerText = mapelScores.ips;
+      document.getElementById('score-ips').innerText = mapelScores.ips + " %";
       document.getElementById('bar-ips').style.width = `${mapelScores.ips}%`;
 
-      // Render QR Code Validasi Keaslian Sertifikat
+      // Render QR Code Validasi Keaslian Sertifikat (Utama)
       const qrContainer = document.getElementById("qrcode-container");
       qrContainer.innerHTML = '';
       new QRCode(qrContainer, {
@@ -1129,6 +1290,30 @@
         colorDark: "#022c22",
         colorLight: "#ffffff",
         correctLevel: QRCode.CorrectLevel.H
+      });
+
+      // Render QR Code Tanda Tangan Digital Ketua Panitia
+      const qrPanitia = document.getElementById("qrcode-panitia");
+      qrPanitia.innerHTML = '';
+      new QRCode(qrPanitia, {
+        text: `MANUHA1_KUDUS|PPDB2026|VERIF_KETUA_PANITIA|NAMA:Ihsan Darmawan, M.Pd.|PegID:20317810194001|SISWA:${currentUser.nama}|REG:${noPesertaBaru}`,
+        width: 48,
+        height: 48,
+        colorDark: "#047857",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      // Render QR Code Tanda Tangan Digital Kepala Madrasah
+      const qrKamad = document.getElementById("qrcode-kamad");
+      qrKamad.innerHTML = '';
+      new QRCode(qrKamad, {
+        text: `MANUHA1_KUDUS|PPDB2026|VERIF_KEPALA_MADRASAH|NAMA:H. Musafak, S.Ag., M.Pd.|PegID:91000069136074|SISWA:${currentUser.nama}|REG:${noPesertaBaru}`,
+        width: 48,
+        height: 48,
+        colorDark: "#047857",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
       });
 
       // Render Chart Mini (Chart.js)
