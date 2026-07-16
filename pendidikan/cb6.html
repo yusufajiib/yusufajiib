@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Materi MAKESTA Keindonesiaan MA NU Hasyim Asy'ari 1 Kudus</title>
+    <title>Aplikasi Kanvas & Analitik MAKESTA MA NU Hasyim Asy'ari 1 Kudus</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Inter & Playfair Display -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,500;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800&family=Playfair+Display:ital,wght=0,600;0,700;1,500;1,700&display=swap" rel="stylesheet">
     
     <style>
         body {
@@ -136,6 +136,17 @@
                 <div id="materi-content-holder">
                     <!-- Loading skeleton/placeholder -->
                 </div>
+            </div>
+            
+            <!-- Quick Tip Helper -->
+            <div class="bg-blue-50 border-l-4 border-blue-600 p-4 rounded-r-xl shadow-sm">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-circle-info text-blue-600"></i>
+                    <p class="text-xs font-bold text-blue-900">Tips Belajar Interaktif:</p>
+                </div>
+                <p class="text-xs text-blue-800 mt-1">
+                    Anda dapat **mengklik setiap poin materi** di atas untuk membuka penjelasan sejarah dan filosofis yang mendalam secara instan!
+                </p>
             </div>
         </section>
 
@@ -605,6 +616,32 @@
 
     </main>
 
+    <!-- INTERACTIVE MATERIAL DETAIL MODAL -->
+    <div id="material-detail-modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden border border-slate-100 transform scale-95 transition-transform duration-300" id="modal-container-box">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-emerald-800 via-emerald-700 to-green-800 text-white p-5 relative">
+                <button onclick="closeDetailModal()" class="absolute right-4 top-4 text-white/80 hover:text-white hover:bg-white/10 p-2 rounded-full transition">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+                <span id="modal-badge" class="bg-yellow-400 text-slate-900 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Materi Makesta</span>
+                <h3 id="modal-title" class="text-xl font-bold mt-2 accent-font leading-tight">Detail Pembelajaran</h3>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-6 space-y-4">
+                <div class="text-sm text-slate-600 leading-relaxed space-y-3" id="modal-body-content">
+                    <!-- Dynamic details go here -->
+                </div>
+                <!-- Modal Footer -->
+                <div class="pt-4 border-t border-slate-100 flex justify-end">
+                    <button onclick="closeDetailModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-lg text-xs transition shadow-md">
+                        Saya Paham & Siap Mengabdi <i class="fas fa-check ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- FOOTER -->
     <footer class="bg-slate-900 text-white mt-12 py-8 border-t-4 border-yellow-400">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-6">
@@ -650,200 +687,156 @@
         // Reflection Sticky Notes
         let reflectionNotes = [];
 
-        // Dynamic Questions Library (Categorized by Package A, B, and C)
-        const quizDatabase = {
-            A: [
-                {
-                    question: "Semboyan 'Hubbul Wathan Minal Iman' memiliki arti 'Cinta tanah air sebagian dari Iman'. Siapakah tokoh ulama pendiri NU yang memopulerkan gagasan tersebut?",
-                    options: [
-                        { text: "Hadratussyaikh KH. Hasyim Asy'ari", isCorrect: true },
-                        { text: "KH. Ahmad Dahlan", isCorrect: false },
-                        { text: "KH. Wahab Chasbullah", isCorrect: false },
-                        { text: "KH. Bisri Syansuri", isCorrect: false }
-                    ],
-                    explanation: "Hadratussyaikh KH. Hasyim Asy'ari menyebarkan semangat Hubbul Wathan Minal Iman untuk mengobarkan jiwa nasionalisme santri."
-                },
-                {
-                    question: "Sikap moderasi beragama dalam tradisi Nahdlatul Ulama yang berarti bersikap adil dan proporsional adalah...",
-                    options: [
-                        { text: "Tasamuh", isCorrect: false },
-                        { text: "Tawasuth", isCorrect: false },
-                        { text: "Tawazun", isCorrect: false },
-                        { text: "I'tidal", isCorrect: true }
-                    ],
-                    explanation: "I'tidal berarti tegak lurus dan bersikap adil demi menegakkan kebenaran di tengah kehidupan berbangsa."
-                },
-                {
-                    question: "Empat konsensus kebangsaan NKRI mencakup hal-hal di bawah ini, KECUALI...",
-                    options: [
-                        { text: "Sistem Monarki Absolut", isCorrect: true },
-                        { text: "Pancasila", isCorrect: false },
-                        { text: "UUD 1945", isCorrect: false },
-                        { text: "Bhinneka Tunggal Ika", isCorrect: false }
-                    ],
-                    explanation: "Sistem Monarki Absolut tidak termasuk. Empat pilar resmi adalah Pancasila, UUD 1945, NKRI, dan Bhinneka Tunggal Ika."
-                },
-                {
-                    question: "Bagi NU, Pancasila sebagai dasar negara adalah bersifat final. Konsensus ini disepakati secara resmi pada Muktamar NU ke-27 di daerah...",
-                    options: [
-                        { text: "Situbondo (1984)", isCorrect: true },
-                        { text: "Kudus (1989)", isCorrect: false },
-                        { text: "Semarang (1979)", isCorrect: false },
-                        { text: "Jakarta (1994)", isCorrect: false }
-                    ],
-                    explanation: "Muktamar NU ke-27 di Situbondo tahun 1984 merumuskan deklarasi hubungan Pancasila dengan Islam secara integratif."
-                },
-                {
-                    question: "Bagaimanakah sikap bela negara yang paling tepat bagi seorang pelajar Nahdliyin di era kemerdekaan saat ini?",
-                    options: [
-                        { text: "Belajar dengan tekun, menjauhi narkoba, dan mengamalkan nilai kesantrian", isCorrect: true },
-                        { text: "Mengikuti aksi demonstrasi anarkis di jalan raya", isCorrect: false },
-                        { text: "Menolak segala bentuk modernisasi teknologi", isCorrect: false },
-                        { text: "Hanya beribadah ritual individu tanpa peduli masalah sosial", isCorrect: false }
-                    ],
-                    explanation: "Bela negara pelajar diwujudkan lewat karya nyata, belajar, dan membentengi diri dengan akhlakul karimah."
-                }
-            ],
-            B: [
-                {
-                    question: "Filosofi 'Gusjigang' yang diwariskan oleh Sunan Kudus merupakan singkatan dari karakter unggul yaitu...",
-                    options: [
-                        { text: "Bagus akhlaknya, pintar Ngaji, terampil Dagang", isCorrect: true },
-                        { text: "Bagus rupa, rajin Jagongan, gemar dolanan", isCorrect: false },
-                        { text: "Gusti, Jiwa, Ganyang kolonial", isCorrect: false },
-                        { text: "Giat ibadah, Usaha keras, Jiwa penolong", isCorrect: false }
-                    ],
-                    explanation: "Gusjigang (Bagus, Ngaji, Dagang) adalah ajaran Sunan Kudus agar santri berakhlak mulia, pandai ilmu agama, sekaligus mandiri finansial."
-                },
-                {
-                    question: "Wujud toleransi dakwah kultural Sunan Kudus yang menghormati penganut agama Hindu saat itu adalah...",
-                    options: [
-                        { text: "Melarang penyembelihan hewan Sapi", isCorrect: true },
-                        { text: "Membakar kitab suci peninggalan terdahulu", isCorrect: false },
-                        { text: "Mendirikan candi megah di lereng Muria", isCorrect: false },
-                        { text: "Melarang perayaan hari raya Idul Adha", isCorrect: false }
-                    ],
-                    explanation: "Sunan Kudus melarang penyembelihan sapi demi menghormati pemeluk Hindu yang menyucikan sapi, wujud akulturasi dakwah yang damai."
-                },
-                {
-                    question: "Sunan Muria, salah satu Walisongo yang makamnya berada di Kudus, berdakwah kepada rakyat kecil dengan sarana seni...",
-                    options: [
-                        { text: "Tembang Sinom dan Kinanthi", isCorrect: true },
-                        { text: "Lukisan kaligrafi Arab kontemporer", isCorrect: false },
-                        { text: "Pertunjukan sulap modern", isCorrect: false },
-                        { text: "Seni musik qasidah terbangan", isCorrect: false }
-                    ],
-                    explanation: "Sunan Muria mahir berdakwah menggunakan kesenian rakyat jelata, menciptakan tembang Sinom & Kinanthi yang sarat ajaran moral luhur."
-                },
-                {
-                    question: "Bentuk akulturasi fisik budaya Hindu-Buddha dengan Islam yang masih tegak kokoh di Kudus adalah...",
-                    options: [
-                        { text: "Menara Kudus", isCorrect: true },
-                        { text: "Gerbang Pendopo Kabupaten", isCorrect: false },
-                        { text: "Masjid Agung Jawa Tengah", isCorrect: false },
-                        { text: "Klenteng Hok Hien Bio", isCorrect: false }
-                    ],
-                    explanation: "Menara Kudus dibangun dengan arsitektur menyerupai candi Hindu namun berfungsi sebagai tempat mengumandangkan adzan Islam."
-                },
-                {
-                    question: "Mengapa nilai 'Gusjigang' relevan dikembangkan bagi kemandirian generasi pelajar MA NU Hasyim Asy'ari 1 Kudus?",
-                    options: [
-                        { text: "Melatih kemandirian ekonomi kewirausahaan tanpa melupakan ibadah", isCorrect: true },
-                        { text: "Mengajarkan siswa untuk berfokus mencari uang sejak dini dan melalaikan tugas sekolah", isCorrect: false },
-                        { text: "Agar siswa dapat bersaing dalam politik praktis daerah", isCorrect: false },
-                        { text: "Hanya relevan bagi pedagang pasar kliwon saja", isCorrect: false }
-                    ],
-                    explanation: "Gusjigang menginspirasi kemandirian wirausaha kreatif berbasis nilai spiritual keagamaan demi masa depan bangsa."
-                }
-            ],
-            C: [
-                {
-                    question: "Semboyan perjuangan IPNU-IPPNU yang ditekankan dalam pembinaan kader di MA NU Hasyim Asy'ari 1 Kudus adalah...",
-                    options: [
-                        { text: "Belajar, Berjuang, Bertaqwa", isCorrect: true },
-                        { text: "Beraksi, Berkarya, Bermanfaat", isCorrect: false },
-                        { text: "Bekerja, Mengabdi, Beriman", isCorrect: false },
-                        { text: "Berprestasi, Menang, Jaya", isCorrect: false }
-                    ],
-                    explanation: "Tiga komitmen utama pelajar NU dikenal dengan doktrin Tri Perjuangan: Belajar (ilmiah), Berjuang (amaliah), Bertaqwa (ukhrawiah)."
-                },
-                {
-                    question: "Sikap 'Tabayyun' dalam menanggapi derasnya arus informasi dan berita hoaks di media sosial merupakan implementasi dari pilar...",
-                    options: [
-                        { text: "Pendidikan kritis berbasis Aswaja", isCorrect: true },
-                        { text: "Sikap pasrah terhadap keadaan", isCorrect: false },
-                        { text: "Penolakan terhadap teknologi digital", isCorrect: false },
-                        { text: "Kecintaan berlebihan pada budaya barat", isCorrect: false }
-                    ],
-                    explanation: "Tabayyun (klarifikasi/verifikasi berita) melatih pelajar berpikir cerdas, objektif, dan kritis dalam mengonsumsi berita."
-                },
-                {
-                    question: "Apa tantangan terbesar bagi pelajar milenial NU dalam mempertahankan nilai-nilai 'Ke-Indonesiaan' di dunia maya?",
-                    options: [
-                        { text: "Masuknya paham radikalisme transnasional yang merongrong Pancasila", isCorrect: true },
-                        { text: "Terlalu banyaknya akses internet gratis di sekolah", isCorrect: false },
-                        { text: "Mahalnya harga komputer/smartphone berspesifikasi tinggi", isCorrect: false },
-                        { text: "Kurangnya platform media sosial lokal Indonesia", isCorrect: false }
-                    ],
-                    explanation: "Paham ekstremis transnasional mengintai media sosial pelajar. Kader IPNU IPPNU bertugas menjadi benteng penolak ideologi radikal."
-                },
-                {
-                    question: "Kepemimpinan transformatif ala pelajar NU dilambangkan dengan sikap Tawasuth, yang artinya...",
-                    options: [
-                        { text: "Moderat dan tidak condong ekstrem kanan/kiri", isCorrect: true },
-                        { text: "Bersikap keras demi menegakkan prinsip kelompok", isCorrect: false },
-                        { text: "Mudah menyerah jika menghadapi rintangan", isCorrect: false },
-                        { text: "Selalu mengekor keputusan pimpinan tanpa kritik", isCorrect: false }
-                    ],
-                    explanation: "Tawasuth berarti mengambil jalan tengah yang moderat, mengutamakan kedamaian, harmoni sosial, dan kesepakatan mufakat."
-                },
-                {
-                    question: "Sebagai duta digital MA NU Hasyim Asy'ari 1 Kudus, kontribusi nyata apa yang bisa dilakukan kader IPNU IPPNU di internet?",
-                    options: [
-                        { text: "Memproduksi konten dakwah ramah, nilai kebangsaan, dan prestasi belajar", isCorrect: true },
-                        { text: "Ikut berkomentar provokatif dalam unggahan bertema politik", isCorrect: false },
-                        { text: "Membagikan tautan berita sensasional tanpa dibaca terlebih dahulu", isCorrect: false },
-                        { text: "Membatasi diri tidak mau bersosialisasi dengan kalangan non-muslim", isCorrect: false }
-                    ],
-                    explanation: "Konten dakwah santun menyejukkan jagat digital dan mencerminkan akhlak mulia santri masa kini."
-                }
-            ]
-        };
-
-        // Seed data for sticky notes
-        const seedReflectionNotes = [
-            {
-                id: 1,
-                author: "Rekan Ahmad Yusuf",
-                classInfo: "Kelas X-A",
-                text: "Ke-Indonesiaan bagi saya adalah bangga memakai batik dan sarung saat berangkat ngaji, serta menghormati perbedaan di sekolah!",
-                color: "emerald",
-                date: "16 Juli 2026"
+        // Dynamic Detailed Materials Database (Popup content)
+        const materialDetails = {
+            // Category 1: 4 Konsensus Kebangsaan (Paket A)
+            pancasila: {
+                badge: "Pilar 1: Pancasila",
+                title: "Pancasila: Landasan Ideologi Bernegara",
+                content: `<p>Bagi warga Nahdlatul Ulama (NU), Pancasila adalah kesepakatan agung ($kalimatun\ sawa'$) yang menyatukan keberagaman bangsa Indonesia. Sila pertama "Ketuhanan Yang Maha Esa" mencerminkan nilai tauhid Islam yang melindungi segenap pemeluk agama.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>NU secara resmi menyatakan Pancasila bersifat final sebagai dasar negara pada Muktamar NU ke-27 di Situbondo (1984). Santri wajib mengamalkan butir-butir Pancasila sebagai cerminan akhlak mulia dan kepatuhan hukum bernegara.</p>`
             },
-            {
-                id: 2,
-                author: "Rekanita Sofia",
-                classInfo: "Kelas X-C",
-                text: "Semangat MAKESTA! Siap belajar, berjuang, dan bertaqwa demi mengharumkan MA NU Hasyim Asy'ari 1 Kudus.",
-                color: "yellow",
-                date: "16 Juli 2026"
-            }
-        ];
+            uud1945: {
+                badge: "Pilar 2: UUD 1945",
+                title: "UUD 1945: Konstitusi Hukum Berkeadilan",
+                content: `<p>Undang-Undang Dasar Negara Republik Indonesia Tahun 1945 merupakan hukum dasar tertinggi yang mengatur jalannya pemerintahan negara dan menjamin hak-hak asasi setiap warga negara, termasuk kebebasan beribadah.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Sebagai pelajar sadar hukum, kita menaati aturan konstitusi demi kemaslahatan bersama ($mashlahah\ 'ammah$). Mempelajari konstitusi membantu santri terhindar dari perilaku melanggar hukum dan membentengi hak sipil keagamaan kita.</p>`
+            },
+            nkri: {
+                badge: "Pilar 3: NKRI",
+                title: "NKRI: Wadah Persatuan Multikultural",
+                content: `<p>Negara Kesatuan Republik Indonesia (NKRI) adalah harga mati. Bentuk kesatuan ini adalah pilihan terbaik untuk mempersatukan belasan ribu pulau, ratusan suku, dan beragam keyakinan di bawah satu payung kedaulatan.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>NU memandang NKRI sebagai *Darussalam* (Negara Damai), bukan negara agama (*Darul Islam*) secara formal, namun substansi hukum-hukum Islam terlindungi dan dapat dijalankan dengan aman dan damai.</p>`
+            },
+            bhinneka: {
+                badge: "Pilar 4: Bhinneka Tunggal Ika",
+                title: "Bhinneka Tunggal Ika: Perekat Keberagaman",
+                content: `<p>Berasal dari Kitab Sutasoma karya Mpu Tantular, semboyan ini berarti "Berbeda-beda tetapi tetap satu". Keberagaman bukanlah kelemahan, melainkan anugerah rahmat dari Allah SWT yang harus dijaga.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Sebagai kader IPNU-IPPNU, santri harus berada di garda depan untuk memupuk persaudaraan sesama manusia ($ukhuwah\ basyariyah$) tanpa memandang perbedaan latar belakang budaya dan agama.</p>`
+            },
 
-        // ON LAUNCH INITIALIZER
-        window.onload = function() {
-            reflectionNotes = [...seedReflectionNotes];
-            
-            // Set dynamic barcode text generator
-            document.getElementById('cert-reg-id').innerText = Math.floor(1000 + Math.random() * 9000);
-            
-            // Render material & initializations
-            selectPackage('A');
-            initCanvas();
-            renderReflectionNotes();
-            updateAnalytics();
-            
-            window.addEventListener('resize', handleCanvasResize);
+            // Category 2: Aswaja & Nasionalisme (Paket A)
+            hubbulwathan: {
+                badge: "Nilai Aswaja: Hubbul Wathan",
+                title: "Hubbul Wathan Minal Iman",
+                content: `<p>Slogan perjuangan legendaris yang dicetuskan oleh ulama pendiri NU seperti KH. Wahab Chasbullah dan Hadratussyaikh KH. Hasyim Asy'ari. Artinya "Cinta Tanah Air adalah Sebagian dari Iman".</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Nasionalisme dan agama tidak saling bertentangan, melainkan saling memperkuat. Tanah air yang aman dan merdeka adalah prasyarat utama agar umat Muslim dapat menjalankan ibadah, dakwah, dan pendidikan secara tenang.</p>`
+            },
+            moderasinu: {
+                badge: "Sikap Kemasyarakatan NU",
+                title: "Tawasuth, Tasamuh, Tawazun & I'tidal",
+                content: `<p>Empat pilar karakter moderasi beragama dalam tradisi Nahdlatul Ulama:</p>
+                <ul class="list-disc pl-5 space-y-1.5 mt-2">
+                    <li><strong>Tawasuth:</strong> Sikap tengah-tengah, tidak ekstrem kanan maupun kiri.</li>
+                    <li><strong>Tasamuh:</strong> Sikap toleran terhadap perbedaan pandangan.</li>
+                    <li><strong>Tawazun:</strong> Sikap seimbang antara dalil naqli (agama) dan aqli (akal).</li>
+                    <li><strong>I'tidal:</strong> Sikap tegak lurus mengutamakan keadilan sosial.</li>
+                </ul>`
+            },
+            islamramah: {
+                badge: "Metode Dakwah Aswaja",
+                title: "Islam Ramah yang Merangkul Kultur",
+                content: `<p>Aswaja menyebarkan Islam yang sejuk, damai, dan merangkul kebudayaan nusantara sepanjang tidak bertentangan dengan syariat inti. Mengutamakan metode dakwah ramah, bukan marah; mengajak, bukan mengejek.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Menolak segala bentuk dakwah radikal dan takfiri yang gemar menyalahkan adat istiadat leluhur. Dakwah harus berlandaskan rahmat bagi semesta alam ($rahmatan\ lil\ 'alamin$).</p>`
+            },
+
+            // Category 3: Toleransi Menara Kudus (Paket B)
+            sapitoleransi: {
+                badge: "Warisan Sunan Kudus",
+                title: "Pelarangan Sembelih Sapi",
+                content: `<p>Demi menghormati perasaan umat Hindu di Kudus pada masa lampau, Sunan Kudus (Ja'far Shadiq) melarang penyembelihan hewan Sapi untuk konsumsi harian dan Idul Adha, lalu menggantinya dengan kerbau.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Ini adalah teladan toleransi praktis ($tasamuh$) tingkat tinggi dalam sejarah Indonesia. Toleransi bukan berarti mengorbankan akidah, melainkan menghormati tetangga demi kerukunan sosial yang kokoh.</p>`
+            },
+            menarakudus: {
+                badge: "Akulturasi Fisik",
+                title: "Konstruksi Menara Candi-Masjid",
+                content: `<p>Menara Masjid Al-Aqsa Kudus dibangun dengan arsitektur menyerupai candi Hindu/Buddha menggunakan tumpukan bata merah tanpa semen, menunjukkan perpaduan fisik budaya yang indah.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Sebagai ikon kebanggaan Kudus, menara membuktikan bahwa dakwah Islam tidak menghancurkan kebudayaan lokal, melainkan mengadopsi dan memberinya nilai spiritual baru yang luhur.</p>`
+            },
+            dakwahinklusif: {
+                badge: "Metode Sunan Kudus",
+                title: "Dakwah Inklusif & Kerukunan Sosial",
+                content: `<p>Sunan Kudus merangkul seluruh lapisan masyarakat tanpa memandang kasta atau kelas sosial, membimbing warga lokal dengan kelembutan, seni, dan kebijaksanaan lokal (*local wisdom*).</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Sikap inklusif ini menjadi dasar bagi santri MA NU Hasyim Asy'ari 1 Kudus untuk mudah membaur di masyarakat, menawarkan solusi perdamaian, dan mencegah bibit-bibit perpecahan sosial.</p>`
+            },
+
+            // Category 4: Ajaran Luhur Gusjigang (Paket B)
+            bagusakhlak: {
+                badge: "Gusjigang: BAGUS",
+                title: "Bagus: Kepribadian Akhlakul Karimah",
+                content: `<p>Kata "Bagus" dalam filosofi warisan Sunan Kudus merujuk pada keindahan batiniah, yaitu memiliki budi pekerti yang luhur, jujur, sopan, bertanggung jawab, dan taat beribadah.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Prestasi akademik tinggi tidak akan berarti tanpa fondasi akhlak yang bagus. Santri harus menjadi panutan kesantunan baik di sekolah, rumah, maupun di lingkungan masyarakat luas.</p>`
+            },
+            ngajiilmu: {
+                badge: "Gusjigang: NGAJI",
+                title: "Ngaji: Memperdalam Sanad Keilmuan",
+                content: `<p>Kata "Ngaji" melambangkan kewajiban menuntut ilmu agama dan umum secara terus-menerus. Tradisi mengaji di NU mementingkan kejelasan silsilah (sanad) guru agar pemahaman agama tetap lurus.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Santri didorong untuk tidak sekadar "belajar agama instan" dari media sosial, melainkan tekun mengkaji kitab kuning dari para ulama terpercaya di MA NU Hasyim Asy'ari 1 Kudus.</p>`
+            },
+            dagangmandiri: {
+                badge: "Gusjigang: DAGANG",
+                title: "Dagang: Kemandirian Ekonomi Santri",
+                content: `<p>Kata "Dagang" melambangkan kemandirian ekonomi, etos kerja tinggi, inovasi, dan kewirausahaan. Santri tidak boleh bermental tangan di bawah, melainkan harus mandiri secara ekonomi.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Kudus terkenal sebagai kota UMKM dan industri. Mempelajari kewirausahaan sejak dini membekali santri untuk mandiri, menciptakan lapangan kerja baru, dan berkontribusi pada kejayaan ekonomi bangsa.</p>`
+            },
+
+            // Category 5: Tri Perjuangan IPNU-IPPNU (Paket C)
+            belajartri: {
+                badge: "Tri Perjuangan: BELAJAR",
+                title: "Belajar: Memperluas Cakrawala Keilmuan",
+                content: `<p>Belajar adalah gerbang utama kaderisasi IPNU-IPPNU. Kewajiban menuntut ilmu tidak berbatas waktu dan tempat, mencakup penguasaan ilmu agama (syariat) maupun ilmu pengetahuan umum modern.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Sebagai pelajar di era digital, santri harus cerdas teknologi, berprestasi di kelas, rajin membaca, dan kritis terhadap perkembangan global demi mempersiapkan generasi Indonesia Emas.</p>`
+            },
+            berjuangtri: {
+                badge: "Tri Perjuangan: BERJUANG",
+                title: "Berjuang: Khidmah & Dedikasi untuk Negeri",
+                content: `<p>Berjuang di IPNU-IPPNU berarti ikhlas mendarmabaktikan waktu, tenaga, pikiran, dan keterampilan demi kemaslahatan organisasi, umat Islam, serta keutuhan NKRI.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Perjuangan saat ini tidak lagi memegang senjata fisik, melainkan aktif berorganisasi, menolong sesama pelajar, menyebarkan kebaikan, dan mengabdi tanpa pamrih pada panji kepemimpinan santri.</p>`
+            },
+            bertaqwatri: {
+                badge: "Tri Perjuangan: BERTAQWA",
+                title: "Bertaqwa: Jangkar Spiritual Pelajar NU",
+                content: `<p>Bertaqwa adalah fondasi paling dasar dari Tri Perjuangan. Segala aktivitas belajar dan berorganisasi harus diniatkan murni untuk ibadah mengharap ridha Allah SWT.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Menjaga ibadah shalat berjamaah, membiasakan diri membaca shalawat, berbakti kepada bapak-ibu guru, serta menjaga kebersihan hati dari penyakit sombong dan dengki.</p>`
+            },
+
+            // Category 6: Aktivisme Era Digital (Paket C)
+            digitaldakwah: {
+                badge: "Aktivisme Digital",
+                title: "Dakwah Ramah Mendinginkan Jagat Maya",
+                content: `<p>Media sosial adalah medan perjuangan baru. Santri wajib membanjiri ruang digital dengan narasi yang menyejukkan, konten dakwah Aswaja yang moderat, edukatif, kreatif, dan menginspirasi kebaikan.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Mengurangi perdebatan kusir yang sia-sia, menghindari ujaran kebencian (*hate speech*), dan mengedepankan kesantunan santri di dunia digital.</p>`
+            },
+            cegahradikalisme: {
+                badge: "Bela Negara Digital",
+                title: "Mencegah Paham Ekstremis Radikal",
+                content: `<p>Paham radikalisme transnasional yang ekstrem kerap disebarkan secara halus menyasar anak-anak muda di internet dengan tujuan memecah belah keutuhan persatuan Pancasila.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Sebagai kader benteng aswaja, santri wajib mengenali ciri-ciri radikalisme (seperti mudah mengafirkan orang lain, anti-pemerintah sah, dan intoleran) untuk kemudian dijauhi dan ditolak sebarannya.</p>`
+            },
+            budayatabayyun: {
+                badge: "Literasi Informasi",
+                title: "Budayakan Tabayyun Penangkal Hoaks",
+                content: `<p>Sesuai tuntunan Al-Qur'an (QS. Al-Hujurat: 6), *Tabayyun* berarti meneliti, memverifikasi, dan mengklarifikasi setiap informasi sebelum mempercayai atau membagikannya ke orang lain.</p>
+                <p class="font-semibold text-emerald-800">Urgensi untuk Santri MA NU Hasyim Asy'ari 1 Kudus:</p>
+                <p>Saring sebelum *sharing*. Jangan biarkan jempol kita menyebarkan fitnah, berita palsu (hoaks), atau adu domba. Gunakan akal kritis berbasis kesadaran akhlak keagamaan.</p>`
+            }
         };
 
         // --- DYNAMIC CONTENT RENDERER (MATERIALS BY PACKAGES) ---
@@ -896,12 +889,32 @@
                                 <i class="fas fa-shield-halved"></i>
                             </div>
                             <h3 class="text-lg font-bold text-slate-800 mb-2">4 Konsensus Kebangsaan</h3>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Pondasi tegak kedaulatan kedaulatan negara:</p>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Pondasi tegak kedaulatan negara (Klik untuk detail):</p>
                             <ul class="space-y-2 text-xs text-slate-700">
-                                <li><i class="fas fa-circle-check text-green-600 mr-1.5"></i> <strong>Pancasila:</strong> Landasan ideologi bernegara.</li>
-                                <li><i class="fas fa-circle-check text-green-600 mr-1.5"></i> <strong>UUD 1945:</strong> Konstitusi hukum berkeadilan.</li>
-                                <li><i class="fas fa-circle-check text-green-600 mr-1.5"></i> <strong>NKRI:</strong> Wadah persatuan multikultural.</li>
-                                <li><i class="fas fa-circle-check text-green-600 mr-1.5"></i> <strong>Bhinneka Tunggal Ika:</strong> Perekat keberagaman.</li>
+                                <li>
+                                    <button onclick="openDetailModal('pancasila')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-circle-check text-green-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Pancasila:</strong> Landasan ideologi bernegara.</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onclick="openDetailModal('uud1945')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-circle-check text-green-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>UUD 1945:</strong> Konstitusi hukum berkeadilan.</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onclick="openDetailModal('nkri')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-circle-check text-green-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>NKRI:</strong> Wadah persatuan multikultural.</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onclick="openDetailModal('bhinneka')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-circle-check text-green-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Bhinneka Tunggal Ika:</strong> Perekat keberagaman.</span>
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                         <!-- Pillar 2 -->
@@ -910,18 +923,33 @@
                                 <i class="fas fa-hands-holding"></i>
                             </div>
                             <h3 class="text-lg font-bold text-slate-800 mb-2">Aswaja & Nasionalisme</h3>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Integrasi nilai kepatuhan agama dan kesetiaan berbangsa:</p>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Integrasi nilai agama & tanah air (Klik untuk detail):</p>
                             <ul class="space-y-2 text-xs text-slate-700">
-                                <li><i class="fas fa-heart text-red-600 mr-1.5"></i> Hubbul Wathan Minal Iman adalah kesatuan mutlak.</li>
-                                <li><i class="fas fa-heart text-red-600 mr-1.5"></i> Sikap Tawasuth, Tasamuh, Tawazun & I'tidal.</li>
-                                <li><i class="fas fa-heart text-red-600 mr-1.5"></i> Islam ramah yang merangkul segenap kultur bumi pertiwi.</li>
+                                <li>
+                                    <button onclick="openDetailModal('hubbulwathan')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-heart text-red-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Hubbul Wathan Minal Iman:</strong> Kesatuan cinta tanah air & iman.</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onclick="openDetailModal('moderasinu')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-heart text-red-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Sikap Moderat:</strong> Tawasuth, Tasamuh, Tawazun & I'tidal.</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onclick="openDetailModal('islamramah')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-heart text-red-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Islam Ramah:</strong> Rahmatan lil 'Alamin merangkul kultur nusantara.</span>
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                         <!-- Graphic Card -->
                         <div class="bg-gradient-to-br from-red-600 to-red-800 rounded-xl shadow-md p-6 text-white flex flex-col justify-between">
                             <div>
                                 <h3 class="text-lg font-bold mb-2">Simbol Ke-Indonesiaan</h3>
-                                <p class="text-xs text-red-100 leading-relaxed">Merah Putih melambangkan keberanian raga dan kesucian jiwa, berkibar serasi di atas dakwah santun Aswaja di bumi Kudus.</p>
+                                <p class="text-xs text-red-100 leading-relaxed font-medium">Merah Putih melambangkan keberanian raga dan kesucian jiwa, berkibar serasi di atas dakwah santun Aswaja di bumi Kudus.</p>
                             </div>
                             <div class="flex justify-center mt-4">
                                 <!-- Elegant Flag Minimalist SVG -->
@@ -942,11 +970,26 @@
                                 <i class="fas fa-mosque"></i>
                             </div>
                             <h3 class="text-lg font-bold text-slate-800 mb-2">Toleransi Menara Kudus</h3>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Akulturasi harmonis Sunan Kudus merangkul tradisi umat Hindu:</p>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Akulturasi harmonis Sunan Kudus merangkul tradisi Hindu (Klik untuk detail):</p>
                             <ul class="space-y-2 text-xs text-slate-700">
-                                <li><i class="fas fa-circle-check text-yellow-600 mr-1.5"></i> Pelarangan sembelih Sapi bentuk apresiasi budaya.</li>
-                                <li><i class="fas fa-circle-check text-yellow-600 mr-1.5"></i> Konstruksi Menara berasitektur candi megah.</li>
-                                <li><i class="fas fa-circle-check text-yellow-600 mr-1.5"></i> Dakwah inklusif mementingkan kerukunan sosial.</li>
+                                <li>
+                                    <button onclick="openDetailModal('sapitoleransi')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-circle-check text-yellow-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Pelarangan Sapi:</strong> Bentuk nyata apresiasi budaya toleran.</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onclick="openDetailModal('menarakudus')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-circle-check text-yellow-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Arsitektur Menara:</strong> Konstruksi megah mirip candi Hindu.</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onclick="openDetailModal('dakwahinklusif')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-circle-check text-yellow-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Dakwah Inklusif:</strong> Mengedepankan integrasi & kerukunan sosial.</span>
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                         <!-- Pillar 2 -->
@@ -955,11 +998,26 @@
                                 <i class="fas fa-graduation-cap"></i>
                             </div>
                             <h3 class="text-lg font-bold text-slate-800 mb-2">Ajaran Luhur Gusjigang</h3>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Konsep matang integrasi kemandirian santri di Kudus:</p>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Konsep matang kemandirian karakter santri Kudus (Klik untuk detail):</p>
                             <ul class="space-y-2 text-xs text-slate-700">
-                                <li><i class="fas fa-star text-yellow-500 mr-1.5"></i> <strong>Bagus:</strong> Memiliki kepribadian akhlakul karimah.</li>
-                                <li><i class="fas fa-star text-yellow-500 mr-1.5"></i> <strong>Ngaji:</strong> Memperdalam kajian agama berlandaskan sanad guru.</li>
-                                <li><i class="fas fa-star text-yellow-500 mr-1.5"></i> <strong>Dagang:</strong> Melatih kemandirian ekonomi kewirausahaan.</li>
+                                <li>
+                                    <button onclick="openDetailModal('bagusakhlak')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-star text-yellow-500 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Bagus:</strong> Kepribadian berakhlakul karimah mulia.</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onclick="openDetailModal('ngajiilmu')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-star text-yellow-500 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Ngaji:</strong> Memperdalam keilmuan bersanad muktabarah.</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onclick="openDetailModal('dagangmandiri')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-star text-yellow-500 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Dagang:</strong> Jiwa mandiri wirausaha berbasis nilai agama.</span>
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                         <!-- Graphic Card -->
@@ -983,11 +1041,26 @@
                                 <i class="fas fa-people-group"></i>
                             </div>
                             <h3 class="text-lg font-bold text-slate-800 mb-2">Tri Perjuangan IPNU-IPPNU</h3>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Tiga pilar kaderisasi wajib bagi pelajar Nahdliyin:</p>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Tiga pilar kaderisasi wajib pelajar Nahdliyin (Klik untuk detail):</p>
                             <ul class="space-y-2 text-xs text-slate-700">
-                                <li><i class="fas fa-check text-emerald-600 mr-1.5"></i> <strong>Belajar:</strong> Bertekad memperluas cakrawala keilmuan.</li>
-                                <li><i class="fas fa-check text-emerald-600 mr-1.5"></i> <strong>Berjuang:</strong> Siap mendarmabaktikan raga untuk sesama.</li>
-                                <li><i class="fas fa-check text-emerald-600 mr-1.5"></i> <strong>Bertaqwa:</strong> Berfondasi keteguhan iman dan ibadah tulus.</li>
+                                <li>
+                                    <button onclick="openDetailModal('belajartri')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-check text-emerald-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Belajar:</strong> Bertekad memperluas cakrawala keilmuan secara luas.</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onclick="openDetailModal('berjuangtri')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-check text-emerald-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Berjuang:</strong> Khidmah dan dedikasi nyata untuk sesama.</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onclick="openDetailModal('bertaqvatri')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-check text-emerald-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Bertaqwa:</strong> Berfondasi keteguhan iman dan ibadah tulus.</span>
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                         <!-- Pillar 2 -->
@@ -996,11 +1069,26 @@
                                 <i class="fas fa-mobile-screen"></i>
                             </div>
                             <h3 class="text-lg font-bold text-slate-800 mb-2">Aktivisme Era Digital</h3>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Tantangan pemuda di bawah naungan Hasyim Asy'ari:</p>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Tantangan pemuda di bawah naungan Hasyim Asy'ari (Klik untuk detail):</p>
                             <ul class="space-y-2 text-xs text-slate-700">
-                                <li><i class="fas fa-check text-red-600 mr-1.5"></i> Menyebarkan dakwah toleran mendinginkan jagat maya.</li>
-                                <li><i class="fas fa-check text-red-600 mr-1.5"></i> Mencegah faham ekstremis radikal pemecah persatuan.</li>
-                                <li><i class="fas fa-check text-red-600 mr-1.5"></i> Budayakan Tabayyun penangkal sebaran fitnah hoaks.</li>
+                                <li>
+                                    <button onclick="openDetailModal('digitaldakwah')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-check text-red-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Dakwah Toleran:</strong> Menyejukkan jagat maya dengan narasi aswaja.</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onclick="openDetailModal('cegahradikalisme')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-check text-red-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Cegah Radikalisme:</strong> Menangkal faham ekstremis pemecah bangsa.</span>
+                                    </button>
+                                </li>
+                                <li>
+                                    <button onclick="openDetailModal('budayatabayyun')" class="text-left w-full hover:bg-slate-50 p-1.5 rounded transition flex items-start gap-2 group">
+                                        <i class="fas fa-check text-red-600 mt-0.5 flex-shrink-0 group-hover:scale-110 transition"></i> 
+                                        <span><strong>Budaya Tabayyun:</strong> Menyaring berita hoaks demi kebenaran.</span>
+                                    </button>
+                                </li>
                             </ul>
                         </div>
                         <!-- Graphic Card -->
@@ -1018,6 +1106,41 @@
             }
 
             container.innerHTML = html;
+        }
+
+        // --- INTERACTIVE MODAL CONTROLLERS ---
+        function openDetailModal(key) {
+            const detail = materialDetails[key];
+            if (!detail) return;
+
+            document.getElementById('modal-title').innerText = detail.title;
+            document.getElementById('modal-badge').innerText = detail.badge;
+            document.getElementById('modal-body-content').innerHTML = detail.content;
+
+            const modal = document.getElementById('material-detail-modal');
+            const containerBox = document.getElementById('modal-container-box');
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('opacity-100');
+                modal.classList.remove('opacity-0');
+                containerBox.classList.remove('scale-95');
+                containerBox.classList.add('scale-100');
+            }, 15);
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('material-detail-modal');
+            const containerBox = document.getElementById('modal-container-box');
+
+            modal.classList.add('opacity-0');
+            modal.classList.remove('opacity-100');
+            containerBox.classList.remove('scale-100');
+            containerBox.classList.add('scale-95');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
         }
 
         // --- NAVIGATION CONTROLLER ---
@@ -1425,6 +1548,26 @@
             document.getElementById('quiz-intro-box').classList.remove('hidden');
         }
 
+        // Seed data for sticky notes
+        const seedReflectionNotes = [
+            {
+                id: 1,
+                author: "Rekan Ahmad Yusuf",
+                classInfo: "Kelas X-A",
+                text: "Ke-Indonesiaan bagi saya adalah bangga memakai batik dan sarung saat berangkat ngaji, serta menghormati perbedaan di sekolah!",
+                color: "emerald",
+                date: "16 Juli 2026"
+            },
+            {
+                id: 2,
+                author: "Rekanita Sofia",
+                classInfo: "Kelas X-C",
+                text: "Semangat MAKESTA! Siap belajar, berjuang, dan bertaqwa demi mengharumkan MA NU Hasyim Asy'ari 1 Kudus.",
+                color: "yellow",
+                date: "16 Juli 2026"
+            }
+        ];
+
         // --- STICKY REFLECTION BOARD ---
         function renderReflectionNotes() {
             const notesGrid = document.getElementById('notes-grid');
@@ -1550,7 +1693,7 @@
             const delegationInput = document.getElementById('cert-input-delegation').value.trim();
             
             if (nameInput === '') {
-                // Inline styled custom box warning instead of alert()
+                // Inline styled custom box warning
                 const warningBox = document.createElement('div');
                 warningBox.className = "fixed bottom-5 right-5 bg-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-2xl z-[9999] transition-all";
                 warningBox.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i> Mohon isi Nama Anda terlebih dahulu!`;
@@ -1759,6 +1902,182 @@
             link.href = image;
             link.click();
         }
+
+        // --- DYNAMIC QUIZ DATABASE ---
+        const quizDatabase = {
+            A: [
+                {
+                    question: "Semboyan 'Hubbul Wathan Minal Iman' memiliki arti 'Cinta tanah air sebagian dari Iman'. Siapakah tokoh ulama pendiri NU yang memopulerkan slogan perjuangan legendaris tersebut?",
+                    options: [
+                        { text: "Hadratussyaikh KH. Hasyim Asy'ari", isCorrect: true },
+                        { text: "KH. Ahmad Dahlan", isCorrect: false },
+                        { text: "KH. Wahab Chasbullah", isCorrect: false },
+                        { text: "KH. Bisri Syansuri", isCorrect: false }
+                    ],
+                    explanation: "Hadratussyaikh KH. Hasyim Asy'ari bersama para kiai NU mengobarkan semangat resolusi jihad dan slogan Hubbul Wathan Minal Iman untuk mengobarkan semangat juang para santri."
+                },
+                {
+                    question: "Sikap moderasi beragama dalam tradisi Nahdlatul Ulama yang berarti bersikap adil, lurus, dan proporsional adalah...",
+                    options: [
+                        { text: "Tasamuh", isCorrect: false },
+                        { text: "Tawasuth", isCorrect: false },
+                        { text: "Tawazun", isCorrect: false },
+                        { text: "I'tidal", isCorrect: true }
+                    ],
+                    explanation: "I'tidal berarti tegak lurus dan bersikap adil demi menegakkan keadilan sosial di tengah pluralisme berbangsa."
+                },
+                {
+                    question: "Empat konsensus kebangsaan NKRI mencakup hal-hal di bawah ini, KECUALI...",
+                    options: [
+                        { text: "Sistem Monarki Absolut", isCorrect: true },
+                        { text: "Pancasila", isCorrect: false },
+                        { text: "UUD 1945", isCorrect: false },
+                        { text: "Bhinneka Tunggal Ika", isCorrect: false }
+                    ],
+                    explanation: "Sistem Monarki Absolut tidak termasuk. Empat pilar konsensus nasional resmi adalah Pancasila, UUD 1945, NKRI, dan Bhinneka Tunggal Ika."
+                },
+                {
+                    question: "Bagi NU, Pancasila sebagai dasar negara adalah bersifat final. Konsensus kebangsaan ini disepakati secara resmi pada Muktamar NU ke-27 di daerah...",
+                    options: [
+                        { text: "Situbondo (1984)", isCorrect: true },
+                        { text: "Kudus (1989)", isCorrect: false },
+                        { text: "Semarang (1979)", isCorrect: false },
+                        { text: "Jakarta (1994)", isCorrect: false }
+                    ],
+                    explanation: "Muktamar NU ke-27 di Situbondo tahun 1984 merumuskan deklarasi hubungan Pancasila dengan Islam secara integratif yang harmonis."
+                },
+                {
+                    question: "Bagaimanakah sikap bela negara yang paling tepat bagi seorang pelajar Nahdliyin di era kemerdekaan saat ini?",
+                    options: [
+                        { text: "Belajar dengan tekun, menjauhi narkoba, dan mengamalkan nilai kesantrian", isCorrect: true },
+                        { text: "Mengikuti aksi demonstrasi anarkis di jalan raya", isCorrect: false },
+                        { text: "Menolak segala bentuk modernisasi teknologi", isCorrect: false },
+                        { text: "Hanya beribadah ritual individu tanpa peduli masalah sosial", isCorrect: false }
+                    ],
+                    explanation: "Bela negara pelajar diwujudkan lewat karya nyata belajar, menjauhi kenakalan remaja, dan membentengi diri dengan akhlakul karimah."
+                }
+            ],
+            B: [
+                {
+                    question: "Filosofi 'Gusjigang' yang diwariskan oleh Sunan Kudus merupakan singkatan dari karakter unggul yaitu...",
+                    options: [
+                        { text: "Bagus akhlaknya, pintar Ngaji, terampil Dagang", isCorrect: true },
+                        { text: "Bagus rupa, rajin Jagongan, gemar dolanan", isCorrect: false },
+                        { text: "Gusti, Jiwa, Ganyang kolonial", isCorrect: false },
+                        { text: "Giat ibadah, Usaha keras, Jiwa penolong", isCorrect: false }
+                    ],
+                    explanation: "Gusjigang (Bagus, Ngaji, Dagang) adalah ajaran Sunan Kudus agar santri memiliki akhlak mulia, pandai ilmu agama, sekaligus mandiri finansial."
+                },
+                {
+                    question: "Wujud toleransi dakwah kultural Sunan Kudus yang menghormati penganut agama Hindu saat itu adalah...",
+                    options: [
+                        { text: "Melarang penyembelihan hewan Sapi", isCorrect: true },
+                        { text: "Membakar kitab suci peninggalan terdahulu", isCorrect: false },
+                        { text: "Mendirikan candi megah di lereng Muria", isCorrect: false },
+                        { text: "Melarang perayaan hari raya Idul Adha", isCorrect: false }
+                    ],
+                    explanation: "Sunan Kudus melarang penyembelihan sapi demi menghormati pemeluk Hindu yang menyucikan sapi, wujud akulturasi dakwah tingkat tinggi."
+                },
+                {
+                    question: "Sunan Muria, salah satu Walisongo yang makamnya berada di Kudus, berdakwah kepada rakyat kecil dengan sarana seni...",
+                    options: [
+                        { text: "Tembang Sinom dan Kinanthi", isCorrect: true },
+                        { text: "Lukisan kaligrafi Arab kontemporer", isCorrect: false },
+                        { text: "Pertunjukan sulap modern", isCorrect: false },
+                        { text: "Seni musik qasidah terbangan", isCorrect: false }
+                    ],
+                    explanation: "Sunan Muria mahir berdakwah menggunakan kesenian rakyat jelata, menciptakan tembang Sinom & Kinanthi yang sarat ajaran moral luhur."
+                },
+                {
+                    question: "Bentuk akulturasi fisik budaya Hindu-Buddha dengan Islam yang masih tegak kokoh di Kudus adalah...",
+                    options: [
+                        { text: "Menara Kudus", isCorrect: true },
+                        { text: "Gerbang Pendopo Kabupaten", isCorrect: false },
+                        { text: "Masjid Agung Jawa Tengah", isCorrect: false },
+                        { text: "Klenteng Hok Hien Bio", isCorrect: false }
+                    ],
+                    explanation: "Menara Kudus dibangun dengan arsitektur menyerupai candi Hindu namun berfungsi sebagai tempat mengumandangkan adzan Islam."
+                },
+                {
+                    question: "Mengapa nilai 'Gusjigang' relevan dikembangkan bagi kemandirian generasi pelajar MA NU Hasyim Asy'ari 1 Kudus?",
+                    options: [
+                        { text: "Melatih kemandirian ekonomi kewirausahaan tanpa melupakan ibadah", isCorrect: true },
+                        { text: "Mengajarkan siswa untuk berfokus mencari uang sejak dini dan melalaikan tugas sekolah", isCorrect: false },
+                        { text: "Agar siswa dapat bersaing dalam politik praktis daerah", isCorrect: false },
+                        { text: "Hanya relevan bagi pedagang pasar kliwon saja", isCorrect: false }
+                    ],
+                    explanation: "Gusjigang menginspirasi kemandirian wirausaha kreatif berbasis nilai spiritual keagamaan demi masa depan bangsa."
+                }
+            ],
+            C: [
+                {
+                    question: "Semboyan perjuangan IPNU-IPPNU yang ditekankan dalam pembinaan kader di MA NU Hasyim Asy'ari 1 Kudus adalah...",
+                    options: [
+                        { text: "Belajar, Berjuang, Bertaqwa", isCorrect: true },
+                        { text: "Beraksi, Berkarya, Bermanfaat", isCorrect: false },
+                        { text: "Bekerja, Mengabdi, Beriman", isCorrect: false },
+                        { text: "Berprestasi, Menang, Jaya", isCorrect: false }
+                    ],
+                    explanation: "Tiga komitmen utama pelajar NU dikenal dengan doktrin Tri Perjuangan: Belajar (ilmiah), Berjuang (amaliah), Bertaqwa (ukhrawiah)."
+                },
+                {
+                    question: "Sikap 'Tabayyun' dalam menanggapi derasnya arus informasi dan berita hoaks di media sosial merupakan implementasi dari pilar...",
+                    options: [
+                        { text: "Pendidikan kritis berbasis Aswaja", isCorrect: true },
+                        { text: "Sikap pasrah terhadap keadaan", isCorrect: false },
+                        { text: "Penolakan terhadap teknologi digital", isCorrect: false },
+                        { text: "Kecintaan berlebihan pada budaya barat", isCorrect: false }
+                    ],
+                    explanation: "Tabayyun (klarifikasi/verifikasi berita) melatih pelajar berpikir cerdas, objektif, dan kritis dalam mengonsumsi berita."
+                },
+                {
+                    question: "Apa tantangan terbesar bagi pelajar milenial NU dalam mempertahankan nilai-nilai 'Ke-Indonesiaan' di dunia maya?",
+                    options: [
+                        { text: "Masuknya paham radikalisme transnasional yang merongrong Pancasila", isCorrect: true },
+                        { text: "Terlalu banyaknya akses internet gratis di sekolah", isCorrect: false },
+                        { text: "Mahalnya harga komputer/smartphone berspesifikasi tinggi", isCorrect: false },
+                        { text: "Kurangnya platform media sosial lokal Indonesia", isCorrect: false }
+                    ],
+                    explanation: "Paham ekstremis transnasional mengintai media sosial pelajar. Kader IPNU IPPNU bertugas menjadi benteng penolak ideologi radikal."
+                },
+                {
+                    question: "Kepemimpinan transformatif ala pelajar NU dilambangkan dengan sikap Tawasuth, yang artinya...",
+                    options: [
+                        { text: "Moderat dan tidak condong ekstrem kanan/kiri", isCorrect: true },
+                        { text: "Bersikap keras demi menegakkan prinsip kelompok", isCorrect: false },
+                        { text: "Mudah menyerah jika menghadapi rintangan", isCorrect: false },
+                        { text: "Selalu mengekor keputusan pimpinan tanpa kritik", isCorrect: false }
+                    ],
+                    explanation: "Tawasuth berarti mengambil jalan tengah yang moderat, mengutamakan kedamaian, harmoni sosial, dan kesepakatan mufakat."
+                },
+                {
+                    question: "Sebagai duta digital MA NU Hasyim Asy'ari 1 Kudus, kontribusi nyata apa yang bisa dilakukan kader IPNU IPPNU di internet?",
+                    options: [
+                        { text: "Memproduksi konten dakwah ramah, nilai kebangsaan, dan prestasi belajar", isCorrect: true },
+                        { text: "Ikut berkomentar provokatif dalam unggahan bertema politik", isCorrect: false },
+                        { text: "Membagikan tautan berita sensasional tanpa dibaca terlebih dahulu", isCorrect: false },
+                        { text: "Membatasi diri tidak mau bersosialisasi dengan kalangan non-muslim", isCorrect: false }
+                    ],
+                    explanation: "Konten dakwah santun menyejukkan jagat digital dan mencerminkan akhlak mulia santri masa kini."
+                }
+            ]
+        };
+
+        // ON LAUNCH INITIALIZER
+        window.onload = function() {
+            reflectionNotes = [...seedReflectionNotes];
+            
+            // Set dynamic barcode text generator
+            document.getElementById('cert-reg-id').innerText = Math.floor(1000 + Math.random() * 9000);
+            
+            // Render material & initializations
+            selectPackage('A');
+            initCanvas();
+            renderReflectionNotes();
+            updateAnalytics();
+            
+            window.addEventListener('resize', handleCanvasResize);
+        };
     </script>
 </body>
 </html>
