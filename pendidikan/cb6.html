@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Kanvas & Analitik MAKESTA MA NU Hasyim Asy'ari 1 Kudus</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Playfair Display -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,500;1,700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .accent-font {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #059669;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #047857;
+        }
+        .guilloche-bg {
+            background-color: #fcfbf7;
+            background-image: radial-gradient(circle at 100% 150%, #fcfbf7 24%, #f5f2e9 25%, #f5f2e9 28%, #fcfbf7 29%, #fcfbf7 36%, #f5f2e9 37%, #f5f2e9 40%, #fcfbf7 41%);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- HEADER SECTION -->
+    <header class="bg-gradient-to-r from-emerald-800 via-emerald-700 to-green-800 text-white shadow-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <!-- Branding -->
+            <div class="flex items-center space-x-3 text-center md:text-left">
+                <div class="bg-white p-1.5 rounded-full shadow-md inline-flex items-center justify-center">
+                    <span class="text-xl px-2 py-1 bg-emerald-600 rounded-full text-white font-bold leading-none">I</span>
+                    <span class="text-xl px-2 py-1 bg-red-600 rounded-full text-white font-bold leading-none -ml-2">I</span>
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-extrabold tracking-wide uppercase">MAKESTA 2026/2027</h1>
+                    <p class="text-xs text-emerald-100 font-medium">MA NU Hasyim Asy'ari 1 Kudus • Hubbul Wathan Minal Iman</p>
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <nav class="flex flex-wrap justify-center gap-2">
+                <button onclick="switchTab('materi')" id="tab-materi" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 bg-emerald-900 text-white shadow-md border-b-2 border-yellow-400">
+                    <i class="fas fa-book-open mr-1.5"></i> Materi & Trek
+                </button>
+                <button onclick="switchTab('kanvas')" id="tab-kanvas" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 text-emerald-100 hover:bg-emerald-600/50">
+                    <i class="fas fa-paint-brush mr-1.5"></i> Kanvas Komitmen
+                </button>
+                <button onclick="switchTab('kuis')" id="tab-kuis" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 text-emerald-100 hover:bg-emerald-600/50">
+                    <i class="fas fa-vial mr-1.5"></i> Kuis Interaktif
+                </button>
+                <button onclick="switchTab('refleksi')" id="tab-refleksi" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 text-emerald-100 hover:bg-emerald-600/50">
+                    <i class="fas fa-clipboard-list mr-1.5"></i> Dinding Refleksi
+                </button>
+                <button onclick="switchTab('sertifikat')" id="tab-sertifikat" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 text-emerald-100 hover:bg-emerald-600/50 bg-emerald-950/40 border border-emerald-500/30">
+                    <i class="fas fa-certificate mr-1.5 text-yellow-400"></i> Analisis & Sertifikat
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 sm:px-6 lg:px-8">
+
+        <!-- TAB 1: MATERI KE-INDONESIAAN & PILIHAN TREK -->
+        <section id="content-materi" class="tab-content block space-y-6">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-br from-emerald-950 via-emerald-900 to-slate-900 rounded-2xl p-6 md:p-10 text-white shadow-xl relative overflow-hidden">
+                <div class="absolute right-0 bottom-0 top-0 w-1/3 opacity-15 hidden lg:block">
+                    <!-- Indonesia Map Outline SVG Representation -->
+                    <svg class="w-full h-full text-white" viewBox="0 0 100 100" fill="currentColor">
+                        <path d="M5,40 Q15,35 25,45 T45,40 T65,45 T85,35 T95,45 L95,65 Q85,55 75,65 T55,60 T35,65 T15,55 T5,65 Z" />
+                    </svg>
+                </div>
+                <div class="max-w-3xl relative z-10">
+                    <span class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Integrasi Nasionalisme & Aswaja</span>
+                    <h2 class="text-3xl md:text-5xl font-black mt-3 mb-4 accent-font text-yellow-400 leading-tight">KE-INDONESIAAN: Karakter Santri untuk Negeri</h2>
+                    <p class="text-base md:text-lg text-emerald-100 leading-relaxed mb-6">
+                        Menyongsong Indonesia Emas dan memperkokoh benteng kebangsaan di lingkungan Pimpinan Komisariat IPNU-IPPNU MA NU Hasyim Asy'ari 1 Kudus. Pilih Paket Pembelajaran Anda untuk memulai!
+                    </p>
+                    
+                    <!-- Dynamic Package Selector cards inside Banner -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+                        <button onclick="selectPackage('A')" id="pkg-card-A" class="package-selector bg-emerald-800/80 hover:bg-emerald-800 border-2 border-yellow-400 text-left p-4 rounded-xl transition duration-300 shadow-md">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="bg-yellow-400 text-slate-900 font-extrabold text-xs px-2.5 py-1 rounded">PAKET A</span>
+                                <i class="fas fa-check-circle text-yellow-400 text-lg" id="pkg-check-A"></i>
+                            </div>
+                            <h4 class="font-bold text-white text-sm">Konsensus Kebangsaan & Aswaja</h4>
+                            <p class="text-[11px] text-emerald-200 mt-1">Fokus pada 4 Pilar RI dan pilar moderasi beragama Nahdlatul Ulama.</p>
+                        </button>
+
+                        <button onclick="selectPackage('B')" id="pkg-card-B" class="package-selector bg-emerald-950/50 hover:bg-emerald-900/80 border-2 border-transparent text-left p-4 rounded-xl transition duration-300 shadow-md">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="bg-emerald-700 text-emerald-100 font-extrabold text-xs px-2.5 py-1 rounded">PAKET B</span>
+                                <i class="fas fa-check-circle text-emerald-400 text-lg hidden" id="pkg-check-B"></i>
+                            </div>
+                            <h4 class="font-bold text-white text-sm">Kearifan Lokal & Karakter Kudus</h4>
+                            <p class="text-[11px] text-emerald-200 mt-1">Mendalami filosofi luhur Gusjigang dan kerukunan Sunan Kudus.</p>
+                        </button>
+
+                        <button onclick="selectPackage('C')" id="pkg-card-C" class="package-selector bg-emerald-950/50 hover:bg-emerald-900/80 border-2 border-transparent text-left p-4 rounded-xl transition duration-300 shadow-md">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="bg-emerald-700 text-emerald-100 font-extrabold text-xs px-2.5 py-1 rounded">PAKET C</span>
+                                <i class="fas fa-check-circle text-emerald-400 text-lg hidden" id="pkg-check-C"></i>
+                            </div>
+                            <h4 class="font-bold text-white text-sm">Kepemimpinan Pelajar & Aktivisme</h4>
+                            <p class="text-[11px] text-emerald-200 mt-1">Peran IPNU-IPPNU di era digital serta pencegahan radikalisme.</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DYNAMIC MATERIALS DISPLAY -->
+            <div id="materi-container" class="space-y-6">
+                <!-- Content will be injected dynamically based on selected package, fallback layout is Paket A -->
+                <div id="materi-content-holder">
+                    <!-- Loading skeleton/placeholder -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: KANVAS KOMITMEN KREATIF -->
+        <section id="content-kanvas" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl shadow-md p-4 md:p-6">
+                <div class="mb-4 text-center md:text-left flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800 flex items-center justify-center md:justify-start">
+                            <i class="fas fa-paint-brush text-emerald-600 mr-2"></i> Kanvas Komitmen Kebangsaan
+                        </h2>
+                        <p class="text-sm text-slate-600 mt-1">
+                            Lukis atau tanda tangani lembar pernyataan cinta tanah air di bawah ini. Selesaikan untuk klaim poin sertifikat!
+                        </p>
+                    </div>
+                    <!-- Indicator Badge of Completion -->
+                    <div id="canvas-status-badge" class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1.5 rounded-full border border-amber-200 flex items-center gap-1.5">
+                        <i class="fas fa-spinner fa-spin"></i> Belum Digambar (Butuh min. 1 coretan)
+                    </div>
+                </div>
+
+                <!-- Main Canvas Layout Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <!-- Tool Panel -->
+                    <div class="lg:col-span-1 bg-slate-50 rounded-xl p-4 border border-slate-200 flex flex-col justify-between space-y-4">
+                        <div>
+                            <h3 class="text-xs uppercase font-extrabold text-slate-500 tracking-wider mb-3">Pengaturan Alat</h3>
+                            
+                            <!-- Brush Size -->
+                            <div class="mb-4">
+                                <label class="block text-xs font-bold text-slate-700 mb-1 flex justify-between">
+                                    <span>Ukuran Kuas:</span>
+                                    <span id="brush-size-display">5 px</span>
+                                </label>
+                                <input type="range" id="brush-size" min="1" max="25" value="5" class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600" oninput="updateBrushSizeDisplay(this.value)">
+                            </div>
+
+                            <!-- Color Palette -->
+                            <div class="mb-4">
+                                <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Warna Kuas:</label>
+                                <div class="grid grid-cols-5 gap-2">
+                                    <button onclick="setBrushColor('#000000')" class="color-swatch w-8 h-8 rounded-full border-2 border-slate-300 shadow-sm bg-black ring-4 ring-emerald-500" title="Hitam"></button>
+                                    <button onclick="setBrushColor('#dc2626')" class="color-swatch w-8 h-8 rounded-full border-2 border-white shadow-sm bg-red-600" title="Merah"></button>
+                                    <button onclick="setBrushColor('#16a34a')" class="color-swatch w-8 h-8 rounded-full border-2 border-white shadow-sm bg-green-600" title="Hijau IPNU"></button>
+                                    <button onclick="setBrushColor('#0284c7')" class="color-swatch w-8 h-8 rounded-full border-2 border-white shadow-sm bg-sky-600" title="Biru IPPNU"></button>
+                                    <button onclick="setBrushColor('#eab308')" class="color-swatch w-8 h-8 rounded-full border-2 border-white shadow-sm bg-yellow-500" title="Kuning"></button>
+                                    <button onclick="setBrushColor('#ffffff')" class="color-swatch w-8 h-8 rounded-full border-2 border-slate-300 shadow-sm bg-white" title="Putih"></button>
+                                    <button onclick="setBrushColor('#8b5cf6')" class="color-swatch w-8 h-8 rounded-full border-2 border-white shadow-sm bg-violet-500" title="Ungu"></button>
+                                    <button onclick="setBrushColor('#ea580c')" class="color-swatch w-8 h-8 rounded-full border-2 border-white shadow-sm bg-orange-600" title="Oranye"></button>
+                                    <div class="col-span-2 flex items-center">
+                                        <input type="color" id="custom-color" onchange="setBrushColor(this.value)" class="w-full h-8 rounded cursor-pointer border border-slate-300 p-0.5">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Templates -->
+                            <div class="mb-4">
+                                <label class="block text-xs font-bold text-slate-700 mb-2">Latar Belakang / Template:</label>
+                                <div class="space-y-2">
+                                    <button onclick="setCanvasBackground('blank')" class="template-btn w-full text-left text-xs bg-white hover:bg-slate-100 p-2 rounded border border-slate-300 font-medium flex items-center transition">
+                                        <i class="far fa-square text-slate-400 mr-2 text-sm"></i> Kanvas Putih Polos
+                                    </button>
+                                    <button onclick="setCanvasBackground('peta')" class="template-btn w-full text-left text-xs bg-white hover:bg-slate-100 p-2 rounded border border-slate-300 font-medium flex items-center transition">
+                                        <i class="fas fa-map-marked-alt text-emerald-600 mr-2 text-sm"></i> Peta & Bendera RI
+                                    </button>
+                                    <button onclick="setCanvasBackground('ipnu')" class="template-btn w-full text-left text-xs bg-white hover:bg-slate-100 p-2 rounded border border-slate-300 font-medium flex items-center transition">
+                                        <i class="fas fa-star text-yellow-500 mr-2 text-sm"></i> Frame Cinta NKRI & Aswaja
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="space-y-2 pt-4 border-t border-slate-200">
+                            <button onclick="clearCanvas()" class="w-full bg-slate-200 text-slate-700 hover:bg-slate-300 px-4 py-2 rounded-lg text-xs font-bold transition flex items-center justify-center">
+                                <i class="fas fa-trash-alt mr-1.5"></i> Bersihkan Kanvas
+                            </button>
+                            <button onclick="undoLastAction()" class="w-full bg-slate-200 text-slate-700 hover:bg-slate-300 px-4 py-2 rounded-lg text-xs font-bold transition flex items-center justify-center">
+                                <i class="fas fa-undo mr-1.5"></i> Batalkan (Undo)
+                            </button>
+                            <button onclick="saveCanvasImage()" class="w-full bg-emerald-600 text-white hover:bg-emerald-700 px-4 py-2 rounded-lg text-xs font-bold transition flex items-center justify-center shadow-md">
+                                <i class="fas fa-download mr-1.5"></i> Unduh Gambar Kanvas
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Drawing Canvas -->
+                    <div class="lg:col-span-3 flex flex-col items-center">
+                        <div class="relative w-full bg-white border-2 border-slate-300 rounded-xl overflow-hidden shadow-inner cursor-crosshair max-w-full">
+                            <canvas id="paint-canvas" class="w-full block"></canvas>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2 text-center">
+                            <i class="fas fa-info-circle mr-1"></i> Gunakan mouse atau sentuhan jari langsung di atas kanvas untuk menggambar.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: KUIS PATRIOTISME -->
+        <section id="content-kuis" class="tab-content hidden space-y-6">
+            <div class="bg-white rounded-2xl shadow-md p-6 max-w-3xl mx-auto">
+                <div class="text-center mb-6">
+                    <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full uppercase" id="quiz-tag-package">Kuis Makesta: Paket A</span>
+                    <h2 class="text-2xl font-bold text-slate-800 mt-2">Uji Jiwa Ke-Indonesiaan & Pemahaman</h2>
+                    <p class="text-sm text-slate-600 mt-1">
+                        Selesaikan kuis ini untuk mengkalkulasi persentase kelayakan sertifikat bela negara Anda!
+                    </p>
+                </div>
+
+                <!-- Quiz Container -->
+                <div id="quiz-intro-box" class="space-y-6 text-center py-8">
+                    <div class="text-6xl text-emerald-600">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <div class="max-w-md mx-auto">
+                        <h3 class="text-lg font-bold text-slate-800">Siap Uji Nyali Pelajar Pancasila?</h3>
+                        <p class="text-sm text-slate-600 mt-2">
+                            Pertanyaan disusun dinamis berdasarkan paket materi aktif yang Anda pilih di tab pertama. Anda dapat mengubah paket materi kapan saja.
+                        </p>
+                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 my-4 text-xs font-semibold text-emerald-800">
+                            Trek Kuis Terpilih: <span id="quiz-selected-track-name" class="font-extrabold text-red-600">Paket A (Konsensus Kebangsaan & Aswaja)</span>
+                        </div>
+                        <button onclick="startQuiz()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-all duration-300">
+                            Mulai Kuis Paket Ini
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Question Box -->
+                <div id="quiz-question-box" class="hidden space-y-6">
+                    <div>
+                        <div class="flex justify-between items-center text-xs font-bold text-slate-600 mb-1">
+                            <span id="quiz-question-number">Pertanyaan 1 dari 5</span>
+                            <span id="quiz-score-indicator">Skor Sementara: 0</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div id="quiz-progress-bar" class="bg-emerald-600 h-full transition-all duration-300" style="width: 20%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <p id="quiz-question-text" class="text-base md:text-lg font-semibold text-slate-800"></p>
+                    </div>
+
+                    <div id="quiz-options-container" class="grid grid-cols-1 gap-3"></div>
+
+                    <!-- Feedback and Next Button -->
+                    <div id="quiz-feedback-box" class="hidden p-4 rounded-xl text-sm font-semibold flex flex-col gap-2">
+                        <div class="flex justify-between items-center">
+                            <div id="quiz-feedback-title" class="font-extrabold flex items-center"></div>
+                            <button id="quiz-next-btn" onclick="nextQuestion()" class="bg-slate-800 text-white hover:bg-slate-900 px-4 py-2 rounded-lg text-xs font-bold transition">
+                                Lanjut <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                        <div id="quiz-feedback-explanation" class="text-xs font-normal"></div>
+                    </div>
+                </div>
+
+                <!-- Quiz Results Box -->
+                <div id="quiz-result-box" class="hidden text-center py-8 space-y-6">
+                    <div id="result-icon-container" class="text-7xl"></div>
+                    <div class="max-w-md mx-auto">
+                        <h3 id="result-title" class="text-2xl font-bold text-slate-800">Luar Biasa!</h3>
+                        <p id="result-description" class="text-sm text-slate-600 mt-2"></p>
+                        
+                        <div class="bg-emerald-50 text-emerald-800 rounded-xl p-4 my-6 border border-emerald-100 inline-block px-10">
+                            <div class="text-xs uppercase font-extrabold tracking-wider">Skor Kuis</div>
+                            <div class="text-5xl font-black mt-1" id="quiz-final-score">0</div>
+                        </div>
+
+                        <div class="flex justify-center gap-3">
+                            <button onclick="restartQuiz()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 px-5 py-2.5 rounded-lg text-xs font-bold transition">
+                                Ulangi Kuis
+                            </button>
+                            <button onclick="switchTab('sertifikat')" class="bg-yellow-500 hover:bg-yellow-600 text-slate-950 px-5 py-2.5 rounded-lg text-xs font-bold transition shadow-md">
+                                Cek Sertifikat Saya <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: DINDING REFLEKSI -->
+        <section id="content-refleksi" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Submit Note Panel -->
+                <div class="bg-white rounded-2xl shadow-md p-6 h-fit">
+                    <h2 class="text-xl font-bold text-slate-800 mb-2 flex items-center">
+                        <i class="fas fa-pen-nib text-emerald-600 mr-2"></i> Tambah Refleksi Kebangsaan
+                    </h2>
+                    <p class="text-xs text-slate-600 mb-4">
+                        Tuliskan kontribusi nyata atau refleksi Anda terhadap nusa bangsa. Aktivitas ini menyumbang bobot 20% bagi penentuan kelulusan bersertifikat!
+                    </p>
+
+                    <form id="refleksi-form" onsubmit="addReflectionNote(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap:</label>
+                            <input type="text" id="note-author" required placeholder="Misal: Rekanita Fatmawati" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Kelas / Delegasi Komisariat:</label>
+                            <input type="text" id="note-class" required placeholder="Misal: X-A / PK Hasyim Asy'ari 1" class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Pesan Komitmen Ke-Indonesiaan:</label>
+                            <textarea id="note-text" required rows="3" placeholder="Tuliskan janjimu dalam mengabdi pada bangsa..." class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm resize-none"></textarea>
+                        </div>
+                        
+                        <!-- Note Color Selector -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Warna Kertas:</label>
+                            <div class="flex space-x-3">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="note-color" value="yellow" checked class="sr-only peer">
+                                    <span class="w-8 h-8 rounded-full bg-yellow-100 border-2 border-transparent peer-checked:border-yellow-500 flex items-center justify-center inline-block shadow-sm">
+                                        <span class="w-4 h-4 rounded-full bg-yellow-300"></span>
+                                    </span>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="note-color" value="emerald" class="sr-only peer">
+                                    <span class="w-8 h-8 rounded-full bg-emerald-100 border-2 border-transparent peer-checked:border-emerald-500 flex items-center justify-center inline-block shadow-sm">
+                                        <span class="w-4 h-4 rounded-full bg-emerald-300"></span>
+                                    </span>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="note-color" value="rose" class="sr-only peer">
+                                    <span class="w-8 h-8 rounded-full bg-rose-100 border-2 border-transparent peer-checked:border-rose-500 flex items-center justify-center inline-block shadow-sm">
+                                        <span class="w-4 h-4 rounded-full bg-rose-300"></span>
+                                    </span>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="note-color" value="sky" class="sr-only peer">
+                                    <span class="w-8 h-8 rounded-full bg-sky-100 border-2 border-transparent peer-checked:border-sky-500 flex items-center justify-center inline-block shadow-sm">
+                                        <span class="w-4 h-4 rounded-full bg-sky-300"></span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg text-sm transition shadow-md flex items-center justify-center">
+                            <i class="fas fa-paper-plane mr-2"></i> Tempelkan di Dinding
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Display Notes Wall -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg">Papan Aspirasi Santri Kudus</h3>
+                            <p class="text-xs text-slate-500">Curahan tekad Rekan & Rekanita untuk kemajuan NKRI</p>
+                        </div>
+                        <span id="note-count-badge" class="bg-emerald-600 text-white font-bold px-3 py-1 rounded-full text-xs">0 Catatan</span>
+                    </div>
+
+                    <!-- Sticky Notes Grid -->
+                    <div id="notes-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: CERTIFICATE AND ANALYTICS -->
+        <section id="content-sertifikat" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Sidebar Analysis & Instructions -->
+                <div class="bg-white rounded-2xl shadow-md p-6 h-fit space-y-6">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Analitik Jiwa Ke-Indonesiaan</h3>
+                        <p class="text-xs text-slate-500">Nilai dikalkulasi secara instan berdasarkan keterlibatan Anda dalam aktivitas Makesta ini.</p>
+                    </div>
+
+                    <!-- Live Progress Index Indicators -->
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold mb-1">
+                                <span>1. Wawasan Nasionalisme (Quiz)</span>
+                                <span class="font-bold text-emerald-600" id="index-nasionalisme">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                                <div id="bar-nasionalisme" class="bg-emerald-600 h-full w-0 transition-all duration-500"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold mb-1">
+                                <span>2. Komitmen Bakti (Drawing Canvas)</span>
+                                <span class="font-bold text-emerald-600" id="index-komitmen">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                                <div id="bar-komitmen" class="bg-emerald-600 h-full w-0 transition-all duration-500"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-semibold mb-1">
+                                <span>3. Aspirasi Kontributif (Sticky Notes)</span>
+                                <span class="font-bold text-emerald-600" id="index-aspirasi">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                                <div id="bar-aspirasi" class="bg-emerald-600 h-full w-0 transition-all duration-500"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Index Score Total -->
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-100 text-center">
+                        <span class="text-xs font-extrabold uppercase tracking-widest text-slate-400">Total Skor Ke-Indonesiaan</span>
+                        <div class="text-4xl font-black text-emerald-700 mt-1" id="total-keindonesiaan-score">0%</div>
+                        <p class="text-[10px] text-slate-500 mt-2">Dibutuhkan minimal <strong>60%</strong> untuk mencetak sertifikat digital resmi.</p>
+                    </div>
+
+                    <!-- Verification Details Input -->
+                    <div class="space-y-3">
+                        <h4 class="text-xs uppercase font-extrabold text-slate-500 tracking-wider">Sesuaikan Nama Sertifikat</h4>
+                        <div>
+                            <label class="block text-xs text-slate-600 mb-1">Nama Penerima:</label>
+                            <input type="text" id="cert-input-name" oninput="updateCertificateUI()" placeholder="Masukkan Nama Lengkap Anda" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-600 mb-1">Asal Kelas/Delegasi:</label>
+                            <input type="text" id="cert-input-delegation" oninput="updateCertificateUI()" placeholder="Misal: Kelas X-B" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                    </div>
+
+                    <button onclick="downloadCertificate()" id="btn-unduh-sertifikat" disabled class="w-full bg-slate-300 text-slate-500 cursor-not-allowed font-bold py-3 rounded-xl text-sm transition shadow flex items-center justify-center gap-2">
+                        <i class="fas fa-file-pdf"></i> Unduh Sertifikat (PNG)
+                    </button>
+                </div>
+
+                <!-- Live Certificate Preview Block -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="bg-slate-200 p-2 rounded-xl text-center text-xs font-semibold text-slate-600 flex items-center justify-center gap-1.5">
+                        <i class="fas fa-eye"></i> Tampilan Pratinjau Sertifikat Komitmen (Siap Unduh)
+                    </div>
+
+                    <!-- Visual Cert Holder (Scaled Container) -->
+                    <div class="overflow-x-auto">
+                        <div id="certificate-visual" class="guilloche-bg w-[800px] h-[560px] mx-auto border-[16px] border-emerald-900 rounded shadow-2xl relative p-8 text-slate-800 select-none flex flex-col justify-between">
+                            
+                            <!-- Watermark / Background Seals via Inline SVG -->
+                            <div class="absolute inset-0 opacity-[0.03] flex items-center justify-center pointer-events-none">
+                                <svg class="w-3/5 h-3/5" viewBox="0 0 100 100" fill="currentColor">
+                                    <polygon points="50,15 90,85 10,85" />
+                                </svg>
+                            </div>
+
+                            <!-- Certificate Header border -->
+                            <div class="absolute inset-2 border border-yellow-500/30 rounded pointer-events-none"></div>
+
+                            <!-- Cert Header -->
+                            <div class="text-center space-y-1 relative z-10">
+                                <h1 class="text-xs font-black uppercase tracking-[0.2em] text-emerald-800">PIMPINAN KOMISARIAT IPNU-IPPNU</h1>
+                                <h2 class="text-sm font-bold text-slate-700 uppercase tracking-wide">MA NU HASYIM ASY'ARI 1 KUDUS</h2>
+                                <p class="text-[9px] text-slate-500 italic">Masa Kesetiaan Anggota (MAKESTA) Tahun Ajaran 2026/2027</p>
+                                <div class="w-36 h-[2px] bg-gradient-to-r from-transparent via-yellow-500 to-transparent mx-auto my-1"></div>
+                            </div>
+
+                            <!-- Cert Title -->
+                            <div class="text-center relative z-10">
+                                <h3 class="accent-font text-3xl font-black text-emerald-800 tracking-wide">SERTIFIKAT KE-INDONESIAAN</h3>
+                                <p class="text-[10px] uppercase font-bold tracking-widest text-slate-500 mt-1">Diberikan Kepada Pejuang Kebangsaan:</p>
+                            </div>
+
+                            <!-- Dynamic Name -->
+                            <div class="text-center relative z-10">
+                                <div class="accent-font text-3xl font-bold text-slate-900 border-b border-dashed border-slate-300 inline-block px-12 pb-1" id="cert-output-name">
+                                    [Nama Peserta Makesta]
+                                </div>
+                                <div class="text-[11px] text-slate-600 font-medium mt-1" id="cert-output-delegation">
+                                    Delegasi: [Kelas / PAC]
+                                </div>
+                            </div>
+
+                            <!-- Achievement Text -->
+                            <div class="text-center px-12 text-xs text-slate-700 relative z-10 leading-relaxed max-w-2xl mx-auto">
+                                Dinyatakan LULUS dan dinobatkan memiliki loyalitas militansi kebangsaan yang tangguh berdasarkan penilaian komprehensif pada uji materi <span class="font-extrabold text-emerald-800" id="cert-output-track">Paket Pembelajaran</span> dengan capaian nilai indeks patriotismenya sebesar:
+                            </div>
+
+                            <!-- Score Analysis Badge -->
+                            <div class="text-center relative z-10">
+                                <div class="inline-flex items-center gap-3 bg-white/95 px-6 py-2 rounded-full shadow-md border border-yellow-400">
+                                    <div class="text-[10px] uppercase font-black text-slate-500 text-left leading-none">
+                                        Indeks Jiwa<br>Ke-Indonesiaan
+                                    </div>
+                                    <div class="text-3xl font-black text-emerald-700 leading-none" id="cert-output-score">
+                                        0%
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Signatures & Verification Area -->
+                            <div class="flex justify-between items-end px-6 relative z-10">
+                                
+                                <!-- Barcode Verification (Raw SVG) -->
+                                <div class="text-left flex flex-col gap-1 items-start">
+                                    <!-- Dynamic Barcode simulation -->
+                                    <div class="bg-white p-1 rounded border border-slate-200">
+                                        <svg class="w-32 h-10" id="cert-barcode" viewBox="0 0 100 30" fill="currentColor">
+                                            <!-- Mock Barcode Stripes -->
+                                            <rect x="5" y="2" width="2" height="26" />
+                                            <rect x="9" y="2" width="4" height="26" />
+                                            <rect x="15" y="2" width="1" height="26" />
+                                            <rect x="18" y="2" width="3" height="26" />
+                                            <rect x="23" y="2" width="2" height="26" />
+                                            <rect x="27" y="2" width="5" height="26" />
+                                            <rect x="34" y="2" width="1" height="26" />
+                                            <rect x="37" y="2" width="3" height="26" />
+                                            <rect x="42" y="2" width="2" height="26" />
+                                            <rect x="46" y="2" width="4" height="26" />
+                                            <rect x="52" y="2" width="1" height="26" />
+                                            <rect x="55" y="2" width="3" height="26" />
+                                            <rect x="60" y="2" width="2" height="26" />
+                                            <rect x="64" y="2" width="4" height="26" />
+                                            <rect x="70" y="2" width="1" height="26" />
+                                            <rect x="73" y="2" width="3" height="26" />
+                                            <rect x="78" y="2" width="2" height="26" />
+                                            <rect x="82" y="2" width="5" height="26" />
+                                            <rect x="89" y="2" width="1" height="26" />
+                                            <rect x="92" y="2" width="3" height="26" />
+                                        </svg>
+                                    </div>
+                                    <span class="text-[8px] font-mono text-slate-500 tracking-wider">REG: MAKESTA-2026-<span id="cert-reg-id">9982</span></span>
+                                </div>
+
+                                <!-- Middle Authenticity Stamp -->
+                                <div class="flex flex-col items-center">
+                                    <div class="w-16 h-16 rounded-full border-4 border-yellow-500/20 flex items-center justify-center p-1 bg-white shadow-sm relative">
+                                        <!-- Seal Emblem -->
+                                        <div class="w-full h-full rounded-full border border-dashed border-yellow-600 flex flex-col items-center justify-center bg-yellow-50/50">
+                                            <i class="fas fa-star text-yellow-600 text-[10px]"></i>
+                                            <span class="text-[7px] font-extrabold text-emerald-800 leading-none mt-0.5">MA NU H1</span>
+                                            <span class="text-[5px] text-slate-500 mt-0.5 font-bold">KUDUS</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Signature Officer -->
+                                <div class="text-center w-40">
+                                    <p class="text-[9px] uppercase font-bold tracking-wide text-slate-500">Panitia Pelaksana,</p>
+                                    
+                                    <!-- Handdrawn-style signature SVG simulation -->
+                                    <div class="h-12 w-full relative flex items-center justify-center">
+                                        <svg class="absolute w-3/4 h-full text-emerald-800 opacity-85" viewBox="0 0 100 40">
+                                            <!-- Path representing elegant sign -->
+                                            <path d="M10,25 C30,5 50,35 60,10 C70,-5 80,15 90,20" fill="none" stroke="currentColor" stroke-width="2" />
+                                            <path d="M25,22 C45,20 65,18 85,24" fill="none" stroke="currentColor" stroke-width="1" />
+                                        </svg>
+                                    </div>
+
+                                    <p class="text-[10px] font-bold text-slate-800 border-t border-slate-300 pt-0.5">M. Ahsin Wijaya, S.Pd</p>
+                                    <p class="text-[7px] text-slate-500">Instruktur Kaderisasi PK IPNU</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Printable Canvas Container (hidden) used strictly for PNG rendering -->
+                    <canvas id="export-cert-canvas" style="display: none;"></canvas>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-900 text-white mt-12 py-8 border-t-4 border-yellow-400">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+                <p class="font-bold text-emerald-400">PK IPNU IPPNU Komisariat Kudus</p>
+                <p class="text-lg font-extrabold accent-font">MA NU Hasyim Asy'ari 1 Kudus</p>
+                <p class="text-xs text-slate-400 mt-1">Masa Kesetiaan Anggota (MAKESTA) Tahun Ajaran 2026/2027</p>
+            </div>
+            <div class="text-center md:text-right space-y-2">
+                <p class="text-xs text-slate-400">Materi Pengembangan Ke-Indonesiaan & Cinta NKRI</p>
+                <div class="flex justify-center md:justify-end space-x-3 text-slate-300">
+                    <span class="text-xs bg-slate-800 px-3 py-1.5 rounded-md border border-slate-700">Hubbul Wathan Minal Iman</span>
+                    <span class="text-xs bg-slate-800 px-3 py-1.5 rounded-md border border-slate-700">Gusjigang Kudus</span>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-slate-800 mt-6 pt-4 text-center text-xs text-slate-500">
+            &copy; 2026 MAKESTA Kudus - MA NU Hasyim Asy'ari 1. All Rights Reserved.
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- GLOBAL STATE ---
+        let selectedPackage = 'A'; // Tracks 'A', 'B', or 'C'
+        let currentTab = 'materi';
+
+        // Canvas States
+        let canvas, ctx;
+        let isDrawing = false;
+        let brushColor = '#000000';
+        let brushSize = 5;
+        let drawingHistory = [];
+        let currentBgTemplate = 'blank';
+        let strokeCount = 0; // Quantifies drawing activity
+
+        // Quiz State
+        let currentQuestionIndex = 0;
+        let quizScore = 0;
+        let selectedOptionIndex = null;
+        let activeQuestions = [];
+
+        // Reflection Sticky Notes
+        let reflectionNotes = [];
+
+        // Dynamic Questions Library (Categorized by Package A, B, and C)
+        const quizDatabase = {
+            A: [
+                {
+                    question: "Semboyan 'Hubbul Wathan Minal Iman' memiliki arti 'Cinta tanah air sebagian dari Iman'. Siapakah tokoh ulama pendiri NU yang memopulerkan gagasan tersebut?",
+                    options: [
+                        { text: "Hadratussyaikh KH. Hasyim Asy'ari", isCorrect: true },
+                        { text: "KH. Ahmad Dahlan", isCorrect: false },
+                        { text: "KH. Wahab Chasbullah", isCorrect: false },
+                        { text: "KH. Bisri Syansuri", isCorrect: false }
+                    ],
+                    explanation: "Hadratussyaikh KH. Hasyim Asy'ari menyebarkan semangat Hubbul Wathan Minal Iman untuk mengobarkan jiwa nasionalisme santri."
+                },
+                {
+                    question: "Sikap moderasi beragama dalam tradisi Nahdlatul Ulama yang berarti bersikap adil dan proporsional adalah...",
+                    options: [
+                        { text: "Tasamuh", isCorrect: false },
+                        { text: "Tawasuth", isCorrect: false },
+                        { text: "Tawazun", isCorrect: false },
+                        { text: "I'tidal", isCorrect: true }
+                    ],
+                    explanation: "I'tidal berarti tegak lurus dan bersikap adil demi menegakkan kebenaran di tengah kehidupan berbangsa."
+                },
+                {
+                    question: "Empat konsensus kebangsaan NKRI mencakup hal-hal di bawah ini, KECUALI...",
+                    options: [
+                        { text: "Sistem Monarki Absolut", isCorrect: true },
+                        { text: "Pancasila", isCorrect: false },
+                        { text: "UUD 1945", isCorrect: false },
+                        { text: "Bhinneka Tunggal Ika", isCorrect: false }
+                    ],
+                    explanation: "Sistem Monarki Absolut tidak termasuk. Empat pilar resmi adalah Pancasila, UUD 1945, NKRI, dan Bhinneka Tunggal Ika."
+                },
+                {
+                    question: "Bagi NU, Pancasila sebagai dasar negara adalah bersifat final. Konsensus ini disepakati secara resmi pada Muktamar NU ke-27 di daerah...",
+                    options: [
+                        { text: "Situbondo (1984)", isCorrect: true },
+                        { text: "Kudus (1989)", isCorrect: false },
+                        { text: "Semarang (1979)", isCorrect: false },
+                        { text: "Jakarta (1994)", isCorrect: false }
+                    ],
+                    explanation: "Muktamar NU ke-27 di Situbondo tahun 1984 merumuskan deklarasi hubungan Pancasila dengan Islam secara integratif."
+                },
+                {
+                    question: "Bagaimanakah sikap bela negara yang paling tepat bagi seorang pelajar Nahdliyin di era kemerdekaan saat ini?",
+                    options: [
+                        { text: "Belajar dengan tekun, menjauhi narkoba, dan mengamalkan nilai kesantrian", isCorrect: true },
+                        { text: "Mengikuti aksi demonstrasi anarkis di jalan raya", isCorrect: false },
+                        { text: "Menolak segala bentuk modernisasi teknologi", isCorrect: false },
+                        { text: "Hanya beribadah ritual individu tanpa peduli masalah sosial", isCorrect: false }
+                    ],
+                    explanation: "Bela negara pelajar diwujudkan lewat karya nyata, belajar, dan membentengi diri dengan akhlakul karimah."
+                }
+            ],
+            B: [
+                {
+                    question: "Filosofi 'Gusjigang' yang diwariskan oleh Sunan Kudus merupakan singkatan dari karakter unggul yaitu...",
+                    options: [
+                        { text: "Bagus akhlaknya, pintar Ngaji, terampil Dagang", isCorrect: true },
+                        { text: "Bagus rupa, rajin Jagongan, gemar dolanan", isCorrect: false },
+                        { text: "Gusti, Jiwa, Ganyang kolonial", isCorrect: false },
+                        { text: "Giat ibadah, Usaha keras, Jiwa penolong", isCorrect: false }
+                    ],
+                    explanation: "Gusjigang (Bagus, Ngaji, Dagang) adalah ajaran Sunan Kudus agar santri berakhlak mulia, pandai ilmu agama, sekaligus mandiri finansial."
+                },
+                {
+                    question: "Wujud toleransi dakwah kultural Sunan Kudus yang menghormati penganut agama Hindu saat itu adalah...",
+                    options: [
+                        { text: "Melarang penyembelihan hewan Sapi", isCorrect: true },
+                        { text: "Membakar kitab suci peninggalan terdahulu", isCorrect: false },
+                        { text: "Mendirikan candi megah di lereng Muria", isCorrect: false },
+                        { text: "Melarang perayaan hari raya Idul Adha", isCorrect: false }
+                    ],
+                    explanation: "Sunan Kudus melarang penyembelihan sapi demi menghormati pemeluk Hindu yang menyucikan sapi, wujud akulturasi dakwah yang damai."
+                },
+                {
+                    question: "Sunan Muria, salah satu Walisongo yang makamnya berada di Kudus, berdakwah kepada rakyat kecil dengan sarana seni...",
+                    options: [
+                        { text: "Tembang Sinom dan Kinanthi", isCorrect: true },
+                        { text: "Lukisan kaligrafi Arab kontemporer", isCorrect: false },
+                        { text: "Pertunjukan sulap modern", isCorrect: false },
+                        { text: "Seni musik qasidah terbangan", isCorrect: false }
+                    ],
+                    explanation: "Sunan Muria mahir berdakwah menggunakan kesenian rakyat jelata, menciptakan tembang Sinom & Kinanthi yang sarat ajaran moral luhur."
+                },
+                {
+                    question: "Bentuk akulturasi fisik budaya Hindu-Buddha dengan Islam yang masih tegak kokoh di Kudus adalah...",
+                    options: [
+                        { text: "Menara Kudus", isCorrect: true },
+                        { text: "Gerbang Pendopo Kabupaten", isCorrect: false },
+                        { text: "Masjid Agung Jawa Tengah", isCorrect: false },
+                        { text: "Klenteng Hok Hien Bio", isCorrect: false }
+                    ],
+                    explanation: "Menara Kudus dibangun dengan arsitektur menyerupai candi Hindu namun berfungsi sebagai tempat mengumandangkan adzan Islam."
+                },
+                {
+                    question: "Mengapa nilai 'Gusjigang' relevan dikembangkan bagi kemandirian generasi pelajar MA NU Hasyim Asy'ari 1 Kudus?",
+                    options: [
+                        { text: "Melatih kemandirian ekonomi kewirausahaan tanpa melupakan ibadah", isCorrect: true },
+                        { text: "Mengajarkan siswa untuk berfokus mencari uang sejak dini dan melalaikan tugas sekolah", isCorrect: false },
+                        { text: "Agar siswa dapat bersaing dalam politik praktis daerah", isCorrect: false },
+                        { text: "Hanya relevan bagi pedagang pasar kliwon saja", isCorrect: false }
+                    ],
+                    explanation: "Gusjigang menginspirasi kemandirian wirausaha kreatif berbasis nilai spiritual keagamaan demi masa depan bangsa."
+                }
+            ],
+            C: [
+                {
+                    question: "Semboyan perjuangan IPNU-IPPNU yang ditekankan dalam pembinaan kader di MA NU Hasyim Asy'ari 1 Kudus adalah...",
+                    options: [
+                        { text: "Belajar, Berjuang, Bertaqwa", isCorrect: true },
+                        { text: "Beraksi, Berkarya, Bermanfaat", isCorrect: false },
+                        { text: "Bekerja, Mengabdi, Beriman", isCorrect: false },
+                        { text: "Berprestasi, Menang, Jaya", isCorrect: false }
+                    ],
+                    explanation: "Tiga komitmen utama pelajar NU dikenal dengan doktrin Tri Perjuangan: Belajar (ilmiah), Berjuang (amaliah), Bertaqwa (ukhrawiah)."
+                },
+                {
+                    question: "Sikap 'Tabayyun' dalam menanggapi derasnya arus informasi dan berita hoaks di media sosial merupakan implementasi dari pilar...",
+                    options: [
+                        { text: "Pendidikan kritis berbasis Aswaja", isCorrect: true },
+                        { text: "Sikap pasrah terhadap keadaan", isCorrect: false },
+                        { text: "Penolakan terhadap teknologi digital", isCorrect: false },
+                        { text: "Kecintaan berlebihan pada budaya barat", isCorrect: false }
+                    ],
+                    explanation: "Tabayyun (klarifikasi/verifikasi berita) melatih pelajar berpikir cerdas, objektif, dan kritis dalam mengonsumsi berita."
+                },
+                {
+                    question: "Apa tantangan terbesar bagi pelajar milenial NU dalam mempertahankan nilai-nilai 'Ke-Indonesiaan' di dunia maya?",
+                    options: [
+                        { text: "Masuknya paham radikalisme transnasional yang merongrong Pancasila", isCorrect: true },
+                        { text: "Terlalu banyaknya akses internet gratis di sekolah", isCorrect: false },
+                        { text: "Mahalnya harga komputer/smartphone berspesifikasi tinggi", isCorrect: false },
+                        { text: "Kurangnya platform media sosial lokal Indonesia", isCorrect: false }
+                    ],
+                    explanation: "Paham ekstremis transnasional mengintai media sosial pelajar. Kader IPNU IPPNU bertugas menjadi benteng penolak ideologi radikal."
+                },
+                {
+                    question: "Kepemimpinan transformatif ala pelajar NU dilambangkan dengan sikap Tawasuth, yang artinya...",
+                    options: [
+                        { text: "Moderat dan tidak condong ekstrem kanan/kiri", isCorrect: true },
+                        { text: "Bersikap keras demi menegakkan prinsip kelompok", isCorrect: false },
+                        { text: "Mudah menyerah jika menghadapi rintangan", isCorrect: false },
+                        { text: "Selalu mengekor keputusan pimpinan tanpa kritik", isCorrect: false }
+                    ],
+                    explanation: "Tawasuth berarti mengambil jalan tengah yang moderat, mengutamakan kedamaian, harmoni sosial, dan kesepakatan mufakat."
+                },
+                {
+                    question: "Sebagai duta digital MA NU Hasyim Asy'ari 1 Kudus, kontribusi nyata apa yang bisa dilakukan kader IPNU IPPNU di internet?",
+                    options: [
+                        { text: "Memproduksi konten dakwah ramah, nilai kebangsaan, dan prestasi belajar", isCorrect: true },
+                        { text: "Ikut berkomentar provokatif dalam unggahan bertema politik", isCorrect: false },
+                        { text: "Membagikan tautan berita sensasional tanpa dibaca terlebih dahulu", isCorrect: false },
+                        { text: "Membatasi diri tidak mau bersosialisasi dengan kalangan non-muslim", isCorrect: false }
+                    ],
+                    explanation: "Konten dakwah santun menyejukkan jagat digital dan mencerminkan akhlak mulia santri masa kini."
+                }
+            ]
+        };
+
+        // Seed data for sticky notes
+        const seedReflectionNotes = [
+            {
+                id: 1,
+                author: "Rekan Ahmad Yusuf",
+                classInfo: "Kelas X-A",
+                text: "Ke-Indonesiaan bagi saya adalah bangga memakai batik dan sarung saat berangkat ngaji, serta menghormati perbedaan di sekolah!",
+                color: "emerald",
+                date: "16 Juli 2026"
+            },
+            {
+                id: 2,
+                author: "Rekanita Sofia",
+                classInfo: "Kelas X-C",
+                text: "Semangat MAKESTA! Siap belajar, berjuang, dan bertaqwa demi mengharumkan MA NU Hasyim Asy'ari 1 Kudus.",
+                color: "yellow",
+                date: "16 Juli 2026"
+            }
+        ];
+
+        // ON LAUNCH INITIALIZER
+        window.onload = function() {
+            reflectionNotes = [...seedReflectionNotes];
+            
+            // Set dynamic barcode text generator
+            document.getElementById('cert-reg-id').innerText = Math.floor(1000 + Math.random() * 9000);
+            
+            // Render material & initializations
+            selectPackage('A');
+            initCanvas();
+            renderReflectionNotes();
+            updateAnalytics();
+            
+            window.addEventListener('resize', handleCanvasResize);
+        };
+
+        // --- DYNAMIC CONTENT RENDERER (MATERIALS BY PACKAGES) ---
+        function selectPackage(packageId) {
+            selectedPackage = packageId;
+            
+            // Highlight selector buttons
+            document.querySelectorAll('.package-selector').forEach(btn => {
+                btn.className = "package-selector bg-emerald-950/50 hover:bg-emerald-900/80 border-2 border-transparent text-left p-4 rounded-xl transition duration-300 shadow-md";
+            });
+            document.querySelectorAll('.fa-check-circle').forEach(icon => {
+                icon.classList.add('hidden');
+            });
+
+            const activeBtn = document.getElementById(`pkg-card-${packageId}`);
+            if (activeBtn) {
+                activeBtn.className = "package-selector bg-emerald-800/85 hover:bg-emerald-800 border-2 border-yellow-400 text-left p-4 rounded-xl transition duration-300 shadow-md";
+                document.getElementById(`pkg-check-${packageId}`).classList.remove('hidden');
+            }
+
+            // Sync with certificate label & quiz
+            document.getElementById('quiz-selected-track-name').innerText = getPackageFullName(packageId);
+            document.getElementById('quiz-tag-package').innerText = `Kuis Makesta: Paket ${packageId}`;
+            document.getElementById('cert-output-track').innerText = `Paket ${packageId}: ${getPackageFullName(packageId)}`;
+
+            // Render Material HTML
+            renderMaterialContent(packageId);
+            
+            // If quiz already started, restart it to load new package questions
+            restartQuiz();
+            updateAnalytics();
+        }
+
+        function getPackageFullName(id) {
+            if (id === 'A') return 'Konsensus Kebangsaan & Aswaja';
+            if (id === 'B') return 'Kearifan Lokal & Karakter Kudus';
+            return 'Kepemimpinan Pelajar & Aktivisme';
+        }
+
+        function renderMaterialContent(id) {
+            const container = document.getElementById('materi-content-holder');
+            let html = '';
+
+            if (id === 'A') {
+                html = `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+                        <!-- Pillar 1 -->
+                        <div class="bg-white rounded-xl shadow-md p-6 border-t-4 border-red-600 hover:shadow-lg transition">
+                            <div class="w-12 h-12 bg-red-50 text-red-600 rounded-lg flex items-center justify-center text-xl font-bold mb-4">
+                                <i class="fas fa-shield-halved"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-2">4 Konsensus Kebangsaan</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Pondasi tegak kedaulatan kedaulatan negara:</p>
+                            <ul class="space-y-2 text-xs text-slate-700">
+                                <li><i class="fas fa-circle-check text-green-600 mr-1.5"></i> <strong>Pancasila:</strong> Landasan ideologi bernegara.</li>
+                                <li><i class="fas fa-circle-check text-green-600 mr-1.5"></i> <strong>UUD 1945:</strong> Konstitusi hukum berkeadilan.</li>
+                                <li><i class="fas fa-circle-check text-green-600 mr-1.5"></i> <strong>NKRI:</strong> Wadah persatuan multikultural.</li>
+                                <li><i class="fas fa-circle-check text-green-600 mr-1.5"></i> <strong>Bhinneka Tunggal Ika:</strong> Perekat keberagaman.</li>
+                            </ul>
+                        </div>
+                        <!-- Pillar 2 -->
+                        <div class="bg-white rounded-xl shadow-md p-6 border-t-4 border-emerald-600 hover:shadow-lg transition">
+                            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center text-xl font-bold mb-4">
+                                <i class="fas fa-hands-holding"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-2">Aswaja & Nasionalisme</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Integrasi nilai kepatuhan agama dan kesetiaan berbangsa:</p>
+                            <ul class="space-y-2 text-xs text-slate-700">
+                                <li><i class="fas fa-heart text-red-600 mr-1.5"></i> Hubbul Wathan Minal Iman adalah kesatuan mutlak.</li>
+                                <li><i class="fas fa-heart text-red-600 mr-1.5"></i> Sikap Tawasuth, Tasamuh, Tawazun & I'tidal.</li>
+                                <li><i class="fas fa-heart text-red-600 mr-1.5"></i> Islam ramah yang merangkul segenap kultur bumi pertiwi.</li>
+                            </ul>
+                        </div>
+                        <!-- Graphic Card -->
+                        <div class="bg-gradient-to-br from-red-600 to-red-800 rounded-xl shadow-md p-6 text-white flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold mb-2">Simbol Ke-Indonesiaan</h3>
+                                <p class="text-xs text-red-100 leading-relaxed">Merah Putih melambangkan keberanian raga dan kesucian jiwa, berkibar serasi di atas dakwah santun Aswaja di bumi Kudus.</p>
+                            </div>
+                            <div class="flex justify-center mt-4">
+                                <!-- Elegant Flag Minimalist SVG -->
+                                <svg class="w-24 h-16 shadow-lg rounded" viewBox="0 0 300 200">
+                                    <rect width="300" height="100" fill="#EF4444"/>
+                                    <rect y="100" width="300" height="100" fill="#F8FAFC"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (id === 'B') {
+                html = `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+                        <!-- Pillar 1 -->
+                        <div class="bg-white rounded-xl shadow-md p-6 border-t-4 border-yellow-500 hover:shadow-lg transition">
+                            <div class="w-12 h-12 bg-yellow-50 text-yellow-600 rounded-lg flex items-center justify-center text-xl font-bold mb-4">
+                                <i class="fas fa-mosque"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-2">Toleransi Menara Kudus</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Akulturasi harmonis Sunan Kudus merangkul tradisi umat Hindu:</p>
+                            <ul class="space-y-2 text-xs text-slate-700">
+                                <li><i class="fas fa-circle-check text-yellow-600 mr-1.5"></i> Pelarangan sembelih Sapi bentuk apresiasi budaya.</li>
+                                <li><i class="fas fa-circle-check text-yellow-600 mr-1.5"></i> Konstruksi Menara berasitektur candi megah.</li>
+                                <li><i class="fas fa-circle-check text-yellow-600 mr-1.5"></i> Dakwah inklusif mementingkan kerukunan sosial.</li>
+                            </ul>
+                        </div>
+                        <!-- Pillar 2 -->
+                        <div class="bg-white rounded-xl shadow-md p-6 border-t-4 border-emerald-600 hover:shadow-lg transition">
+                            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center text-xl font-bold mb-4">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-2">Ajaran Luhur Gusjigang</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Konsep matang integrasi kemandirian santri di Kudus:</p>
+                            <ul class="space-y-2 text-xs text-slate-700">
+                                <li><i class="fas fa-star text-yellow-500 mr-1.5"></i> <strong>Bagus:</strong> Memiliki kepribadian akhlakul karimah.</li>
+                                <li><i class="fas fa-star text-yellow-500 mr-1.5"></i> <strong>Ngaji:</strong> Memperdalam kajian agama berlandaskan sanad guru.</li>
+                                <li><i class="fas fa-star text-yellow-500 mr-1.5"></i> <strong>Dagang:</strong> Melatih kemandirian ekonomi kewirausahaan.</li>
+                            </ul>
+                        </div>
+                        <!-- Graphic Card -->
+                        <div class="bg-gradient-to-br from-emerald-800 to-teal-900 rounded-xl shadow-md p-6 text-white flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold mb-2">Simbol Toleransi Kudus</h3>
+                                <p class="text-xs text-emerald-100 leading-relaxed">Menara Kudus melambangkan perdamaian abadi dan asimilasi luhur antar pemeluk beragama di nusantara.</p>
+                            </div>
+                            <div class="flex justify-center mt-4">
+                                <!-- Tower SVG -->
+                                <svg class="w-16 h-20 text-yellow-400" viewBox="0 0 100 120" fill="currentColor">
+                                    <rect x="35" y="90" width="30" height="30" />
+                                    <rect x="40" y="50" width="20" height="40" />
+                                    <polygon points="50,10 35,50 65,50" />
+                                    <line x1="50" y1="10" x2="50" y2="120" stroke="white" stroke-width="2"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html = `
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
+                        <!-- Pillar 1 -->
+                        <div class="bg-white rounded-xl shadow-md p-6 border-t-4 border-emerald-600 hover:shadow-lg transition">
+                            <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center text-xl font-bold mb-4">
+                                <i class="fas fa-people-group"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-2">Tri Perjuangan IPNU-IPPNU</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Tiga pilar kaderisasi wajib bagi pelajar Nahdliyin:</p>
+                            <ul class="space-y-2 text-xs text-slate-700">
+                                <li><i class="fas fa-check text-emerald-600 mr-1.5"></i> <strong>Belajar:</strong> Bertekad memperluas cakrawala keilmuan.</li>
+                                <li><i class="fas fa-check text-emerald-600 mr-1.5"></i> <strong>Berjuang:</strong> Siap mendarmabaktikan raga untuk sesama.</li>
+                                <li><i class="fas fa-check text-emerald-600 mr-1.5"></i> <strong>Bertaqwa:</strong> Berfondasi keteguhan iman dan ibadah tulus.</li>
+                            </ul>
+                        </div>
+                        <!-- Pillar 2 -->
+                        <div class="bg-white rounded-xl shadow-md p-6 border-t-4 border-red-500 hover:shadow-lg transition">
+                            <div class="w-12 h-12 bg-red-50 text-red-600 rounded-lg flex items-center justify-center text-xl font-bold mb-4">
+                                <i class="fas fa-mobile-screen"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-slate-800 mb-2">Aktivisme Era Digital</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4">Tantangan pemuda di bawah naungan Hasyim Asy'ari:</p>
+                            <ul class="space-y-2 text-xs text-slate-700">
+                                <li><i class="fas fa-check text-red-600 mr-1.5"></i> Menyebarkan dakwah toleran mendinginkan jagat maya.</li>
+                                <li><i class="fas fa-check text-red-600 mr-1.5"></i> Mencegah faham ekstremis radikal pemecah persatuan.</li>
+                                <li><i class="fas fa-check text-red-600 mr-1.5"></i> Budayakan Tabayyun penangkal sebaran fitnah hoaks.</li>
+                            </ul>
+                        </div>
+                        <!-- Graphic Card -->
+                        <div class="bg-gradient-to-br from-emerald-900 to-indigo-950 rounded-xl shadow-md p-6 text-white flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold mb-2">Dakwah Digital Santun</h3>
+                                <p class="text-xs text-emerald-100 leading-relaxed">Manfaatkan kecerdasan teknologi AI dan internet untuk mengabdi demi kejayaan bangsa Indonesia.</p>
+                            </div>
+                            <div class="flex justify-center mt-4">
+                                <!-- Mobile with Star SVG -->
+                                <svg class="w-12 h-20 text-yellow-400" viewBox="0 0 100 150" fill="currentColor">
+                                    <rect x="15" y="10" width="70" height="130" rx="10" fill="#1E293B"/>
+                                    <circle cx="50" cy="130" r="5" fill="#94A3B8"/>
+                                    <polygon points="50,40 55,55 70,55 58,65 62,80 50,70 38,80 42,65 30,55 45,55" fill="#EAB308"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // --- NAVIGATION CONTROLLER ---
+        function switchTab(tabId) {
+            currentTab = tabId;
+            
+            // Toggle Content Visibility
+            document.querySelectorAll('.tab-content').forEach(element => {
+                element.classList.add('hidden');
+            });
+            document.getElementById(`content-${tabId}`).classList.remove('hidden');
+
+            // Update Navigation Button Styles
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 text-emerald-100 hover:bg-emerald-600/50";
+            });
+            
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 bg-emerald-900 text-white shadow-md border-b-2 border-yellow-400";
+            }
+
+            // Canvas Redraw logic when switching tabs
+            if (tabId === 'kanvas') {
+                setTimeout(handleCanvasResize, 100);
+            } else if (tabId === 'sertifikat') {
+                updateAnalytics();
+            }
+        }
+
+        // --- CANVAS CONTROLLER ---
+        function initCanvas() {
+            canvas = document.getElementById('paint-canvas');
+            ctx = canvas.getContext('2d');
+            
+            handleCanvasResize();
+
+            // Desktop Mouse Events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            // Smartphone Touch Events
+            canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+            canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+            canvas.addEventListener('touchend', stopDrawing, { passive: false });
+        }
+
+        function handleCanvasResize() {
+            if (!canvas) return;
+            const tempImage = canvas.toDataURL();
+            const containerWidth = canvas.parentElement.clientWidth;
+            
+            canvas.width = containerWidth;
+            canvas.height = containerWidth * 0.65; // Maintains 4:3 Aspect ratio
+
+            redrawCanvasBackground(tempImage);
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            ctx.beginPath();
+            
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+            
+            ctx.moveTo(x, y);
+            ctx.lineWidth = brushSize;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.strokeStyle = brushColor;
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+
+            strokeCount++;
+            updateCanvasBadge();
+        }
+
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                ctx.closePath();
+                saveStateToHistory();
+            }
+        }
+
+        function handleTouchStart(e) {
+            if (e.touches.length === 1) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousedown', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            }
+        }
+
+        function handleTouchMove(e) {
+            if (e.touches.length === 1) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousemove', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            }
+        }
+
+        function updateCanvasBadge() {
+            const badge = document.getElementById('canvas-status-badge');
+            if (strokeCount > 10) {
+                badge.className = "bg-green-100 text-green-800 text-xs font-bold px-3 py-1.5 rounded-full border border-green-200 flex items-center gap-1.5";
+                badge.innerHTML = `<i class="fas fa-check-circle text-green-600"></i> Lukisan Siap (Komitmen Aktif)`;
+            } else {
+                badge.className = "bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1.5 rounded-full border border-amber-200 flex items-center gap-1.5";
+                badge.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Belum Digambar (Butuh coretan)`;
+            }
+        }
+
+        // STATE HISTORY (UNDO)
+        function saveStateToHistory() {
+            if (drawingHistory.length >= 20) {
+                drawingHistory.shift();
+            }
+            drawingHistory.push(canvas.toDataURL());
+            updateAnalytics();
+        }
+
+        function undoLastAction() {
+            if (drawingHistory.length > 0) {
+                drawingHistory.pop();
+                const lastState = drawingHistory[drawingHistory.length - 1];
+                clearCanvasDrawArea();
+                
+                if (lastState) {
+                    const img = new Image();
+                    img.onload = function() {
+                        ctx.drawImage(img, 0, 0);
+                    };
+                    img.src = lastState;
+                } else {
+                    applyCurrentTemplate();
+                }
+                updateAnalytics();
+            }
+        }
+
+        // TEMPLATE ENGINE
+        function setCanvasBackground(templateName) {
+            currentBgTemplate = templateName;
+            
+            document.querySelectorAll('.template-btn').forEach(btn => {
+                btn.classList.remove('border-emerald-600', 'bg-emerald-50', 'text-emerald-800');
+            });
+            
+            clearCanvasDrawArea();
+            applyCurrentTemplate();
+            drawingHistory = [];
+            saveStateToHistory();
+        }
+
+        function clearCanvasDrawArea() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function applyCurrentTemplate() {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (currentBgTemplate === 'blank') {
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(0, 0, canvas.width, canvas.height);
+            } 
+            else if (currentBgTemplate === 'peta') {
+                // Red and White national design
+                ctx.fillStyle = '#ef4444'; 
+                ctx.fillRect(0, 0, canvas.width, canvas.height * 0.15);
+                
+                ctx.fillStyle = '#f8fafc'; 
+                ctx.fillRect(0, canvas.height * 0.15, canvas.width, canvas.height * 0.15);
+
+                ctx.font = 'bold italic 18px "Playfair Display", serif';
+                ctx.fillStyle = '#0f172a';
+                ctx.textAlign = 'center';
+                ctx.fillText('"HUBBUL WATHAN MINAL IMAN"', canvas.width / 2, canvas.height * 0.52);
+                
+                ctx.font = 'italic 11px "Inter", sans-serif';
+                ctx.fillStyle = '#475569';
+                ctx.fillText('MA NU Hasyim Asy\'ari 1 Kudus — MAKESTA 2026/2027', canvas.width / 2, canvas.height * 0.65);
+
+                ctx.strokeStyle = '#dc2626';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(0, 0, canvas.width, canvas.height);
+            } 
+            else if (currentBgTemplate === 'ipnu') {
+                ctx.fillStyle = '#0f766e'; 
+                ctx.fillRect(0, 0, canvas.width, 50);
+
+                ctx.font = 'bold 14px "Inter", sans-serif';
+                ctx.fillStyle = '#FBBF24'; 
+                ctx.textAlign = 'center';
+                ctx.fillText('IKRAR SETIA NKRI & ASWAJA NU', canvas.width / 2, 30);
+
+                ctx.strokeStyle = '#059669';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(15, 65, canvas.width - 30, canvas.height - 80);
+
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2 - 120, canvas.height - 35);
+                ctx.lineTo(canvas.width / 2 + 120, canvas.height - 35);
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.stroke();
+
+                ctx.font = '9px "Inter", sans-serif';
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillText('(Coretkan Nama & Tanda Tangan Komitmen Anda)', canvas.width / 2, canvas.height - 20);
+            }
+        }
+
+        function redrawCanvasBackground(savedImageSrc) {
+            applyCurrentTemplate();
+            if (savedImageSrc) {
+                const img = new Image();
+                img.onload = function() {
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                };
+                img.src = savedImageSrc;
+            }
+        }
+
+        function updateBrushSizeDisplay(val) {
+            brushSize = val;
+            document.getElementById('brush-size-display').innerText = `${val} px`;
+        }
+
+        function setBrushColor(color) {
+            brushColor = color;
+            document.querySelectorAll('.color-swatch').forEach(swatch => {
+                swatch.classList.remove('ring-4', 'ring-emerald-500');
+            });
+            if (event) {
+                event.target.classList.add('ring-4', 'ring-emerald-500');
+            }
+        }
+
+        function clearCanvas() {
+            clearCanvasDrawArea();
+            applyCurrentTemplate();
+            drawingHistory = [];
+            strokeCount = 0;
+            updateCanvasBadge();
+            saveStateToHistory();
+        }
+
+        function saveCanvasImage() {
+            const image = canvas.toDataURL("image/png");
+            const link = document.createElement('a');
+            link.download = 'Komitmen_Kebangsaan_MAKESTA.png';
+            link.href = image;
+            link.click();
+        }
+
+        // --- QUIZ SYSTEM ---
+        function startQuiz() {
+            document.getElementById('quiz-intro-box').classList.add('hidden');
+            document.getElementById('quiz-result-box').classList.add('hidden');
+            document.getElementById('quiz-question-box').classList.remove('hidden');
+            
+            // Set active questions dynamically from Database based on selected track
+            activeQuestions = quizDatabase[selectedPackage];
+            currentQuestionIndex = 0;
+            quizScore = 0;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const currentQuestion = activeQuestions[currentQuestionIndex];
+            selectedOptionIndex = null;
+            
+            document.getElementById('quiz-question-number').innerText = `Pertanyaan ${currentQuestionIndex + 1} dari ${activeQuestions.length}`;
+            document.getElementById('quiz-score-indicator').innerText = `Skor Sementara: ${quizScore}`;
+            document.getElementById('quiz-question-text').innerText = currentQuestion.question;
+            
+            const percentComplete = ((currentQuestionIndex + 1) / activeQuestions.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${percentComplete}%`;
+
+            const feedbackBox = document.getElementById('quiz-feedback-box');
+            feedbackBox.classList.add('hidden');
+
+            const optionsContainer = document.getElementById('quiz-options-container');
+            optionsContainer.innerHTML = '';
+
+            currentQuestion.options.forEach((opt, idx) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = "w-full text-left bg-white border border-slate-300 hover:bg-emerald-50 hover:border-emerald-500 px-4 py-3 rounded-xl text-xs font-medium transition duration-200 shadow-sm flex justify-between items-center";
+                optBtn.innerHTML = `
+                    <span>${opt.text}</span>
+                    <i class="far fa-circle text-slate-300 text-lg flex-shrink-0"></i>
+                `;
+                optBtn.onclick = () => selectOption(idx);
+                optionsContainer.appendChild(optBtn);
+            });
+        }
+
+        function selectOption(index) {
+            if (selectedOptionIndex !== null) return;
+            
+            selectedOptionIndex = index;
+            const currentQuestion = activeQuestions[currentQuestionIndex];
+            const selectedOpt = currentQuestion.options[index];
+            const optionsContainer = document.getElementById('quiz-options-container');
+            const feedbackBox = document.getElementById('quiz-feedback-box');
+            const feedbackTitle = document.getElementById('quiz-feedback-title');
+            const feedbackExplanation = document.getElementById('quiz-feedback-explanation');
+
+            feedbackBox.classList.remove('hidden');
+
+            if (selectedOpt.isCorrect) {
+                quizScore += 20;
+                feedbackBox.className = "p-4 rounded-xl text-sm font-semibold flex flex-col gap-1 bg-green-50 text-green-800 border border-green-200 mt-4";
+                feedbackTitle.innerHTML = `<i class="fas fa-check-circle text-green-600 mr-2"></i> Jawaban Anda Benar!`;
+                feedbackExplanation.innerText = currentQuestion.explanation;
+
+                optionsContainer.children[index].className = "w-full text-left bg-green-50 border-2 border-green-500 px-4 py-3 rounded-xl text-xs font-bold text-green-800 flex justify-between items-center";
+                optionsContainer.children[index].innerHTML += ` <i class="fas fa-check-circle text-green-600"></i>`;
+            } else {
+                feedbackBox.className = "p-4 rounded-xl text-sm font-semibold flex flex-col gap-1 bg-red-50 text-red-800 border border-red-200 mt-4";
+                feedbackTitle.innerHTML = `<i class="fas fa-times-circle text-red-600 mr-2"></i> Jawaban Kurang Tepat`;
+                feedbackExplanation.innerText = currentQuestion.explanation;
+
+                optionsContainer.children[index].className = "w-full text-left bg-red-50 border-2 border-red-500 px-4 py-3 rounded-xl text-xs font-bold text-red-800 flex justify-between items-center";
+                optionsContainer.children[index].innerHTML += ` <i class="fas fa-times-circle text-red-600"></i>`;
+
+                const correctIdx = currentQuestion.options.findIndex(o => o.isCorrect);
+                optionsContainer.children[correctIdx].className = "w-full text-left bg-green-50/50 border-2 border-green-300 px-4 py-3 rounded-xl text-xs font-medium text-green-800 flex justify-between items-center mt-1";
+            }
+
+            document.getElementById('quiz-score-indicator').innerText = `Skor Sementara: ${quizScore}`;
+            updateAnalytics();
+        }
+
+        function nextQuestion() {
+            if (selectedOptionIndex === null) return;
+
+            currentQuestionIndex++;
+            if (currentQuestionIndex < activeQuestions.length) {
+                renderQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            document.getElementById('quiz-question-box').classList.add('hidden');
+            document.getElementById('quiz-result-box').classList.remove('hidden');
+            
+            document.getElementById('quiz-final-score').innerText = quizScore;
+            const iconContainer = document.getElementById('result-icon-container');
+            const resultTitle = document.getElementById('result-title');
+            const resultDesc = document.getElementById('result-description');
+
+            if (quizScore >= 80) {
+                iconContainer.className = "text-7xl text-yellow-500 animate-bounce";
+                iconContainer.innerHTML = '<i class="fas fa-crown"></i>';
+                resultTitle.innerText = "Luar Biasa, Rekan/Rekanita!";
+                resultDesc.innerText = "Wawasan Anda kuat sekali. Anda berjiwa nasionalis luhur dan siap menjadi pilar penggerak komisariat Hasyim Asy'ari!";
+            } else if (quizScore >= 60) {
+                iconContainer.className = "text-7xl text-emerald-600";
+                iconContainer.innerHTML = '<i class="fas fa-award"></i>';
+                resultTitle.innerText = "Sangat Bagus!";
+                resultDesc.innerText = "Pemahaman Anda memadai, tingkatkan dedikasi beragama dan bernegara demi kejayaan nusa bangsa.";
+            } else {
+                iconContainer.className = "text-7xl text-slate-400";
+                iconContainer.innerHTML = '<i class="fas fa-book"></i>';
+                resultTitle.innerText = "Pelajari Kembali!";
+                resultDesc.innerText = "Silakan telusuri lagi materi yang kami sediakan untuk melengkapi bekal militansi kebangsaan Anda.";
+            }
+            updateAnalytics();
+        }
+
+        function restartQuiz() {
+            document.getElementById('quiz-result-box').classList.add('hidden');
+            document.getElementById('quiz-question-box').classList.add('hidden');
+            document.getElementById('quiz-intro-box').classList.remove('hidden');
+        }
+
+        // --- STICKY REFLECTION BOARD ---
+        function renderReflectionNotes() {
+            const notesGrid = document.getElementById('notes-grid');
+            notesGrid.innerHTML = '';
+            
+            document.getElementById('note-count-badge').innerText = `${reflectionNotes.length} Catatan`;
+
+            reflectionNotes.forEach(note => {
+                const noteCard = document.createElement('div');
+                let colorClasses = "bg-yellow-100 border-yellow-300 text-yellow-900";
+                
+                if (note.color === 'emerald') colorClasses = "bg-emerald-100 border-emerald-300 text-emerald-950";
+                else if (note.color === 'rose') colorClasses = "bg-rose-100 border-rose-300 text-rose-950";
+                else if (note.color === 'sky') colorClasses = "bg-sky-100 border-sky-300 text-sky-950";
+
+                noteCard.className = `p-5 rounded-2xl shadow-md border-l-4 transition-all duration-300 hover:scale-102 hover:shadow-lg ${colorClasses} flex flex-col justify-between relative overflow-hidden`;
+                noteCard.innerHTML = `
+                    <div class="absolute -right-3 -top-3 opacity-10 text-6xl">
+                        <i class="fas fa-quote-right"></i>
+                    </div>
+                    <p class="italic text-xs font-semibold mb-4 relative z-10 leading-relaxed">
+                        "${note.text}"
+                    </p>
+                    <div class="border-t border-slate-900/10 pt-2 flex justify-between items-center text-[10px]">
+                        <div>
+                            <p class="font-extrabold">${note.author}</p>
+                            <p class="opacity-70">${note.classInfo}</p>
+                        </div>
+                        <span class="opacity-60">${note.date}</span>
+                    </div>
+                `;
+                notesGrid.appendChild(noteCard);
+            });
+        }
+
+        function addReflectionNote(event) {
+            event.preventDefault();
+
+            const authorInput = document.getElementById('note-author');
+            const classInput = document.getElementById('note-class');
+            const textInput = document.getElementById('note-text');
+            const selectedColor = document.querySelector('input[name="note-color"]:checked').value;
+
+            const newNote = {
+                id: Date.now(),
+                author: authorInput.value,
+                classInfo: classInput.value,
+                text: textInput.value,
+                color: selectedColor,
+                date: "Baru Saja"
+            };
+
+            reflectionNotes.unshift(newNote);
+            renderReflectionNotes();
+
+            authorInput.value = '';
+            classInput.value = '';
+            textInput.value = '';
+            
+            updateAnalytics();
+            document.getElementById('notes-grid').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- ANALYTICS AND CERTIFICATE GENERATOR ---
+        function updateAnalytics() {
+            // Index 1: Nationalism (based on Quiz score)
+            let indexNasionalismeVal = quizScore; // Max is 100
+            
+            // Index 2: Commitment (based on canvas drawing actions)
+            let indexKomitmenVal = 0;
+            if (strokeCount > 100) indexKomitmenVal = 100;
+            else if (strokeCount > 10) indexKomitmenVal = 60 + Math.floor(strokeCount * 0.3);
+            else if (strokeCount > 0) indexKomitmenVal = 30;
+
+            // Index 3: Aspirational (based on reflection submissions)
+            // Starts with 50% for default seed reflections, 100% when they post their own
+            let submittedOwn = reflectionNotes.some(n => n.date === "Baru Saja");
+            let indexAspirasiVal = submittedOwn ? 100 : 50;
+
+            // Update DOM progress
+            document.getElementById('index-nasionalisme').innerText = `${indexNasionalismeVal}%`;
+            document.getElementById('bar-nasionalisme').style.width = `${indexNasionalismeVal}%`;
+
+            document.getElementById('index-komitmen').innerText = `${indexKomitmenVal}%`;
+            document.getElementById('bar-komitmen').style.width = `${indexKomitmenVal}%`;
+
+            document.getElementById('index-aspirasi').innerText = `${indexAspirasiVal}%`;
+            document.getElementById('bar-aspirasi').style.width = `${indexAspirasiVal}%`;
+
+            // Calculate overall blended score (Quiz: 40%, Commit: 30%, Reflect: 30%)
+            let finalScore = Math.round((indexNasionalismeVal * 0.4) + (indexKomitmenVal * 0.3) + (indexAspirasiVal * 0.3));
+            document.getElementById('total-keindonesiaan-score').innerText = `${finalScore}%`;
+            document.getElementById('cert-output-score').innerText = `${finalScore}%`;
+
+            // Toggle eligibility
+            const downloadBtn = document.getElementById('btn-unduh-sertifikat');
+            if (finalScore >= 60) {
+                downloadBtn.disabled = false;
+                downloadBtn.className = "w-full bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-3 rounded-xl text-sm transition shadow-md flex items-center justify-center gap-2 cursor-pointer";
+            } else {
+                downloadBtn.disabled = true;
+                downloadBtn.className = "w-full bg-slate-300 text-slate-500 cursor-not-allowed font-bold py-3 rounded-xl text-sm transition shadow flex items-center justify-center gap-2";
+            }
+
+            updateCertificateUI();
+        }
+
+        function updateCertificateUI() {
+            // Extract from input fields or fallback
+            const nameInput = document.getElementById('cert-input-name').value.trim();
+            const delegationInput = document.getElementById('cert-input-delegation').value.trim();
+
+            const displayName = nameInput !== '' ? nameInput : '[Masukan Nama Anda]';
+            const displayDelegation = delegationInput !== '' ? `Delegasi: ${delegationInput}` : '[Masukan Kelas Anda]';
+
+            document.getElementById('cert-output-name').innerText = displayName;
+            document.getElementById('cert-output-delegation').innerText = displayDelegation;
+        }
+
+        // COMPLEX RENDER: DRAW THE ENTIRE CERTIFICATE DESIGN TO DETAILED HIGH-RES CANVAS AND INITIATE PNG DOWNLOAD
+        function downloadCertificate() {
+            const nameInput = document.getElementById('cert-input-name').value.trim();
+            const delegationInput = document.getElementById('cert-input-delegation').value.trim();
+            
+            if (nameInput === '') {
+                // Inline styled custom box warning instead of alert()
+                const warningBox = document.createElement('div');
+                warningBox.className = "fixed bottom-5 right-5 bg-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-2xl z-[9999] transition-all";
+                warningBox.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i> Mohon isi Nama Anda terlebih dahulu!`;
+                document.body.appendChild(warningBox);
+                setTimeout(() => warningBox.remove(), 3000);
+                return;
+            }
+
+            const exportCanvas = document.getElementById('export-cert-canvas');
+            const eCtx = exportCanvas.getContext('2d');
+
+            // High resolution dimensions (scale x2 for printing sharpness)
+            exportCanvas.width = 1600;
+            exportCanvas.height = 1120;
+
+            // 1. Draw Background Solid color
+            eCtx.fillStyle = '#fcfbf7';
+            eCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+            // 2. Beautiful frame borders
+            eCtx.strokeStyle = '#064e3b'; // Emerald-900
+            eCtx.lineWidth = 32;
+            eCtx.strokeRect(16, 16, exportCanvas.width - 32, exportCanvas.height - 32);
+
+            eCtx.strokeStyle = '#eab308'; // Yellow Gold Border line
+            eCtx.lineWidth = 4;
+            eCtx.strokeRect(40, 40, exportCanvas.width - 80, exportCanvas.height - 80);
+
+            // 3. Header Texts
+            eCtx.textAlign = 'center';
+            eCtx.fillStyle = '#065f46'; // Emerald 800
+            eCtx.font = '900 24px "Inter", sans-serif';
+            eCtx.fillText('PIMPINAN KOMISARIAT IPNU-IPPNU', exportCanvas.width / 2, 120);
+
+            eCtx.fillStyle = '#1e293b'; // Slate 800
+            eCtx.font = 'bold 28px "Inter", sans-serif';
+            eCtx.fillText('MA NU HASYIM ASY\'ARI 1 KUDUS', exportCanvas.width / 2, 160);
+
+            eCtx.fillStyle = '#64748b'; // Slate 500
+            eCtx.font = 'italic 20px "Inter", sans-serif';
+            eCtx.fillText('Masa Kesetiaan Anggota (MAKESTA) TA. 2026/2027', exportCanvas.width / 2, 200);
+
+            // Gold divider line
+            eCtx.strokeStyle = '#eab308';
+            eCtx.lineWidth = 3;
+            eCtx.beginPath();
+            eCtx.moveTo(exportCanvas.width / 2 - 250, 230);
+            eCtx.lineTo(exportCanvas.width / 2 + 250, 230);
+            eCtx.stroke();
+
+            // 4. Certificate Core Title
+            eCtx.fillStyle = '#064e3b';
+            eCtx.font = 'bold 54px "Playfair Display", serif';
+            eCtx.fillText('SERTIFIKAT KE-INDONESIAAN', exportCanvas.width / 2, 320);
+
+            eCtx.fillStyle = '#64748b';
+            eCtx.font = 'bold tracking-widest 16px "Inter", sans-serif';
+            eCtx.fillText('DIBERIKAN KEPADA PEJUANG KEBANGSAAN:', exportCanvas.width / 2, 380);
+
+            // 5. Dynamic Name and Delegation
+            eCtx.fillStyle = '#0f172a';
+            eCtx.font = 'bold 44px "Playfair Display", serif';
+            eCtx.fillText(nameInput.toUpperCase(), exportCanvas.width / 2, 450);
+
+            // Dashed line under name
+            eCtx.strokeStyle = '#cbd5e1';
+            eCtx.lineWidth = 2;
+            eCtx.beginPath();
+            eCtx.moveTo(exportCanvas.width / 2 - 280, 470);
+            eCtx.lineTo(exportCanvas.width / 2 + 280, 470);
+            eCtx.stroke();
+
+            eCtx.fillStyle = '#475569';
+            eCtx.font = '600 22px "Inter", sans-serif';
+            eCtx.fillText(`Delegasi: ${delegationInput || 'Kelas / PAC Kudus'}`, exportCanvas.width / 2, 510);
+
+            // 6. Detailed achievement description
+            eCtx.fillStyle = '#334155';
+            eCtx.font = '18px "Inter", sans-serif';
+            const descLine1 = `Dinyatakan LULUS dan dinobatkan memiliki loyalitas militansi kebangsaan yang tangguh berdasarkan`;
+            const descLine2 = `penilaian komprehensif pada uji materi Paket ${selectedPackage}: ${getPackageFullName(selectedPackage)}`;
+            const descLine3 = `dengan capaian nilai indeks patriotisme beragama Nahdliyin sebesar:`;
+
+            eCtx.fillText(descLine1, exportCanvas.width / 2, 590);
+            eCtx.fillText(descLine2, exportCanvas.width / 2, 625);
+            eCtx.fillText(descLine3, exportCanvas.width / 2, 660);
+
+            // 7. Score Badge Draw
+            const scorePercent = document.getElementById('cert-output-score').innerText;
+            
+            // Draw badge circle/rect
+            eCtx.fillStyle = '#ffffff';
+            eCtx.strokeStyle = '#eab308';
+            eCtx.lineWidth = 4;
+            // Draw Rounded Rectangle for score
+            const badgeW = 260;
+            const badgeH = 80;
+            const badgeX = exportCanvas.width / 2 - (badgeW / 2);
+            const badgeY = 700;
+            
+            eCtx.beginPath();
+            eCtx.roundRect(badgeX, badgeY, badgeW, badgeH, 40);
+            eCtx.fill();
+            eCtx.stroke();
+
+            // Label on the left of score
+            eCtx.fillStyle = '#475569';
+            eCtx.font = '900 12px "Inter", sans-serif';
+            eCtx.textAlign = 'left';
+            eCtx.fillText('INDEKS JIWA', badgeX + 30, badgeY + 36);
+            eCtx.fillText('KE-INDONESIAAN', badgeX + 30, badgeY + 52);
+
+            // Large Score Text
+            eCtx.fillStyle = '#047857'; // Emerald-700
+            eCtx.font = '900 48px "Inter", sans-serif';
+            eCtx.fillText(scorePercent, badgeX + 160, badgeY + 56);
+
+            // 8. Bottom area (Signatures and Verification Barcode)
+            eCtx.textAlign = 'left';
+            
+            // Draw Barcode lines
+            eCtx.fillStyle = '#1e293b';
+            const bX = 140;
+            const bY = 880;
+            eCtx.fillRect(bX, bY, 4, 60);
+            eCtx.fillRect(bX+8, bY, 8, 60);
+            eCtx.fillRect(bX+20, bY, 2, 60);
+            eCtx.fillRect(bX+26, bY, 6, 60);
+            eCtx.fillRect(bX+36, bY, 4, 60);
+            eCtx.fillRect(bX+44, bY, 10, 60);
+            eCtx.fillRect(bX+58, bY, 2, 60);
+            eCtx.fillRect(bX+64, bY, 6, 60);
+            eCtx.fillRect(bX+74, bY, 4, 60);
+            eCtx.fillRect(bX+82, bY, 8, 60);
+            eCtx.fillRect(bX+94, bY, 2, 60);
+            eCtx.fillRect(bX+100, bY, 6, 60);
+            eCtx.fillRect(bX+110, bY, 4, 60);
+            eCtx.fillRect(bX+118, bY, 10, 60);
+            eCtx.fillRect(bX+132, bY, 2, 60);
+            eCtx.fillRect(bX+138, bY, 6, 60);
+            
+            eCtx.fillStyle = '#64748b';
+            eCtx.font = '12px "Courier New", monospace';
+            const regId = document.getElementById('cert-reg-id').innerText;
+            eCtx.fillText(`REG: MAKESTA-2026-${regId}`, bX, bY + 80);
+
+            // Draw Middle Seal Stamp
+            const sealX = exportCanvas.width / 2;
+            const sealY = 920;
+            eCtx.beginPath();
+            eCtx.arc(sealX, sealY, 50, 0, 2 * Math.PI);
+            eCtx.fillStyle = '#ffffff';
+            eCtx.fill();
+            eCtx.strokeStyle = 'rgba(234, 179, 8, 0.4)';
+            eCtx.lineWidth = 6;
+            eCtx.stroke();
+            
+            eCtx.fillStyle = '#065f46';
+            eCtx.font = 'bold 10px "Inter", sans-serif';
+            eCtx.textAlign = 'center';
+            eCtx.fillText('PK IPNU IPPNU', sealX, sealY - 12);
+            eCtx.fillStyle = '#eab308';
+            eCtx.font = 'bold 12px "Inter", sans-serif';
+            eCtx.fillText('HASYIM ASY\'ARI 1', sealX, sealY + 4);
+            eCtx.fillStyle = '#475569';
+            eCtx.font = '900 8px "Inter", sans-serif';
+            eCtx.fillText('KUDUS', sealX, sealY + 18);
+
+            // Draw Officer Signature block
+            const sigX = exportCanvas.width - 340;
+            const sigY = 880;
+            
+            eCtx.textAlign = 'center';
+            eCtx.fillStyle = '#64748b';
+            eCtx.font = 'bold 16px "Inter", sans-serif';
+            eCtx.fillText('Panitia Pelaksana,', sigX + 100, sigY - 20);
+
+            // Mock Signature illustration draw
+            eCtx.strokeStyle = '#065f46';
+            eCtx.lineWidth = 3;
+            eCtx.beginPath();
+            eCtx.moveTo(sigX + 20, sigY + 20);
+            eCtx.bezierCurveTo(sigX + 60, sigY - 20, sigX + 100, sigY + 50, sigX + 120, sigY + 10);
+            eCtx.bezierCurveTo(sigX + 140, sigY - 20, sigX + 160, sigY + 20, sigX + 180, sigY + 25);
+            eCtx.stroke();
+
+            eCtx.strokeStyle = 'rgba(6, 95, 70, 0.4)';
+            eCtx.lineWidth = 1.5;
+            eCtx.beginPath();
+            eCtx.moveTo(sigX + 50, sigY + 22);
+            eCtx.lineTo(sigX + 160, sigY + 28);
+            eCtx.stroke();
+
+            // Name
+            eCtx.fillStyle = '#0f172a';
+            eCtx.font = 'bold 18px "Inter", sans-serif';
+            eCtx.fillText('M. Ahsin Wijaya, S.Pd', sigX + 100, sigY + 60);
+            eCtx.fillStyle = '#64748b';
+            eCtx.font = '14px "Inter", sans-serif';
+            eCtx.fillText('Instruktur Kaderisasi PK IPNU', sigX + 100, sigY + 80);
+
+            // Initiate PNG download
+            const image = exportCanvas.toDataURL("image/png");
+            const link = document.createElement('a');
+            link.download = `Sertifikat_Keindonesiaan_${nameInput.replace(/\s+/g, '_')}.png`;
+            link.href = image;
+            link.click();
+        }
+    </script>
+</body>
+</html>
