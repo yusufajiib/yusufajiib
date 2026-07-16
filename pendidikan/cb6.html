@@ -95,14 +95,14 @@
                     <span class="bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Integrasi Nasionalisme & Aswaja</span>
                     <h2 class="text-3xl md:text-5xl font-black mt-3 mb-4 accent-font text-yellow-400 leading-tight">KE-INDONESIAAN: Karakter Santri untuk Negeri</h2>
                     <p class="text-base md:text-lg text-emerald-100 leading-relaxed mb-6">
-                        Menyongsong Indonesia Emas dan memperkokoh benteng kebangsaan di lingkungan Pimpinan Komisariat IPNU-IPPNU MA NU Hasyim Asy'ari 1 Kudus. Pilih Paket Pembelajaran Anda untuk memulai!
+                        Menyongsong Indonesia Emas dan memperkokoh benteng kebangsaan di lingkungan Pimpinan Komisariat IPNU-IPPNU MA NU Hasyim Asy'ari 1 Kudus. Pilih Materi Pembelajaran Anda untuk memulai!
                     </p>
                     
                     <!-- Dynamic Package Selector cards inside Banner -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
                         <button onclick="selectPackage('A')" id="pkg-card-A" class="package-selector bg-emerald-800/80 hover:bg-emerald-800 border-2 border-yellow-400 text-left p-4 rounded-xl transition duration-300 shadow-md">
                             <div class="flex justify-between items-center mb-2">
-                                <span class="bg-yellow-400 text-slate-900 font-extrabold text-xs px-2.5 py-1 rounded">PAKET A</span>
+                                <span class="bg-yellow-400 text-slate-900 font-extrabold text-xs px-2.5 py-1 rounded">MATERI A</span>
                                 <i class="fas fa-check-circle text-yellow-400 text-lg" id="pkg-check-A"></i>
                             </div>
                             <h4 class="font-bold text-white text-sm">Konsensus Kebangsaan & Aswaja</h4>
@@ -111,7 +111,7 @@
 
                         <button onclick="selectPackage('B')" id="pkg-card-B" class="package-selector bg-emerald-950/50 hover:bg-emerald-900/80 border-2 border-transparent text-left p-4 rounded-xl transition duration-300 shadow-md">
                             <div class="flex justify-between items-center mb-2">
-                                <span class="bg-emerald-700 text-emerald-100 font-extrabold text-xs px-2.5 py-1 rounded">PAKET B</span>
+                                <span class="bg-emerald-700 text-emerald-100 font-extrabold text-xs px-2.5 py-1 rounded">MATERI B</span>
                                 <i class="fas fa-check-circle text-emerald-400 text-lg hidden" id="pkg-check-B"></i>
                             </div>
                             <h4 class="font-bold text-white text-sm">Kearifan Lokal & Karakter Kudus</h4>
@@ -120,7 +120,7 @@
 
                         <button onclick="selectPackage('C')" id="pkg-card-C" class="package-selector bg-emerald-950/50 hover:bg-emerald-900/80 border-2 border-transparent text-left p-4 rounded-xl transition duration-300 shadow-md">
                             <div class="flex justify-between items-center mb-2">
-                                <span class="bg-emerald-700 text-emerald-100 font-extrabold text-xs px-2.5 py-1 rounded">PAKET C</span>
+                                <span class="bg-emerald-700 text-emerald-100 font-extrabold text-xs px-2.5 py-1 rounded">MATERI C</span>
                                 <i class="fas fa-check-circle text-emerald-400 text-lg hidden" id="pkg-check-C"></i>
                             </div>
                             <h4 class="font-bold text-white text-sm">Kepemimpinan Pelajar & Aktivisme</h4>
@@ -132,7 +132,7 @@
 
             <!-- DYNAMIC MATERIALS DISPLAY -->
             <div id="materi-container" class="space-y-6">
-                <!-- Content will be injected dynamically based on selected package, fallback layout is Paket A -->
+                <!-- Content will be injected dynamically based on selected package, fallback layout is Materi A -->
                 <div id="materi-content-holder">
                     <!-- Loading skeleton/placeholder -->
                 </div>
@@ -250,7 +250,7 @@
         <section id="content-kuis" class="tab-content hidden space-y-6">
             <div class="bg-white rounded-2xl shadow-md p-6 max-w-3xl mx-auto">
                 <div class="text-center mb-6">
-                    <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full uppercase" id="quiz-tag-package">Kuis Makesta: Paket A</span>
+                    <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full uppercase" id="quiz-tag-package">Kuis Makesta: Materi A</span>
                     <h2 class="text-2xl font-bold text-slate-800 mt-2">Uji Jiwa Ke-Indonesiaan & Pemahaman</h2>
                     <p class="text-sm text-slate-600 mt-1">
                         Selesaikan kuis ini untuk mengkalkulasi persentase kelayakan sertifikat bela negara Anda!
@@ -268,10 +268,10 @@
                             Pertanyaan disusun dinamis berdasarkan paket materi aktif yang Anda pilih di tab pertama. Anda dapat mengubah paket materi kapan saja.
                         </p>
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 my-4 text-xs font-semibold text-emerald-800">
-                            Trek Kuis Terpilih: <span id="quiz-selected-track-name" class="font-extrabold text-red-600">Paket A (Konsensus Kebangsaan & Aswaja)</span>
+                            Trek Kuis Terpilih: <span id="quiz-selected-track-name" class="font-extrabold text-red-600">Materi A (Konsensus Kebangsaan & Aswaja)</span>
                         </div>
                         <button onclick="startQuiz()" class="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-xl shadow-md transition-all duration-300">
-                            Mulai Kuis Paket Ini
+                            Mulai Kuis Materi Ini
                         </button>
                     </div>
                 </div>
@@ -525,7 +525,7 @@
 
                             <!-- Achievement Text -->
                             <div class="text-center px-12 text-xs text-slate-700 relative z-10 leading-relaxed max-w-2xl mx-auto">
-                                Dinyatakan LULUS dan dinobatkan memiliki loyalitas militansi kebangsaan yang tangguh berdasarkan penilaian komprehensif pada uji materi <span class="font-extrabold text-emerald-800" id="cert-output-track">Paket Pembelajaran</span> dengan capaian nilai indeks patriotismenya sebesar:
+                                Dinyatakan LULUS dan dinobatkan memiliki loyalitas militansi kebangsaan yang tangguh berdasarkan penilaian komprehensif pada uji materi <span class="font-extrabold text-emerald-800" id="cert-output-track">Materi Pembelajaran</span> dengan capaian nilai indeks patriotismenya sebesar:
                             </div>
 
                             <!-- Score Analysis Badge -->
@@ -689,7 +689,7 @@
 
         // Dynamic Detailed Materials Database (Popup content)
         const materialDetails = {
-            // Category 1: 4 Konsensus Kebangsaan (Paket A)
+            // Category 1: 4 Konsensus Kebangsaan (Materi A)
             pancasila: {
                 badge: "Pilar 1: Pancasila",
                 title: "Pancasila: Landasan Ideologi Bernegara",
@@ -719,7 +719,7 @@
                 <p>Sebagai kader IPNU-IPPNU, santri harus berada di garda depan untuk memupuk persaudaraan sesama manusia ($ukhuwah\ basyariyah$) tanpa memandang perbedaan latar belakang budaya dan agama.</p>`
             },
 
-            // Category 2: Aswaja & Nasionalisme (Paket A)
+            // Category 2: Aswaja & Nasionalisme (Materi A)
             hubbulwathan: {
                 badge: "Nilai Aswaja: Hubbul Wathan",
                 title: "Hubbul Wathan Minal Iman",
@@ -746,7 +746,7 @@
                 <p>Menolak segala bentuk dakwah radikal dan takfiri yang gemar menyalahkan adat istiadat leluhur. Dakwah harus berlandaskan rahmat bagi semesta alam ($rahmatan\ lil\ 'alamin$).</p>`
             },
 
-            // Category 3: Toleransi Menara Kudus (Paket B)
+            // Category 3: Toleransi Menara Kudus (Materi B)
             sapitoleransi: {
                 badge: "Warisan Sunan Kudus",
                 title: "Pelarangan Sembelih Sapi",
@@ -769,7 +769,7 @@
                 <p>Sikap inklusif ini menjadi dasar bagi santri MA NU Hasyim Asy'ari 1 Kudus untuk mudah membaur di masyarakat, menawarkan solusi perdamaian, dan mencegah bibit-bibit perpecahan sosial.</p>`
             },
 
-            // Category 4: Ajaran Luhur Gusjigang (Paket B)
+            // Category 4: Ajaran Luhur Gusjigang (Materi B)
             bagusakhlak: {
                 badge: "Gusjigang: BAGUS",
                 title: "Bagus: Kepribadian Akhlakul Karimah",
@@ -792,7 +792,7 @@
                 <p>Kudus terkenal sebagai kota UMKM dan industri. Mempelajari kewirausahaan sejak dini membekali santri untuk mandiri, menciptakan lapangan kerja baru, dan berkontribusi pada kejayaan ekonomi bangsa.</p>`
             },
 
-            // Category 5: Tri Perjuangan IPNU-IPPNU (Paket C)
+            // Category 5: Tri Perjuangan IPNU-IPPNU (Materi C)
             belajartri: {
                 badge: "Tri Perjuangan: BELAJAR",
                 title: "Belajar: Memperluas Cakrawala Keilmuan",
@@ -815,7 +815,7 @@
                 <p>Menjaga ibadah shalat berjamaah, membiasakan diri membaca shalawat, berbakti kepada bapak-ibu guru, serta menjaga kebersihan hati dari penyakit sombong dan dengki.</p>`
             },
 
-            // Category 6: Aktivisme Era Digital (Paket C)
+            // Category 6: Aktivisme Era Digital (Materi C)
             digitaldakwah: {
                 badge: "Aktivisme Digital",
                 title: "Dakwah Ramah Mendinginkan Jagat Maya",
@@ -859,8 +859,8 @@
 
             // Sync with certificate label & quiz
             document.getElementById('quiz-selected-track-name').innerText = getPackageFullName(packageId);
-            document.getElementById('quiz-tag-package').innerText = `Kuis Makesta: Paket ${packageId}`;
-            document.getElementById('cert-output-track').innerText = `Paket ${packageId}: ${getPackageFullName(packageId)}`;
+            document.getElementById('quiz-tag-package').innerText = `Kuis Makesta: Materi ${packageId}`;
+            document.getElementById('cert-output-track').innerText = `Materi ${packageId}: ${getPackageFullName(packageId)}`;
 
             // Render Material HTML
             renderMaterialContent(packageId);
@@ -1770,7 +1770,7 @@
             eCtx.fillStyle = '#334155';
             eCtx.font = '18px "Inter", sans-serif';
             const descLine1 = `Dinyatakan LULUS dan dinobatkan memiliki loyalitas militansi kebangsaan yang tangguh berdasarkan`;
-            const descLine2 = `penilaian komprehensif pada uji materi Paket ${selectedPackage}: ${getPackageFullName(selectedPackage)}`;
+            const descLine2 = `penilaian komprehensif pada uji materi Materi ${selectedPackage}: ${getPackageFullName(selectedPackage)}`;
             const descLine3 = `dengan capaian nilai indeks patriotisme beragama Nahdliyin sebesar:`;
 
             eCtx.fillText(descLine1, exportCanvas.width / 2, 590);
