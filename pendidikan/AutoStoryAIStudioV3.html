@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoStory AI Studio - Generator Cerita & Video Otomatis</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- JSZip for exporting assets -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,800;1,600&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #09090b;
+            color: #f4f4f5;
+        }
+        .font-serif-title {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #18181b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52525b;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER -->
+    <header class="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                    <i class="fa-solid fa-wand-magic-sparkles text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent">
+                        AutoStory <span class="text-indigo-400">AI</span> Studio
+                    </h1>
+                    <p class="text-xs text-zinc-400">Generator Video & Cerita Sinematik Otomatis</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 bg-zinc-900 px-3 py-1.5 rounded-lg border border-zinc-800 text-xs text-zinc-300">
+                <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Gemini 2.5 & Imagen 4.0 Terintegrasi</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- LEFT PANEL: CONFIGURATION (lg:col-span-5) -->
+        <section class="lg:col-span-5 flex flex-col gap-6">
+            <div class="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-5 sm:p-6 backdrop-blur-sm shadow-xl flex flex-col gap-5">
+                <div class="flex items-center gap-2 border-b border-zinc-800 pb-3">
+                    <i class="fa-solid fa-sliders text-indigo-400"></i>
+                    <h2 class="font-bold text-lg text-white">Konfigurasi Cerita</h2>
+                </div>
+
+                <!-- Input Teks 1: Judul Cerita -->
+                <div class="flex flex-col gap-2">
+                    <label for="storyTitle" class="text-sm font-semibold text-zinc-300 flex items-center justify-between">
+                        <span>Judul Cerita / Topik Utama <span class="text-red-500">*</span></span>
+                        <span class="text-xs text-zinc-500">Mandat Utama</span>
+                    </label>
+                    <input type="text" id="storyTitle" 
+                        class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition"
+                        placeholder="Contoh: Petualangan Kucing Hebat di Hutan Ajaib">
+                </div>
+
+                <!-- Input Teks 2: Detail Cerita Tambahan -->
+                <div class="flex flex-col gap-2">
+                    <label for="storyDetail" class="text-sm font-semibold text-zinc-300 flex items-center justify-between">
+                        <span>Detail Cerita Tambahan <span class="text-xs font-normal text-zinc-500">(Opsional)</span></span>
+                        <span class="text-xs text-zinc-500">Mendalam & Menarik</span>
+                    </label>
+                    <textarea id="storyDetail" rows="3"
+                        class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition text-sm resize-none"
+                        placeholder="Tambahkan detail karakter, pesan moral, plot twist, atau suasana tertentu agar cerita lebih hidup..."></textarea>
+                </div>
+
+                <!-- Grid Dropdowns -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Drop-Down 1: Gaya Gambar -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="imageStyle" class="text-xs font-bold text-zinc-400">Gaya Gambar</label>
+                        <select id="imageStyle" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+                            <option value="Studio Ghibli Animation Style, hand-drawn aesthetic, soft colors, detailed background, nostalgic anime">Studio Ghibli Animation Style</option>
+                            <option value="3D Pixar Concept Art style, colorful, expressive characters, detailed textures, soft lighting">3D Pixar Concept Art</option>
+                            <option value="Dark Fantasy Cinematic Style, dramatic shadows, realistic, mystical atmosphere, epic lighting">Dark Fantasy Cinematic</option>
+                            <option value="Cyberpunk Synthwave Art, neon glows, futuristic cityscape, purple and cyan color palette">Cyberpunk Synthwave</option>
+                            <option value="Watercolor Storybook Illustration, soft pastel tones, charming children's book aesthetic">Watercolor Storybook</option>
+                            <option value="Vintage Comic Book Sketch, hand-inked illustration, retro halftone shading, bold lines">Vintage Comic Sketch</option>
+                            <option value="Hyper-realistic Digital Painting, cinematic composition, breathtaking natural landscapes">Hyper-realistic Painting</option>
+                        </select>
+                    </div>
+
+                    <!-- Drop-Down 2: Orientasi -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="orientation" class="text-xs font-bold text-zinc-400">Orientasi Video</label>
+                        <select id="orientation" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+                            <option value="portrait">Portrait (9:16) - Shorts/Reels</option>
+                            <option value="landscape" selected>Landscape (16:9) - YouTube</option>
+                        </select>
+                    </div>
+
+                    <!-- Drop-Down 3: Kecepatan Audio -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="audioSpeed" class="text-xs font-bold text-zinc-400">Kecepatan Audio</label>
+                        <select id="audioSpeed" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+                            <option value="lambat">Lambat (Slow & Calming)</option>
+                            <option value="normal" selected>Normal (Standard)</option>
+                            <option value="cepat">Cepat (Energetic)</option>
+                        </select>
+                    </div>
+
+                    <!-- Drop-Down 4: Subtitle -->
+                    <div class="flex flex-col gap-1.5">
+                        <label for="subtitleOption" class="text-xs font-bold text-zinc-400">Subtitle</label>
+                        <select id="subtitleOption" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+                            <option value="on" selected>Tanpa Subtitle</option>
+                            <option value="off">Aktifkan Subtitle</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Drop-Down 5: Jenis Suara Vokal -->
+                <div class="flex flex-col gap-1.5">
+                    <label for="vocalVoice" class="text-xs font-bold text-zinc-400">Jenis Suara Vokal (Narator)</label>
+                    <select id="vocalVoice" class="bg-zinc-950 border border-zinc-800 rounded-xl px-3 py-2.5 text-xs text-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50">
+                        <option value="Kore" selected>Kore (Suara Hangat & Informatif)</option>
+                        <option value="Zephyr">Zephyr (Suara Lembut & Naratif)</option>
+                        <option value="Fenrir">Fenrir (Suara Berwibawa & Dalam)</option>
+                        <option value="Aoede">Aoede (Suara Ceria & Bersahabat)</option>
+                        <option value="Charon">Charon (Suara Misterius & Tenang)</option>
+                    </select>
+                </div>
+
+                <!-- Generate Button -->
+                <button id="btnGenerate" class="w-full mt-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-indigo-500/20 transition duration-300 flex items-center justify-center gap-2 transform active:scale-95">
+                    <i class="fa-solid fa-circle-play text-lg"></i>
+                    <span>Mulai Pembuatan Cerita AI</span>
+                </button>
+            </div>
+
+            <!-- LIVE STATUS LOGGER -->
+            <div id="statusConsole" class="bg-zinc-950 border border-zinc-800 rounded-2xl p-5 hidden flex-col gap-4">
+                <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-gears text-purple-400 animate-spin"></i>
+                        <span class="text-sm font-semibold text-white">Proses Pembuatan Konten</span>
+                    </div>
+                    <span id="overallProgressPercent" class="text-xs font-bold text-indigo-400">0%</span>
+                </div>
+                <!-- Progress bar -->
+                <div class="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
+                    <div id="overallProgressBar" class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 h-full w-0 transition-all duration-300"></div>
+                </div>
+                <!-- Dynamic Logs -->
+                <div id="logList" class="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1 text-xs text-zinc-400">
+                    <!-- Logs dynamically appended here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT PANEL: INTERACTIVE PREVIEW & PLAYBACK (lg:col-span-7) -->
+        <section class="lg:col-span-7 flex flex-col gap-6">
+            <!-- NOT GENERATED YET STATE -->
+            <div id="emptyState" class="flex-grow min-h-[400px] bg-zinc-900/40 border-2 border-dashed border-zinc-800 rounded-2xl flex flex-col items-center justify-center p-8 text-center">
+                <div class="h-16 w-16 rounded-full bg-zinc-800 flex items-center justify-center mb-4 text-zinc-500">
+                    <i class="fa-solid fa-clapperboard text-3xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-2">Belum Ada Cerita yang Dihasilkan</h3>
+                <p class="text-sm text-zinc-400 max-w-md">Masukkan judul dan konfigurasi di panel sebelah kiri untuk memulai pembuatan video interaktif 10-Scene beserta Thumbnail otomatis.</p>
+            </div>
+
+            <!-- RESULT PLAYBACK SECTION -->
+            <div id="resultContainer" class="hidden flex-col gap-6 flex-grow">
+                <!-- PREVIEW PLAYER -->
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+                    <!-- Tab Selector -->
+                    <div class="bg-zinc-950 border-b border-zinc-800 px-4 py-3 flex items-center justify-between">
+                        <div class="flex items-center gap-1.5 bg-zinc-900 p-1 rounded-lg border border-zinc-800">
+                            <button id="tabThumbnailBtn" onclick="switchPreviewTab('thumbnail')" class="px-3 py-1.5 text-xs font-bold rounded-md bg-zinc-800 text-white transition">Thumbnail</button>
+                            <button id="tabScenesBtn" onclick="switchPreviewTab('scenes')" class="px-3 py-1.5 text-xs font-bold rounded-md text-zinc-400 hover:text-white transition">Preview Cerita (10 Scene)</button>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-1 rounded">Model Aktif</span>
+                        </div>
+                    </div>
+
+                    <!-- Preview Frame Wrapper (Maintains ratios) -->
+                    <div class="bg-zinc-950 flex items-center justify-center p-4 relative" id="previewArea">
+                        <!-- THUMBNAIL PREVIEW -->
+                        <div id="thumbnailTabContent" class="w-full flex flex-col items-center justify-center gap-3">
+                            <div id="thumbnailFrame" class="relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 shadow-lg max-w-full">
+                                <canvas id="thumbnailCanvas" class="max-w-full h-auto block"></canvas>
+                            </div>
+                            <span class="text-xs text-zinc-500 italic"><i class="fa-solid fa-circle-info mr-1"></i> Teks judul di-render secara dinamis di atas karya seni AI.</span>
+                        </div>
+
+                        <!-- SCENES PREVIEW PLAYER -->
+                        <div id="scenesTabContent" class="hidden w-full flex-col items-center gap-4">
+                            <!-- Visual Player Frame -->
+                            <div id="playerFrame" class="relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 shadow-lg max-w-full">
+                                <img id="playerImage" class="w-full h-full object-cover" src="" alt="Scene Visual">
+                                <!-- Subtitles Overlay -->
+                                <div id="playerSubtitleBox" class="absolute bottom-4 left-4 right-4 bg-black/85 backdrop-blur-sm border border-zinc-800 rounded-xl p-3 text-center transition">
+                                    <p id="playerSubtitleText" class="text-sm font-semibold text-white leading-relaxed"></p>
+                                </div>
+                            </div>
+
+                            <!-- Playback & Navigation Controls -->
+                            <div class="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-xl p-3 flex flex-col gap-3">
+                                <div class="flex items-center justify-between text-xs text-zinc-400">
+                                    <span id="sceneIndicator" class="font-bold">Scene 1 dari 10</span>
+                                    <span id="audioTime">00:00</span>
+                                </div>
+
+                                <!-- Custom Audio Element -->
+                                <audio id="playerAudio" class="hidden"></audio>
+
+                                <!-- Controller Buttons -->
+                                <div class="flex items-center justify-center gap-4">
+                                    <button onclick="prevScene()" class="h-9 w-9 rounded-full bg-zinc-800 hover:bg-zinc-700 text-white transition flex items-center justify-center text-sm">
+                                        <i class="fa-solid fa-backward"></i>
+                                    </button>
+                                    <button id="btnPlayPause" onclick="togglePlay()" class="h-11 w-11 rounded-full bg-indigo-500 hover:bg-indigo-400 text-white transition flex items-center justify-center text-base shadow-md shadow-indigo-500/20">
+                                        <i class="fa-solid fa-play" id="playIcon"></i>
+                                    </button>
+                                    <button onclick="nextScene()" class="h-9 w-9 rounded-full bg-zinc-800 hover:bg-zinc-700 text-white transition flex items-center justify-center text-sm">
+                                        <i class="fa-solid fa-forward"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EXP-EXPORT COMPONENT -->
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                            <i class="fa-solid fa-box-archive text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-sm">Ekspor Hasil Cerita</h4>
+                            <p class="text-xs text-zinc-400">Unduh semua aset visual, audio, & narasi teks.</p>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                        <button onclick="downloadAllZip()" class="flex-grow sm:flex-none bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-3 rounded-xl transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-zipper"></i>
+                            <span>Unduh ZIP (Semua Aset)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STORY DETAIL VIEW (10 Scenes Grid & Editor) -->
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 flex flex-col gap-4">
+                    <h3 class="font-bold text-white text-base flex items-center gap-2 border-b border-zinc-800 pb-2">
+                        <i class="fa-solid fa-list-ol text-purple-400"></i>
+                        <span>Detail Alur Cerita & Metadata Scene</span>
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto pr-1" id="scenesGrid">
+                        <!-- Dynamic Scenes Cards go here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-zinc-900 bg-zinc-950 py-4 px-6 text-center text-xs text-zinc-500">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p>&copy; 2026 AutoStory AI Studio. Didukung oleh teknologi AI tercanggih.</p>
+            <div class="flex items-center gap-4">
+                <span class="hover:text-zinc-300 transition cursor-pointer">Syarat & Ketentuan</span>
+                <span class="hover:text-zinc-300 transition cursor-pointer">Kebijakan Privasi</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE NOTIFICATION COMPONENT -->
+    <div id="toastContainer" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-2 max-w-md w-full"></div>
+
+    <!-- CORE SYSTEM LOGIC (BEHIND THE SCENES) -->
+    <script>
+        // System variables & configuration
+        const apiKey = ""; // Disuntik otomatis oleh lingkungan eksekusi
+        let storyData = null; // Holds the structured 10 scenes & prompts
+        let activeTab = 'thumbnail'; // Default tab
+        let currentSceneIndex = 0; // Playback engine pointer
+        let generatedAssets = {
+            thumbnail: { image: null, prompt: '' },
+            scenes: [] // Array of { imageBlob/Url, audioBlob/Url, narration, prompt, sceneNumber }
+        };
+
+        // UI Controls references
+        const btnGenerate = document.getElementById('btnGenerate');
+        const storyTitleInput = document.getElementById('storyTitle');
+        const storyDetailInput = document.getElementById('storyDetail');
+        const imageStyleSelect = document.getElementById('imageStyle');
+        const orientationSelect = document.getElementById('orientation');
+        const audioSpeedSelect = document.getElementById('audioSpeed');
+        const subtitleOptionSelect = document.getElementById('subtitleOption');
+        const vocalVoiceSelect = document.getElementById('vocalVoice');
+
+        const statusConsole = document.getElementById('statusConsole');
+        const logList = document.getElementById('logList');
+        const overallProgressBar = document.getElementById('overallProgressBar');
+        const overallProgressPercent = document.getElementById('overallProgressPercent');
+
+        const emptyState = document.getElementById('emptyState');
+        const resultContainer = document.getElementById('resultContainer');
+
+        const playerImage = document.getElementById('playerImage');
+        const playerAudio = document.getElementById('playerAudio');
+        const playerSubtitleBox = document.getElementById('playerSubtitleBox');
+        const playerSubtitleText = document.getElementById('playerSubtitleText');
+        const sceneIndicator = document.getElementById('sceneIndicator');
+        const audioTime = document.getElementById('audioTime');
+        const btnPlayPause = document.getElementById('btnPlayPause');
+        const playIcon = document.getElementById('playIcon');
+
+        // Initial setup on Window Load
+        window.onload = function() {
+            addLog("Sistem siap. Silakan masukkan parameter naskah di sebelah kiri.", 'info');
+        };
+
+        // Notification Helper (Anti Browser Alerts)
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bgClass = "bg-zinc-900 border-zinc-800";
+            let icon = "fa-circle-info text-blue-400";
+            if (type === 'success') {
+                bgClass = "bg-zinc-900 border-emerald-800/50";
+                icon = "fa-circle-check text-emerald-400";
+            } else if (type === 'error') {
+                bgClass = "bg-zinc-900 border-rose-800/50";
+                icon = "fa-triangle-exclamation text-rose-400";
+            } else if (type === 'warning') {
+                bgClass = "bg-zinc-900 border-amber-800/50";
+                icon = "fa-circle-exclamation text-amber-400";
+            }
+
+            toast.className = `p-4 rounded-xl border ${bgClass} shadow-xl flex items-start gap-3 transform translate-y-2 opacity-0 transition duration-300`;
+            toast.innerHTML = `
+                <i class="fa-solid ${icon} mt-0.5 text-lg"></i>
+                <div class="flex-grow">
+                    <p class="text-sm font-semibold text-white">${message}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-zinc-500 hover:text-zinc-300"><i class="fa-solid fa-xmark"></i></button>
+            `;
+            container.appendChild(toast);
+            
+            // Animation triggers
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+            
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        // Logger helper for UI Progress Tracker
+        function addLog(message, type = 'info') {
+            const logItem = document.createElement('div');
+            logItem.className = "flex items-start gap-2 py-0.5 border-b border-zinc-900/50";
+            let color = "text-zinc-400";
+            let icon = "fa-chevron-right";
+
+            if (type === 'success') {
+                color = "text-emerald-400 font-medium";
+                icon = "fa-check";
+            } else if (type === 'error') {
+                color = "text-rose-400 font-medium";
+                icon = "fa-triangle-exclamation";
+            } else if (type === 'warning') {
+                color = "text-amber-400";
+                icon = "fa-clock-rotate-left";
+            } else if (type === 'process') {
+                color = "text-indigo-400";
+                icon = "fa-spinner animate-spin";
+            }
+
+            logItem.innerHTML = `<i class="fa-solid ${icon} mt-0.5 flex-shrink-0 ${color}"></i> <span class="${color}">${message}</span>`;
+            logList.appendChild(logItem);
+            logList.scrollTop = logList.scrollHeight;
+        }
+
+        // Update overall progress bar & percentage
+        function updateProgress(percent) {
+            overallProgressBar.style.width = `${percent}%`;
+            overallProgressPercent.textContent = `${Math.round(percent)}%`;
+        }
+
+        // SMART RETRY MECHANISM: Wrapper for API Call with Exponential Backoff
+        async function fetchWithRetry(url, options, maxRetries = 5) {
+            let delay = 1000; // Mulai dari 1 detik
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.ok) {
+                        return await response.json();
+                    }
+                    if (response.status === 429) {
+                        // Rate Limit Terdeteksi
+                        addLog(`Tingkat batas (Rate Limit) terdeteksi. Mengulang secara otomatis dalam ${(delay/1000)} detik... (Percobaan ke-${i + 1})`, 'warning');
+                    } else {
+                        addLog(`Mengalami masalah jaringan (${response.status}). Mencoba kembali dalam ${(delay/1000)} detik...`, 'warning');
+                    }
+                } catch (error) {
+                    // Kesalahan Jaringan / Pengecualian Jaringan
+                    if (i === maxRetries - 1) throw error;
+                }
+                await new Promise(resolve => setTimeout(resolve, delay));
+                delay *= 2; // Lipat gandakan waktu tunggu (Exponential Backoff)
+            }
+            throw new Error(`Gagal memuat API setelah ${maxRetries} kali percobaan.`);
+        }
+
+        // GENERATE FLOW CONTROLLER
+        btnGenerate.addEventListener('click', async () => {
+            const title = storyTitleInput.value.trim();
+            const detail = storyDetailInput.value.trim();
+
+            if (!title) {
+                showNotification("Harap masukkan Judul Cerita atau Topik Utama!", "warning");
+                return;
+            }
+
+            // Disable UI inputs during processing
+            btnGenerate.disabled = true;
+            btnGenerate.classList.add('opacity-50', 'cursor-not-allowed');
+            statusConsole.classList.remove('hidden');
+            statusConsole.classList.add('flex');
+            logList.innerHTML = "";
+            updateProgress(0);
+
+            try {
+                // STEP 1: Generate 10-Scene Naskah (Gemini 2.5 Flash - Structured JSON output)
+                addLog("Menghubungi AI untuk merancang naskah cerita dan arahan visual...", "process");
+                updateProgress(5);
+                
+                const prompt = `Buatkan naskah cerita lengkap bertema "${title}".
+Detail tambahan: "${detail}".
+Aturan wajib:
+1. Menghasilkan tepat 10 Scene cerita yang berkelanjutan dan saling menyatu secara logis.
+2. Setiap scene memiliki teks narasi dalam bahasa Indonesia maksimal 500 karakter.
+3. Setiap scene memiliki "image_prompt" (deskripsi visual rinci yang sesuai gaya visual, hindari teks di dalam gambar).
+4. Scene ke-10 (terakhir) harus bertindak sebagai Call to Action (ajakan visual dan narasi untuk "Subscribe" dan "Like" konten).
+5. Buat satu "thumbnail_prompt" eksternal yang dramatis dan menarik untuk merangkum esensi cerita.
+
+Hasilkan naskah dalam format JSON yang valid dengan struktur ini:
+{
+  "title": "Judul Cerita",
+  "thumbnail_prompt": "Deskripsi rinci untuk gambar thumbnail",
+  "scenes": [
+    {
+      "scene_number": 1,
+      "narration": "Teks narasi scene 1",
+      "image_prompt": "Prompt visual deskriptif untuk scene 1"
+    },
+    ... sampai scene 10
+  ]
+}`;
+
+                const systemInstruction = "Anda adalah sutradara dan penulis naskah kreatif profesional. Selalu hasilkan JSON murni yang valid tanpa membungkusnya dengan Markdown.";
+
+                const payloadText = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    systemInstruction: { parts: [{ text: systemInstruction }] },
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                title: { type: "STRING" },
+                                thumbnail_prompt: { type: "STRING" },
+                                scenes: {
+                                    type: "ARRAY",
+                                    items: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            scene_number: { type: "INTEGER" },
+                                            narration: { type: "STRING" },
+                                            image_prompt: { type: "STRING" }
+                                        },
+                                        required: ["scene_number", "narration", "image_prompt"]
+                                    }
+                                }
+                            },
+                            required: ["title", "thumbnail_prompt", "scenes"]
+                        }
+                    }
+                };
+
+                const scriptResult = await fetchWithRetry(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payloadText)
+                    }
+                );
+
+                const scriptRawText = scriptResult.candidates?.[0]?.content?.parts?.[0]?.text;
+                storyData = JSON.parse(scriptRawText);
+                addLog("Naskah cerita berhasil disusun oleh AI!", "success");
+                addLog(`Judul Cerita: "${storyData.title}" (10 Scene dikonfirmasi).`, "info");
+                updateProgress(15);
+
+                // Reset local generated assets buffer
+                generatedAssets.scenes = [];
+                generatedAssets.thumbnail = { image: null, prompt: storyData.thumbnail_prompt };
+
+                // STEP 2: Process Assets Sequentially (Thumbnail -> Scenes 1-10)
+                const totalSteps = 11; // 1 thumbnail + 10 scenes
+                let currentStep = 0;
+
+                // 2A: Generate Thumbnail Image
+                addLog("Memproses Aset: Membuat Thumbnail Sinematik...", "process");
+                const styleModifier = imageStyleSelect.value;
+                const orientation = orientationSelect.value;
+                const ratio = orientation === 'portrait' ? '9:16' : '16:9';
+                
+                const thumbnailFullPrompt = `${storyData.title}. ${storyData.thumbnail_prompt}, style of ${styleModifier}, high resolution, ultra realistic lighting, cinema quality.`;
+                
+                const thumbImageBase64 = await generateImage(thumbnailFullPrompt, ratio);
+                generatedAssets.thumbnail.image = `data:image/png;base64,${thumbImageBase64}`;
+                
+                // Draw title overlay on thumbnail Canvas
+                await drawThumbnailWithCanvas(generatedAssets.thumbnail.image, storyData.title, ratio);
+                
+                addLog("Thumbnail berhasil dibuat dengan overlay teks dinamis!", "success");
+                currentStep++;
+                updateProgress(15 + (currentStep / totalSteps) * 80);
+
+                // 2B: Generate 10 Scenes (Visual + Voice Over) Sequentially
+                for (let i = 0; i < storyData.scenes.length; i++) {
+                    const scene = storyData.scenes[i];
+                    addLog(`[Scene ${scene.scene_number}/10] Memulai generasi aset...`, "process");
+
+                    // Visual prompt assembly
+                    const sceneFullPrompt = `${scene.image_prompt}, style of ${styleModifier}, cinematic lighting, immersive details.`;
+                    
+                    // Generate Image for this scene
+                    addLog(`[Scene ${scene.scene_number}/10] Menggambar visual di kanvas AI...`, "process");
+                    const sceneImageBase64 = await generateImage(sceneFullPrompt, ratio);
+                    const sceneImageUrl = `data:image/png;base64,${sceneImageBase64}`;
+
+                    // Generate Audio TTS for this scene
+                    addLog(`[Scene ${scene.scene_number}/10] Merekam suara narasi otomatis...`, "process");
+                    const audioBlob = await generateSpeech(scene.narration, vocalVoiceSelect.value, audioSpeedSelect.value);
+                    const sceneAudioUrl = URL.createObjectURL(audioBlob);
+
+                    // Store assets
+                    generatedAssets.scenes.push({
+                        sceneNumber: scene.scene_number,
+                        narration: scene.narration,
+                        imagePrompt: scene.image_prompt,
+                        image: sceneImageUrl,
+                        audio: sceneAudioUrl,
+                        audioBlob: audioBlob
+                    });
+
+                    addLog(`[Scene ${scene.scene_number}/10] Berhasil dimuat dengan sempurna!`, "success");
+                    currentStep++;
+                    updateProgress(15 + (currentStep / totalSteps) * 85);
+                }
+
+                // FINALIZE GENERATION
+                updateProgress(100);
+                addLog("Selamat! Seluruh aset video dan cerita selesai diproduksi.", "success");
+                showNotification("Seluruh aset cerita telah selesai dihasilkan!", "success");
+
+                // Render components inside the UI
+                renderResultUI();
+
+            } catch (error) {
+                addLog(`Proses Gagal: ${error.message}`, "error");
+                showNotification(`Gagal membuat konten: ${error.message}`, "error");
+            } finally {
+                btnGenerate.disabled = false;
+                btnGenerate.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        });
+
+        // IMAGEN 4.0 API CALL WITH RETRY
+        async function generateImage(prompt, ratio) {
+            const payload = {
+                instances: [{ prompt: prompt }],
+                parameters: {
+                    sampleCount: 1,
+                    aspectRatio: ratio
+                }
+            };
+
+            const result = await fetchWithRetry(
+                `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+            const base64Bytes = result.predictions?.[0]?.bytesBase64Encoded;
+            if (!base64Bytes) {
+                throw new Error("Gagal memperoleh data biner gambar dari Imagen API.");
+            }
+            return base64Bytes;
+        }
+
+        // GEMINI TTS API CALL WITH RETRY (PCM-TO-WAV conversion integrated)
+        async function generateSpeech(text, voice, speed) {
+            let speedInstruction = "Bicaralah dengan tempo normal yang stabil dan intonasi ramah.";
+            if (speed === 'lambat') {
+                speedInstruction = "Bicaralah dengan tempo lambat, penuh penghayatan, dan jeda yang menenangkan.";
+            } else if (speed === 'cepat') {
+                speedInstruction = "Bicaralah dengan tempo sedikit lebih cepat dan penuh energi bersemangat.";
+            }
+
+            const prompt = `${speedInstruction} Bacakan teks ini secara profesional: "${text}"`;
+
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: {
+                        voiceConfig: {
+                            prebuiltVoiceConfig: {
+                                voiceName: voice
+                            }
+                        }
+                    }
+                }
+            };
+
+            const result = await fetchWithRetry(
+                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+            const audioDataB64 = result.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+            if (!audioDataB64) {
+                throw new Error("Gagal memperoleh data audio dari modul Voice-Over TTS.");
+            }
+
+            // Convert raw PCM L16 to playable WAV Blob (Using 24kHz Default)
+            return pcmToWav(audioDataB64, 24000);
+        }
+
+        // UTILITY: PCM 16-Bit Mono to WAV Wrapper
+        function pcmToWav(base64Pcm, sampleRate = 24000) {
+            const raw = atob(base64Pcm);
+            const buffer = new ArrayBuffer(raw.length);
+            const view = new Uint8Array(buffer);
+            for (let i = 0; i < raw.length; i++) {
+                view[i] = raw.charCodeAt(i);
+            }
+
+            const wavBuffer = new ArrayBuffer(44 + buffer.byteLength);
+            const wavView = new DataView(wavBuffer);
+            
+            // "RIFF" chunk descriptor
+            wavView.setUint32(0, 0x52494646, false);
+            wavView.setUint32(4, 36 + buffer.byteLength, true); // ChunkSize
+            wavView.setUint32(8, 0x57415645, false); // "WAVE" format
+            
+            // "fmt " sub-chunk
+            wavView.setUint32(12, 0x666d7420, false);
+            wavView.setUint32(16, 16, true); // Subchunk1Size
+            wavView.setUint16(20, 1, true); // AudioFormat (1 for PCM)
+            wavView.setUint16(22, 1, true); // NumChannels (1 mono)
+            wavView.setUint32(24, sampleRate, true); // SampleRate
+            wavView.setUint32(28, sampleRate * 2, true); // ByteRate (sampleRate * numChannels * bitsPerSample/8)
+            wavView.setUint16(32, 2, true); // BlockAlign
+            wavView.setUint16(34, 16, true); // BitsPerSample
+            
+            // "data" sub-chunk
+            wavView.setUint32(36, 0x64617461, false);
+            wavView.setUint32(40, buffer.byteLength, true); // Subchunk2Size
+            
+            // Copy data
+            const wavBytes = new Uint8Array(wavBuffer);
+            wavBytes.set(view, 44);
+            
+            return new Blob([wavBytes], { type: 'audio/wav' });
+        }
+
+        // CANVAS WORKFLOW: Draw Aesthetic Thumbnail with Title Text
+        function drawThumbnailWithCanvas(imgSrc, titleText, ratio) {
+            return new Promise((resolve) => {
+                const canvas = document.getElementById('thumbnailCanvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = function() {
+                    // Adjust canvas size based on aspect ratio
+                    if (ratio === '9:16') {
+                        canvas.width = 720;
+                        canvas.height = 1280;
+                    } else {
+                        canvas.width = 1280;
+                        canvas.height = 720;
+                    }
+
+                    // 1. Draw Background Image
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    // 2. Add Dark Vignette / Gradient Overlay to improve readability
+                    const grad = ctx.createLinearGradient(0, canvas.height * 0.4, 0, canvas.height);
+                    grad.addColorStop(0, 'rgba(0,0,0,0)');
+                    grad.addColorStop(0.5, 'rgba(0,0,0,0.6)');
+                    grad.addColorStop(1, 'rgba(0,0,0,0.95)');
+                    ctx.fillStyle = grad;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // 3. Draw Story Title Text
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    
+                    // Choose elegant font sizes depending on layout
+                    const fontSize = ratio === '9:16' ? 52 : 64;
+                    ctx.font = `bold ${fontSize}px 'Playfair Display', serif`;
+                    
+                    // Drop Shadow
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+                    ctx.shadowBlur = 15;
+                    ctx.shadowOffsetX = 4;
+                    ctx.shadowOffsetY = 4;
+
+                    // Text Wrap Implementation
+                    const maxWidth = canvas.width * 0.85;
+                    const words = titleText.split(' ');
+                    let line = '';
+                    const lines = [];
+
+                    for (let n = 0; n < words.length; n++) {
+                        let testLine = line + words[n] + ' ';
+                        let metrics = ctx.measureText(testLine);
+                        if (metrics.width > maxWidth && n > 0) {
+                            lines.push(line);
+                            line = words[n] + ' ';
+                        } else {
+                            line = testLine;
+                        }
+                    }
+                    lines.push(line);
+
+                    // Calculate Y Offset to place text centrally in the lower section
+                    let startY = canvas.height * 0.7 - ((lines.length - 1) * (fontSize + 15)) / 2;
+
+                    lines.forEach((l, idx) => {
+                        // Drawing premium multi-colored glow texts
+                        const gradText = ctx.createLinearGradient(0, startY - 20, 0, startY + 20);
+                        gradText.addColorStop(0, '#ffffff');
+                        gradText.addColorStop(1, '#e2e8f0');
+                        
+                        ctx.fillStyle = gradText;
+                        ctx.fillText(l.trim(), canvas.width / 2, startY);
+                        startY += (fontSize + 15);
+                    });
+
+                    // 4. Add small subtitle pill at top for premium styling
+                    //ctx.shadowBlur = 0;
+                    //ctx.shadowOffsetX = 0;
+                    //ctx.shadowOffsetY = 0;
+                    //ctx.fillStyle = 'rgba(99, 102, 241, 0.9)'; // Indigo branding
+                    //const badgeWidth = 240;
+                    //const badgeHeight = 36;
+                    //const badgeX = (canvas.width - badgeWidth) / 2;
+                    //const badgeY = canvas.height * 0.08;
+                    
+                    // Draw Rounded Rect for badge
+                    //drawRoundedRect(ctx, badgeX, badgeY, badgeWidth, badgeHeight, 18);
+                    //ctx.fill();
+
+                    // Badge text
+                    //ctx.fillStyle = '#ffffff';
+                    //ctx.font = "bold 14px 'Plus Jakarta Sans', sans-serif";
+                    //ctx.fillText("SINEMA SPESIAL AI", canvas.width / 2, badgeY + (badgeHeight / 2));
+
+                    resolve();
+                };
+                img.src = imgSrc;
+            });
+        }
+
+        // Helper to draw rounded rectangle in Canvas
+        function drawRoundedRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
+
+        // PREVIEW COMPONENT TAB SWITCHER
+        function switchPreviewTab(tab) {
+            activeTab = tab;
+            const tabThumb = document.getElementById('tabThumbnailBtn');
+            const tabScenes = document.getElementById('tabScenesBtn');
+            const thumbContent = document.getElementById('thumbnailTabContent');
+            const scenesContent = document.getElementById('scenesTabContent');
+
+            if (tab === 'thumbnail') {
+                tabThumb.className = "px-3 py-1.5 text-xs font-bold rounded-md bg-zinc-800 text-white transition";
+                tabScenes.className = "px-3 py-1.5 text-xs font-bold rounded-md text-zinc-400 hover:text-white transition";
+                thumbContent.classList.remove('hidden');
+                scenesContent.classList.add('hidden');
+                pauseVideo(); // Stop audio if playing
+            } else {
+                tabScenes.className = "px-3 py-1.5 text-xs font-bold rounded-md bg-zinc-800 text-white transition";
+                tabThumb.className = "px-3 py-1.5 text-xs font-bold rounded-md text-zinc-400 hover:text-white transition";
+                scenesContent.classList.remove('hidden');
+                thumbContent.classList.add('hidden');
+                loadScenePlayer(currentSceneIndex);
+            }
+        }
+
+        // RENDER GENERATED STORIES TO PLAYBACK INTERFACE
+        function renderResultUI() {
+            emptyState.classList.add('hidden');
+            resultContainer.classList.remove('hidden');
+            resultContainer.classList.add('flex');
+
+            // Apply aspect ratio sizes on Preview elements dynamically
+            const orientation = orientationSelect.value;
+            const playerFrame = document.getElementById('playerFrame');
+            const thumbnailFrame = document.getElementById('thumbnailFrame');
+
+            if (orientation === 'portrait') {
+                // 9:16 Aspect ratio sizes
+                playerFrame.style.width = '320px';
+                playerFrame.style.height = '568px';
+                thumbnailFrame.style.width = '320px';
+                thumbnailFrame.style.height = '568px';
+            } else {
+                // 16:9 Aspect ratio sizes
+                playerFrame.style.width = '560px';
+                playerFrame.style.height = '315px';
+                thumbnailFrame.style.width = '560px';
+                thumbnailFrame.style.height = '315px';
+            }
+
+            // Fill Scenes Cards/Grid inside detail view
+            const scenesGrid = document.getElementById('scenesGrid');
+            scenesGrid.innerHTML = "";
+
+            generatedAssets.scenes.forEach((scene, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-zinc-950 border border-zinc-800 hover:border-zinc-700 rounded-xl p-3 flex gap-3 cursor-pointer transition";
+                card.onclick = () => {
+                    switchPreviewTab('scenes');
+                    loadScenePlayer(index);
+                };
+
+                card.innerHTML = `
+                    <div class="h-16 w-16 bg-zinc-900 rounded-lg overflow-hidden flex-shrink-0 relative border border-zinc-800">
+                        <img src="${scene.image}" class="h-full w-full object-cover">
+                        <span class="absolute bottom-1 right-1 text-[9px] bg-black/80 px-1 py-0.5 rounded text-white font-bold">#${scene.sceneNumber}</span>
+                    </div>
+                    <div class="flex-grow min-w-0">
+                        <div class="flex items-center justify-between mb-1">
+                            <h5 class="text-xs font-bold text-indigo-400">Scene ${scene.sceneNumber}</h5>
+                            <button onclick="event.stopPropagation(); downloadSingleAudio(${index})" class="text-[10px] text-zinc-500 hover:text-zinc-300" title="Unduh Suara"><i class="fa-solid fa-volume-high"></i></button>
+                        </div>
+                        <p class="text-xs text-zinc-300 line-clamp-2 leading-relaxed">${scene.narration}</p>
+                    </div>
+                `;
+                scenesGrid.appendChild(card);
+            });
+
+            // Initialize Player at Scene 0
+            currentSceneIndex = 0;
+            loadScenePlayer(0);
+        }
+
+        // LOAD SCENE DATA TO INTERACTIVE PREVIEW PLAYER
+        function loadScenePlayer(index) {
+            if (!generatedAssets.scenes[index]) return;
+            currentSceneIndex = index;
+            const scene = generatedAssets.scenes[index];
+
+            playerImage.src = scene.image;
+            playerAudio.src = scene.audio;
+            
+            // Subtitle visibility
+            const subtitleOn = subtitleOptionSelect.value === 'on';
+            if (subtitleOn) {
+                playerSubtitleBox.classList.remove('hidden');
+                playerSubtitleText.textContent = scene.narration;
+            } else {
+                playerSubtitleBox.classList.add('hidden');
+            }
+
+            sceneIndicator.textContent = `Scene ${scene.sceneNumber} dari 10`;
+            audioTime.textContent = "00:00";
+            
+            // Reset Play Icon State
+            playIcon.className = "fa-solid fa-play";
+
+            // Event Listeners for Audio element
+            playerAudio.onloadedmetadata = () => {
+                const mins = Math.floor(playerAudio.duration / 60);
+                const secs = Math.floor(playerAudio.duration % 60).toString().padStart(2, '0');
+                audioTime.textContent = `00:${secs}`;
+            };
+
+            playerAudio.ontimeupdate = () => {
+                const currentSecs = Math.floor(playerAudio.currentTime).toString().padStart(2, '0');
+                const totalSecs = Math.floor(playerAudio.duration || 0).toString().padStart(2, '0');
+                audioTime.textContent = `00:${currentSecs} / 00:${totalSecs}`;
+            };
+
+            playerAudio.onended = () => {
+                // Automatically progress to next scene if active
+                if (currentSceneIndex < 9) {
+                    nextScene();
+                    togglePlay(); // Auto-start play
+                } else {
+                    pauseVideo();
+                }
+            };
+        }
+
+        // CONTROLLER ACTIONS
+        function togglePlay() {
+            if (playerAudio.paused) {
+                playerAudio.play();
+                playIcon.className = "fa-solid fa-pause";
+            } else {
+                playerAudio.pause();
+                playIcon.className = "fa-solid fa-play";
+            }
+        }
+
+        function pauseVideo() {
+            playerAudio.pause();
+            playIcon.className = "fa-solid fa-play";
+        }
+
+        function prevScene() {
+            if (currentSceneIndex > 0) {
+                loadScenePlayer(currentSceneIndex - 1);
+            }
+        }
+
+        function nextScene() {
+            if (currentSceneIndex < 9) {
+                loadScenePlayer(currentSceneIndex + 1);
+            }
+        }
+
+        // EXPORT INDIVIDUAL SOUND ASSET
+        function downloadSingleAudio(index) {
+            const scene = generatedAssets.scenes[index];
+            const a = document.createElement('a');
+            a.href = scene.audio;
+            a.download = `scene_${scene.sceneNumber}_audio.wav`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // EXPORT ALL ASSETS PACKAGED IN ONE ZIP FILE
+        async function downloadAllZip() {
+            if (!storyData || generatedAssets.scenes.length === 0) {
+                showNotification("Aset cerita belum dihasilkan!", "warning");
+                return;
+            }
+
+            showNotification("Mempersiapkan kompresi ZIP untuk diunduh...", "info");
+            const zip = new JSZip();
+            const rootFolder = zip.folder(storyData.title.replace(/[^a-z0-9]/gi, '_').toLowerCase());
+
+            // 1. Save Thumbnail Image (with text overlay from Canvas)
+            const canvas = document.getElementById('thumbnailCanvas');
+            const thumbDataUrl = canvas.toDataURL('image/png');
+            const thumbBase64 = thumbDataUrl.split(',')[1];
+            rootFolder.file("thumbnail_berjudul.png", thumbBase64, { base64: true });
+
+            // 2. Save Story Script Metadata (Text)
+            let metadataText = `=== AUTOSTORY AI SCRIPT ===\n`;
+            metadataText += `Judul Utama: ${storyData.title}\n`;
+            metadataText += `Gaya Gambar: ${imageStyleSelect.value}\n`;
+            metadataText += `Orientasi: ${orientationSelect.value}\n\n`;
+
+            // Loop and add scenes visual + audio to ZIP
+            for (let i = 0; i < generatedAssets.scenes.length; i++) {
+                const s = generatedAssets.scenes[i];
+                
+                // Add text details
+                metadataText += `[SCENE ${s.sceneNumber}]\n`;
+                metadataText += `Narasi: ${s.narration}\n`;
+                metadataText += `Prompt Visual: ${s.imagePrompt}\n\n`;
+
+                // Add base64 image data to zip
+                const imgBase64 = s.image.split(',')[1];
+                rootFolder.file(`visual_scene_${s.sceneNumber}.png`, imgBase64, { base64: true });
+
+                // Add Audio Wav File
+                rootFolder.file(`suara_scene_${s.sceneNumber}.wav`, s.audioBlob);
+            }
+
+            rootFolder.file("metadata_naskah_cerita.txt", metadataText);
+
+            // Generate ZIP file and download
+            const content = await zip.generateAsync({ type: "blob" });
+            const url = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `autostory_pack_${storyData.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showNotification("Paket berkas ZIP berhasil diunduh!", "success");
+        }
+    </script>
+</body>
+</html>
