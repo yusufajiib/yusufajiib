@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alumni</title>
+    <title>Alumni MA NU Hasyim Asy'ari 1 Kudus</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -288,6 +288,16 @@
             </div>
         </div>
 
+        <!-- Pagination Controls -->
+        <div id="paginationContainer" class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm mt-6">
+            <div class="text-xs text-slate-600 font-medium text-center sm:text-left">
+                Menampilkan <span id="pageRangeText" class="font-bold text-slate-900">0 - 0</span> dari <span id="pageTotalText" class="font-bold text-slate-900">0</span> alumni
+            </div>
+            <div id="paginationButtons" class="flex items-center gap-1 flex-wrap justify-center">
+                <!-- Dynamic page buttons rendered here -->
+            </div>
+        </div>
+
         <!-- Empty State -->
         <div id="emptyState" class="hidden bg-white rounded-xl p-12 text-center border border-slate-200 shadow-sm">
             <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 text-2xl">
@@ -503,6 +513,9 @@
         let alumniData = [];
         let filteredAlumni = [];
         let currentViewMode = 'grid'; // 'grid' or 'table'
+        
+        let currentPage = 1;
+        const itemsPerPage = 30;
 
         // RICH FALLBACK DATA (Sample Realistic Alumni Data for MA NU Hasyim Asy'ari 1 Kudus)
         const SAMPLE_ALUMNI = [
@@ -695,7 +708,25 @@
             }
         }
 
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
         function processDataAndRender() {
+            const withPhoto = alumniData.filter(a => a.foto && a.foto.trim() !== '');
+            const withoutPhoto = alumniData.filter(a => !a.foto || a.foto.trim() === '');
+            
+            // Acak urutan alumni yang berfoto agar variasi angkatan tampil acak di beranda
+            const randomizedPhotoAlumni = shuffleArray(withPhoto);
+            
+            // Gabungkan kembali: berfoto acak di atas, lalu non-foto di bawah
+            alumniData = [...randomizedPhotoAlumni, ...withoutPhoto];
+
             populateFilterDropdowns();
             applyFilters();
             updateStatistics();
@@ -745,12 +776,8 @@
                 return matchSearch && matchAngkatan && matchJurusan && matchPhoto;
             });
 
-            // Pengurutan: Alumni yang memiliki foto diprioritaskan tampil di bagian paling atas
-            filteredAlumni.sort((a, b) => {
-                const aHasPhoto = (a.foto && a.foto.trim() !== '') ? 1 : 0;
-                const bHasPhoto = (b.foto && b.foto.trim() !== '') ? 1 : 0;
-                return bHasPhoto - aHasPhoto;
-            });
+            // Re-reset ke halaman 1 saat filter atau kata kunci berubah
+            currentPage = 1;
 
             document.getElementById('totalAlumniCount').textContent = alumniData.length;
             document.getElementById('tagResultCount').textContent = `Menampilkan ${filteredAlumni.length} alumni`;
@@ -762,30 +789,39 @@
             const gridView = document.getElementById('gridView');
             const tableView = document.getElementById('tableView');
             const emptyState = document.getElementById('emptyState');
+            const paginationContainer = document.getElementById('paginationContainer');
 
             if (filteredAlumni.length === 0) {
                 gridView.classList.add('hidden');
                 tableView.classList.add('hidden');
+                paginationContainer.classList.add('hidden');
                 emptyState.classList.remove('hidden');
                 return;
             }
 
             emptyState.classList.add('hidden');
+            paginationContainer.classList.remove('hidden');
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredAlumni.length);
+            const pagedData = filteredAlumni.slice(startIndex, endIndex);
 
             if (currentViewMode === 'grid') {
                 gridView.classList.remove('hidden');
                 tableView.classList.add('hidden');
-                renderGridView();
+                renderGridView(pagedData);
             } else {
                 gridView.classList.add('hidden');
                 tableView.classList.remove('hidden');
-                renderTableView();
+                renderTableView(pagedData, startIndex);
             }
+
+            renderPagination(startIndex, endIndex);
         }
 
-        function renderGridView() {
+        function renderGridView(data) {
             const gridView = document.getElementById('gridView');
-            gridView.innerHTML = filteredAlumni.map(item => `
+            gridView.innerHTML = data.map(item => `
                 <div class="bg-white rounded-2xl shadow-sm hover:shadow-md border border-slate-200 overflow-hidden flex flex-col transition duration-200 group">
                     <div class="relative bg-gradient-to-br from-brand-900 to-brand-700 h-28 p-4 flex items-end justify-center">
                         <div class="absolute top-3 left-3 bg-amber-400 text-slate-900 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm">
@@ -824,11 +860,11 @@
             `).join('');
         }
 
-        function renderTableView() {
+        function renderTableView(data, offset = 0) {
             const tableBody = document.getElementById('tableBody');
-            tableBody.innerHTML = filteredAlumni.map((item, index) => `
+            tableBody.innerHTML = data.map((item, index) => `
                 <tr class="hover:bg-slate-50 transition text-xs">
-                    <td class="p-3 text-center font-bold text-slate-500">${index + 1}</td>
+                    <td class="p-3 text-center font-bold text-slate-500">${offset + index + 1}</td>
                     <td class="p-3">
                         <img src="${item.foto || getPlaceholderImage(item.nama)}" 
                              alt="${item.nama}" 
@@ -853,6 +889,62 @@
                     </td>
                 </tr>
             `).join('');
+        }
+
+        function renderPagination(startIndex, endIndex) {
+            const totalItems = filteredAlumni.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+            document.getElementById('pageRangeText').textContent = totalItems === 0 ? '0 - 0' : `${startIndex + 1} - ${endIndex}`;
+            document.getElementById('pageTotalText').textContent = totalItems;
+
+            const buttonsContainer = document.getElementById('paginationButtons');
+            if (totalPages <= 1) {
+                buttonsContainer.innerHTML = '';
+                return;
+            }
+
+            let btnHTML = '';
+
+            // Tombol Prev
+            btnHTML += `
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} 
+                    class="px-3 py-1.5 rounded-lg border text-xs font-semibold transition ${currentPage === 1 ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'}">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+            `;
+
+            // Tombol Nomor Halaman
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    btnHTML += `
+                        <button onclick="changePage(${i})" 
+                            class="px-3 py-1.5 rounded-lg border text-xs font-bold transition ${i === currentPage ? 'bg-brand-700 text-white border-brand-700 shadow-sm' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'}">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    btnHTML += `<span class="px-2 text-slate-400 text-xs">...</span>`;
+                }
+            }
+
+            // Tombol Next
+            btnHTML += `
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} 
+                    class="px-3 py-1.5 rounded-lg border text-xs font-semibold transition ${currentPage === totalPages ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'}">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            `;
+
+            buttonsContainer.innerHTML = btnHTML;
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredAlumni.length / itemsPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderMainView();
+            window.scrollTo({ top: 300, behavior: 'smooth' });
         }
 
         function updateStatistics() {
