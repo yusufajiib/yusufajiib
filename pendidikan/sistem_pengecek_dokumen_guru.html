@@ -20,16 +20,16 @@
     <header class="bg-emerald-700 text-white shadow-md sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center space-x-3">
-                <div class="bg-emerald-600 p-2.5 rounded-xl shadow-inner border border-indigo-500">
-                    <i class="fa-solid fa-folder-open text-xl text-indigo-100"></i>
+                <div class="bg-emerald-600 p-2.5 rounded-xl shadow-inner border border-emerald-500">
+                    <i class="fa-solid fa-folder-open text-xl text-emerald-100"></i>
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-tight">SI-Dokumen Guru</h1>
-                    <p class="text-xs text-indigo-200">Sistem Pencatat & Pengecek Kelengkapan Berkas</p>
+                    <p class="text-xs text-emerald-200">Sistem Pencatat & Pengecek Kelengkapan Berkas</p>
                 </div>
             </div>
             <div class="flex items-center gap-3 w-full sm:w-auto">
-                <button onclick="refreshData()" id="refreshBtn" class="w-full sm:w-auto inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium py-2.5 px-5 rounded-xl transition shadow-sm border border-indigo-500">
+                <button onclick="refreshData()" id="refreshBtn" class="w-full sm:w-auto inline-flex items-center justify-center bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium py-2.5 px-5 rounded-xl transition shadow-sm border border-emerald-500">
                     <i class="fa-solid fa-rotate mr-2"></i> Perbarui Data
                 </button>
             </div>
@@ -53,7 +53,7 @@
                     <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Jenis Dokumen Dinamis</p>
                     <h3 id="statTotalDocTypes" class="text-2xl font-bold text-slate-700 mt-1">0</h3>
                 </div>
-                <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
                     <i class="fa-solid fa-file-shield"></i>
                 </div>
             </div>
@@ -75,11 +75,11 @@
                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
-                <input type="text" id="searchInput" oninput="filterData()" placeholder="Cari nama siswa atau NISN..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+                <input type="text" id="searchInput" oninput="filterData()" placeholder="Cari nama siswa atau NISN..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition">
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
                 <span class="text-xs text-slate-500 font-medium">Filter Kelengkapan:</span>
-                <select id="statusFilter" onchange="filterData()" class="bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <select id="statusFilter" onchange="filterData()" class="bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
                     <option value="all">Semua Status</option>
                     <option value="complete">Lengkap Semua</option>
                     <option value="incomplete">Belum Lengkap</option>
@@ -88,7 +88,7 @@
         </div>
 
         <div id="loadingState" class="flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
-            <div class="animate-spin rounded-full h-10 w-10 border-4 border-indigo-600 border-t-transparent mb-4"></div>
+            <div class="animate-spin rounded-full h-10 w-10 border-4 border-emerald-600 border-t-transparent mb-4"></div>
             <p class="text-slate-600 font-medium text-sm">Memuat data dari Google Spreadsheet...</p>
         </div>
 
@@ -128,10 +128,10 @@
             <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
                 <div class="flex items-center gap-2 truncate">
                     <span id="modalDocTitle" class="font-bold text-slate-800 text-base truncate">Judul Dokumen</span>
-                    <span id="modalStudentName" class="text-xs bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full font-medium truncate">Nama Siswa</span>
+                    <span id="modalStudentName" class="text-xs bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full font-medium truncate">Nama Siswa</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span id="modalTypeBadge" class="hidden text-xs bg-indigo-50 text-indigo-600 border border-indigo-200 px-2.5 py-1 rounded-lg font-semibold">Dokumen</span>
+                    <span id="modalTypeBadge" class="hidden text-xs bg-emerald-50 text-emerald-600 border border-emerald-200 px-2.5 py-1 rounded-lg font-semibold">Dokumen</span>
                     <button onclick="closePreviewModal()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center transition">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
@@ -141,14 +141,14 @@
                 <img id="modalImage" src="" alt="Preview Dokumen" class="max-h-[65vh] max-w-full rounded-xl shadow-md object-contain hidden">
                 <iframe id="modalIframe" src="" class="w-full h-[65vh] rounded-xl shadow-md border-0 hidden" allow="autoplay; encrypted-media"></iframe>
                 <div id="modalLoading" class="flex flex-col items-center justify-center text-slate-400">
-                    <div class="animate-spin rounded-full h-8 w-8 border-3 border-indigo-600 border-t-transparent mb-2"></div>
+                    <div class="animate-spin rounded-full h-8 w-8 border-3 border-emerald-600 border-t-transparent mb-2"></div>
                     <p class="text-xs">Memuat pratinjau dokumen / PDF...</p>
                 </div>
                 <div id="modalError" class="hidden flex flex-col items-center justify-center text-center p-6 text-slate-500">
                     <i class="fa-solid fa-triangle-exclamation text-3xl text-amber-500 mb-2"></i>
                     <p class="font-medium text-sm">Gagal memuat pratinjau dokumen.</p>
                     <p class="text-xs text-slate-400 mt-1">Pastikan tautan Google Drive publik ("Siapa saja yang memiliki link dapat melihat").</p>
-                    <a id="modalExternalLink" href="#" target="_blank" class="mt-4 inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium py-2 px-4 rounded-xl transition shadow-sm">
+                    <a id="modalExternalLink" href="#" target="_blank" class="mt-4 inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium py-2 px-4 rounded-xl transition shadow-sm">
                         <i class="fa-solid fa-external-link-alt"></i> Buka Dokumen Langsung
                     </a>
                 </div>
@@ -332,7 +332,7 @@
                 let uploadedCount = (i % 7); // Bervariasi jumlah dokumen terunggah
                 dynamicDocTypes.forEach((dt, idx) => {
                     if (idx < uploadedCount) {
-                        docs[dt.key] = 'https://placehold.co/400x300/indigo/white?text=Dokumen+' + dt.label;
+                        docs[dt.key] = 'https://placehold.co/400x300/emerald/white?text=Dokumen+' + dt.label;
                     } else {
                         docs[dt.key] = '';
                     }
@@ -410,9 +410,9 @@
                     if (docLink && docLink.trim() !== '') {
                         bodyHtml += `
                             <td class="py-4 px-4 text-center">
-                                <div onclick="openPreview('${escapeHtml(student.nama)}', '${escapeHtml(dt.label)}', '${escapeHtml(docLink)}')" class="group relative w-14 h-14 mx-auto rounded-xl overflow-hidden border-2 border-slate-200 hover:border-indigo-500 cursor-pointer shadow-sm transition bg-slate-100 flex items-center justify-center">
+                                <div onclick="openPreview('${escapeHtml(student.nama)}', '${escapeHtml(dt.label)}', '${escapeHtml(docLink)}')" class="group relative w-14 h-14 mx-auto rounded-xl overflow-hidden border-2 border-slate-200 hover:border-emerald-500 cursor-pointer shadow-sm transition bg-slate-100 flex items-center justify-center">
                                     <img src="${escapeHtml(docLink)}" alt="${dt.label}" class="w-full h-full object-cover group-hover:scale-105 transition duration-200" onerror="this.onerror=null; this.src='https://placehold.co/100x100/e2e8f0/64748b?text=File';">
-                                    <div class="absolute inset-0 bg-indigo-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs">
+                                    <div class="absolute inset-0 bg-emerald-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs">
                                         <i class="fa-solid fa-eye"></i>
                                     </div>
                                 </div>
@@ -465,7 +465,7 @@
             for (let i = 1; i <= totalPages; i++) {
                 if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
                     controlsHtml += `
-                        <button onclick="changePage(${i})" class="px-3 py-1.5 rounded-lg text-xs font-medium transition ${currentPage === i ? 'bg-indigo-600 text-white font-semibold' : 'border border-slate-200 text-slate-600 hover:bg-slate-100'}">
+                        <button onclick="changePage(${i})" class="px-3 py-1.5 rounded-lg text-xs font-medium transition ${currentPage === i ? 'bg-emerald-600 text-white font-semibold' : 'border border-slate-200 text-slate-600 hover:bg-slate-100'}">
                             ${i}
                         </button>
                     `;
