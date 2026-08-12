@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pencatat & Pengecek Data Siswa - Guru</title>
+    <title>Pencatat & Pengecek Data Siswa</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -38,7 +38,6 @@
 
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
         
-        <!-- Statistics & Info Bar -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
                 <div>
@@ -71,7 +70,6 @@
             </div>
         </div>
 
-        <!-- Search and Filter Toolbar -->
         <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-4 items-center justify-between">
             <div class="relative w-full sm:w-96">
                 <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -89,7 +87,6 @@
             </div>
         </div>
 
-        <!-- Loading & Empty States -->
         <div id="loadingState" class="flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
             <div class="animate-spin rounded-full h-10 w-10 border-4 border-indigo-600 border-t-transparent mb-4"></div>
             <p class="text-slate-600 font-medium text-sm">Memuat data dari Google Spreadsheet...</p>
@@ -101,7 +98,6 @@
             <p class="text-slate-400 text-xs mt-1">Coba kata kunci lain atau periksa tautan spreadsheet Anda.</p>
         </div>
 
-        <!-- Main Data Table Container -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
             <div class="overflow-x-auto custom-scrollbar">
                 <table class="w-full text-left border-collapse" id="studentTable">
@@ -115,10 +111,18 @@
                     </tbody>
                 </table>
             </div>
+
+            <div id="paginationContainer" class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-xs text-slate-500" id="paginationInfo">
+                    Menampilkan 0 - 0 dari 0 data siswa
+                </div>
+                <div class="flex items-center gap-1.5" id="paginationControls">
+                    <!-- Dynamically generated pagination buttons -->
+                </div>
+            </div>
         </div>
     </main>
 
-    <!-- Document Preview Modal -->
     <div id="previewModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -131,7 +135,7 @@
                 </button>
             </div>
             <div class="p-6 flex-1 overflow-auto flex items-center justify-center bg-slate-950/5 min-h-[300px]">
-                <img id="modalImage" src="" alt="Preview Dokumen" class="max-h-[60vh] max-w-full rounded-xl shadow-md object-contain hidden" onerror="handleImageError()">
+                <img id="modalImage" src="" alt="Preview Dokumen" class="max-h-[60vh] max-w-full rounded-xl shadow-md object-contain hidden">
                 <div id="modalLoading" class="flex flex-col items-center justify-center text-slate-400">
                     <div class="animate-spin rounded-full h-8 w-8 border-3 border-indigo-600 border-t-transparent mb-2"></div>
                     <p class="text-xs">Memuat pratinjau gambar...</p>
@@ -152,7 +156,6 @@
         </div>
     </div>
 
-    <!-- Custom Notification Toast -->
     <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm">
         <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400"></i>
         <span id="toastMessage">Pemberitahuan</span>
@@ -164,156 +167,186 @@
         let dynamicDocTypes = [];
         let globalStudents = [];
         let filteredStudents = [];
+        
+        let currentPage = 1;
+        const rowsPerPage = 30;
 
         window.onload = function() {
             fetchSpreadsheetData();
         };
 
-        async function fetchSpreadsheetData() {
+        function fetchSpreadsheetData() {
             showLoading(true);
-            try {
-                const response = await fetch(SHEET_URL);
-                if (!response.ok) throw new Error('Gagal terhubung ke Google Spreadsheet.');
-                const csvText = await response.text();
-                parseCSV(csvText);
-            } catch (err) {
-                console.warn('Gagal mengambil langsung via fetch, mencoba mock fallback:', err);
-                loadMockData();
-            }
+            fetch(SHEET_URL)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.text();
+                })
+                .then(csvText => {
+                    parseCSV(csvText);
+                })
+                .catch(error => {
+                    console.warn('Gagal memuat langsung dari spreadsheet, memuat data contoh...', error);
+                    loadMockData();
+                });
         }
 
-        function parseCSV(text) {
-            const lines = text.split('\n').filter(line => line.trim() !== '');
-            if (lines.length === 0) {
-                showEmptyState(true);
-                showLoading(false);
+        function parseCSV(csvText) {
+            const rows = parseCSVLines(csvText);
+            if (rows.length < 2) {
+                loadMockData();
                 return;
             }
 
-            const rawHeaders = parseCSVLine(lines[0]);
+            const headers = rows[0].map(h => h.trim());
             
-            // Kolom 0 = No, Kolom 1 = Nama Siswa, Kolom 2 = NISN. Kolom 3 dan seterusnya adalah jenis dokumen dinamis.
+            // Kolom dokumen dinamis dimulai dari indeks 3 (setelah No, Nama, NISN)
             dynamicDocTypes = [];
-            for (let i = 3; i < rawHeaders.length; i++) {
-                let headerTitle = rawHeaders[i].trim().replace(/^"|"$/g, '');
-                if (headerTitle) {
-                    let key = headerTitle.toLowerCase().replace(/[^a-z0-9_]/g, '_');
-                    dynamicDocTypes.push({ key: key, label: headerTitle });
+            for (let i = 3; i < headers.length; i++) {
+                if (headers[i]) {
+                    dynamicDocTypes.push({
+                        key: 'doc_' + i,
+                        label: headers[i],
+                        originalIndex: i
+                    });
                 }
             }
 
-            // Fallback jika header dokumen belum terdeteksi di row pertama
             if (dynamicDocTypes.length === 0) {
+                // Fallback default jika kolom tidak terdeteksi
                 dynamicDocTypes = [
-                    { key: 'kk', label: 'KK' },
-                    { key: 'akta', label: 'Akta Kelahiran' },
-                    { key: 'ijazah_mts', label: 'Ijazah MTs/SMP' },
-                    { key: 'ijazah_ma', label: 'Ijazah MA/SMA' },
-                    { key: 'ktp_ortu', label: 'KTP Orang Tua' },
-                    { key: 'formulir', label: 'Formulir Pendaftaran' },
-                    { key: 'surat_pernyataan', label: 'Surat Pernyataan' }
+                    { key: 'doc_kk', label: 'KK', originalIndex: 3 },
+                    { key: 'doc_akta', label: 'Akta Kelahiran', originalIndex: 4 },
+                    { key: 'doc_smp', label: 'Ijazah MTs/SMP', originalIndex: 5 },
+                    { key: 'doc_sma', label: 'Ijazah MA/SMA', originalIndex: 6 },
+                    { key: 'doc_ktp', label: 'KTP Orang Tua', originalIndex: 7 },
+                    { key: 'doc_form', label: 'Formulir Pendaftaran', originalIndex: 8 },
+                    { key: 'doc_surat', label: 'Surat Pernyataan', originalIndex: 9 }
                 ];
             }
 
-            let students = [];
-            for (let i = 1; i < lines.length; i++) {
-                const row = parseCSVLine(lines[i]);
-                if (row.length === 0 || !row[0].trim()) continue;
+            const students = [];
+            for (let i = 1; i < rows.length; i++) {
+                const cols = rows[i];
+                if (!cols || cols.length < 2) continue;
+                
+                const nama = cols[1] ? cols[1].trim() : '';
+                if (!nama) continue;
 
-                let student = {
-                    id: i,
-                    nama: row[1] || row[0] || `Siswa ${i}`,
-                    nisn: row[2] || '-',
-                    docs: {}
-                };
-
-                dynamicDocTypes.forEach((docType, index) => {
-                    let colIndex = 3 + index;
-                    let rawLink = row[colIndex] ? row[colIndex].trim() : '';
-                    student.docs[docType.key] = formatDriveLink(rawLink);
+                const nisn = cols[2] ? cols[2].trim() : '';
+                
+                const docs = {};
+                dynamicDocTypes.forEach(dt => {
+                    let rawUrl = cols[dt.originalIndex] ? cols[dt.originalIndex].trim() : '';
+                    docs[dt.key] = convertGoogleDriveUrl(rawUrl);
                 });
 
-                students.push(student);
+                students.push({
+                    nama: nama,
+                    nisn: nisn,
+                    docs: docs
+                });
             }
 
             globalStudents = students;
             filteredStudents = students;
+            currentPage = 1;
             updateStatistics();
             renderTable();
             showLoading(false);
             showToast('Data berhasil diperbarui dari Google Spreadsheet!', 'success');
         }
 
-        function parseCSVLine(text) {
-            let result = [];
+        function parseCSVLines(text) {
+            let lines = [];
+            let row = [''];
             let inQuotes = false;
-            let current = '';
+            
             for (let i = 0; i < text.length; i++) {
-                let char = text[i];
-                if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    result.push(current.trim().replace(/^"|"$/g, ''));
-                    current = '';
+                let c = text[i];
+                let nextC = text[i + 1];
+                
+                if (c === '"') {
+                    if (inQuotes && nextC === '"') {
+                        row[row.length - 1] += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (c === ',' && !inQuotes) {
+                    row.push('');
+                } else if ((c === '\r' && nextC === '\n') || c === '\n') {
+                    if (c === '\r') i++;
+                    lines.push(row);
+                    row = [''];
                 } else {
-                    current += char;
+                    row[row.length - 1] += c;
                 }
             }
-            result.push(current.trim().replace(/^"|"$/g, ''));
-            return result;
+            if (row.length > 1 || row[0] !== '') {
+                lines.push(row);
+            }
+            return lines;
+        }
+
+        function convertGoogleDriveUrl(url) {
+            if (!url) return '';
+            if (url.includes('drive.google.com')) {
+                let fileId = '';
+                if (url.includes('/file/d/')) {
+                    let parts = url.split('/file/d/');
+                    if (parts[1]) {
+                        fileId = parts[1].split('/')[0];
+                    }
+                } else if (url.includes('id=')) {
+                    let match = url.match(/id=([a-zA-Z0-9_-]+)/);
+                    if (match && match[1]) {
+                        fileId = match[1];
+                    }
+                }
+                if (fileId) {
+                    return `https://lh3.googleusercontent.com/d/${fileId}=w800`;
+                }
+            }
+            return url;
         }
 
         function loadMockData() {
             dynamicDocTypes = [
-                { key: 'kk', label: 'KK' },
-                { key: 'akta', label: 'Akta Kelahiran' },
-                { key: 'ijazah_mts', label: 'Ijazah MTs/SMP' },
-                { key: 'ijazah_ma', label: 'Ijazah MA/SMA' },
-                { key: 'ktp_ortu', label: 'KTP Orang Tua' },
-                { key: 'formulir', label: 'Formulir Pendaftaran' },
-                { key: 'surat_pernyataan', label: 'Surat Pernyataan' }
+                { key: 'doc_kk', label: 'KK', originalIndex: 3 },
+                { key: 'doc_akta', label: 'Akta Kelahiran', originalIndex: 4 },
+                { key: 'doc_smp', label: 'Ijazah MTs/SMP', originalIndex: 5 },
+                { key: 'doc_sma', label: 'Ijazah MA/SMA', originalIndex: 6 },
+                { key: 'doc_ktp', label: 'KTP Orang Tua', originalIndex: 7 },
+                { key: 'doc_form', label: 'Formulir Pendaftaran', originalIndex: 8 },
+                { key: 'doc_surat', label: 'Surat Pernyataan', originalIndex: 9 }
             ];
 
-            const sampleNames = [
-                "Ahmad Fauzi", "Siti Nurhaliza", "Budi Santoso", "Dewi Lestari", 
-                "Reza Pratama", "Anisa Rahmawati", "Dimas Anggara", "Rina Marlina"
-            ];
-
-            let students = sampleNames.map((name, idx) => {
+            const students = [];
+            for (let i = 1; i <= 45; i++) {
                 let docs = {};
-                dynamicDocTypes.forEach(dt => {
-                    docs[dt.key] = idx % 2 === 0 ? `https://picsum.photos/seed/${name.replace(/\s/g, '')}_${dt.key}/800/600` : '';
+                let uploadedCount = (i % 7); // Bervariasi jumlah dokumen terunggah
+                dynamicDocTypes.forEach((dt, idx) => {
+                    if (idx < uploadedCount) {
+                        docs[dt.key] = 'https://placehold.co/400x300/indigo/white?text=Dokumen+' + dt.label;
+                    } else {
+                        docs[dt.key] = '';
+                    }
                 });
-                return {
-                    id: idx + 1,
-                    nama: name,
-                    nisn: `307892${1000 + idx}`,
+                students.push({
+                    nama: `Siswa Contoh ${i}`,
+                    nisn: `30789210${i < 10 ? '0' + i : i}`,
                     docs: docs
-                };
-            });
+                });
+            }
 
             globalStudents = students;
             filteredStudents = students;
+            currentPage = 1;
             updateStatistics();
             renderTable();
             showLoading(false);
             showToast('Dimuat menggunakan mode contoh (Mock Data).', 'info');
-        }
-
-        function formatDriveLink(url) {
-            if (!url) return '';
-            if (url.includes('drive.google.com/file/d/')) {
-                const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-                if (match && match[1]) {
-                    return `https://lh3.googleusercontent.com/d/${match[1]}=w1000`;
-                }
-            } else if (url.includes('id=')) {
-                const match = url.match(/id=([a-zA-Z0-9_-]+)/);
-                if (match && match[1]) {
-                    return `https://lh3.googleusercontent.com/d/${match[1]}=w1000`;
-                }
-            }
-            return url;
         }
 
         function renderTable() {
@@ -324,6 +357,7 @@
                 showEmptyState(true);
                 tableHeaderRow.innerHTML = '';
                 tableBody.innerHTML = '';
+                renderPagination(0);
                 return;
             }
             showEmptyState(false);
@@ -331,22 +365,31 @@
             let headerHtml = `
                 <th class="py-3.5 px-4 font-semibold text-slate-700 w-12 text-center">No</th>
                 <th class="py-3.5 px-4 font-semibold text-slate-700 min-w-[200px]">Nama Siswa / NISN</th>
-                <th class="py-3.5 px-4 font-semibold text-slate-700 text-center w-32">Status</th>
+                <th class="py-3.5 px-4 font-semibold text-slate-700 text-center w-36">Status</th>
             `;
             dynamicDocTypes.forEach(dt => {
                 headerHtml += `<th class="py-3.5 px-4 font-semibold text-slate-700 text-center min-w-[120px]">${dt.label}</th>`;
             });
             tableHeaderRow.innerHTML = headerHtml;
 
+            const totalPages = Math.ceil(filteredStudents.length / rowsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+            const paginatedStudents = filteredStudents.slice(startIndex, endIndex);
+
             let bodyHtml = '';
-            filteredStudents.forEach((student, index) => {
+            paginatedStudents.forEach((student, index) => {
+                const absoluteIndex = startIndex + index + 1;
                 let totalDocs = dynamicDocTypes.length;
                 let uploadedCount = dynamicDocTypes.filter(dt => student.docs[dt.key] && student.docs[dt.key].trim() !== '').length;
                 let isComplete = totalDocs > 0 && uploadedCount === totalDocs;
 
                 bodyHtml += `
                     <tr class="hover:bg-slate-50/80 transition">
-                        <td class="py-4 px-4 text-center font-medium text-slate-500">${index + 1}</td>
+                        <td class="py-4 px-4 text-center font-medium text-slate-500">${absoluteIndex}</td>
                         <td class="py-4 px-4">
                             <div class="font-bold text-slate-800">${escapeHtml(student.nama)}</div>
                             <div class="text-xs text-slate-400 mt-0.5">NISN: ${escapeHtml(student.nisn || '-')}</div>
@@ -386,6 +429,65 @@
             });
 
             tableBody.innerHTML = bodyHtml;
+            renderPagination(filteredStudents.length);
+        }
+
+        function renderPagination(totalItems) {
+            const paginationInfo = document.getElementById('paginationInfo');
+            const paginationControls = document.getElementById('paginationControls');
+
+            if (totalItems === 0) {
+                paginationInfo.innerText = 'Tidak ada data untuk ditampilkan';
+                paginationControls.innerHTML = '';
+                return;
+            }
+
+            const totalPages = Math.ceil(totalItems / rowsPerPage);
+            const startIndex = (currentPage - 1) * rowsPerPage + 1;
+            const endIndex = Math.min(currentPage * rowsPerPage, totalItems);
+
+            paginationInfo.innerText = `Menampilkan ${startIndex} - ${endIndex} dari ${totalItems} data siswa`;
+
+            let controlsHtml = '';
+            
+            // Tombol Previous
+            controlsHtml += `
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled class="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed text-xs font-medium"' : 'class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition"'}>
+                    <i class="fa-solid fa-chevron-left mr-1"></i> Prev
+                </button>
+            `;
+
+            // Angka Halaman
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    if (i === currentPage) {
+                        controlsHtml += `<button class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold shadow-sm">${i}</button>`;
+                    } else {
+                        controlsHtml += `<button onclick="changePage(${i})" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition">${i}</button>`;
+                    }
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    controlsHtml += `<span class="px-2 text-slate-400 text-xs">...</span>`;
+                }
+            }
+
+            // Tombol Next
+            controlsHtml += `
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled class="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed text-xs font-medium"' : 'class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition"'}>
+                    Next <i class="fa-solid fa-chevron-right ml-1"></i>
+                </button>
+            `;
+
+            paginationControls.innerHTML = controlsHtml;
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredStudents.length / rowsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderTable();
+                const tableContainer = document.querySelector('.overflow-x-auto');
+                if (tableContainer) tableContainer.scrollTop = 0;
+            }
         }
 
         function filterData() {
@@ -406,6 +508,7 @@
                 return matchName && matchStatus;
             });
 
+            currentPage = 1;
             renderTable();
         }
 
@@ -447,9 +550,12 @@
         }
 
         function handleImageError() {
-            document.getElementById('modalLoading').classList.add('hidden');
-            document.getElementById('modalImage').classList.add('hidden');
-            document.getElementById('modalError').classList.remove('hidden');
+            const modalLoading = document.getElementById('modalLoading');
+            const modalImage = document.getElementById('modalImage');
+            const modalError = document.getElementById('modalError');
+            if (modalLoading) modalLoading.classList.add('hidden');
+            if (modalImage) modalImage.classList.add('hidden');
+            if (modalError) modalError.classList.remove('hidden');
         }
 
         function closePreviewModal() {
@@ -472,11 +578,10 @@
         function refreshData() {
             const btn = document.getElementById('refreshBtn');
             btn.querySelector('i').classList.add('fa-spin');
-            fetchSpreadsheetData().finally(() => {
-                setTimeout(() => {
-                    btn.querySelector('i').classList.remove('fa-spin');
-                }, 500);
-            });
+            fetchSpreadsheetData();
+            setTimeout(() => {
+                btn.querySelector('i').classList.remove('fa-spin');
+            }, 600);
         }
 
         function showToast(message, type = 'success') {
