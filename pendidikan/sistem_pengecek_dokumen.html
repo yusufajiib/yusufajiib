@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pencatat & Pengecek Data Siswa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-full flex flex-col antialiased">
+
+    <header class="bg-indigo-700 text-white shadow-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 p-2.5 rounded-xl shadow-inner border border-indigo-500">
+                    <i class="fa-solid fa-folder-open text-xl text-indigo-100"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">SI-Dokumen Siswa</h1>
+                    <p class="text-xs text-indigo-200">Sistem Pencatat & Pengecek Kelengkapan Berkas</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <button onclick="refreshData()" id="refreshBtn" class="flex-1 sm:flex-none inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium py-2 px-4 rounded-xl transition shadow-sm border border-indigo-500">
+                    <i class="fa-solid fa-rotate mr-2"></i> Perbarui Data
+                </button>
+                <button onclick="openAddModal()" class="flex-1 sm:flex-none inline-flex items-center justify-center bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium py-2 px-4 rounded-xl transition shadow-sm">
+                    <i class="fa-solid fa-plus mr-2"></i> Tambah Dokumen Baru
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
+        
+        <!-- Statistics & Info Bar -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Siswa</p>
+                    <h3 id="statTotalSiswa" class="text-2xl font-bold text-slate-700 mt-1">0</h3>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Jenis Dokumen Wajib</p>
+                    <h3 id="statTotalDocTypes" class="text-2xl font-bold text-slate-700 mt-1">7</h3>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-file-shield"></i>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Sumber Data</p>
+                    <h3 class="text-sm font-bold text-emerald-600 mt-1 flex items-center gap-1.5 truncate max-w-[200px]">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Google Spreadsheet
+                    </h3>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-link"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filter Toolbar -->
+        <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div class="relative w-full sm:w-96">
+                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input type="text" id="searchInput" oninput="filterData()" placeholder="Cari nama siswa..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition">
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <span class="text-xs text-slate-500 font-medium">Filter Kelengkapan:</span>
+                <select id="statusFilter" onchange="filterData()" class="bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="all">Semua Status</option>
+                    <option value="complete">Lengkap Semua</option>
+                    <option value="incomplete">Belum Lengkap</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Loading & Empty States -->
+        <div id="loadingState" class="hidden flex-col items-center justify-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <div class="animate-spin rounded-full h-10 w-10 border-4 border-indigo-600 border-t-transparent mb-4"></div>
+            <p class="text-slate-600 font-medium text-sm">Memuat data dari Google Spreadsheet...</p>
+        </div>
+
+        <div id="emptyState" class="hidden flex-col items-center justify-center py-16 bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <div class="text-slate-300 text-5xl mb-3"><i class="fa-solid fa-folder-closed"></i></div>
+            <p class="text-slate-700 font-semibold">Tidak ada data siswa ditemukan</p>
+            <p class="text-slate-400 text-xs mt-1">Coba kata kunci lain atau periksa tautan spreadsheet Anda.</p>
+        </div>
+
+        <!-- Main Data Table / Card Grid container -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left border-collapse" id="studentTable">
+                    <thead>
+                        <tr id="tableHeaderRow" class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-semibold uppercase tracking-wider">
+                            <!-- Dynamically generated headers -->
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-slate-100 text-sm">
+                        <!-- Dynamically populated rows -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Document Preview Modal -->
+    <div id="previewModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <div class="flex items-center gap-2 truncate">
+                    <span id="modalDocTitle" class="font-bold text-slate-800 text-base truncate">Judul Dokumen</span>
+                    <span id="modalStudentName" class="text-xs bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full font-medium truncate">Nama Siswa</span>
+                </div>
+                <button onclick="closePreviewModal()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 flex-1 overflow-auto flex items-center justify-center bg-slate-950/5 min-h-[300px]">
+                <img id="modalImage" src="" alt="Preview Dokumen" class="max-h-[60vh] max-w-full rounded-xl shadow-md object-contain hidden" onerror="handleImageError()">
+                <div id="modalLoading" class="flex flex-col items-center justify-center text-slate-400">
+                    <div class="animate-spin rounded-full h-8 w-8 border-3 border-indigo-600 border-t-transparent mb-2"></div>
+                    <p class="text-xs">Memuat pratinjau gambar...</p>
+                </div>
+                <div id="modalError" class="hidden flex flex-col items-center justify-center text-center p-6 text-slate-500">
+                    <i class="fa-solid fa-triangle-exclamation text-3xl text-amber-500 mb-2"></i>
+                    <p class="font-medium text-sm">Gagal memuat gambar atau tautan tidak valid.</p>
+                    <p class="text-xs text-slate-400 mt-1">Pastikan tautan berbagi Google Drive publik dan dapat diakses.</p>
+                    <a id="modalExternalLink" href="#" target="_blank" class="mt-4 inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium py-2 px-4 rounded-xl transition">
+                        <i class="fa-solid fa-external-link-alt"></i> Buka Tautan Langsung
+                    </a>
+                </div>
+            </div>
+            <div class="px-6 py-3 border-t border-slate-100 bg-slate-50 flex justify-between items-center text-xs text-slate-500">
+                <span id="modalLinkStatus" class="truncate max-w-md">URL: -</span>
+                <button onclick="closePreviewModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-1.5 px-4 rounded-xl transition">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Custom Document Modal -->
+    <div id="addModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <h3 class="font-bold text-slate-800 text-base">Tambah Dokumen Jenis Baru</h3>
+                <button onclick="closeAddModal()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="handleAddNewDocType(event)" class="p-6 flex flex-col gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1.5">Nama Jenis Dokumen Baru</label>
+                    <input type="text" id="newDocNameInput" required placeholder="Contoh: Sertifikat Prestasi" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1.5">Kunci Kolom (Tanpa spasi)</label>
+                    <input type="text" id="newDocKeyInput" required placeholder="Contoh: sertifikat_prestasi" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <p class="text-[11px] text-slate-400 mt-1">Gunakan huruf kecil dan garis bawah (_) untuk kunci data.</p>
+                </div>
+                <div class="flex justify-end gap-2 mt-2">
+                    <button type="button" onclick="closeAddModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium py-2 px-4 rounded-xl transition">Batal</button>
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-xl transition shadow-sm">Simpan Dokumen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Custom Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastMessage">Pemberitahuan</span>
+    </div>
+
+    <script>
+        // Configuration & Constants
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/18HtWDVXGLt1RPbuZxqWxQHYJnS-rdFN5qDc-vqjvrU0/gviz/tq?tqx=out:csv';
+        
+        // Default required document types as specified, now dynamically expandable from Spreadsheet headers
+        let defaultDocTypes = [
+            { key: 'kk', label: 'KK' },
+            { key: 'akta', label: 'Akta Kelahiran' },
+            { key: 'ijazah_mts', label: 'Ijazah MTs/SMP' },
+            { key: 'ijazah_ma', label: 'Ijazah MA/SMA' },
+            { key: 'ktp_ortu', label: 'KTP Orang Tua' },
+            { key: 'formulir', label: 'Formulir Pendaftaran' },
+            { key: 'surat_pernyataan', label: 'Surat Pernyataan' }
+        ];
+
+        let globalStudents = [];
+        let filteredStudents = [];
+
+        // On window load fetch data
+        window.onload = function() {
+            fetchSpreadsheetData();
+        };
+
+        // Fetch CSV data from Google Spreadsheet
+        async function fetchSpreadsheetData() {
+            showLoading(true);
+            try {
+                const response = await fetch(SHEET_URL);
+                if (!response.ok) throw new Error('Gagal terhubung ke Google Spreadsheet.');
+                const csvText = await response.text();
+                parseCSV(csvText);
+            } catch (err) {
+                console.warn('Gagal mengambil langsung via fetch, mencoba mock fallback:', err);
+                loadMockData();
+            }
+        }
+
+        // Parse CSV data and dynamically detect new document columns from spreadsheet headers
+        function parseCSV(text) {
+            const lines = text.split('\n').filter(line => line.trim() !== '');
+            if (lines.length === 0) {
+                showEmptyState(true);
+                showLoading(false);
+                return;
+            }
+
+            const rawHeaders = parseCSVLine(lines[0]);
+            
+            // Kolom 0, 1, 2 biasanya No, Nama, NISN. Kolom ke-3 dan seterusnya adalah dokumen.
+            let dynamicDocTypes = [];
+            for (let i = 3; i < rawHeaders.length; i++) {
+                let headerTitle = rawHeaders[i].trim().replace(/^"|"$/g, '');
+                if (headerTitle) {
+                    let key = headerTitle.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+                    dynamicDocTypes.push({ key: key, label: headerTitle });
+                }
+            }
+
+            // Jika ada kolom baru di spreadsheet, gabungkan dengan default atau gunakan sebagai sumber utama
+            if (dynamicDocTypes.length > 0) {
+                defaultDocTypes = dynamicDocTypes;
+            }
+
+            let students = [];
+            for (let i = 1; i < lines.length; i++) {
+                const row = parseCSVLine(lines[i]);
+                if (row.length === 0 || !row[0].trim()) continue;
+
+                let student = {
+                    id: i,
+                    nama: row[1] || row[0] || `Siswa ${i}`,
+                    nisn: row[2] || '-',
+                    docs: {}
+                };
+
+                // Map spreadsheet columns to document types based on header position
+                defaultDocTypes.forEach((docType, index) => {
+                    let colIndex = 3 + index;
+                    let rawLink = row[colIndex] ? row[colIndex].trim() : '';
+                    student.docs[docType.key] = formatDriveLink(rawLink);
+                });
+
+                students.push(student);
+            }
+
+            globalStudents = students;
+            filteredStudents = students;
+            updateStatistics();
+            renderTable();
+            showLoading(false);
+            showToast('Data berhasil diperbarui dari Google Spreadsheet!', 'success');
+        }
+
+        // Helper to parse individual CSV line correctly handling quotes
+        function parseCSVLine(text) {
+            let result = [];
+            let inQuotes = false;
+            let current = '';
+            for (let i = 0; i < text.length; i++) {
+                let char = text[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim().replace(/^"|"$/g, ''));
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim().replace(/^"|"$/g, ''));
+            return result;
+        }
+
+        // Fallback mock data if spreadsheet fetch encounters CORS restrictions
+        function loadMockData() {
+            const sampleNames = [
+                "Ahmad Fauzi", "Siti Nurhaliza", "Budi Santoso", "Dewi Lestari", 
+                "Reza Pratama", "Anisa Rahmawati", "Dimas Anggara", "Rina Marlina"
+            ];
+
+            let students = sampleNames.map((name, idx) => {
+                let docs = {};
+                defaultDocTypes.forEach(dt => {
+                    // Generate sample previewable image placeholders or real public test images
+                    docs[dt.key] = idx % 2 === 0 ? `https://picsum.photos/seed/${name.replace(/\s/g, '')}_${dt.key}/800/600` : '';
+                });
+                return {
+                    id: idx + 1,
+                    nama: name,
+                    nisn: `307892${1000 + idx}`,
+                    docs: docs
+                };
+            });
+
+            globalStudents = students;
+            filteredStudents = students;
+            updateStatistics();
+            renderTable();
+            showLoading(false);
+            showToast('Dimuat menggunakan mode contoh (Mock Data).', 'info');
+        }
+
+        // Convert various Google Drive link formats to direct viewable image link
+        function formatDriveLink(url) {
+            if (!url) return '';
+            // If it's already a direct image or standard URL
+            if (url.includes('drive.google.com/file/d/')) {
+                const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    return `https://lh3.googleusercontent.com/d/${match[1]}=w1000`;
+                }
+            } else if (url.includes('id=')) {
+                const match = url.match(/id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    return `https://lh3.googleusercontent.com/d/${match[1]}=w1000`;
+                }
+            }
+            return url;
+        }
+
+        // Render Table Headers and Body
+        function renderTable() {
+            const tableHeaderRow = document.getElementById('tableHeaderRow');
+            const tableBody = document.getElementById('tableBody');
+
+            if (filteredStudents.length === 0) {
+                showEmptyState(true);
+                tableHeaderRow.innerHTML = '';
+                tableBody.innerHTML = '';
+                return;
+            }
+            showEmptyState(false);
+
+            // Build Header
+            let headerHtml = `
+                <th class="py-3.5 px-4 font-semibold text-slate-700 w-12 text-center">No</th>
+                <th class="py-3.5 px-4 font-semibold text-slate-700 min-w-[200px]">Nama Siswa / NISN</th>
+                <th class="py-3.5 px-4 font-semibold text-slate-700 text-center w-28">Status</th>
+            `;
+            defaultDocTypes.forEach(dt => {
+                headerHtml += `<th class="py-3.5 px-4 font-semibold text-slate-700 text-center min-w-[120px]">${dt.label}</th>`;
+            });
+            tableHeaderRow.innerHTML = headerHtml;
+
+            // Build Body
+            let bodyHtml = '';
+            filteredStudents.forEach((student, index) => {
+                // Calculate completion
+                let totalDocs = defaultDocTypes.length;
+                let uploadedCount = defaultDocTypes.filter(dt => student.docs[dt.key] && student.docs[dt.key] !== '').length;
+                let isComplete = uploadedCount === totalDocs;
+
+                bodyHtml += `
+                    <tr class="hover:bg-slate-50/80 transition">
+                        <td class="py-4 px-4 text-center font-medium text-slate-500">${index + 1}</td>
+                        <td class="py-4 px-4">
+                            <div class="font-bold text-slate-800">${escapeHtml(student.nama)}</div>
+                            <div class="text-xs text-slate-400 mt-0.5">NISN: ${escapeHtml(student.nisn || '-')}</div>
+                        </td>
+                        <td class="py-4 px-4 text-center">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${isComplete ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">
+                                ${uploadedCount}/${totalDocs} Lengkap
+                            </span>
+                        </td>
+                `;
+
+                defaultDocTypes.forEach(dt => {
+                    let docLink = student.docs[dt.key];
+                    if (docLink) {
+                        bodyHtml += `
+                            <td class="py-4 px-4 text-center">
+                                <div onclick="openPreview('${escapeHtml(student.nama)}', '${escapeHtml(dt.label)}', '${escapeHtml(docLink)}')" class="group relative w-14 h-14 mx-auto rounded-xl overflow-hidden border-2 border-slate-200 hover:border-indigo-500 cursor-pointer shadow-sm transition bg-slate-100 flex items-center justify-center">
+                                    <img src="${escapeHtml(docLink)}" alt="${dt.label}" class="w-full h-full object-cover group-hover:scale-105 transition duration-200" onerror="this.onerror=null; this.src='https://placehold.co/100x100/e2e8f0/64748b?text=File';">
+                                    <div class="absolute inset-0 bg-indigo-900/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </div>
+                                </div>
+                            </td>
+                        `;
+                    } else {
+                        bodyHtml += `
+                            <td class="py-4 px-4 text-center">
+                                <span class="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-slate-100 text-slate-400 border border-dashed border-slate-300 text-xs font-medium" title="Belum Diunggah">
+                                    <i class="fa-solid fa-minus text-slate-300"></i>
+                                </span>
+                            </td>
+                        `;
+                    }
+                });
+
+                bodyHtml += `</tr>`;
+            });
+
+            tableBody.innerHTML = bodyHtml;
+        }
+
+        // Filter search and status dropdown
+        function filterData() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            filteredStudents = globalStudents.filter(student => {
+                const matchName = student.nama.toLowerCase().includes(query) || (student.nisn && student.nisn.toLowerCase().includes(query));
+                
+                let totalDocs = defaultDocTypes.length;
+                let uploadedCount = defaultDocTypes.filter(dt => student.docs[dt.key] && student.docs[dt.key] !== '').length;
+                let isComplete = uploadedCount === totalDocs;
+
+                let matchStatus = true;
+                if (statusFilter === 'complete') matchStatus = isComplete;
+                if (statusFilter === 'incomplete') matchStatus = !isComplete;
+
+                return matchName && matchStatus;
+            });
+
+            renderTable();
+        }
+
+        // Update statistics counters
+        function updateStatistics() {
+            document.getElementById('statTotalSiswa').innerText = globalStudents.length;
+            document.getElementById('statTotalDocTypes').innerText = defaultDocTypes.length;
+        }
+
+        // Modal Preview Controls
+        function openPreview(studentName, docLabel, url) {
+            const modal = document.getElementById('previewModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalLoading = document.getElementById('modalLoading');
+            const modalError = document.getElementById('modalError');
+            const modalDocTitle = document.getElementById('modalDocTitle');
+            const modalStudentName = document.getElementById('modalStudentName');
+            const modalLinkStatus = document.getElementById('modalLinkStatus');
+            const modalExternalLink = document.getElementById('modalExternalLink');
+
+            modalDocTitle.innerText = docLabel;
+            modalStudentName.innerText = studentName;
+            modalLinkStatus.innerText = `URL: ${url}`;
+            modalExternalLink.href = url;
+
+            modal.classList.remove('hidden');
+            modalImage.classList.add('hidden');
+            modalError.classList.add('hidden');
+            modalLoading.classList.remove('hidden');
+
+            modalImage.onload = function() {
+                modalLoading.classList.add('hidden');
+                modalImage.classList.remove('hidden');
+            };
+
+            modalImage.onerror = function() {
+                handleImageError();
+            };
+
+            modalImage.src = url;
+        }
+
+        function handleImageError() {
+            document.getElementById('modalLoading').classList.add('hidden');
+            document.getElementById('modalImage').classList.add('hidden');
+            document.getElementById('modalError').classList.remove('hidden');
+        }
+
+        function closePreviewModal() {
+            document.getElementById('previewModal').classList.add('hidden');
+            document.getElementById('modalImage').src = '';
+        }
+
+        // Add New Document Type Modal controls
+        function openAddModal() {
+            document.getElementById('addModal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').classList.add('hidden');
+            document.getElementById('newDocNameInput').value = '';
+            document.getElementById('newDocKeyInput').value = '';
+        }
+
+        function handleAddNewDocType(e) {
+            e.preventDefault();
+            const label = document.getElementById('newDocNameInput').value.trim();
+            const key = document.getElementById('newDocKeyInput').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+
+            if (defaultDocTypes.some(dt => dt.key === key)) {
+                showToast('Kunci dokumen sudah ada, gunakan nama lain.', 'error');
+                return;
+            }
+
+            const newDoc = { key, label };
+            defaultDocTypes.push(newDoc);
+
+            closeAddModal();
+            updateStatistics();
+            renderTable();
+            showToast(`Jenis dokumen "${label}" berhasil ditambahkan ke tampilan web!`, 'success');
+        }
+
+        // UI Helpers
+        function showLoading(show) {
+            const el = document.getElementById('loadingState');
+            if (show) el.classList.remove('hidden');
+            else el.classList.add('hidden');
+        }
+
+        function showEmptyState(show) {
+            const el = document.getElementById('emptyState');
+            if (show) el.classList.remove('hidden');
+            else el.classList.add('hidden');
+        }
+
+        function refreshData() {
+            const btn = document.getElementById('refreshBtn');
+            btn.querySelector('i').classList.add('fa-spin');
+            fetchSpreadsheetData().finally(() => {
+                setTimeout(() => {
+                    btn.querySelector('i').classList.remove('fa-spin');
+                }, 500);
+            });
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.innerText = message;
+            if (type === 'success') {
+                toastIcon.className = 'fa-solid fa-circle-check text-emerald-400';
+            } else if (type === 'error') {
+                toastIcon.className = 'fa-solid fa-circle-exclamation text-rose-400';
+            } else {
+                toastIcon.className = 'fa-solid fa-circle-info text-sky-400';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+    </script>
+</body>
+</html>
