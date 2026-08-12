@@ -124,28 +124,32 @@
     </main>
 
     <div id="previewModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
                 <div class="flex items-center gap-2 truncate">
                     <span id="modalDocTitle" class="font-bold text-slate-800 text-base truncate">Judul Dokumen</span>
                     <span id="modalStudentName" class="text-xs bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full font-medium truncate">Nama Siswa</span>
                 </div>
-                <button onclick="closePreviewModal()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <div class="flex items-center gap-2">
+                    <span id="modalTypeBadge" class="hidden text-xs bg-indigo-50 text-indigo-600 border border-indigo-200 px-2.5 py-1 rounded-lg font-semibold">Dokumen</span>
+                    <button onclick="closePreviewModal()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-600 flex items-center justify-center transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
             </div>
-            <div class="p-6 flex-1 overflow-auto flex items-center justify-center bg-slate-950/5 min-h-[300px]">
-                <img id="modalImage" src="" alt="Preview Dokumen" class="max-h-[60vh] max-w-full rounded-xl shadow-md object-contain hidden">
+            <div class="p-4 sm:p-6 flex-1 overflow-auto flex items-center justify-center bg-slate-950/5 min-h-[350px]">
+                <img id="modalImage" src="" alt="Preview Dokumen" class="max-h-[65vh] max-w-full rounded-xl shadow-md object-contain hidden">
+                <iframe id="modalIframe" src="" class="w-full h-[65vh] rounded-xl shadow-md border-0 hidden" allow="autoplay; encrypted-media"></iframe>
                 <div id="modalLoading" class="flex flex-col items-center justify-center text-slate-400">
                     <div class="animate-spin rounded-full h-8 w-8 border-3 border-indigo-600 border-t-transparent mb-2"></div>
-                    <p class="text-xs">Memuat pratinjau gambar...</p>
+                    <p class="text-xs">Memuat pratinjau dokumen / PDF...</p>
                 </div>
                 <div id="modalError" class="hidden flex flex-col items-center justify-center text-center p-6 text-slate-500">
                     <i class="fa-solid fa-triangle-exclamation text-3xl text-amber-500 mb-2"></i>
-                    <p class="font-medium text-sm">Gagal memuat gambar atau tautan tidak valid.</p>
-                    <p class="text-xs text-slate-400 mt-1">Pastikan tautan berbagi Google Drive publik dan dapat diakses.</p>
-                    <a id="modalExternalLink" href="#" target="_blank" class="mt-4 inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium py-2 px-4 rounded-xl transition">
-                        <i class="fa-solid fa-external-link-alt"></i> Buka Tautan Langsung
+                    <p class="font-medium text-sm">Gagal memuat pratinjau dokumen.</p>
+                    <p class="text-xs text-slate-400 mt-1">Pastikan tautan Google Drive publik ("Siapa saja yang memiliki link dapat melihat").</p>
+                    <a id="modalExternalLink" href="#" target="_blank" class="mt-4 inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium py-2 px-4 rounded-xl transition shadow-sm">
+                        <i class="fa-solid fa-external-link-alt"></i> Buka Dokumen Langsung
                     </a>
                 </div>
             </div>
@@ -443,36 +447,36 @@
             }
 
             const totalPages = Math.ceil(totalItems / rowsPerPage);
-            const startIndex = (currentPage - 1) * rowsPerPage + 1;
-            const endIndex = Math.min(currentPage * rowsPerPage, totalItems);
+            const startItem = (currentPage - 1) * rowsPerPage + 1;
+            const endItem = Math.min(currentPage * rowsPerPage, totalItems);
 
-            paginationInfo.innerText = `Menampilkan ${startIndex} - ${endIndex} dari ${totalItems} data siswa`;
+            paginationInfo.innerText = `Menampilkan ${startItem} - ${endItem} dari ${totalItems} data siswa`;
 
             let controlsHtml = '';
             
-            // Tombol Previous
+            // Prev button
             controlsHtml += `
-                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled class="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed text-xs font-medium"' : 'class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition"'}>
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 text-xs font-medium hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition">
                     <i class="fa-solid fa-chevron-left mr-1"></i> Prev
                 </button>
             `;
 
-            // Angka Halaman
+            // Page numbers
             for (let i = 1; i <= totalPages; i++) {
                 if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
-                    if (i === currentPage) {
-                        controlsHtml += `<button class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold shadow-sm">${i}</button>`;
-                    } else {
-                        controlsHtml += `<button onclick="changePage(${i})" class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition">${i}</button>`;
-                    }
+                    controlsHtml += `
+                        <button onclick="changePage(${i})" class="px-3 py-1.5 rounded-lg text-xs font-medium transition ${currentPage === i ? 'bg-indigo-600 text-white font-semibold' : 'border border-slate-200 text-slate-600 hover:bg-slate-100'}">
+                            ${i}
+                        </button>
+                    `;
                 } else if (i === currentPage - 2 || i === currentPage + 2) {
-                    controlsHtml += `<span class="px-2 text-slate-400 text-xs">...</span>`;
+                    controlsHtml += `<span class="px-1 text-slate-400 text-xs">...</span>`;
                 }
             }
 
-            // Tombol Next
+            // Next button
             controlsHtml += `
-                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled class="px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed text-xs font-medium"' : 'class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition"'}>
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 text-xs font-medium hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition">
                     Next <i class="fa-solid fa-chevron-right ml-1"></i>
                 </button>
             `;
@@ -481,31 +485,27 @@
         }
 
         function changePage(page) {
-            const totalPages = Math.ceil(filteredStudents.length / rowsPerPage);
-            if (page >= 1 && page <= totalPages) {
-                currentPage = page;
-                renderTable();
-                const tableContainer = document.querySelector('.overflow-x-auto');
-                if (tableContainer) tableContainer.scrollTop = 0;
-            }
+            currentPage = page;
+            renderTable();
         }
 
         function filterData() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const statusFilter = document.getElementById('statusFilter').value;
+            const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+            const statusVal = document.getElementById('statusFilter').value;
 
             filteredStudents = globalStudents.filter(student => {
-                const matchName = student.nama.toLowerCase().includes(query) || (student.nisn && student.nisn.toLowerCase().includes(query));
-                
+                const matchSearch = student.nama.toLowerCase().includes(searchVal) || 
+                                    student.nisn.toLowerCase().includes(searchVal);
+
                 let totalDocs = dynamicDocTypes.length;
                 let uploadedCount = dynamicDocTypes.filter(dt => student.docs[dt.key] && student.docs[dt.key].trim() !== '').length;
                 let isComplete = totalDocs > 0 && uploadedCount === totalDocs;
 
                 let matchStatus = true;
-                if (statusFilter === 'complete') matchStatus = isComplete;
-                if (statusFilter === 'incomplete') matchStatus = !isComplete;
+                if (statusVal === 'complete') matchStatus = isComplete;
+                else if (statusVal === 'incomplete') matchStatus = !isComplete;
 
-                return matchName && matchStatus;
+                return matchSearch && matchStatus;
             });
 
             currentPage = 1;
@@ -517,15 +517,25 @@
             document.getElementById('statTotalDocTypes').innerText = dynamicDocTypes.length;
         }
 
+        function extractGoogleDriveId(url) {
+            if (!url) return null;
+            let match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || 
+                        url.match(/id=([a-zA-Z0-9_-]+)/) ||
+                        url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+            return match ? match[1] : null;
+        }
+
         function openPreview(studentName, docLabel, url) {
             const modal = document.getElementById('previewModal');
             const modalImage = document.getElementById('modalImage');
+            const modalIframe = document.getElementById('modalIframe');
             const modalLoading = document.getElementById('modalLoading');
             const modalError = document.getElementById('modalError');
             const modalDocTitle = document.getElementById('modalDocTitle');
             const modalStudentName = document.getElementById('modalStudentName');
             const modalLinkStatus = document.getElementById('modalLinkStatus');
             const modalExternalLink = document.getElementById('modalExternalLink');
+            const modalTypeBadge = document.getElementById('modalTypeBadge');
 
             modalDocTitle.innerText = docLabel;
             modalStudentName.innerText = studentName;
@@ -534,33 +544,102 @@
 
             modal.classList.remove('hidden');
             modalImage.classList.add('hidden');
+            modalIframe.classList.add('hidden');
             modalError.classList.add('hidden');
             modalLoading.classList.remove('hidden');
+            if (modalTypeBadge) modalTypeBadge.classList.add('hidden');
 
-            modalImage.onload = function() {
-                modalLoading.classList.add('hidden');
-                modalImage.classList.remove('hidden');
-            };
+            const driveId = extractGoogleDriveId(url);
+            const lowerUrl = url.toLowerCase();
+            const isPdf = lowerUrl.endsWith('.pdf') || lowerUrl.includes('.pdf?') || lowerUrl.includes('application/pdf');
 
-            modalImage.onerror = function() {
-                handleImageError();
-            };
+            // Jika file dari Google Drive atau bertipe PDF
+            if (driveId) {
+                if (modalTypeBadge) {
+                    modalTypeBadge.innerText = 'Google Drive / PDF';
+                    modalTypeBadge.classList.remove('hidden');
+                }
+                modalIframe.src = `https://drive.google.com/file/d/${driveId}/preview`;
+                modalIframe.onload = function() {
+                    modalLoading.classList.add('hidden');
+                    modalIframe.classList.remove('hidden');
+                };
+                setTimeout(() => {
+                    if (modalLoading && !modalLoading.classList.contains('hidden')) {
+                        modalLoading.classList.add('hidden');
+                        modalIframe.classList.remove('hidden');
+                    }
+                }, 1200);
 
-            modalImage.src = url;
+            } else if (isPdf) {
+                if (modalTypeBadge) {
+                    modalTypeBadge.innerText = 'PDF Dokumen';
+                    modalTypeBadge.classList.remove('hidden');
+                }
+                modalIframe.src = `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true`;
+                modalIframe.onload = function() {
+                    modalLoading.classList.add('hidden');
+                    modalIframe.classList.remove('hidden');
+                };
+                setTimeout(() => {
+                    if (modalLoading && !modalLoading.classList.contains('hidden')) {
+                        modalLoading.classList.add('hidden');
+                        modalIframe.classList.remove('hidden');
+                    }
+                }, 1200);
+
+            } else {
+                // Untuk file gambar standar (PNG, JPG, WebP)
+                if (modalTypeBadge) {
+                    modalTypeBadge.innerText = 'Gambar';
+                    modalTypeBadge.classList.remove('hidden');
+                }
+                modalImage.onload = function() {
+                    modalLoading.classList.add('hidden');
+                    modalImage.classList.remove('hidden');
+                };
+
+                modalImage.onerror = function() {
+                    // Coba fallback tampilkan via iframe jika pemuatan tag img gagal
+                    modalImage.classList.add('hidden');
+                    modalIframe.src = url;
+                    modalIframe.onload = function() {
+                        modalLoading.classList.add('hidden');
+                        modalIframe.classList.remove('hidden');
+                    };
+                    modalIframe.onerror = function() {
+                        handleImageError();
+                    };
+                    setTimeout(() => {
+                        if (modalIframe.classList.contains('hidden')) {
+                            handleImageError();
+                        }
+                    }, 1500);
+                };
+
+                modalImage.src = url;
+            }
         }
 
         function handleImageError() {
             const modalLoading = document.getElementById('modalLoading');
             const modalImage = document.getElementById('modalImage');
+            const modalIframe = document.getElementById('modalIframe');
             const modalError = document.getElementById('modalError');
             if (modalLoading) modalLoading.classList.add('hidden');
             if (modalImage) modalImage.classList.add('hidden');
+            if (modalIframe) modalIframe.classList.add('hidden');
             if (modalError) modalError.classList.remove('hidden');
         }
 
         function closePreviewModal() {
-            document.getElementById('previewModal').classList.add('hidden');
-            document.getElementById('modalImage').src = '';
+            const modal = document.getElementById('previewModal');
+            const modalImage = document.getElementById('modalImage');
+            const modalIframe = document.getElementById('modalIframe');
+
+            modal.classList.add('hidden');
+            if (modalImage) modalImage.src = '';
+            if (modalIframe) modalIframe.src = ''; // Menghentikan pemutaran/viewer pada iframe
         }
 
         function showLoading(show) {
