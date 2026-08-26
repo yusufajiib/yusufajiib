@@ -258,14 +258,14 @@
         <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6">
             <h3 class="text-lg font-bold text-gray-800 mb-3 border-b pb-2">Panduan Integrasi Google Spreadsheet</h3>
             <div class="text-xs text-gray-600 space-y-3 leading-relaxed">
-                <p>Aplikasi ini mengambil data secara otomatis dari Spreadsheet Anda:</p>
+                <p>Aplikasi ini mengambil data secara otomatis dari Spreadsheet Anda secara <b>dinamis</b>:</p>
                 <div class="bg-gray-50 p-3 rounded border border-gray-200 space-y-1">
-                    <p class="font-bold text-gray-700">1. Nama Sheet Harus Sesuai:</p>
-                    <p class="text-emerald-700 font-mono">PEMBAYARAN</p>
+                    <p class="font-bold text-gray-700">1. Kolom Dinamis (Bisa Ditambah / Dikurangi):</p>
+                    <p>Semua kolom pembayaran di sheet <span class="font-mono bg-emerald-100 text-emerald-800 px-1">PEMBAYARAN</span> akan dideteksi secara otomatis. Jika Anda menambah kolom baru (misal: <i>Infaq Masjid</i>, <i>Uang Gedung</i>) atau menghapus kolom di Google Sheets, daftar tunggakan di Surat Panggilan akan langsung bertambah/berkurang mengikuti kolom tersebut.</p>
                 </div>
                 <div class="bg-gray-50 p-3 rounded border border-gray-200 space-y-1">
-                    <p class="font-bold text-gray-700">2. Logika Deteksi Tunggakan:</p>
-                    <p>Setiap kolom di sheet (seperti <span class="font-mono bg-yellow-100 px-1">JUL Kelas 10</span>, <span class="font-mono bg-yellow-100 px-1">Ziarah</span>, <span class="font-mono bg-yellow-100 px-1">Ijazah</span>) yang bernilai <b>kosong ("")</b>, <b>"-"</b>, <b>"X"</b>, atau <b>"Belum Lunas"</b> otomatis dianggap sebagai item TUNGGAKAN.</p>
+                    <p class="font-bold text-gray-700">2. Logika Deteksi Sel Kosong (Tunggakan):</p>
+                    <p>Setiap sel pada baris siswa yang bernilai <b>kosong ("")</b>, <b>"-"</b>, <b>"X"</b>, atau <b>"Belum Lunas"</b> otomatis dianggap sebagai item TUNGGAKAN.</p>
                 </div>
                 <div class="bg-gray-50 p-3 rounded border border-gray-200 space-y-1">
                     <p class="font-bold text-gray-700">3. Izin Berbagi File Spreadsheet:</p>
@@ -281,140 +281,24 @@
     </div>
 
     <script>
-        // Configuration
-        const SPREADSHEET_ID = '1znFWK8Lwj7-eOyHGBddkvvOlcWDHFJ_hogFadKtk8Go';
-
-        // Application State
         let appData = {
-            pembayaran: null,
+            pembayaran: { headers: [], rows: [] },
             mergedStudents: {}
         };
-        
         let currentTab = 'pembayaran';
         let selectedStudent = null;
 
-        // Standard Default Tariffs
         const DEFAULT_TARIFFS = {
             'spp': 175000,
-            'bulanan': 175000,
-            'jul': 175000,
-            'agu': 175000,
-            'sep': 175000,
-            'okt': 175000,
-            'nov': 175000,
-            'des': 175000,
-            'jan': 175000,
-            'feb': 175000,
-            'mar': 175000,
-            'apr': 175000,
-            'mei': 175000,
-            'jun': 175000,
-            'ziarah': 350000,
-            'ijazah': 250000,
-            'daftar ulang': 450000,
+            'daftar ulang': 250000,
             'infaq': 500000,
-            'seragam': 400000,
-            'lks': 150000,
-            'pts': 150000,
-            'pas': 150000,
-            'pat': 150000,
-            'harlah': 100000,
-            'phbi': 50000
+            'kebersihan': 50000,
+            'ziarah': 300000,
+            'ijazah': 200000,
+            'gedung': 500000
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('tanggal-surat').value = today;
-            
-            document.getElementById('search-input').addEventListener('input', renderCurrentTable);
-            document.getElementById('search-siswa-surat').addEventListener('input', renderStudentList);
-            
-            fetchAllData();
-        });
-
-        async function fetchAllData() {
-            const statusElem = document.getElementById('connection-status');
-            statusElem.className = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-200 border border-yellow-500/30';
-            statusElem.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-400 mr-2 animate-pulse"></span> Mengambil Sheet PEMBAYARAN...';
-
-            try {
-                const data = await fetchSheetGViz('PEMBAYARAN');
-                appData.pembayaran = data;
-                document.getElementById('count-pembayaran').textContent = data.rows.length;
-                
-                statusElem.className = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-200 border border-emerald-500/30';
-                statusElem.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 mr-2"></span> Spreadsheet Terhubung';
-                
-                processMergedStudents();
-                renderCurrentTable();
-                
-            } catch (err) {
-                console.warn("GViz fetch warning/error:", err.message);
-                statusElem.className = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-200 border border-amber-500/30';
-                statusElem.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 mr-2"></span> Mode Data Lokal';
-                
-                loadSampleFallbackData();
-                processMergedStudents();
-                renderCurrentTable();
-            }
-        }
-
-        function fetchSheetGViz(sheetName) {
-            return new Promise((resolve, reject) => {
-                const cbName = 'gviz_' + Math.floor(Math.random() * 1000000);
-                const script = document.createElement('script');
-                
-                window[cbName] = function(response) {
-                    delete window[cbName];
-                    script.remove();
-                    
-                    if (!response || response.status === 'error') {
-                        reject(new Error("Sheet error or restricted access"));
-                        return;
-                    }
-                    resolve(parseGVizTable(response.table));
-                };
-
-                script.onerror = () => {
-                    delete window[cbName];
-                    script.remove();
-                    reject(new Error(`Gagal memuat sheet ${sheetName}`));
-                };
-
-                script.src = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json;responseHandler:${cbName}&sheet=${encodeURIComponent(sheetName)}`;
-                document.body.appendChild(script);
-            });
-        }
-
-        function parseGVizTable(table) {
-            if (!table || !table.cols) return { headers: [], rows: [] };
-
-            let headers = table.cols.map(c => c ? (c.label || c.id || '') : '');
-            let rowData = table.rows || [];
-
-            if (headers.every(h => !h || h.match(/^[A-Z]$/))) {
-                if (rowData.length > 0 && rowData[0].c) {
-                    headers = rowData[0].c.map(cell => cell && cell.v ? cell.v.toString().trim() : '');
-                    rowData = rowData.slice(1);
-                }
-            }
-
-            while (headers.length > 0 && (!headers[headers.length - 1] || headers[headers.length - 1].trim() === '')) {
-                headers.pop();
-            }
-
-            const rows = rowData.map(row => {
-                const item = {};
-                headers.forEach((h, i) => {
-                    if (!h) return;
-                    const cell = row.c && row.c[i] ? row.c[i] : null;
-                    item[h] = cell ? (cell.f ? cell.f : (cell.v !== null && cell.v !== undefined ? cell.v : '')) : '';
-                });
-                return item;
-            }).filter(r => Object.values(r).some(val => val !== '' && val !== null));
-
-            return { headers, rows };
-        }
+        const SPREADSHEET_ID = '1znFWK8Lwj7-eOyHGBddkvvOlcWDHFJ_hogFadKtk8Go';
 
         function processMergedStudents() {
             appData.mergedStudents = {};
@@ -422,16 +306,22 @@
             const sheet = appData.pembayaran;
             if (!sheet || !sheet.headers || sheet.rows.length === 0) return;
 
+            const countBadge = document.getElementById('count-pembayaran');
+            if (countBadge) countBadge.textContent = sheet.rows.length;
+
             const nameCol = sheet.headers.find(h => h.toLowerCase().includes('nama')) || sheet.headers[0];
-            const kelasCol = sheet.headers.find(h => h.toLowerCase().includes('kelas'));
+            const kelasCol = sheet.headers.find(h => h.toLowerCase().trim() === 'kelas' || h.toLowerCase().trim() === 'kls');
 
-            // Non-payment columns to ignore
-            const ignoredKeywords = ['no', 'nama', 'kelas', 'nis', 'nisn', 'ket', 'keterangan', 'total', 'jumlah', 'sisa', 'ttd', 'paraf', 'catatan', 'hp', 'kontak', 'wali', 'nohp', 'alamat'];
+            // Kolom identitas & ringkasan yang diabaikan dari kategori pembayaran
+            const identityCols = ['no', 'no.', 'nama', 'nama siswa', 'nama lengkap', 'kelas', 'kls', 'nis', 'nisn', 'ttd', 'paraf', 'catatan', 'hp', 'no hp', 'no. hp', 'kontak', 'wali', 'nama wali', 'alamat'];
 
+            // Deteksi SELURUH kolom pembayaran secara DINAMIS
             const paymentCols = sheet.headers.filter(h => {
                 if (!h || !h.trim()) return false;
                 const hl = h.toLowerCase().trim();
-                return !ignoredKeywords.some(key => hl === key || hl.startsWith(key + ' ') || hl.endsWith(' ' + key) || hl.includes('jumlah') || hl.includes('total') || hl.includes('keterangan'));
+                if (identityCols.includes(hl)) return false;
+                if (hl.includes('jumlah') || hl.includes('total') || hl.includes('keterangan') || hl.includes('sisa')) return false;
+                return true;
             });
 
             sheet.rows.forEach(row => {
@@ -447,19 +337,17 @@
                     tunggakan: []
                 };
 
-                // PEMERIKSAAN HORIZONTAL ROW-BY-ROW:
+                // PEMERIKSAAN HORIZONTAL ROW-BY-ROW DINAMIS:
                 paymentCols.forEach(col => {
                     const val = (row[col] !== undefined && row[col] !== null) ? row[col].toString().trim() : '';
                     const valLower = val.toLowerCase();
 
-                    // Sel dianggap LUNAS jika berisi teks Lunas, nilai angka, atau penanda lunas
                     const isLunas = valLower.includes('lunas') && !valLower.includes('belum');
                     const isPaidNumber = /^\d+$/.test(val.replace(/[^\d]/g, '')) && parseInt(val.replace(/[^\d]/g, '')) > 0;
                     const isOkMarker = valLower === 'v' || valLower === 'ok' || valLower === 'ya' || valLower === '✓' || valLower === 'sudah';
 
                     const isPaid = isLunas || isPaidNumber || isOkMarker;
 
-                    // Sel dianggap TUNGGAKAN khusus jika secara horizontal KOSONG (""), "-", "x", "0", atau "belum lunas"
                     const isTunggakan = !isPaid && (val === '' || val === '-' || valLower === 'x' || val === '0' || valLower.includes('belum'));
 
                     if (isTunggakan) {
@@ -482,10 +370,18 @@
 
         function extractNominalFromText(text) {
             if (!text) return 0;
-            const matches = text.toString().match(/(?:rp\.?|rp)?\s*(\d[\d\.\,]*)/i);
+            const str = text.toString();
+            
+            // Deteksi format singkatan angka seperti 175rb atau 150k
+            const rbMatch = str.match(/(\d+)\s*(?:rb|k)/i);
+            if (rbMatch && rbMatch[1]) {
+                return parseInt(rbMatch[1], 10) * 1000;
+            }
+
+            const matches = str.match(/(?:rp\.?|rp)?\s*(\d[\d\.\,]*)/i);
             if (matches && matches[1]) {
                 const num = parseInt(matches[1].replace(/[^\d]/g, ''), 10);
-                if (num > 1000) return num;
+                if (num >= 1000) return num;
             }
             return 0;
         }
@@ -886,32 +782,99 @@
 
         function loadSampleFallbackData() {
             appData.pembayaran = {
-                headers: ['No', 'Nama', 'JUL Kelas 10', 'AGU Kelas 10', 'SEP Kelas 10', 'OKT Kelas 10', 'NOV Kelas 10', 'DES Kelas 10', 'JAN Kelas 10', 'FEB Kelas 10', 'MAR Kelas 10', 'APR Kelas 10', 'MEI Kelas 10', 'JUN Kelas 10', 'Daftar Ulang', 'Infaq Gedung', 'Ziarah Wali Songo', 'Ijazah & Legalisir'],
+                headers: ['No', 'Nama', 'JUL Kelas 10', 'AGU Kelas 10', 'SEP Kelas 10', 'OKT Kelas 10', 'NOV Kelas 10', 'DES Kelas 10', 'JAN Kelas 10', 'FEB Kelas 10', 'MAR Kelas 10', 'APR Kelas 10', 'MEI Kelas 10', 'JUN Kelas 10', 'Kebersihan Kelas', 'Daftar Ulang', 'Infaq Gedung', 'Ziarah Wali Songo', 'Ijazah & Legalisir'],
                 rows: [
                     { 
                         'No': 1, 
                         'Nama': 'Abdul Khanan Ma\'sum', 
                         'JUL Kelas 10': 'Lunas', 'AGU Kelas 10': 'Lunas', 'SEP Kelas 10': 'Lunas', 'OKT Kelas 10': 'Lunas', 'NOV Kelas 10': 'Lunas', 'DES Kelas 10': 'Lunas', 
                         'JAN Kelas 10': '', 'FEB Kelas 10': '', 'MAR Kelas 10': '', 'APR Kelas 10': '', 'MEI Kelas 10': '', 'JUN Kelas 10': '',
-                        'Daftar Ulang': 'Lunas', 'Infaq Gedung': 'Lunas', 'Ziarah Wali Songo': '', 'Ijazah & Legalisir': '' 
+                        'Kebersihan Kelas': '', 'Daftar Ulang': 'Lunas', 'Infaq Gedung': 'Lunas', 'Ziarah Wali Songo': '', 'Ijazah & Legalisir': '' 
                     },
                     { 
                         'No': 2, 
                         'Nama': 'Abas', 
                         'JUL Kelas 10': 'Lunas', 'AGU Kelas 10': 'Lunas', 'SEP Kelas 10': 'Lunas', 'OKT Kelas 10': 'Lunas', 'NOV Kelas 10': 'Lunas', 'DES Kelas 10': 'Lunas', 
                         'JAN Kelas 10': 'Lunas', 'FEB Kelas 10': 'Lunas', 'MAR Kelas 10': 'Lunas', 'APR Kelas 10': 'Lunas', 'MEI Kelas 10': 'Lunas', 'JUN Kelas 10': 'Lunas',
-                        'Daftar Ulang': 'Lunas', 'Infaq Gedung': 'Lunas', 'Ziarah Wali Songo': 'Lunas', 'Ijazah & Legalisir': 'Lunas' 
+                        'Kebersihan Kelas': 'Lunas', 'Daftar Ulang': 'Lunas', 'Infaq Gedung': 'Lunas', 'Ziarah Wali Songo': 'Lunas', 'Ijazah & Legalisir': 'Lunas' 
                     },
                     { 
                         'No': 3, 
                         'Nama': 'Ahmad Fauzi', 
                         'JUL Kelas 10': 'Lunas', 'AGU Kelas 10': 'Lunas', 'SEP Kelas 10': 'Lunas', 'OKT Kelas 10': 'Lunas', 'NOV Kelas 10': 'Lunas', 'DES Kelas 10': 'Lunas', 
                         'JAN Kelas 10': 'Lunas', 'FEB Kelas 10': 'Lunas', 'MAR Kelas 10': 'Lunas', 'APR Kelas 10': 'Lunas', 'MEI Kelas 10': 'Lunas', 'JUN Kelas 10': 'Lunas',
-                        'Daftar Ulang': 'Lunas', 'Infaq Gedung': 'Lunas', 'Ziarah Wali Songo': 'Lunas', 'Ijazah & Legalisir': 'Lunas' 
+                        'Kebersihan Kelas': 'Lunas', 'Daftar Ulang': 'Lunas', 'Infaq Gedung': 'Lunas', 'Ziarah Wali Songo': 'Lunas', 'Ijazah & Legalisir': 'Lunas' 
                     }
                 ]
             };
         }
+
+        function fetchAllData() {
+            const loading = document.getElementById('loading-indicator');
+            const errorMsg = document.getElementById('error-message');
+            const tableWrapper = document.getElementById('table-wrapper');
+            const statusSpan = document.getElementById('connection-status');
+
+            if (loading) loading.classList.remove('hidden');
+            if (errorMsg) errorMsg.classList.add('hidden');
+            if (tableWrapper) tableWrapper.classList.add('hidden');
+
+            const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&sheet=PEMBAYARAN`;
+
+            fetch(url)
+                .then(res => res.text())
+                .then(data => {
+                    const jsonString = data.substring(data.indexOf('{'), data.lastIndexOf('}') + 1);
+                    const json = JSON.parse(jsonString);
+                    
+                    if (json && json.table) {
+                        const cols = json.table.cols.map(c => c ? (c.label || c.id || '') : '').filter(c => c.trim() !== '');
+                        const rows = json.table.rows.map(r => {
+                            const rowObj = {};
+                            r.c.forEach((cell, idx) => {
+                                if (cols[idx]) {
+                                    rowObj[cols[idx]] = cell && cell.v !== null && cell.v !== undefined ? cell.v : '';
+                                }
+                            });
+                            return rowObj;
+                        });
+
+                        appData.pembayaran = { headers: cols, rows: rows };
+                        if (statusSpan) {
+                            statusSpan.className = "inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-200 border border-emerald-500/30";
+                            statusSpan.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400 mr-2"></span> Terhubung Live Spreadsheet';
+                        }
+                    } else {
+                        throw new Error("Format tabel tidak valid");
+                    }
+                    processMergedStudents();
+                    renderCurrentTable();
+                })
+                .catch(err => {
+                    console.warn("Gagal mengambil data live, menggunakan sampel fallback:", err);
+                    if (statusSpan) {
+                        statusSpan.className = "inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-200 border border-yellow-500/30";
+                        statusSpan.innerHTML = '<span class="w-2 h-2 rounded-full bg-yellow-400 mr-2"></span> Mode Sampel Lokal';
+                    }
+                    loadSampleFallbackData();
+                    processMergedStudents();
+                    renderCurrentTable();
+                });
+        }
+
+        window.onload = function() {
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('tanggal-surat');
+            if (dateInput) dateInput.value = today;
+
+            fetchAllData();
+
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.addEventListener('input', renderCurrentTable);
+
+            const searchSiswaSurat = document.getElementById('search-siswa-surat');
+            if (searchSiswaSurat) searchSiswaSurat.addEventListener('input', renderStudentList);
+        };
 
         function formatRupiah(num) {
             return new Intl.NumberFormat('id-ID').format(num || 0);
