@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Keuangan & Surat Panggilan - MA NU Hasyim Asy'ari 1</title>
+    <title>Sistem Keuangan & Surat Panggilan - MA NU Hasyim Asy'ari 1 Kudus</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -1248,7 +1248,64 @@
         function printSurat() {
             if (!selectedStudent) return;
             updateSuratPreview();
-            window.print();
+
+            const printWindow = window.open('', '_blank');
+            if (!printWindow) {
+                alert('Popup diblokir peramban. Harap izinkan popup agar surat panggilan dapat dicetak.');
+                return;
+            }
+
+            const suratContent = document.getElementById('surat-preview-content').innerHTML;
+            const studentName = selectedStudent ? selectedStudent.nama : 'Siswa';
+            const cleanFileName = `Surat_Panggilan_${studentName.replace(/[^a-zA-Z0-9]/g, '_')}`;
+
+            printWindow.document.open();
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html lang="id">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>${escapeHTML(cleanFileName)}</title>
+                    <script src="https://cdn.tailwindcss.com"><` + `/script>
+                    <style>
+                        @media print {
+                            .no-print { display: none !important; }
+                            body { background: white !important; padding: 0 !important; }
+                            .page-container { border: none !important; box-shadow: none !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
+                            @page { size: A4 portrait; margin: 1.5cm 2cm; }
+                        }
+                        body { background-color: #334155; font-family: 'Inter', sans-serif; margin: 0; padding: 24px 12px; }
+                        .page-container { background: white; width: 21cm; min-height: 29.7cm; margin: 0 auto; padding: 1.5cm 2cm; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); border-radius: 4px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="no-print max-w-[21cm] mx-auto mb-4 bg-gray-900 text-white p-3.5 rounded-xl flex flex-col sm:flex-row justify-between items-center gap-3 shadow-2xl border border-gray-700">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center font-bold text-xs text-white">SP</div>
+                            <div>
+                                <h2 class="font-bold text-xs text-emerald-400">Surat Panggilan Orang Tua / Wali</h2>
+                                <p class="text-[10px] text-gray-300">Siswa: <b>${escapeHTML(studentName)}</b></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="window.print()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow transition flex items-center">
+                                Cetak Surat Panggilan
+                            </button>
+                            <button onclick="window.close()" class="px-3.5 py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium text-xs rounded-lg transition">Tutup</button>
+                        </div>
+                    </div>
+                    <div id="pdf-content" class="page-container">${suratContent}</div>
+                    <script>
+                        window.onload = function() {
+                            setTimeout(function() {
+                                window.print();
+                            }, 600);
+                        };
+                    <` + `/script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
         }
 
         function openKwitansiModal() {
