@@ -28,30 +28,6 @@
             background: #94a3b8; 
         }
 
-        @media print {
-            body * {
-                visibility: hidden;
-            }
-            #print-area, #print-area * {
-                visibility: visible;
-            }
-            #print-area {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                background-color: white;
-                padding: 1.5cm 2cm;
-            }
-            .no-print {
-                display: none !important;
-            }
-            @page {
-                size: A4;
-                margin: 0;
-            }
-        }
-        
         .loader {
             border-top-color: #10b981;
             -webkit-animation: spinner 1.5s linear infinite;
@@ -481,9 +457,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Hidden Print Container for Direct Page Printing -->
-    <div id="print-area"></div>
 
     <script>
         function escapeHTML(str) {
@@ -1240,9 +1213,6 @@
 
             const previewElem = document.getElementById('surat-preview-content');
             if (previewElem) previewElem.innerHTML = suratTemplate;
-
-            const printElem = document.getElementById('print-area');
-            if (printElem) printElem.innerHTML = suratTemplate;
         }
 
         function printSurat() {
