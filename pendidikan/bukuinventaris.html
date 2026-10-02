@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Inventaris Barang & Aset - MA NU Hasyim Asy'ari 1 Kudus</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- QRCode JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background-color: #fff;
+                color: #000;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+        }
+        .print-only {
+            display: none;
+        }
+        /* Custom scrollbar for table */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #059669;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Header / Navbar -->
+    <header class="bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-900 text-white shadow-lg no-print sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center py-4 space-y-3 md:space-y-0">
+                <!-- Logo & School Branding -->
+                <div class="flex items-center space-x-4">
+                    <img src="https://raw.githubusercontent.com/yusufajiib/yusufajiib/refs/heads/main/gambar/Logo_MA_Terbaru_1-removebg-preview.png" 
+                         alt="Logo MA NU Hasyim Asy'ari 1 Kudus" 
+                         class="w-14 h-14 object-contain filter drop-shadow-md"
+                         onerror="this.onerror=null; this.outerHTML='<div class=\'w-12 h-12 rounded-full bg-emerald-100 text-emerald-900 flex items-center justify-center font-bold text-xl border-2 border-amber-400 shadow-inner\'><i class=\'fa-solid font-bold fa-school text-emerald-800 text-2xl\'></i></div>';">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <span class="bg-amber-400 text-slate-900 font-extrabold text-xs px-2 py-0.5 rounded uppercase tracking-wider">SIP-ASSET</span>
+                            <span class="text-xs text-emerald-200">NSM: 131233190001 | Kudus</span>
+                        </div>
+                        <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white">MA NU Hasyim Asy'ari 1 Kudus</h1>
+                        <p class="text-xs text-emerald-100">Sistem Informasi Inventaris Barang & Aset Murni & Hibah</p>
+                    </div>
+                </div>
+
+                <!-- Quick Action Buttons Header -->
+                <div class="flex items-center space-x-2">
+                    <div id="admin-status-badge" class="bg-emerald-950/80 text-emerald-300 border border-emerald-700/60 text-xs px-3 py-1.5 rounded-lg flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span id="admin-status-text">Mode: Tamu (Lihat Saja)</span>
+                    </div>
+
+                    <button id="btn-admin-auth" onclick="toggleAdminAuth()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-2 rounded-lg text-sm transition flex items-center shadow-md active:scale-95">
+                        <i id="admin-auth-icon" class="fa-solid fa-lock mr-2"></i> 
+                        <span id="admin-auth-btn-text">Login Admin</span>
+                    </button>
+
+                    <button onclick="openModalAddItem()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-semibold px-3 py-2 rounded-lg text-sm transition flex items-center shadow-md border border-emerald-600 active:scale-95">
+                        <i class="fa-solid fa-plus mr-1.5"></i> Tambah Aset
+                    </button>
+                    <button onclick="exportToCSV()" class="bg-emerald-800 hover:bg-emerald-700 text-white font-medium px-3 py-2 rounded-lg text-sm transition flex items-center border border-emerald-600">
+                        <i class="fa-solid fa-file-excel mr-1.5 text-emerald-300"></i> CSV
+                    </button>
+                    <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-600 text-white font-medium px-3 py-2 rounded-lg text-sm transition flex items-center border border-slate-600">
+                        <i class="fa-solid fa-print mr-1.5"></i> Cetak
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="flex space-x-1 sm:space-x-4 border-t border-emerald-700/60 pt-2 pb-1 overflow-x-auto text-sm">
+                <button id="tab-btn-dashboard" onclick="switchTab('dashboard')" class="tab-btn px-4 py-2 font-medium rounded-t-lg transition flex items-center text-amber-300 border-b-2 border-amber-400 bg-emerald-800/60 whitespace-nowrap">
+                    <i class="fa-solid fa-chart-pie mr-2"></i> Dashboard & Ringkasan
+                </button>
+                <button id="tab-btn-items" onclick="switchTab('items')" class="tab-btn px-4 py-2 font-medium rounded-t-lg transition flex items-center text-emerald-100 hover:text-amber-300 hover:bg-emerald-800/40 whitespace-nowrap">
+                    <i class="fa-solid fa-boxes-stacked mr-2"></i> Master Inventaris
+                </button>
+                <button id="tab-btn-rooms" onclick="switchTab('rooms')" class="tab-btn px-4 py-2 font-medium rounded-t-lg transition flex items-center text-emerald-100 hover:text-amber-300 hover:bg-emerald-800/40 whitespace-nowrap">
+                    <i class="fa-solid fa-door-open mr-2"></i> Inventaris Per Ruang (DIR)
+                </button>
+                <button id="tab-btn-labels" onclick="switchTab('labels')" class="tab-btn px-4 py-2 font-medium rounded-t-lg transition flex items-center text-emerald-100 hover:text-amber-300 hover:bg-emerald-800/40 whitespace-nowrap">
+                    <i class="fa-solid fa-qrcode mr-2"></i> Cetak Sticker QR
+                </button>
+                <button id="tab-btn-reports" onclick="switchTab('reports')" class="tab-btn px-4 py-2 font-medium rounded-t-lg transition flex items-center text-emerald-100 hover:text-amber-300 hover:bg-emerald-800/40 whitespace-nowrap">
+                    <i class="fa-solid fa-file-lines mr-2"></i> Laporan Resmi
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- TAB 1: DASHBOARD OVERVIEW -->
+        <div id="tab-dashboard" class="tab-content space-y-6">
+            <!-- Key Metric Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Card Total Types -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Jenis Item Barang</p>
+                        <h3 id="stat-total-items" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
+                        <p class="text-xs text-slate-500 mt-1"><span class="text-emerald-600 font-medium"><i class="fa-solid fa-check-circle"></i> Terdata</span> di sistem</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                </div>
+
+                <!-- Card Total Unit Quantity -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Kuantitas (Unit)</p>
+                        <h3 id="stat-total-qty" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
+                        <p class="text-xs text-slate-500 mt-1">Total seluruh fisik unit</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                </div>
+
+                <!-- Card Condition Good Percentage -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Kondisi Baik</p>
+                        <h3 id="stat-good-condition" class="text-2xl font-bold text-emerald-600 mt-1">0%</h3>
+                        <p id="stat-good-count" class="text-xs text-slate-500 mt-1">0 Unit Layak Pakai</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-thumbs-up"></i>
+                    </div>
+                </div>
+
+                <!-- Card Total Value -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Estimasi Total Aset</p>
+                        <h3 id="stat-total-val" class="text-xl font-bold text-slate-800 mt-1">Rp 0</h3>
+                        <p class="text-xs text-slate-500 mt-1">Berdasarkan harga perolehan</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-wallet"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Condition Doughnut Chart -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <h3 class="text-base font-semibold text-slate-800 mb-4 flex items-center">
+                        <i class="fa-solid fa-pie-chart text-emerald-600 mr-2"></i> Presentase Kondisi Barang
+                    </h3>
+                    <div class="relative flex items-center justify-center h-64">
+                        <canvas id="chartCondition"></canvas>
+                    </div>
+                </div>
+
+                <!-- Asset Breakdown by Building Bar Chart -->
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm lg:col-span-2">
+                    <h3 class="text-base font-semibold text-slate-800 mb-4 flex items-center justify-between">
+                        <span><i class="fa-solid fa-building text-emerald-600 mr-2"></i> Sebaran Aset per Gedung & Ruang</span>
+                        <span class="text-xs text-slate-400 font-normal">Sesuai Lokasi</span>
+                    </h3>
+                    <div class="relative h-64">
+                        <canvas id="chartLocation"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Summary Alert / Recent Items -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-base font-semibold text-slate-800 flex items-center">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500 mr-2"></i> Perhatian Barang Rusak / Butuh Perbaikan
+                    </h3>
+                    <button onclick="filterByCondition('Rusak')" class="text-xs text-emerald-700 hover:text-emerald-900 font-medium">
+                        Lihat Semua Di Master Data &rarr;
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100 text-slate-600 uppercase text-xs">
+                            <tr>
+                                <th class="p-3 rounded-l-lg">Kode</th>
+                                <th class="p-3">Nama Barang</th>
+                                <th class="p-3">Lokasi Ruang</th>
+                                <th class="p-3">Jumlah Rusak</th>
+                                <th class="p-3 rounded-r-lg">Status Kondisi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="damaged-items-preview" class="divide-y divide-slate-100">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: MASTER INVENTARIS TABLE -->
+        <div id="tab-items" class="tab-content hidden space-y-4">
+            <!-- Filter & Search Toolbar -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+                    <!-- Search Input -->
+                    <div class="md:col-span-2 relative">
+                        <i class="fa-solid fa-search absolute left-3 top-3 text-slate-400 text-sm"></i>
+                        <input type="text" id="filter-search" onkeyup="applyFilters()" placeholder="Cari Kode, Nama Barang, Merk, Spesifikasi..." class="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+
+                    <!-- Filter Kondisi -->
+                    <div>
+                        <select id="filter-condition" onchange="applyFilters()" class="w-full py-2 px-3 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                            <option value="">-- Semua Kondisi --</option>
+                            <option value="Baik">Baik</option>
+                            <option value="Rusak Ringan">Rusak Ringan</option>
+                            <option value="Rusak Berat">Rusak Berat</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter Lokasi Gedung -->
+                    <div>
+                        <select id="filter-location" onchange="applyFilters()" class="w-full py-2 px-3 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                            <option value="">-- Semua Lokasi --</option>
+                            <!-- Options filled dynamically -->
+                        </select>
+                    </div>
+
+                    <!-- Filter Kategori -->
+                    <div>
+                        <select id="filter-category" onchange="applyFilters()" class="w-full py-2 px-3 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white">
+                            <option value="">-- Semua Kategori --</option>
+                            <!-- Options filled dynamically -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-2 text-xs text-slate-500 border-t border-slate-100">
+                    <div>
+                        Menampilkan <span id="displayed-count" class="font-bold text-slate-800">0</span> dari <span id="total-count" class="font-bold text-slate-800">0</span> item aset.
+                    </div>
+                    <button onclick="resetFilters()" class="text-slate-500 hover:text-emerald-700 underline flex items-center">
+                        <i class="fa-solid fa-arrows-rotate mr-1"></i> Reset Filter
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main Inventory Data Table -->
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead class="bg-emerald-900 text-white font-medium text-xs uppercase tracking-wider">
+                            <tr>
+                                <th class="p-3 w-12 text-center">No</th>
+                                <th class="p-3">Kode Barang</th>
+                                <th class="p-3">Nama & Merk / Spesifikasi</th>
+                                <th class="p-3">Kategori</th>
+                                <th class="p-3 text-center">Jumlah</th>
+                                <th class="p-3">Kondisi</th>
+                                <th class="p-3">Lokasi (Gedung/Ruang)</th>
+                                <th class="p-3">Sumber / Thn</th>
+                                <th class="p-3 text-right">Nilai Satuan</th>
+                                <th class="p-3 text-center no-print w-28">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table-body" class="divide-y divide-slate-100 bg-white">
+                            <!-- Populated dynamically via Javascript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: DAFTAR INVENTARIS RUANG (DIR) -->
+        <div id="tab-rooms" class="tab-content hidden space-y-6">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center">
+                            <i class="fa-solid fa-door-open text-emerald-700 mr-2"></i> Inspeksi Daftar Inventaris Ruang (DIR)
+                        </h2>
+                        <p class="text-xs text-slate-500">Pilih gedung dan ruangan untuk mencetak lembar daftar barang fisik di dalam ruangan.</p>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <label for="room-select" class="text-xs font-semibold text-slate-600 whitespace-nowrap">Pilih Ruangan:</label>
+                        <select id="room-select" onchange="renderRoomInventory()" class="py-2 px-3 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 bg-emerald-50 font-medium text-emerald-900">
+                            <!-- Options loaded dynamically -->
+                        </select>
+                        <button onclick="printRoomSheet()" class="bg-emerald-800 hover:bg-emerald-900 text-white text-xs px-4 py-2 rounded-lg font-semibold flex items-center shadow">
+                            <i class="fa-solid fa-print mr-2"></i> Cetak DIR Ruangan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Printable Sheet Wrapper -->
+                <div id="room-sheet-container" class="mt-6 p-6 border border-slate-200 rounded-xl bg-slate-50">
+                    <!-- DIR Document Header -->
+                    <div class="flex items-center justify-center space-x-4 pb-4 border-b-2 border-slate-800 mb-6 text-center">
+                        <img src="https://raw.githubusercontent.com/yusufajiib/yusufajiib/refs/heads/main/gambar/Logo_MA_Terbaru_1-removebg-preview.png" 
+                             alt="Logo MA NU Hasyim Asy'ari 1 Kudus" 
+                             class="w-16 h-16 object-contain hidden sm:block print:block">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest">MA NU HASYIM ASY'ARI 1 KUDUS</p>
+                            <h3 class="text-xl font-black text-slate-900 uppercase">DAFTAR INVENTARIS RUANG (DIR)</h3>
+                            <p class="text-xs text-slate-600 mt-1">Lokasi Ruang: <span id="dir-room-title" class="font-bold underline text-emerald-800">...</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Room Stats summary -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                            <span class="text-xs text-slate-500 block">Total Item Barang</span>
+                            <span id="dir-stat-items" class="text-lg font-bold text-slate-800">0</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                            <span class="text-xs text-slate-500 block">Total Kuantitas Fisik</span>
+                            <span id="dir-stat-qty" class="text-lg font-bold text-slate-800">0</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                            <span class="text-xs text-slate-500 block">Barang Baik</span>
+                            <span id="dir-stat-good" class="text-lg font-bold text-emerald-600">0</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                            <span class="text-xs text-slate-500 block">Barang Rusak</span>
+                            <span id="dir-stat-bad" class="text-lg font-bold text-rose-600">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Table Room Items -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm border-collapse bg-white border border-slate-300">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 text-xs font-bold uppercase border-b border-slate-300">
+                                    <th class="p-2 border border-slate-300 text-center w-10">No</th>
+                                    <th class="p-2 border border-slate-300">Kode Barang</th>
+                                    <th class="p-2 border border-slate-300">Nama Barang & Spesifikasi</th>
+                                    <th class="p-2 border border-slate-300 text-center">Jumlah</th>
+                                    <th class="p-2 border border-slate-300 text-center">Baik</th>
+                                    <th class="p-2 border border-slate-300 text-center">Rusak Ringan</th>
+                                    <th class="p-2 border border-slate-300 text-center">Rusak Berat</th>
+                                    <th class="p-2 border border-slate-300">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dir-table-body">
+                                <!-- Filled by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- DIR Signatures section -->
+                    <div class="grid grid-cols-2 gap-8 mt-12 pt-4 text-center text-xs text-slate-800">
+                        <div>
+                            <p>Mengetahui,</p>
+                            <p class="font-bold">Kepala MA NU Hasyim Asy'ari 1 Kudus</p>
+                            <div class="h-16"></div>
+                            <p class="font-bold underline">( H. Noor Yasin, S.Pd., M.Pd.I )</p>
+                            <p class="text-slate-500">NIP / NIY. -</p>
+                        </div>
+                        <div>
+                            <p>Kudus, <span id="dir-current-date">...</span></p>
+                            <p class="font-bold">Penanggung Jawab Ruangan</p>
+                            <div class="h-16"></div>
+                            <p class="font-bold underline">( ................................................... )</p>
+                            <p class="text-slate-500">Pengelola Aset / Wali Kelas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: CETAK STICKER QR CODE -->
+        <div id="tab-labels" class="tab-content hidden space-y-4">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 pb-4 border-b border-slate-200">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800 flex items-center">
+                            <i class="fa-solid fa-qrcode text-emerald-700 mr-2"></i> Generasi Label Sticker QR Code Barang
+                        </h2>
+                        <p class="text-xs text-slate-500">Cetak stiker QR Code untuk ditempelkan secara fisik pada aset madrasah.</p>
+                    </div>
+                    <button onclick="window.print()" class="bg-emerald-800 hover:bg-emerald-900 text-white text-xs px-4 py-2 rounded-lg font-semibold flex items-center shadow">
+                        <i class="fa-solid fa-print mr-2"></i> Cetak Semua Stiker
+                    </button>
+                </div>
+
+                <!-- Label Print Layout Grid -->
+                <div id="qr-labels-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: LAPORAN RESMI -->
+        <div id="tab-reports" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                <div class="flex justify-between items-center pb-4 border-b border-slate-200 no-print">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-800">Laporan Buka Rekapitulasi Inventaris</h2>
+                        <p class="text-xs text-slate-500">Format Laporan Resmi Berita Acara Inventarisasi Aset Madrasah</p>
+                    </div>
+                    <button onclick="window.print()" class="bg-emerald-800 hover:bg-emerald-900 text-white text-xs px-4 py-2 rounded-lg font-semibold flex items-center shadow">
+                        <i class="fa-solid fa-print mr-2"></i> Cetak Laporan Formal
+                    </button>
+                </div>
+
+                <!-- Official Printable Report Document -->
+                <div class="mt-6 p-6 border border-slate-300 rounded-lg bg-white">
+                    <!-- School Header Printable -->
+                    <div class="flex items-center justify-center gap-6 border-b-4 border-double border-slate-800 pb-4 mb-6">
+                        <img src="https://raw.githubusercontent.com/yusufajiib/yusufajiib/refs/heads/main/gambar/Logo_MA_Terbaru_1-removebg-preview.png" 
+                             alt="Logo MA NU Hasyim Asy'ari 1 Kudus" 
+                             class="w-20 h-20 object-contain hidden sm:block print:block">
+                        <div class="text-center">
+                            <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-600">YAYASAN MA'ARIF NU KUDUS</h3>
+                            <h2 class="text-xl font-extrabold uppercase text-slate-900 tracking-tight">MA NU HASYIM ASY'ARI 1 KUDUS</h2>
+                            <p class="text-xs text-slate-600">Jl. Menara No. 1 / Terban, Jekulo, Kudus, Jawa Tengah | Telp: (0291) 438123</p>
+                            <p class="text-xs font-bold text-slate-800 mt-1">STATUS: TERAKREDITASI A | NSM: 131233190001</p>
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-6">
+                        <h3 class="text-lg font-bold underline uppercase">REKAPITULASI BUKU INVENTARIS BARANG & ASET</h3>
+                        <p class="text-xs text-slate-600">Tahun Pelajaran 2024/2025</p>
+                    </div>
+
+                    <!-- Category Summary Breakdown Table -->
+                    <h4 class="text-sm font-bold text-slate-800 mb-2">I. Rekapitulasi Menurut Kategori Barang</h4>
+                    <table class="w-full text-xs text-left border-collapse border border-slate-400 mb-6">
+                        <thead class="bg-slate-100">
+                            <tr>
+                                <th class="p-2 border border-slate-400 text-center w-10">No</th>
+                                <th class="p-2 border border-slate-400">Kategori Barang</th>
+                                <th class="p-2 border border-slate-400 text-center">Jumlah Item</th>
+                                <th class="p-2 border border-slate-400 text-center">Kuantitas Unit</th>
+                                <th class="p-2 border border-slate-400 text-center">Kondisi Baik</th>
+                                <th class="p-2 border border-slate-400 text-center">Kondisi Rusak</th>
+                                <th class="p-2 border border-slate-400 text-right">Total Est. Nilai</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-category-summary">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+
+                    <!-- Formal Signatures -->
+                    <div class="grid grid-cols-2 gap-8 mt-12 text-center text-xs text-slate-800">
+                        <div>
+                            <p>Mengetahui,</p>
+                            <p class="font-bold">Kepala Madrasah</p>
+                            <div class="h-20"></div>
+                            <p class="font-bold underline">( H. Noor Yasin, S.Pd., M.Pd.I )</p>
+                        </div>
+                        <div>
+                            <p>Kudus, <span class="report-date-str">...</span></p>
+                            <p class="font-bold">Pengelola Barang & Aset</p>
+                            <div class="h-20"></div>
+                            <p class="font-bold underline">( H. Ahmad Muzakki, S.Kom )</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL: ADD / EDIT ASSET ITEM -->
+    <div id="modal-item" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200">
+            <!-- Modal Header -->
+            <div class="bg-emerald-900 text-white px-6 py-4 flex justify-between items-center rounded-t-xl">
+                <h3 id="modal-item-title" class="text-base font-bold flex items-center">
+                    <i class="fa-solid fa-box-archive mr-2 text-amber-400"></i> Tambah Item Inventaris
+                </h3>
+                <button onclick="closeModalAddItem()" class="text-emerald-200 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Form -->
+            <form id="form-item" onsubmit="saveItem(event)" class="p-6 space-y-4">
+                <input type="hidden" id="item-id">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Kode Barang -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Kode Barang <span class="text-rose-500">*</span></label>
+                        <input type="text" id="item-code" required placeholder="Contoh: INV/MNU1/ELEC/001" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none uppercase font-mono">
+                    </div>
+
+                    <!-- Nama Barang -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Barang <span class="text-rose-500">*</span></label>
+                        <input type="text" id="item-name" required placeholder="Contoh: Laptop Asus ExpertBook" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+
+                    <!-- Merk / Spesifikasi -->
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Merk / Spesifikasi Detail</label>
+                        <input type="text" id="item-spec" placeholder="Contoh: Core i5 11th Gen, RAM 16GB, SSD 512GB" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+
+                    <!-- Kategori -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kategori <span class="text-rose-500">*</span></label>
+                        <select id="item-category" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <option value="Elektronik & IT">Elektronik & IT</option>
+                            <option value="Meubeler & Mebel">Meubeler & Mebel</option>
+                            <option value="Perlengkapan Kelas">Perlengkapan Kelas</option>
+                            <option value="Media Pembelajaran">Media Pembelajaran</option>
+                            <option value="Alat Olahraga & Seni">Alat Olahraga & Seni</option>
+                            <option value="Peralatan Keagamaan">Peralatan Keagamaan</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+
+                    <!-- Jumlah & Satuan -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Jumlah <span class="text-rose-500">*</span></label>
+                            <input type="number" id="item-qty" min="1" required value="1" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Satuan</label>
+                            <select id="item-unit" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                <option value="Unit">Unit</option>
+                                <option value="Buah">Buah</option>
+                                <option value="Set">Set</option>
+                                <option value="Pcs">Pcs</option>
+                                <option value="Paket">Paket</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Kondisi -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kondisi Barang <span class="text-rose-500">*</span></label>
+                        <select id="item-condition" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <option value="Baik">Baik (Layak Pakai)</option>
+                            <option value="Rusak Ringan">Rusak Ringan (Butuh Servis)</option>
+                            <option value="Rusak Berat">Rusak Berat (Tidak Berfungsi)</option>
+                        </select>
+                    </div>
+
+                    <!-- Lokasi Gedung & Ruang -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Lokasi Gedung / Ruang <span class="text-rose-500">*</span></label>
+                        <input type="text" id="item-location" required list="location-suggestions" placeholder="Contoh: Gedung B - Lab Komputer 1" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                        <datalist id="location-suggestions">
+                            <option value="Gedung A - Ruang Kepala Madrasah">
+                            <option value="Gedung A - Ruang TU & Admin">
+                            <option value="Gedung A - Ruang Guru">
+                            <option value="Gedung B - Lab Komputer 1">
+                            <option value="Gedung B - Lab Komputer 2">
+                            <option value="Gedung B - Lab IPA Biologi">
+                            <option value="Gedung C - Ruang Kelas X IPA 1">
+                            <option value="Gedung C - Ruang Kelas XI IPS 2">
+                            <option value="Gedung C - Perpustakaan Digital">
+                            <option value="Gedung D - Aula & Masjid Madrasah">
+                        </datalist>
+                    </div>
+
+                    <!-- Sumber Dana & Tahun Perolehan -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Sumber Dana</label>
+                        <select id="item-source" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                            <option value="DIPA BOS">DIPA BOS Madrasah</option>
+                            <option value="Komite Sekolah">Komite Sekolah</option>
+                            <option value="Hibah / Yayasan">Hibah / Yayasan NU</option>
+                            <option value="Sponsor / Alumni">Sponsor / Alumni</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tahun Perolehan</label>
+                        <input type="number" id="item-year" value="2024" min="2000" max="2030" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+
+                    <!-- Nilai Satuan (Rp) -->
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Harga Perolehan Satuan (Rp)</label>
+                        <input type="number" id="item-price" min="0" placeholder="0" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Form Footer Actions -->
+                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-200">
+                    <button type="button" onclick="closeModalAddItem()" class="px-4 py-2 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2 text-xs font-bold text-slate-900 bg-amber-400 hover:bg-amber-500 rounded-lg transition shadow">
+                        Simpan Data
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL ALERT / NOTIFICATION -->
+    <div id="modal-alert" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 text-center space-y-4 border border-slate-200">
+            <div id="alert-icon" class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 id="alert-title" class="text-lg font-bold text-slate-800">Pemberitahuan</h3>
+            <p id="alert-message" class="text-xs text-slate-600">Pesan sukses akan muncul di sini.</p>
+            <button onclick="closeAlertModal()" class="w-full py-2 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs rounded-lg transition">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL ADMIN AUTH / LOGIN PIN -->
+    <div id="modal-admin-login" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 border border-slate-200 text-center space-y-4">
+            <div class="w-14 h-14 bg-amber-100 text-amber-700 rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-bold text-slate-800">Verifikasi Admin</h3>
+                <p class="text-xs text-slate-500 mt-1">Masukkan Kode PIN Admin untuk mengaktifkan mode edit & kelola aset.</p>
+            </div>
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <input type="password" id="input-admin-pin" placeholder="Masukkan PIN (Default: 1234)" maxlength="10" required autofocus
+                           class="w-full text-center text-lg font-mono tracking-widest px-4 py-2.5 border-2 border-slate-300 rounded-xl focus:border-amber-500 focus:ring-2 focus:ring-amber-200 focus:outline-none">
+                </div>
+                <div class="flex space-x-2">
+                    <button type="button" onclick="closeAdminLoginModal()" class="w-1/2 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                        Batal
+                    </button>
+                    <button type="submit" class="w-1/2 py-2 text-xs font-bold text-slate-900 bg-amber-400 hover:bg-amber-500 rounded-xl transition shadow">
+                        Masuk Admin
+                    </button>
+                </div>
+            </form>
+            <p class="text-[11px] text-slate-400 border-t border-slate-100 pt-3">PIN Default: <strong class="text-slate-600 font-mono">1234</strong></p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-4 border-t border-slate-800 no-print text-center text-xs">
+        <p>&copy; 2026 MA NU Hasyim Asy'ari 1 Kudus. Sistem Informasi Inventaris Barang & Aset (SIP-ASSET).</p>
+    </footer>
+
+    <script>
+        // Default Sample Initial Inventory Data for MA NU Hasyim Asy'ari 1 Kudus
+        const initialData = [
+            {
+                id: '1',
+                code: 'INV/MNU1/ELEC/001',
+                name: 'Laptop PC Guru Asus ExpertBook B1400',
+                spec: 'Intel Core i5-1135G7, 16GB RAM, SSD 512GB',
+                category: 'Elektronik & IT',
+                qty: 12,
+                unit: 'Unit',
+                condition: 'Baik',
+                location: 'Gedung A - Ruang Guru',
+                source: 'DIPA BOS',
+                year: 2023,
+                price: 9500000
+            },
+            {
+                id: '2',
+                code: 'INV/MNU1/ELEC/002',
+                name: 'Proyektor EPSON EB-E500',
+                spec: '3300 Lumens, XGA HDMI',
+                category: 'Media Pembelajaran',
+                qty: 8,
+                unit: 'Unit',
+                condition: 'Baik',
+                location: 'Gedung B - Lab Komputer 1',
+                source: 'DIPA BOS',
+                year: 2022,
+                price: 5800000
+            },
+            {
+                id: '3',
+                code: 'INV/MNU1/ELEC/003',
+                name: 'Komputer Client All-in-One PC Lenovo',
+                spec: 'Core i3 10th Gen, 8GB RAM, SSD 256GB 21.5 Inch',
+                category: 'Elektronik & IT',
+                qty: 30,
+                unit: 'Unit',
+                condition: 'Baik',
+                location: 'Gedung B - Lab Komputer 1',
+                source: 'Komite Sekolah',
+                year: 2023,
+                price: 7200000
+            },
+            {
+                id: '4',
+                code: 'INV/MNU1/MEB/001',
+                name: 'Meja & Kursi Siswa Kayu Jati Set',
+                spec: 'Kayu Jati Kudus Standar Sekolah',
+                category: 'Meubeler & Mebel',
+                qty: 36,
+                unit: 'Set',
+                condition: 'Baik',
+                location: 'Gedung C - Ruang Kelas X IPA 1',
+                source: 'Komite Sekolah',
+                year: 2021,
+                price: 650000
+            },
+            {
+                id: '5',
+                code: 'INV/MNU1/MEB/002',
+                name: 'Lemari Kabinet Arsip Besi Filing',
+                spec: '4 Lintel Pintu Besi Anti Rayap',
+                category: 'Meubeler & Mebel',
+                qty: 4,
+                unit: 'Buah',
+                condition: 'Rusak Ringan',
+                location: 'Gedung A - Ruang TU & Admin',
+                source: 'DIPA BOS',
+                year: 2020,
+                price: 2400000
+            },
+            {
+                id: '6',
+                code: 'INV/MNU1/ELEC/004',
+                name: 'AC Split Panasonic 1.5 PK',
+                spec: 'Inverter Eco Tough CS-PU12XKJ',
+                category: 'Elektronik & IT',
+                qty: 4,
+                unit: 'Unit',
+                condition: 'Rusak Ringan',
+                location: 'Gedung D - Aula & Masjid Madrasah',
+                source: 'Komite Sekolah',
+                year: 2021,
+                price: 5200000
+            },
+            {
+                id: '7',
+                code: 'INV/MNU1/LAB/001',
+                name: 'Mikroskop Binokuler Digital Olympus',
+                spec: 'Pembesaran 1000x + LED Light Source',
+                category: 'Media Pembelajaran',
+                qty: 6,
+                unit: 'Unit',
+                condition: 'Baik',
+                location: 'Gedung B - Lab IPA Biologi',
+                source: 'Hibah / Yayasan',
+                year: 2022,
+                price: 4500000
+            },
+            {
+                id: '8',
+                code: 'INV/MNU1/REL/001',
+                name: 'Sound System Wireless BMA Portable',
+                spec: 'Speaker 15 Inch + 2 Mic Wireless Professional',
+                category: 'Peralatan Keagamaan',
+                qty: 2,
+                unit: 'Set',
+                condition: 'Baik',
+                location: 'Gedung D - Aula & Masjid Madrasah',
+                source: 'Hibah / Yayasan',
+                year: 2023,
+                price: 3800000
+            },
+            {
+                id: '9',
+                code: 'INV/MNU1/ELEC/005',
+                name: 'Printer Heavy Duty Epson L15150 A3',
+                spec: 'Wi-Fi Duplex All-in-One Ink Tank Printer',
+                category: 'Elektronik & IT',
+                qty: 1,
+                unit: 'Unit',
+                condition: 'Rusak Berat',
+                location: 'Gedung A - Ruang TU & Admin',
+                source: 'DIPA BOS',
+                year: 2019,
+                price: 11500000
+            },
+            {
+                id: '10',
+                code: 'INV/MNU1/SPO/001',
+                name: 'Meja Tenis / Pingpong Donic',
+                spec: 'MDF 25mm Standard PTMSI + Roda Lock',
+                category: 'Alat Olahraga & Seni',
+                qty: 2,
+                unit: 'Set',
+                condition: 'Baik',
+                location: 'Gedung D - Aula & Masjid Madrasah',
+                source: 'Komite Sekolah',
+                year: 2022,
+                price: 4200000
+            }
+        ];
+
+        // State variables
+        let inventory = [];
+        let filteredInventory = [];
+        let conditionChartInstance = null;
+        let locationChartInstance = null;
+
+        let isAdmin = false;
+        let adminPin = localStorage.getItem('MNU1_ADMIN_PIN') || '1234';
+        let pendingAdminAction = null;
+
+        // Initialize App on DOM Loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load saved data from localStorage if exists, else load initial
+            const saved = localStorage.getItem('MNU1_INVENTORY_DATA');
+            if (saved) {
+                try {
+                    inventory = JSON.parse(saved);
+                } catch (e) {
+                    inventory = [...initialData];
+                }
+            } else {
+                inventory = [...initialData];
+                saveToLocalStorage();
+            }
+
+            filteredInventory = [...inventory];
+
+            // Check previous admin session state
+            if (sessionStorage.getItem('MNU1_IS_ADMIN') === 'true') {
+                isAdmin = true;
+            }
+
+            updateAdminUI();
+            populateFilterDropdowns();
+            renderAllViews();
+            setCurrentDates();
+        });
+
+        function updateAdminUI() {
+            const badgeText = document.getElementById('admin-status-text');
+            const authBtnText = document.getElementById('admin-auth-btn-text');
+            const authIcon = document.getElementById('admin-auth-icon');
+            const authBtn = document.getElementById('btn-admin-auth');
+
+            if (isAdmin) {
+                if (badgeText) badgeText.innerHTML = '<span class="font-bold text-emerald-400">Mode: Admin Active</span>';
+                if (authBtnText) authBtnText.textContent = 'Keluar Admin';
+                if (authIcon) authIcon.className = 'fa-solid fa-right-from-bracket mr-2';
+                if (authBtn) {
+                    authBtn.className = "bg-rose-600 hover:bg-rose-700 text-white font-bold px-3 py-2 rounded-lg text-sm transition flex items-center shadow-md active:scale-95";
+                }
+            } else {
+                if (badgeText) badgeText.innerHTML = 'Mode: Tamu (Lihat Saja)';
+                if (authBtnText) authBtnText.textContent = 'Login Admin';
+                if (authIcon) authIcon.className = 'fa-solid fa-lock mr-2';
+                if (authBtn) {
+                    authBtn.className = "bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-2 rounded-lg text-sm transition flex items-center shadow-md active:scale-95";
+                }
+            }
+        }
+
+        function toggleAdminAuth() {
+            if (isAdmin) {
+                isAdmin = false;
+                sessionStorage.removeItem('MNU1_IS_ADMIN');
+                updateAdminUI();
+                renderInventoryTable();
+                showAlertModal('Logout Admin', 'Anda telah keluar dari Mode Admin. Akses pengeditan terkunci.');
+            } else {
+                openAdminLoginModal();
+            }
+        }
+
+        function openAdminLoginModal(onSuccessCallback = null) {
+            pendingAdminAction = onSuccessCallback;
+            document.getElementById('input-admin-pin').value = '';
+            document.getElementById('modal-admin-login').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('input-admin-pin').focus();
+            }, 100);
+        }
+
+        function closeAdminLoginModal() {
+            document.getElementById('modal-admin-login').classList.add('hidden');
+            pendingAdminAction = null;
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const inputPin = document.getElementById('input-admin-pin').value.trim();
+
+            if (inputPin === adminPin) {
+                isAdmin = true;
+                sessionStorage.setItem('MNU1_IS_ADMIN', 'true');
+                updateAdminUI();
+                renderInventoryTable();
+                closeAdminLoginModal();
+
+                showAlertModal('Akses Admin Aktif', 'Selamat datang Admin! Anda sekarang dapat menambah, mengedit, dan menghapus data aset.');
+
+                if (typeof pendingAdminAction === 'function') {
+                    const action = pendingAdminAction;
+                    pendingAdminAction = null;
+                    action();
+                }
+            } else {
+                showAlertModal('PIN Salah!', 'Kode PIN Admin yang Anda masukkan salah. Default PIN adalah 1234.');
+            }
+        }
+
+        function requireAdminAccess(actionCallback) {
+            if (isAdmin) {
+                actionCallback();
+            } else {
+                openAdminLoginModal(actionCallback);
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('MNU1_INVENTORY_DATA', JSON.stringify(inventory));
+        }
+
+        function setCurrentDates() {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const todayStr = new Date().toLocaleDateString('id-ID', options);
+            
+            const dirDateEl = document.getElementById('dir-current-date');
+            if (dirDateEl) dirDateEl.textContent = todayStr;
+
+            const repDates = document.querySelectorAll('.report-date-str');
+            repDates.forEach(el => el.textContent = todayStr);
+        }
+
+        // Tab Switcher Logic
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+
+            // Reset tab button styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-amber-300', 'border-b-2', 'border-amber-400', 'bg-emerald-800/60');
+                btn.classList.add('text-emerald-100');
+            });
+
+            // Show selected tab content
+            const targetContent = document.getElementById(`tab-${tabName}`);
+            if (targetContent) targetContent.classList.remove('hidden');
+
+            // Highlight active tab button
+            const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-emerald-100');
+                activeBtn.classList.add('text-amber-300', 'border-b-2', 'border-amber-400', 'bg-emerald-800/60');
+            }
+
+            // Specific refresh per tab view
+            if (tabName === 'dashboard') {
+                renderCharts();
+            } else if (tabName === 'rooms') {
+                renderRoomInventory();
+            } else if (tabName === 'labels') {
+                renderQRLabels();
+            } else if (tabName === 'reports') {
+                renderOfficialReport();
+            }
+        }
+
+        function populateFilterDropdowns() {
+            // Extract Unique Locations
+            const locations = [...new Set(inventory.map(i => i.location))].sort();
+            const locSelect = document.getElementById('filter-location');
+            const roomSelect = document.getElementById('room-select');
+            
+            locSelect.innerHTML = '<option value="">-- Semua Lokasi --</option>';
+            roomSelect.innerHTML = '';
+
+            locations.forEach(loc => {
+                const opt1 = document.createElement('option');
+                opt1.value = loc;
+                opt1.textContent = loc;
+                locSelect.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = loc;
+                opt2.textContent = loc;
+                roomSelect.appendChild(opt2);
+            });
+
+            // Extract Unique Categories
+            const categories = [...new Set(inventory.map(i => i.category))].sort();
+            const catSelect = document.getElementById('filter-category');
+            catSelect.innerHTML = '<option value="">-- Semua Kategori --</option>';
+
+            categories.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                catSelect.appendChild(opt);
+            });
+        }
+
+        function applyFilters() {
+            const search = document.getElementById('filter-search').value.toLowerCase().trim();
+            const condition = document.getElementById('filter-condition').value;
+            const location = document.getElementById('filter-location').value;
+            const category = document.getElementById('filter-category').value;
+
+            filteredInventory = inventory.filter(item => {
+                const matchSearch = !search || 
+                    item.code.toLowerCase().includes(search) || 
+                    item.name.toLowerCase().includes(search) || 
+                    (item.spec && item.spec.toLowerCase().includes(search));
+                
+                const matchCond = !condition || item.condition.toLowerCase() === condition.toLowerCase();
+                const matchLoc = !location || item.location === location;
+                const matchCat = !category || item.category === category;
+
+                return matchSearch && matchCond && matchLoc && matchCat;
+            });
+
+            renderInventoryTable();
+        }
+
+        function resetFilters() {
+            document.getElementById('filter-search').value = '';
+            document.getElementById('filter-condition').value = '';
+            document.getElementById('filter-location').value = '';
+            document.getElementById('filter-category').value = '';
+            applyFilters();
+        }
+
+        function filterByCondition(condStr) {
+            switchTab('items');
+            document.getElementById('filter-condition').value = condStr;
+            applyFilters();
+        }
+
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+        }
+
+        function renderAllViews() {
+            renderDashboardStats();
+            renderInventoryTable();
+            renderCharts();
+        }
+
+        function renderInventoryTable() {
+            const tbody = document.getElementById('inventory-table-body');
+            tbody.innerHTML = '';
+
+            document.getElementById('displayed-count').textContent = filteredInventory.length;
+            document.getElementById('total-count').textContent = inventory.length;
+
+            if (filteredInventory.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="text-center py-8 text-slate-400">
+                            <i class="fa-solid fa-inbox text-3xl mb-2 block"></i>
+                            Tidak ada data inventaris yang cocok dengan kriteria pencarian.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            filteredInventory.forEach((item, idx) => {
+                let condBadge = '';
+                if (item.condition === 'Baik') {
+                    condBadge = `<span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-1 rounded-full font-semibold border border-emerald-300"><i class="fa-solid fa-check mr-1"></i> Baik</span>`;
+                } else if (item.condition === 'Rusak Ringan') {
+                    condBadge = `<span class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full font-semibold border border-amber-300"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Rusak Ringan</span>`;
+                } else {
+                    condBadge = `<span class="bg-rose-100 text-rose-800 text-xs px-2 py-1 rounded-full font-semibold border border-rose-300"><i class="fa-solid fa-xmark mr-1"></i> Rusak Berat</span>`;
+                }
+
+                // Render Action column based on isAdmin status
+                let actionBtnHtml = '';
+                if (isAdmin) {
+                    actionBtnHtml = `
+                        <div class="flex items-center justify-center space-x-1">
+                            <button onclick="openModalEditItem('${item.id}')" title="Edit Item" class="w-7 h-7 rounded bg-amber-100 text-amber-800 hover:bg-amber-200 flex items-center justify-center transition">
+                                <i class="fa-solid fa-pen text-xs"></i>
+                            </button>
+                            <button onclick="deleteItem('${item.id}')" title="Hapus Item" class="w-7 h-7 rounded bg-rose-100 text-rose-800 hover:bg-rose-200 flex items-center justify-center transition">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    actionBtnHtml = `
+                        <button onclick="openModalEditItem('${item.id}')" title="Kunci Edit (Klik untuk Login Admin)" class="px-2 py-1 bg-slate-100 hover:bg-amber-100 text-slate-400 hover:text-amber-800 text-xs rounded transition flex items-center justify-center mx-auto border border-slate-200">
+                            <i class="fa-solid fa-lock mr-1 text-[10px]"></i> Edit
+                        </button>
+                    `;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-3 text-center text-xs font-mono text-slate-500">${idx + 1}</td>
+                    <td class="p-3 font-mono text-xs font-bold text-emerald-900">${item.code}</td>
+                    <td class="p-3">
+                        <div class="font-semibold text-slate-800">${item.name}</div>
+                        <div class="text-xs text-slate-500">${item.spec || '-'}</div>
+                    </td>
+                    <td class="p-3"><span class="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded">${item.category}</span></td>
+                    <td class="p-3 text-center font-bold text-slate-800">${item.qty} <span class="text-xs font-normal text-slate-500">${item.unit}</span></td>
+                    <td class="p-3">${condBadge}</td>
+                    <td class="p-3 text-xs text-slate-600"><i class="fa-solid fa-location-dot text-slate-400 mr-1"></i> ${item.location}</td>
+                    <td class="p-3 text-xs text-slate-600">${item.source} (${item.year})</td>
+                    <td class="p-3 text-right font-mono text-xs font-semibold text-slate-700">${formatRupiah(item.price || 0)}</td>
+                    <td class="p-3 text-center no-print">
+                        ${actionBtnHtml}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderDashboardStats() {
+            const totalItems = inventory.length;
+            const totalQty = inventory.reduce((acc, curr) => acc + Number(curr.qty || 0), 0);
+            
+            const goodCount = inventory.filter(i => i.condition === 'Baik').reduce((acc, curr) => acc + Number(curr.qty || 0), 0);
+            const goodPercent = totalQty > 0 ? Math.round((goodCount / totalQty) * 100) : 0;
+
+            const totalValue = inventory.reduce((acc, curr) => acc + (Number(curr.price || 0) * Number(curr.qty || 0)), 0);
+
+            document.getElementById('stat-total-items').textContent = totalItems;
+            document.getElementById('stat-total-qty').textContent = totalQty;
+            document.getElementById('stat-good-condition').textContent = `${goodPercent}%`;
+            document.getElementById('stat-good-count').textContent = `${goodCount} / ${totalQty} Unit Layak`;
+            document.getElementById('stat-total-val').textContent = formatRupiah(totalValue);
+
+            // Populate Damaged Preview Table
+            const damagedTbody = document.getElementById('damaged-items-preview');
+            damagedTbody.innerHTML = '';
+            const damagedItems = inventory.filter(i => i.condition !== 'Baik');
+
+            if (damagedItems.length === 0) {
+                damagedTbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-emerald-600 font-medium">Semua aset madrasah dalam kondisi BAIK! Tidak ada kerusakan.</td></tr>`;
+            } else {
+                damagedItems.forEach(item => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="p-3 font-mono text-xs font-bold text-slate-700">${item.code}</td>
+                        <td class="p-3 font-medium text-slate-800">${item.name}</td>
+                        <td class="p-3 text-slate-600">${item.location}</td>
+                        <td class="p-3 text-center font-bold text-rose-600">${item.qty} ${item.unit}</td>
+                        <td class="p-3">
+                            <span class="bg-amber-100 text-amber-800 text-xs px-2 py-0.5 rounded-full font-bold">${item.condition}</span>
+                        </td>
+                    `;
+                    damagedTbody.appendChild(tr);
+                });
+            }
+        }
+
+        function renderCharts() {
+            // Chart 1: Condition Breakdown
+            const goodQty = inventory.filter(i => i.condition === 'Baik').reduce((a, c) => a + c.qty, 0);
+            const lightDamagedQty = inventory.filter(i => i.condition === 'Rusak Ringan').reduce((a, c) => a + c.qty, 0);
+            const heavyDamagedQty = inventory.filter(i => i.condition === 'Rusak Berat').reduce((a, c) => a + c.qty, 0);
+
+            const ctxCond = document.getElementById('chartCondition');
+            if (ctxCond) {
+                if (conditionChartInstance) conditionChartInstance.destroy();
+
+                conditionChartInstance = new Chart(ctxCond, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Baik', 'Rusak Ringan', 'Rusak Berat'],
+                        datasets: [{
+                            data: [goodQty, lightDamagedQty, heavyDamagedQty],
+                            backgroundColor: ['#10b981', '#f59e0b', '#f43f5e']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+
+            // Chart 2: Location Distribution
+            const locMap = {};
+            inventory.forEach(i => {
+                locMap[i.location] = (locMap[i.location] || 0) + i.qty;
+            });
+
+            const ctxLoc = document.getElementById('chartLocation');
+            if (ctxLoc) {
+                if (locationChartInstance) locationChartInstance.destroy();
+
+                locationChartInstance = new Chart(ctxLoc, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(locMap).map(l => l.replace('Gedung ', 'G. ')),
+                        datasets: [{
+                            label: 'Jumlah Kuantitas Unit',
+                            data: Object.values(locMap),
+                            backgroundColor: '#047857',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+        }
+
+        function renderRoomInventory() {
+            const roomSelect = document.getElementById('room-select');
+            const selectedRoom = roomSelect.value;
+            document.getElementById('dir-room-title').textContent = selectedRoom || 'Belum Dipilih';
+
+            const roomItems = inventory.filter(i => i.location === selectedRoom);
+
+            const totalItems = roomItems.length;
+            const totalQty = roomItems.reduce((acc, curr) => acc + Number(curr.qty), 0);
+            const goodCount = roomItems.filter(i => i.condition === 'Baik').reduce((acc, curr) => acc + Number(curr.qty), 0);
+            const badCount = totalQty - goodCount;
+
+            document.getElementById('dir-stat-items').textContent = totalItems;
+            document.getElementById('dir-stat-qty').textContent = totalQty;
+            document.getElementById('dir-stat-good').textContent = goodCount;
+            document.getElementById('dir-stat-bad').textContent = badCount;
+
+            const tbody = document.getElementById('dir-table-body');
+            tbody.innerHTML = '';
+
+            if (roomItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-400">Tidak ada barang terdata pada ruangan ini.</td></tr>`;
+                return;
+            }
+
+            roomItems.forEach((item, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-200 text-xs";
+                tr.innerHTML = `
+                    <td class="p-2 border border-slate-300 text-center font-mono">${idx + 1}</td>
+                    <td class="p-2 border border-slate-300 font-mono font-bold text-slate-800">${item.code}</td>
+                    <td class="p-2 border border-slate-300">
+                        <div class="font-bold text-slate-800">${item.name}</div>
+                        <div class="text-[11px] text-slate-500">${item.spec || '-'}</div>
+                    </td>
+                    <td class="p-2 border border-slate-300 text-center font-bold">${item.qty} ${item.unit}</td>
+                    <td class="p-2 border border-slate-300 text-center font-bold text-emerald-700">${item.condition === 'Baik' ? item.qty : 0}</td>
+                    <td class="p-2 border border-slate-300 text-center font-bold text-amber-600">${item.condition === 'Rusak Ringan' ? item.qty : 0}</td>
+                    <td class="p-2 border border-slate-300 text-center font-bold text-rose-600">${item.condition === 'Rusak Berat' ? item.qty : 0}</td>
+                    <td class="p-2 border border-slate-300 text-slate-600">${item.source} (${item.year})</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function printRoomSheet() {
+            window.print();
+        }
+
+        function renderQRLabels() {
+            const container = document.getElementById('qr-labels-grid');
+            container.innerHTML = '';
+
+            inventory.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-3 border-2 border-dashed border-slate-300 rounded-lg flex items-center space-x-3 shadow-sm hover:border-emerald-500 transition";
+                
+                const qrWrapperId = `qrcode-canvas-${index}`;
+
+                card.innerHTML = `
+                    <div id="${qrWrapperId}" class="w-20 h-20 bg-slate-100 flex items-center justify-center p-1 border border-slate-200 rounded shrink-0"></div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center space-x-1 border-b border-slate-200 pb-0.5 mb-1">
+                            <img src="https://raw.githubusercontent.com/yusufajiib/yusufajiib/refs/heads/main/gambar/Logo_MA_Terbaru_1-removebg-preview.png" alt="Logo" class="w-4 h-4 object-contain">
+                            <p class="text-[10px] font-bold text-emerald-800 tracking-wider uppercase truncate">MA NU HASYIM ASY'ARI 1</p>
+                        </div>
+                        <h4 class="text-xs font-bold text-slate-900 truncate mt-1">${item.name}</h4>
+                        <p class="text-[11px] font-mono font-bold text-slate-700 mt-0.5">${item.code}</p>
+                        <p class="text-[10px] text-slate-500 truncate mt-0.5"><i class="fa-solid fa-location-dot text-slate-400"></i> ${item.location}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+
+                // Generate QR Code dynamically
+                setTimeout(() => {
+                    const targetEl = document.getElementById(qrWrapperId);
+                    if (targetEl) {
+                        targetEl.innerHTML = '';
+                        new QRCode(targetEl, {
+                            text: `MA_NU_HASYIM_ASYARI_1|KODE:${item.code}|NAMA:${item.name}|LOKASI:${item.location}`,
+                            width: 72,
+                            height: 72,
+                            colorDark: "#064e3b",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.M
+                        });
+                    }
+                }, 50);
+            });
+        }
+
+        function renderOfficialReport() {
+            const catMap = {};
+
+            inventory.forEach(item => {
+                if (!catMap[item.category]) {
+                    catMap[item.category] = {
+                        itemCount: 0,
+                        totalQty: 0,
+                        goodQty: 0,
+                        badQty: 0,
+                        totalValue: 0
+                    };
+                }
+
+                catMap[item.category].itemCount += 1;
+                catMap[item.category].totalQty += item.qty;
+                if (item.condition === 'Baik') {
+                    catMap[item.category].goodQty += item.qty;
+                } else {
+                    catMap[item.category].badQty += item.qty;
+                }
+                catMap[item.category].totalValue += (item.price * item.qty);
+            });
+
+            const tbody = document.getElementById('report-category-summary');
+            tbody.innerHTML = '';
+
+            let idx = 1;
+            let grandItemCount = 0;
+            let grandQty = 0;
+            let grandGood = 0;
+            let grandBad = 0;
+            let grandValue = 0;
+
+            for (const [catName, stats] of Object.entries(catMap)) {
+                grandItemCount += stats.itemCount;
+                grandQty += stats.totalQty;
+                grandGood += stats.goodQty;
+                grandBad += stats.badQty;
+                grandValue += stats.totalValue;
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-300";
+                tr.innerHTML = `
+                    <td class="p-2 border border-slate-400 text-center font-mono">${idx++}</td>
+                    <td class="p-2 border border-slate-400 font-bold">${catName}</td>
+                    <td class="p-2 border border-slate-400 text-center">${stats.itemCount}</td>
+                    <td class="p-2 border border-slate-400 text-center font-bold">${stats.totalQty}</td>
+                    <td class="p-2 border border-slate-400 text-center text-emerald-700 font-bold">${stats.goodQty}</td>
+                    <td class="p-2 border border-slate-400 text-center text-rose-600 font-bold">${stats.badQty}</td>
+                    <td class="p-2 border border-slate-400 text-right font-mono font-bold">${formatRupiah(stats.totalValue)}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+
+            // Total Grand Row
+            const trTotal = document.createElement('tr');
+            trTotal.className = "bg-slate-200 font-bold text-slate-900 border-t-2 border-slate-800";
+            trTotal.innerHTML = `
+                <td colspan="2" class="p-2 border border-slate-400 text-center uppercase">JUMLAH TOTAL REKAPITULASI</td>
+                <td class="p-2 border border-slate-400 text-center">${grandItemCount}</td>
+                <td class="p-2 border border-slate-400 text-center">${grandQty}</td>
+                <td class="p-2 border border-slate-400 text-center text-emerald-800">${grandGood}</td>
+                <td class="p-2 border border-slate-400 text-center text-rose-700">${grandBad}</td>
+                <td class="p-2 border border-slate-400 text-right font-mono">${formatRupiah(grandValue)}</td>
+            `;
+            tbody.appendChild(trTotal);
+        }
+
+        function openModalAddItem() {
+            requireAdminAccess(() => {
+                document.getElementById('modal-item-title').innerHTML = `<i class="fa-solid fa-box-archive mr-2 text-amber-400"></i> Tambah Item Inventaris Baru`;
+                document.getElementById('form-item').reset();
+                document.getElementById('item-id').value = '';
+                
+                // Auto generate next code proposal
+                const randomCodeNum = String(inventory.length + 1).padStart(3, '0');
+                document.getElementById('item-code').value = `INV/MNU1/AST/${randomCodeNum}`;
+
+                document.getElementById('modal-item').classList.remove('hidden');
+            });
+        }
+
+        function openModalEditItem(id) {
+            requireAdminAccess(() => {
+                const item = inventory.find(i => i.id === id);
+                if (!item) return;
+
+                document.getElementById('modal-item-title').innerHTML = `<i class="fa-solid fa-pen-to-square mr-2 text-amber-400"></i> Edit Item Inventaris`;
+                
+                document.getElementById('item-id').value = item.id;
+                document.getElementById('item-code').value = item.code;
+                document.getElementById('item-name').value = item.name;
+                document.getElementById('item-spec').value = item.spec || '';
+                document.getElementById('item-category').value = item.category;
+                document.getElementById('item-qty').value = item.qty;
+                document.getElementById('item-unit').value = item.unit || 'Unit';
+                document.getElementById('item-condition').value = item.condition;
+                document.getElementById('item-location').value = item.location;
+                document.getElementById('item-source').value = item.source || 'DIPA BOS';
+                document.getElementById('item-year').value = item.year || 2024;
+                document.getElementById('item-price').value = item.price || 0;
+
+                document.getElementById('modal-item').classList.remove('hidden');
+            });
+        }
+
+        function closeModalAddItem() {
+            document.getElementById('modal-item').classList.add('hidden');
+        }
+
+        function saveItem(e) {
+            e.preventDefault();
+
+            if (!isAdmin) {
+                showAlertModal('Akses Ditolak', 'Hanya admin yang dapat menyimpan perubahan.');
+                return;
+            }
+
+            const id = document.getElementById('item-id').value;
+            const code = document.getElementById('item-code').value.trim().toUpperCase();
+            const name = document.getElementById('item-name').value.trim();
+            const spec = document.getElementById('item-spec').value.trim();
+            const category = document.getElementById('item-category').value;
+            const qty = parseInt(document.getElementById('item-qty').value) || 1;
+            const unit = document.getElementById('item-unit').value;
+            const condition = document.getElementById('item-condition').value;
+            const location = document.getElementById('item-location').value.trim();
+            const source = document.getElementById('item-source').value;
+            const year = parseInt(document.getElementById('item-year').value) || 2024;
+            const price = parseFloat(document.getElementById('item-price').value) || 0;
+
+            if (id) {
+                // Update Existing
+                const index = inventory.findIndex(i => i.id === id);
+                if (index !== -1) {
+                    inventory[index] = { id, code, name, spec, category, qty, unit, condition, location, source, year, price };
+                }
+            } else {
+                // Add New Item
+                const newId = Date.now().toString();
+                inventory.unshift({ id: newId, code, name, spec, category, qty, unit, condition, location, source, year, price });
+            }
+
+            saveToLocalStorage();
+            populateFilterDropdowns();
+            applyFilters();
+            renderDashboardStats();
+            closeModalAddItem();
+
+            showAlertModal('Sukses!', 'Data inventaris berhasil disimpan!');
+        }
+
+        function deleteItem(id) {
+            requireAdminAccess(() => {
+                const item = inventory.find(i => i.id === id);
+                if (!item) return;
+
+                if (confirm(`Apakah Anda yakin ingin menghapus item "${item.name}" (${item.code})?`)) {
+                    inventory = inventory.filter(i => i.id !== id);
+                    saveToLocalStorage();
+                    populateFilterDropdowns();
+                    applyFilters();
+                    renderDashboardStats();
+                    showAlertModal('Terhapus', 'Data aset telah dihapus dari sistem.');
+                }
+            });
+        }
+
+        function openModalEditItem(id) {
+            const item = inventory.find(i => i.id === id);
+            if (!item) return;
+
+            document.getElementById('modal-item-title').innerHTML = `<i class="fa-solid fa-pen-to-square mr-2 text-amber-400"></i> Edit Item Inventaris`;
+            
+            document.getElementById('item-id').value = item.id;
+            document.getElementById('item-code').value = item.code;
+            document.getElementById('item-name').value = item.name;
+            document.getElementById('item-spec').value = item.spec || '';
+            document.getElementById('item-category').value = item.category;
+            document.getElementById('item-qty').value = item.qty;
+            document.getElementById('item-unit').value = item.unit || 'Unit';
+            document.getElementById('item-condition').value = item.condition;
+            document.getElementById('item-location').value = item.location;
+            document.getElementById('item-source').value = item.source || 'DIPA BOS';
+            document.getElementById('item-year').value = item.year || 2024;
+            document.getElementById('item-price').value = item.price || 0;
+
+            document.getElementById('modal-item').classList.remove('hidden');
+        }
+
+        function closeModalAddItem() {
+            document.getElementById('modal-item').classList.add('hidden');
+        }
+
+        function saveItem(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('item-id').value;
+            const code = document.getElementById('item-code').value.trim().toUpperCase();
+            const name = document.getElementById('item-name').value.trim();
+            const spec = document.getElementById('item-spec').value.trim();
+            const category = document.getElementById('item-category').value;
+            const qty = parseInt(document.getElementById('item-qty').value) || 1;
+            const unit = document.getElementById('item-unit').value;
+            const condition = document.getElementById('item-condition').value;
+            const location = document.getElementById('item-location').value.trim();
+            const source = document.getElementById('item-source').value;
+            const year = parseInt(document.getElementById('item-year').value) || 2024;
+            const price = parseFloat(document.getElementById('item-price').value) || 0;
+
+            if (id) {
+                // Update Existing
+                const index = inventory.findIndex(i => i.id === id);
+                if (index !== -1) {
+                    inventory[index] = { id, code, name, spec, category, qty, unit, condition, location, source, year, price };
+                }
+            } else {
+                // Add New Item
+                const newId = Date.now().toString();
+                inventory.unshift({ id: newId, code, name, spec, category, qty, unit, condition, location, source, year, price });
+            }
+
+            saveToLocalStorage();
+            populateFilterDropdowns();
+            applyFilters();
+            renderDashboardStats();
+            closeModalAddItem();
+
+            showAlertModal('Sukses!', 'Data inventaris berhasil disimpan!');
+        }
+
+        function deleteItem(id) {
+            const item = inventory.find(i => i.id === id);
+            if (!item) return;
+
+            if (confirm(`Apakah Anda yakin ingin menghapus item "${item.name}" (${item.code})?`)) {
+                inventory = inventory.filter(i => i.id !== id);
+                saveToLocalStorage();
+                populateFilterDropdowns();
+                applyFilters();
+                renderDashboardStats();
+                showAlertModal('Terhapus', 'Data aset telah dihapus dari sistem.');
+            }
+        }
+
+        function exportToCSV() {
+            if (inventory.length === 0) {
+                showAlertModal('Peringatan', 'Tidak ada data untuk diekspor!');
+                return;
+            }
+
+            let csv = 'Kode Barang,Nama Barang,Spesifikasi,Kategori,Jumlah,Satuan,Kondisi,Lokasi,Sumber Dana,Tahun,Harga Satuan (Rp)\n';
+
+            inventory.forEach(i => {
+                const specClean = (i.spec || '').replace(/"/g, '""');
+                const nameClean = i.name.replace(/"/g, '""');
+                const locClean = i.location.replace(/"/g, '""');
+
+                csv += `"${i.code}","${nameClean}","${specClean}","${i.category}",${i.qty},"${i.unit}","${i.condition}","${locClean}","${i.source}",${i.year},${i.price}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `Inventaris_Aset_MA_NU_Hasyim_Asyari_1_${new Date().toISOString().slice(0,10)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function showAlertModal(title, msg) {
+            document.getElementById('alert-title').textContent = title;
+            document.getElementById('alert-message').textContent = msg;
+            document.getElementById('modal-alert').classList.remove('hidden');
+        }
+
+        function closeAlertModal() {
+            document.getElementById('modal-alert').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
