@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buku Inventaris Barang & Aset - MA NU Hasyim Asy'ari 1</title>
+    <title>Buku Inventaris Barang & Aset - MA NU Hasyim Asy'ari 1 Kudus</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -518,16 +518,25 @@
 
     <div id="modal-report" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden no-print">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden">
-            <div class="bg-slate-800 text-white p-4 flex items-center justify-between">
+            <div class="bg-slate-800 text-white p-4 flex flex-wrap items-center justify-between gap-3">
                 <h3 class="font-bold text-sm flex items-center gap-2">
                     <i class="fa-solid fa-file-invoice text-gold-400"></i>
                     Pratinjau Laporan Resmi Sarpras
                 </h3>
-                <div class="flex items-center gap-2">
-                    <button onclick="window.print()" class="bg-gold-500 hover:bg-gold-600 text-nu-dark px-3 py-1.5 rounded-lg text-xs font-bold">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <!-- Dropdown Filter Lokasi Khusus Cetak Laporan -->
+                    <div class="flex items-center gap-1.5 bg-slate-700 text-white text-xs px-2.5 py-1.5 rounded-xl border border-slate-600">
+                        <i class="fa-solid fa-building text-gold-400"></i>
+                        <span class="font-medium text-slate-300">Pilih Lokasi:</span>
+                        <select id="report-filter-lokasi" onchange="renderReportData()" class="bg-slate-800 text-gold-400 font-bold focus:outline-none cursor-pointer rounded px-1.5 py-0.5 border border-slate-600">
+                            <option value="ALL">Semua Lokasi / Ruang</option>
+                        </select>
+                    </div>
+
+                    <button onclick="window.print()" class="bg-gold-500 hover:bg-gold-600 text-nu-dark px-3.5 py-1.5 rounded-xl text-xs font-bold transition active:scale-95 shadow">
                         <i class="fa-solid fa-print mr-1"></i> Cetak Dokumen
                     </button>
-                    <button onclick="closeReportModal()" class="text-slate-400 hover:text-white ml-2">
+                    <button onclick="closeReportModal()" class="text-slate-400 hover:text-white ml-1">
                         <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
@@ -545,10 +554,11 @@
                     </div>
                 </div>
 
-                <!-- Report Title -->
+                <!-- Report Title & Subtitle Dynamic Location -->
                 <div class="text-center my-6">
                     <h3 class="font-bold text-base uppercase text-slate-900 underline underline-offset-4">LAPORAN INVENTARISASI BARANG DAN ASET MADRASAH</h3>
-                    <p class="text-xs text-slate-600 mt-1" id="report-date-string">Periode Tahun Ajaran 2026/2027</p>
+                    <p class="text-xs font-extrabold text-nu-800 mt-1 uppercase tracking-wide" id="report-location-subtitle">LOKASI / RUANG: SEMUA GEDUNG & KELAS</p>
+                    <p class="text-xs text-slate-600 mt-0.5" id="report-date-string">Periode Tahun Ajaran 2026/2027</p>
                 </div>
 
                 <!-- Summary statistics table in report -->
@@ -1217,12 +1227,49 @@
         }
 
         function openReportModal() {
+            const selectReportLokasi = document.getElementById('report-filter-lokasi');
+            
+            // Populate location dropdown options from dataset
+            const locations = [...new Set(inventoryData.map(i => i.lokasi).filter(Boolean))];
+            selectReportLokasi.innerHTML = `<option value="ALL">&bull; Semua Lokasi / Ruang (${inventoryData.length} Jenis)</option>`;
+            
+            locations.sort().forEach(loc => {
+                const count = inventoryData.filter(i => i.lokasi === loc).length;
+                const opt = document.createElement('option');
+                opt.value = loc;
+                opt.textContent = `${loc} (${count} Jenis)`;
+                selectReportLokasi.appendChild(opt);
+            });
+
+            // Auto-select location matching current table filter if active
+            const currentMainFilterLoc = document.getElementById('filter-lokasi').value;
+            if (currentMainFilterLoc && currentMainFilterLoc !== 'ALL') {
+                selectReportLokasi.value = currentMainFilterLoc;
+            } else {
+                selectReportLokasi.value = 'ALL';
+            }
+
+            renderReportData();
+            document.getElementById('modal-report').classList.remove('hidden');
+        }
+
+        function renderReportData() {
+            const selectedLokasi = document.getElementById('report-filter-lokasi').value;
+            const subtitleEl = document.getElementById('report-location-subtitle');
             const tbody = document.getElementById('report-table-body');
             tbody.innerHTML = '';
 
-            const totalJenis = filteredData.length;
-            const totalUnit = filteredData.reduce((a, c) => a + c.jumlah, 0);
-            const totalBaik = filteredData.filter(i => i.kondisi === 'Baik').reduce((a, c) => a + c.jumlah, 0);
+            let dataToReport = inventoryData;
+            if (selectedLokasi !== 'ALL') {
+                dataToReport = inventoryData.filter(i => i.lokasi === selectedLokasi);
+                subtitleEl.innerText = `LOKASI / RUANG: ${selectedLokasi.toUpperCase()}`;
+            } else {
+                subtitleEl.innerText = `LOKASI / RUANG: SEMUA GEDUNG & KELAS`;
+            }
+
+            const totalJenis = dataToReport.length;
+            const totalUnit = dataToReport.reduce((a, c) => a + (parseInt(c.jumlah) || 0), 0);
+            const totalBaik = dataToReport.filter(i => i.kondisi === 'Baik').reduce((a, c) => a + (parseInt(c.jumlah) || 0), 0);
             const totalRusak = totalUnit - totalBaik;
 
             document.getElementById('rep-jenis').innerText = `${totalJenis} Jenis`;
@@ -1230,7 +1277,12 @@
             document.getElementById('rep-baik').innerText = `${totalBaik} Baik`;
             document.getElementById('rep-rusak').innerText = `${totalRusak} Rusak`;
 
-            filteredData.forEach((item, idx) => {
+            if (dataToReport.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="border border-slate-300 p-4 text-center text-slate-500 italic">Tidak ada barang tercatat di lokasi ini.</td></tr>`;
+                return;
+            }
+
+            dataToReport.forEach((item, idx) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td class="border border-slate-300 p-2 text-center font-medium">${idx + 1}</td>
@@ -1238,13 +1290,11 @@
                     <td class="border border-slate-300 p-2 font-semibold">${escapeHtml(item.nama)}</td>
                     <td class="border border-slate-300 p-2 text-center font-bold">${item.jumlah}</td>
                     <td class="border border-slate-300 p-2 text-center font-medium">${escapeHtml(item.kondisi)}</td>
-                    <td class="border border-slate-300 p-2">${escapeHtml(item.lokasi)}</td>
+                    <td class="border border-slate-300 p-2 font-medium">${escapeHtml(item.lokasi)}</td>
                     <td class="border border-slate-300 p-2 text-slate-600">${escapeHtml(item.keterangan || '-')}</td>
                 `;
                 tbody.appendChild(tr);
             });
-
-            document.getElementById('modal-report').classList.remove('hidden');
         }
 
         function closeReportModal() {
