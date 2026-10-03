@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Informasi Madrasah - MA NU HASYIM ASY'ARI 1 KUDUS </title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#052e16',
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-grid-pattern {
+            background-size: 30px 30px;
+            background-image: linear-gradient(to right, rgba(22, 163, 74, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(22, 163, 74, 0.05) 1px, transparent 1px);
+        }
+        .dark .bg-grid-pattern {
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen flex flex-col bg-grid-pattern transition-colors duration-300">
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md">
+        <!-- Live Date & Time Top Banner Bar -->
+        <div class="bg-gradient-to-r from-brand-950 via-brand-900 to-emerald-950 text-emerald-100 text-xs font-medium py-1.5 px-4 border-b border-brand-800/50">
+            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-1">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-regular fa-clock text-gold-400"></i>
+                    <span id="live-datetime" class="font-semibold tracking-wide">Jumat, 2 Oktober 2026 | 11.06.49 WIB</span>
+                </div>
+                <div class="flex items-center space-x-3 text-[11px] text-emerald-300/80">
+                    <span><i class="fa-solid fa-location-dot text-emerald-400 mr-1"></i>Kudus, Jawa Tengah</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <!-- Transparent Madrasah Logo Header -->
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-700 via-brand-600 to-emerald-400 p-0.5 shadow-lg shadow-brand-600/20 flex items-center justify-center shrink-0">
+                    <div class="w-full h-full bg-white dark:bg-slate-900 rounded-[14px] flex items-center justify-center p-1 overflow-hidden">
+                        <img src="https://raw.githubusercontent.com/yusufajiib/yusufajiib/refs/heads/main/gambar/Logo_MA_Terbaru_1-removebg-preview.png" alt="Logo MA NU Hasyim Asy'ari 1 Kudus" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='🕌';">
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h1 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">SIM-NU KUDUS</h1>
+                        <span class="px-2 py-0.5 text-[10px] font-semibold tracking-wide bg-brand-100 text-brand-800 dark:bg-brand-900/60 dark:text-brand-300 rounded-full border border-brand-200 dark:border-brand-800">
+                            v2.0
+                        </span>
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">MA NU HASYIM ASY'ARI 1 KUDUS</p>
+                </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="flex items-center space-x-3">
+                <!-- Sync Google Sheet Button -->
+                <button id="btn-sync" onclick="loadSpreadsheetData(true)" title="Sinkronkan dengan Google Sheets" class="inline-flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700/80 transition-all text-slate-700 dark:text-slate-200 shadow-sm">
+                    <i id="sync-icon" class="fa-solid fa-rotate text-brand-600 dark:text-brand-400"></i>
+                    <span class="hidden sm:inline">Sinkronkan Data</span>
+                </button>
+
+                <!-- Dark Mode Toggle -->
+                <button id="btn-theme" onclick="toggleTheme()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
+
+                <!-- Shortcut Modal Trigger -->
+                <button onclick="openInfoModal()" class="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-circle-info"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative py-8 sm:py-12 bg-gradient-to-b from-brand-50/50 via-transparent to-transparent dark:from-brand-950/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-gradient-to-r from-brand-800 via-brand-700 to-emerald-900 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
+                <!-- Decorative Elements -->
+                <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-gold-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute right-1/4 -top-10 w-40 h-40 bg-emerald-400/20 rounded-full blur-2xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="max-w-3xl">
+                        <div class="inline-flex items-center space-x-2 bg-emerald-900/60 backdrop-blur-md px-3 py-1 rounded-full border border-emerald-500/30 text-emerald-200 text-xs font-medium mb-4">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>Portal Aplikasi & Layanan Terpadu Madrasah</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-3">
+                            Sistem Informasi MA NU Hasyim Asy'ari 1 Kudus
+                        </h2>
+                        <p class="text-emerald-100 text-sm sm:text-base leading-relaxed mb-6">
+                            Akses cepat seluruh berkas dan layanan digital Kepala Madrasah, Kurikulum, Kesiswaan, Sarpras, Humas, Tata Usaha & Keuangan, serta BK/Konseling yang Terintegrasi Google Sheets.
+                        </p>
+
+                        <!-- Quick Stats Badges -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 border-t border-emerald-600/40 text-xs">
+                            <div class="flex flex-col">
+                                <span class="text-emerald-200">Total Komponen</span>
+                                <span id="stat-total" class="text-lg font-bold text-white">0</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-emerald-200">Kategori Aktif</span>
+                                <span id="stat-categories" class="text-lg font-bold text-white">0</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-emerald-200">Link Favorit</span>
+                                <span id="stat-favorites" class="text-lg font-bold text-gold-400">0</span>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-emerald-200">Sumber Data</span>
+                                <span id="stat-source" class="text-xs font-semibold text-emerald-300 truncate">Google Sheets</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transparent Logo Badge on Hero Banner -->
+                    <div class="hidden md:flex flex-col items-center justify-center shrink-0 p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl">
+                        <img src="https://raw.githubusercontent.com/yusufajiib/yusufajiib/refs/heads/main/gambar/Logo_MA_Terbaru_1-removebg-preview.png" alt="Logo MA NU Hasyim Asy'ari 1 Kudus" class="w-28 h-28 object-contain drop-shadow-lg">
+                        <span class="text-[10px] font-bold tracking-widest text-emerald-200 uppercase mt-2">MA NU HASYIM ASY'ARI 1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Controls Section: Search Bar & View Toggle -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow">
+        
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+            <!-- Search Bar -->
+            <div class="relative w-full md:w-96">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Cari layanan, tugas divisi, atau dokumen..." 
+                    oninput="handleSearch()"
+                    class="w-full pl-11 pr-10 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:text-white shadow-sm transition"
+                >
+                <button 
+                    id="clear-search" 
+                    onclick="clearSearch()" 
+                    class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                >
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Filters & Layout Controls -->
+            <div class="flex items-center justify-between w-full md:w-auto gap-3">
+                <div class="flex items-center space-x-1 bg-slate-200/60 dark:bg-slate-800 p-1 rounded-xl">
+                    <button id="btn-view-grid" onclick="setViewMode('grid')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm">
+                        <i class="fa-solid fa-border-all mr-1"></i> Grid
+                    </button>
+                    <button id="btn-view-list" onclick="setViewMode('list')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 dark:text-slate-400 hover:text-slate-900">
+                        <i class="fa-solid fa-list mr-1"></i> List
+                    </button>
+                </div>
+
+                <button onclick="toggleFavoritesOnly()" id="btn-favorites-filter" class="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-star text-gold-500"></i>
+                    <span>Favorit</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Category Pills Navigation -->
+        <div class="relative mb-8">
+            <div id="category-pills" class="flex items-center space-x-2 overflow-x-auto pb-2 scrollbar-none scroll-smooth">
+                <!-- Category buttons injected dynamically via JS -->
+            </div>
+        </div>
+
+        <!-- Data Sync Status Banner -->
+        <div id="sheet-status-banner" class="mb-6 hidden rounded-2xl p-4 text-xs font-medium border transition"></div>
+
+        <!-- Main Cards Container -->
+        <div id="items-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Dynamic items rendered here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden py-16 text-center">
+            <div class="w-20 h-20 mx-auto mb-4 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-400 text-3xl">
+                <i class="fa-solid fa-folder-open"></i>
+            </div>
+            <h3 class="text-base font-semibold text-slate-700 dark:text-slate-300">Tidak ada data ditemukan</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Coba kata kunci lain atau pilih kategori yang berbeda.</p>
+            <button onclick="resetFilters()" class="mt-4 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-medium transition">
+                Reset Filter
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 mt-16 pt-12 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8 pb-10 border-b border-slate-200 dark:border-slate-800">
+                
+                <!-- Col 1: Identity & Profile -->
+                <div class="lg:col-span-2 space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white text-lg font-bold shadow-md shadow-brand-600/20">
+                            🕌
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white">MA NU HASYIM ASY'ARI 1 KUDUS</h3>
+                            <p class="text-xs text-brand-600 dark:text-brand-400 font-medium flex items-center gap-1">
+                                <i class="fa-solid fa-location-dot"></i> Kudus, Jawa Tengah, Indonesia
+                            </p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed pr-0 md:pr-4">
+                        Madrasah Aliyah berlandaskan nilai-nilai Ahlussunnah wal Jama'ah An-Nahdliyah, mencetak generasi unggul berprestasi, berakhlakul karimah, dan menguasai teknologi informasi.
+                    </p>
+                    <div class="pt-2">
+                        <a href="https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition shadow-sm">
+                            <i class="fa-solid fa-file-excel text-emerald-600"></i>
+                            <span>Database Google Sheet ↗</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Col 2: Bantuan & Layanan Utama -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-headset text-brand-600 dark:text-brand-400"></i> Bantuan & Layanan Utama
+                    </h4>
+                    <ul class="text-xs text-slate-600 dark:text-slate-400 space-y-2 leading-snug">
+                        <li class="flex items-start space-x-2">
+                            <i class="fa-solid fa-angle-right text-brand-500 mt-0.5 shrink-0"></i>
+                            <span>Kebijakan Strategis & Dokumen Kepala Madrasah</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fa-solid fa-angle-right text-brand-500 mt-0.5 shrink-0"></i>
+                            <span>Pendataan Buku Induk & Kesiswaan</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fa-solid fa-angle-right text-brand-500 mt-0.5 shrink-0"></i>
+                            <span>Pengajuan Sarana Prasarana & Maintenance</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fa-solid fa-angle-right text-brand-500 mt-0.5 shrink-0"></i>
+                            <span>Konsultasi & Penanganan Siswa (BK/Konseling)</span>
+                        </li>
+                        <li class="flex items-start space-x-2">
+                            <i class="fa-solid fa-angle-right text-brand-500 mt-0.5 shrink-0"></i>
+                            <span>Validasi Data EMIS & SIMPATIKA Kemenag</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Jam Operasional Sekretariat -->
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-brand-600 dark:text-brand-400"></i> Jam Operasional
+                    </h4>
+                    <div class="text-xs text-slate-600 dark:text-slate-400 space-y-1.5">
+                        <div class="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800">
+                            <span class="font-medium">Senin - Kamis:</span>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">07.00 - 14.00 WIB</span>
+                        </div>
+                        <div class="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800">
+                            <span class="font-medium">Jum'at:</span>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">07.00 - 11.00 WIB</span>
+                        </div>
+                        <div class="flex justify-between items-center py-1 border-b border-slate-100 dark:border-slate-800">
+                            <span class="font-medium">Sabtu:</span>
+                            <span class="font-semibold text-slate-800 dark:text-slate-200">07.00 - 13.00 WIB</span>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-amber-600 dark:text-amber-400 italic pt-1 leading-relaxed">
+                        *Untuk perizinan dan kebutuhan mendesak silakan hubungi BK/Konseling atau Kesiswaan.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Bottom Bar Copyright & Subtitle -->
+            <div class="pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-2 text-center sm:text-left">
+                <p>© 2026 MA NU HASYIM ASY'ARI 1 KUDUS. Hak Cipta Dilindungi Undang-Undang.</p>
+                <p class="text-[11px] font-medium text-slate-400 dark:text-slate-500">Sistem Informasi Madrasah Terpadu & System Navigasi External Link</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Info / Help Modal -->
+    <div id="info-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700/60 pb-3">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-brand-600"></i> Informasi & Petunjuk
+                </h3>
+                <button onclick="closeInfoModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="text-xs text-slate-600 dark:text-slate-300 space-y-3 leading-relaxed">
+                <p>Portal ini dikembangkan untuk memudahkan guru, staf, dan pengurus **MA NU HASYIM ASY'ARI 1 KUDUS** dalam mengakses seluruh dokumen dan sistem informasi madrasah.</p>
+                <div class="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 space-y-2">
+                    <p class="font-semibold text-slate-800 dark:text-slate-200">🔗 Sumber Data Google Sheets:</p>
+                    <p class="font-mono text-[11px] text-brand-600 dark:text-brand-400 break-all">
+                        https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing
+                    </p>
+                </div>
+                <p>Setiap perubahan atau penambahan link di Google Sheet dapat langsung diperbarui di portal ini dengan menekan tombol **"Sinkronkan Data"** di pojok kanan atas.</p>
+            </div>
+            <div class="pt-2 text-right">
+                <button onclick="closeInfoModal()" class="px-4 py-2 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-xl text-xs font-semibold hover:opacity-90 transition">
+                    Mengerti & Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-3 rounded-2xl shadow-xl flex items-center space-x-2 text-xs font-medium border border-slate-700 dark:border-slate-200">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+            <span id="toast-msg">Pesan notifikasi</span>
+        </div>
+    </div>
+
+    <script>
+        // Google Sheet ID from user request
+        const SPREADSHEET_ID = '17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8';
+        const SHEET_GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json`;
+
+        // Pre-populated Dataset with new structure categories:
+        // 1. Kepala Madrasah
+        // 2. Kurikulum
+        // 3. Kesiswaan
+        // 4. Sarpras
+        // 5. Humas
+        // 6. Tata Usaha & Keuangan
+        // 7. BK/Konseling
+        const DEFAULT_DATASET = [
+            // Kepala Madrasah
+            {
+                kategori: "Kepala Madrasah",
+                judul: "Kebijakan & Program Kerja Utama",
+                emoji: "📜",
+                deskripsi: "Dokumen SK, Rencana Kerja Anggaran Madrasah (RKAM), serta kebijakan dan arahan strategis Kepala Madrasah.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+            {
+                kategori: "Kepala Madrasah",
+                judul: "Laporan Evaluasi & Supervisi",
+                emoji: "📊",
+                deskripsi: "Laporan kinerja bulanan, hasil evaluasi ketercapaian program madrasah, dan dokumen pemantauan.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+
+            // Kurikulum
+            {
+                kategori: "Kurikulum",
+                judul: "Perangkat Ajar & Modul Kurikulum",
+                emoji: "📚",
+                deskripsi: "Bank data Capaian Pembelajaran (CP), ATP, Modul Ajar, dan RPP guru MA NU Hasyim Asy'ari 1.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+            {
+                kategori: "Kurikulum",
+                judul: "Jadwal Pelajaran & Kalender Akademik",
+                emoji: "🗓️",
+                deskripsi: "Distribusi jam mengajar guru, jadwal piket mingguan, dan kalender pendidikan madrasah.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+            {
+                kategori: "Kurikulum",
+                judul: "Portal Asesmen & Nilai CBT",
+                emoji: "✍️",
+                deskripsi: "Input nilai Asesmen Sumatif, PTS, PAS, dan rekapitulasi ketuntasan belajar siswa.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+            {
+                kategori: "Kurikulum",
+                judul: "E-Rapor Digital Madrasah",
+                emoji: "🎓",
+                deskripsi: "Sistem manajemen pencetakan dan input capaian hasil belajar peserta didik.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+
+            // Kesiswaan
+            {
+                kategori: "Kesiswaan",
+                judul: "Buku Induk Siswa Digital",
+                emoji: "📕",
+                deskripsi: "Data rekapitulasi seluruh siswa aktif MA NU Hasyim Asy'ari 1 Kudus, NISN, serta histori akademik.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+            {
+                kategori: "Kesiswaan",
+                judul: "Prestasi & Extrakurikuler",
+                emoji: "🏆",
+                deskripsi: "Catatan kejuaraan, data ekstrakurikuler (OSIS, Pramuka, IPNU/IPPNU, Pencak Silat, Paskibra).",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+            {
+                kategori: "Kesiswaan",
+                judul: "Poin Kedisiplinan & Pelanggaran",
+                emoji: "📋",
+                deskripsi: "Sistem pendataan kredit poin tata tertib, presensi, dan catatan kedisiplinan santri/siswa.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+
+            // Sarpras
+            {
+                kategori: "Sarpras",
+                judul: "Inventarisasi Barang & Ruangan",
+                emoji: "🏢",
+                deskripsi: "Pendataan aset madrasah, fasilitas kelas, laboratorium IPA, Komputer, dan sarana olahraga.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+            {
+                kategori: "Sarpras",
+                judul: "Pengajuan Perbaikan & Maintenance",
+                emoji: "🛠️",
+                deskripsi: "Form permohonan pemeliharaan gedung, kelistrikan, fasilitas sarana prasana madrasah.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+            {
+                kategori: "Sarpras",
+                judul: "Jadwal Reservasi Lab & Aula",
+                emoji: "🔑",
+                deskripsi: "Sistem peminjaman ruang multimedia, ruang rapat, dan lapangan utama madrasah.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+
+            // Humas
+            {
+                kategori: "Humas",
+                judul: "Amaliah & Keagamaan An-Nahdliyah",
+                emoji: "🕌",
+                deskripsi: "Jadwal Istighosah, Pembacaan Yasin Tahlil, Ziarah pendiri NU, dan agenda keagamaan.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+            {
+                kategori: "Humas",
+                judul: "Tracer Study & Alumni",
+                emoji: "🌐",
+                deskripsi: "Database penelusuran rekam jejak lulusan MA NU Hasyim Asy'ari 1 Kudus di perguruan tinggi & kerja.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+
+            // Tata Usaha & Keuangan
+            {
+                kategori: "Tata Usaha & Keuangan",
+                judul: "Layanan Persuratan & E-Agenda",
+                emoji: "✉️",
+                deskripsi: "Permohonan Surat Keterangan Aktif Siswa, Izin Penelitian, dan Pengarsipan Surat Masuk/Keluar.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+            {
+                kategori: "Tata Usaha & Keuangan",
+                judul: "Administrasi Pembayaran & SPP",
+                emoji: "💳",
+                deskripsi: "Status rekapitulasi administrasi syahriyah, infak pembangunan, dan kartu SPP digital.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+            {
+                kategori: "Tata Usaha & Keuangan",
+                judul: "SIMPATIKA & EMIS Kemenag",
+                emoji: "📑",
+                deskripsi: "Akses portal resmi Kementerian Agama untuk pengelolaan kepegawaian dan kelembagaan.",
+                link: "https://simpatika.kemenag.go.id"
+            },
+
+            // BK/Konseling
+            {
+                kategori: "BK/Konseling",
+                judul: "Layanan Bimbingan Konseling",
+                emoji: "🤝",
+                deskripsi: "Formulir konseling siswa, peta kerawanan, dan rekapitulasi penanganan peserta didik.",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            },
+            {
+                kategori: "BK/Konseling",
+                judul: "Jadwal Sesi Konseling & Home Visit",
+                emoji: "🏡",
+                deskripsi: "Penjadwalan konseling karir, pendaftaran kuliah, serta agenda kunjungan rumah (home visit).",
+                link: "https://docs.google.com/spreadsheets/d/17Qc4u85jMMYLk3p2cV1q4S_aGSsANRm4ptY7jxULr_8/edit?usp=sharing"
+            }
+        ];
+
+        // App State
+        let allItems = [];
+        let activeCategory = 'Semua';
+        let searchQuery = '';
+        let viewMode = 'grid'; // 'grid' or 'list'
+        let favoritesOnly = false;
+        let favoriteIds = JSON.parse(localStorage.getItem('sim_ma_favs') || '[]');
+
+        // Desired ordered list of categories
+        const ORDERED_CATEGORIES = [
+            'Kepala Madrasah',
+            'Kurikulum',
+            'Kesiswaan',
+            'Sarpras',
+            'Humas',
+            'Tata Usaha & Keuangan',
+            'BK/Konseling'
+        ];
+
+        // Normalization map to convert legacy/Google Sheet names to new category standard
+        function normalizeCategoryName(rawCategory) {
+            if (!rawCategory) return 'Lainnya';
+            const cat = rawCategory.trim();
+            const lower = cat.toLowerCase();
+
+            if (lower.includes('kepala')) return 'Kepala Madrasah';
+            if (lower.includes('kurikulum')) return 'Kurikulum';
+            if (lower.includes('bk') || lower.includes('konseling')) return 'BK/Konseling';
+            if (lower.includes('kesiswaan')) return 'Kesiswaan';
+            if (lower.includes('sarpras') || lower.includes('sarana')) return 'Sarpras';
+            if (lower.includes('humas') || lower.includes('nu')) return 'Humas';
+            if (lower.includes('tata usaha') || lower.includes('keuangan') || lower.includes('tu')) return 'Tata Usaha & Keuangan';
+
+            return cat;
+        }
+
+        // Fetch and parse data from Google Sheets
+        async function loadSpreadsheetData(manualClick = false) {
+            const syncIcon = document.getElementById('sync-icon');
+            syncIcon.classList.add('fa-spin');
+            showBanner('syncing', 'Menghubungkan ke Google Sheets...');
+
+            try {
+                const response = await fetch(SHEET_GVIZ_URL);
+                const text = await response.text();
+
+                // GViz output format is wrapper text `google.visualization.Query.setResponse({...});`
+                const jsonText = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+                const json = JSON.parse(jsonText);
+
+                if (json && json.table && json.table.rows) {
+                    const rows = json.table.rows;
+                    const cols = json.table.cols;
+
+                    // Extract columns map
+                    const headers = cols.map(c => (c.label || '').toLowerCase().trim());
+                    
+                    let parsedData = [];
+
+                    rows.forEach((row, index) => {
+                        const cells = row.c;
+                        if (!cells) return;
+
+                        let rawKategori = getCellValue(cells, headers, ['kategori', 'category', 'seksi', 'waka', 'divisi'], 0) || 'Lainnya';
+                        let kategori = normalizeCategoryName(rawKategori);
+                        let judul = getCellValue(cells, headers, ['judul', 'title', 'nama', 'komponen'], 1);
+                        let emoji = getCellValue(cells, headers, ['emoji', 'icon', 'simbol'], 2) || '📌';
+                        let deskripsi = getCellValue(cells, headers, ['deskripsi', 'description', 'keterangan'], 3) || 'Informasi layanan madrasah.';
+                        let link = getCellValue(cells, headers, ['link', 'url', 'tautan', 'open'], 4) || '#';
+
+                        if (judul && judul.trim() !== '') {
+                            // Extract emoji if embedded in title or separate
+                            if (!emoji || emoji === '📌') {
+                                const detectedEmoji = extractEmoji(judul);
+                                if (detectedEmoji) {
+                                    emoji = detectedEmoji;
+                                    judul = judul.replace(detectedEmoji, '').trim();
+                                }
+                            }
+
+                            parsedData.push({
+                                id: `sheet-${index}`,
+                                kategori: kategori.trim(),
+                                judul: judul.trim(),
+                                emoji: emoji.trim(),
+                                deskripsi: deskripsi.trim(),
+                                link: sanitizeUrl(link.trim())
+                            });
+                        }
+                    });
+
+                    if (parsedData.length > 0) {
+                        allItems = parsedData;
+                        document.getElementById('stat-source').innerText = "Google Sheets (Live)";
+                        showBanner('success', `Berhasil memuat ${parsedData.length} data langsung dari Google Spreadsheet.`);
+                        if (manualClick) showToast('Data berhasil diperbarui dari Spreadsheet!');
+                    } else {
+                        fallbackToDefault("Spreadsheet kosong, menggunakan data internal madrasah.");
+                    }
+                } else {
+                    fallbackToDefault("Format data Spreadsheet tidak valid, menggunakan data standar madrasah.");
+                }
+            } catch (error) {
+                console.warn("Gviz API Fetch Error, using standard default dataset:", error);
+                fallbackToDefault("Gagal mengambil live data. Menampilkan database offline terintegrasi.");
+            } finally {
+                syncIcon.classList.remove('fa-spin');
+                renderUI();
+            }
+        }
+
+        function getCellValue(cells, headers, possibleKeys, fallbackIndex) {
+            for (let key of possibleKeys) {
+                const idx = headers.findIndex(h => h.includes(key));
+                if (idx !== -1 && cells[idx] && cells[idx].v !== null) {
+                    return String(cells[idx].v);
+                }
+            }
+            if (cells[fallbackIndex] && cells[fallbackIndex].v !== null) {
+                return String(cells[fallbackIndex].v);
+            }
+            return '';
+        }
+
+        function extractEmoji(str) {
+            const emojiRegex = /(\p{Emoji_Presentation}|\p{Extended_Pictographic})/u;
+            const match = str.match(emojiRegex);
+            return match ? match[0] : null;
+        }
+
+        function sanitizeUrl(url) {
+            if (!url) return '#';
+            if (url.startsWith('http://') || url.startsWith('https://')) {
+                return url;
+            }
+            return 'https://' + url;
+        }
+
+        function fallbackToDefault(message) {
+            allItems = DEFAULT_DATASET.map((item, idx) => ({
+                id: `default-${idx}`,
+                ...item
+            }));
+            document.getElementById('stat-source').innerText = "Database Internal";
+            showBanner('warning', message);
+        }
+
+        function showBanner(type, message) {
+            const banner = document.getElementById('sheet-status-banner');
+            banner.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'dark:bg-emerald-950/40', 'dark:text-emerald-300', 'dark:border-emerald-800', 'bg-amber-50', 'text-amber-800', 'border-amber-200', 'dark:bg-amber-950/40', 'dark:text-amber-300', 'dark:border-amber-800', 'bg-blue-50', 'text-blue-800', 'border-blue-200', 'dark:bg-blue-950/40', 'dark:text-blue-300', 'dark:border-blue-800');
+
+            if (type === 'success') {
+                banner.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'dark:bg-emerald-950/40', 'dark:text-emerald-300', 'dark:border-emerald-800');
+            } else if (type === 'warning') {
+                banner.classList.add('bg-amber-50', 'text-amber-800', 'border-amber-200', 'dark:bg-amber-950/40', 'dark:text-amber-300', 'dark:border-amber-800');
+            } else {
+                banner.classList.add('bg-blue-50', 'text-blue-800', 'border-blue-200', 'dark:bg-blue-950/40', 'dark:text-blue-300', 'dark:border-blue-800');
+            }
+
+            banner.innerHTML = `<i class="fa-solid ${type === 'success' ? 'fa-circle-check text-emerald-600' : type === 'warning' ? 'fa-triangle-exclamation text-amber-600' : 'fa-spinner fa-spin text-blue-600'} mr-2"></i> ${message}`;
+        }
+
+        function renderUI() {
+            renderCategories();
+            renderCards();
+            updateStats();
+        }
+
+        function renderCategories() {
+            const existingCategories = [...new Set(allItems.map(item => item.kategori))];
+            
+            // Sort categories according to ORDERED_CATEGORIES, then any other category alphabetically
+            const sortedCategories = ['Semua', ...ORDERED_CATEGORIES.filter(cat => existingCategories.includes(cat)), ...existingCategories.filter(cat => !ORDERED_CATEGORIES.includes(cat))];
+
+            const container = document.getElementById('category-pills');
+
+            container.innerHTML = sortedCategories.map(cat => {
+                const isActive = activeCategory === cat;
+                return `
+                    <button 
+                        onclick="setCategory('${cat}')"
+                        class="px-4 py-2 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all duration-200 border ${
+                            isActive 
+                            ? 'bg-brand-600 border-brand-600 text-white shadow-md shadow-brand-600/30' 
+                            : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-brand-500 dark:hover:border-brand-500'
+                        }"
+                    >
+                        ${cat}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function getFilteredItems() {
+            return allItems.filter(item => {
+                const matchesCategory = activeCategory === 'Semua' || item.kategori === activeCategory;
+                const matchesSearch = searchQuery === '' || 
+                    item.judul.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    item.deskripsi.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    item.kategori.toLowerCase().includes(searchQuery.toLowerCase());
+                const matchesFav = !favoritesOnly || favoriteIds.includes(item.id || item.judul);
+
+                return matchesCategory && matchesSearch && matchesFav;
+            });
+        }
+
+        function renderCards() {
+            const container = document.getElementById('items-container');
+            const emptyState = document.getElementById('empty-state');
+            const filtered = getFilteredItems();
+
+            if (filtered.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            if (viewMode === 'grid') {
+                container.className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5";
+                container.innerHTML = filtered.map(item => createGridCardHTML(item)).join('');
+            } else {
+                container.className = "flex flex-col space-y-3";
+                container.innerHTML = filtered.map(item => createListCardHTML(item)).join('');
+            }
+        }
+
+        function createGridCardHTML(item) {
+            const itemId = item.id || item.judul;
+            const isFav = favoriteIds.includes(itemId);
+
+            return `
+                <div class="group relative bg-white dark:bg-slate-800/90 rounded-3xl p-5 border border-slate-200/80 dark:border-slate-700/70 hover:border-brand-500/50 dark:hover:border-brand-500/50 hover:shadow-xl hover:shadow-brand-900/5 dark:hover:shadow-black/40 transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <!-- Card Header -->
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-2xl bg-brand-50 dark:bg-slate-700/50 border border-brand-100 dark:border-slate-600 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300 shadow-sm">
+                                ${item.emoji || '📌'}
+                            </div>
+                            <div class="flex items-center space-x-1">
+                                <button onclick="toggleFavorite('${itemId}')" title="Tandai Favorit" class="p-2 rounded-xl text-slate-400 hover:text-gold-500 transition">
+                                    <i class="fa-${isFav ? 'solid' : 'regular'} fa-star ${isFav ? 'text-gold-500' : ''}"></i>
+                                </button>
+                                <button onclick="copyToClipboard('${item.link}')" title="Salin Link" class="p-2 rounded-xl text-slate-400 hover:text-brand-600 transition">
+                                    <i class="fa-regular fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Badge Category -->
+                        <span class="inline-block px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 mb-2">
+                            ${item.kategori}
+                        </span>
+
+                        <!-- Title -->
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors line-clamp-2">
+                            ${item.judul}
+                        </h3>
+
+                        <!-- Description -->
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 line-clamp-3 leading-relaxed">
+                            ${item.deskripsi}
+                        </p>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="pt-5 mt-4 border-t border-slate-100 dark:border-slate-700/60">
+                        <a 
+                            href="${item.link}" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            class="w-full inline-flex items-center justify-center space-x-2 py-2.5 px-4 rounded-2xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 group-hover:bg-brand-600 dark:group-hover:bg-brand-500 group-hover:text-white text-xs font-semibold shadow-sm transition-all duration-200"
+                        >
+                            <span>Buka Dokumen / Link</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function createListCardHTML(item) {
+            const itemId = item.id || item.judul;
+            const isFav = favoriteIds.includes(itemId);
+
+            return `
+                <div class="group relative bg-white dark:bg-slate-800/90 rounded-2xl p-4 border border-slate-200/80 dark:border-slate-700/70 hover:border-brand-500/50 dark:hover:border-brand-500/50 hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-center space-x-4 min-w-0">
+                        <div class="w-10 h-10 shrink-0 rounded-xl bg-brand-50 dark:bg-slate-700/50 border border-brand-100 dark:border-slate-600 flex items-center justify-center text-xl">
+                            ${item.emoji || '📌'}
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-brand-600 dark:text-brand-400">
+                                    ${item.kategori}
+                                </span>
+                            </div>
+                            <h3 class="text-sm font-bold text-slate-900 dark:text-white truncate">
+                                ${item.judul}
+                            </h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 truncate max-w-xl">
+                                ${item.deskripsi}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2 shrink-0 self-end sm:self-center w-full sm:w-auto justify-end">
+                        <button onclick="toggleFavorite('${itemId}')" title="Tandai Favorit" class="p-2 rounded-xl text-slate-400 hover:text-gold-500 transition">
+                            <i class="fa-${isFav ? 'solid' : 'regular'} fa-star ${isFav ? 'text-gold-500' : ''}"></i>
+                        </button>
+                        <button onclick="copyToClipboard('${item.link}')" title="Salin Link" class="p-2 rounded-xl text-slate-400 hover:text-brand-600 transition">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                        <a 
+                            href="${item.link}" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            class="inline-flex items-center space-x-1.5 py-2 px-3.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold shadow-sm transition"
+                        >
+                            <span>Buka</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function setCategory(cat) {
+            activeCategory = cat;
+            renderCategories();
+            renderCards();
+        }
+
+        function handleSearch() {
+            const input = document.getElementById('search-input');
+            const clearBtn = document.getElementById('clear-search');
+            searchQuery = input.value;
+
+            if (searchQuery.length > 0) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+            renderCards();
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('clear-search').classList.add('hidden');
+            searchQuery = '';
+            renderCards();
+        }
+
+        function setViewMode(mode) {
+            viewMode = mode;
+            const gridBtn = document.getElementById('btn-view-grid');
+            const listBtn = document.getElementById('btn-view-list');
+
+            if (mode === 'grid') {
+                gridBtn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm";
+                listBtn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 dark:text-slate-400 hover:text-slate-900";
+            } else {
+                listBtn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm";
+                gridBtn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 dark:text-slate-400 hover:text-slate-900";
+            }
+            renderCards();
+        }
+
+        function toggleFavoritesOnly() {
+            favoritesOnly = !favoritesOnly;
+            const btn = document.getElementById('btn-favorites-filter');
+            if (favoritesOnly) {
+                btn.classList.add('bg-gold-500/10', 'border-gold-500/50', 'text-gold-600', 'dark:text-gold-400');
+            } else {
+                btn.classList.remove('bg-gold-500/10', 'border-gold-500/50', 'text-gold-600', 'dark:text-gold-400');
+            }
+            renderCards();
+        }
+
+        function toggleFavorite(id) {
+            if (favoriteIds.includes(id)) {
+                favoriteIds = favoriteIds.filter(fId => fId !== id);
+                showToast("Dihapus dari favorit");
+            } else {
+                favoriteIds.push(id);
+                showToast("Ditambahkan ke favorit ⭐");
+            }
+            localStorage.setItem('sim_ma_favs', JSON.stringify(favoriteIds));
+            updateStats();
+            renderCards();
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').innerText = allItems.length;
+            const uniqueCategories = new Set(allItems.map(i => i.kategori)).size;
+            document.getElementById('stat-categories').innerText = uniqueCategories;
+            document.getElementById('stat-favorites').innerText = favoriteIds.length;
+        }
+
+        function resetFilters() {
+            activeCategory = 'Semua';
+            searchQuery = '';
+            favoritesOnly = false;
+            document.getElementById('search-input').value = '';
+            document.getElementById('clear-search').classList.add('hidden');
+            const favBtn = document.getElementById('btn-favorites-filter');
+            favBtn.classList.remove('bg-gold-500/10', 'border-gold-500/50', 'text-gold-600', 'dark:text-gold-400');
+            renderUI();
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text);
+            } else {
+                let textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
+            showToast("Tautan berhasil disalin!");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            toastMsg.innerText = msg;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            const themeIcon = document.getElementById('theme-icon');
+
+            if (isDark) {
+                themeIcon.className = "fa-solid fa-sun text-gold-400";
+                localStorage.setItem('sim_ma_theme', 'dark');
+            } else {
+                themeIcon.className = "fa-solid fa-moon text-slate-600";
+                localStorage.setItem('sim_ma_theme', 'light');
+            }
+        }
+
+        function openInfoModal() {
+            document.getElementById('info-modal').classList.remove('hidden');
+        }
+
+        function closeInfoModal() {
+            document.getElementById('info-modal').classList.add('hidden');
+        }
+
+        // Real-time Date and Clock Display Function
+        function updateLiveClock() {
+            const now = new Date();
+            const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
+            const dayName = days[now.getDay()];
+            const date = now.getDate();
+            const monthName = months[now.getMonth()];
+            const year = now.getFullYear();
+
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+
+            const dateStr = `${dayName}, ${date} ${monthName} ${year} | ${hours}.${minutes}.${seconds} WIB`;
+            const clockElem = document.getElementById('live-datetime');
+            if (clockElem) {
+                clockElem.innerText = dateStr;
+            }
+        }
+
+        // Keyboard navigation shortcuts
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('search-input').focus();
+            }
+        });
+
+        // Initialize App on Load
+        window.onload = function() {
+            // Start Live Clock
+            updateLiveClock();
+            setInterval(updateLiveClock, 1000);
+
+            // Apply saved theme
+            const savedTheme = localStorage.getItem('sim_ma_theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-icon').className = "fa-solid fa-sun text-gold-400";
+            }
+
+            // Load Data from Google Sheets or Fallback
+            loadSpreadsheetData();
+        };
+    </script>
+</body>
+</html>
