@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Inventaris Barang & Aset - MA NU Hasyim Asy'ari 1 Kudus</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        nu: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            dark: '#0B381E'
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; color: black !important; }
+            .print-break-inside-avoid { break-inside: avoid; }
+        }
+        .print-only { display: none; }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="h-full flex flex-col text-slate-800 antialiased selection:bg-nu-600 selection:text-white">
+
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none no-print"></div>
+
+    <header class="bg-nu-dark text-white border-b-4 border-gold-500 shadow-md sticky top-0 z-30 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <!-- Brand Info -->
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 flex items-center justify-center shrink-0">
+                        <!-- Logo MA NU Transparan -->
+                        <img src="https://raw.githubusercontent.com/yusufajiib/yusufajiib/refs/heads/main/gambar/Logo_MA_Terbaru_1-removebg-preview.png" alt="Logo MA NU Hasyim Asy'ari 1" class="w-full h-full object-contain drop-shadow" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-school-flag text-2xl text-gold-400\'></i>';">
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-lg md:text-xl font-bold tracking-tight text-white leading-tight">
+                                BU KU INVENTARIS ASET & BARANG
+                            </h1>
+                            <span class="bg-gold-500 text-nu-dark text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                SIM-SARPRAS
+                            </span>
+                        </div>
+                        <p class="text-xs text-emerald-200 font-medium flex items-center gap-1.5 mt-0.5">
+                            <i class="fa-solid fa-location-dot text-gold-400"></i>
+                            MA NU Hasyim Asy'ari 1 Kudus
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Google Sheet Control & Quick Actions -->
+                <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                    <!-- Sheet Live Indicator -->
+                    <div id="sheet-status-badge" class="flex items-center gap-2 bg-emerald-950/70 border border-emerald-600/50 px-3 py-1.5 rounded-lg text-xs">
+                        <span class="relative flex h-2.5 w-2.5">
+                          <span id="sheet-status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                          <span id="sheet-status-dot" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                        </span>
+                        <span id="sheet-status-text" class="text-emerald-200 font-medium">Google Sheet Linked</span>
+                    </div>
+
+                    <!-- Sync Button -->
+                    <button id="btn-sync-sheet" onclick="fetchGoogleSheetData()" class="inline-flex items-center gap-2 bg-emerald-700 hover:bg-emerald-600 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shadow transition duration-150 active:scale-95">
+                        <i id="sync-icon" class="fa-solid fa-arrows-rotate"></i>
+                        <span>Sync Sheet</span>
+                    </button>
+
+                    <!-- Sheet Config Modal Trigger -->
+                    <button onclick="openConfigModal()" class="p-1.5 bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 hover:text-white rounded-lg transition" title="Pengaturan URL Google Sheet">
+                        <i class="fa-solid fa-gear text-sm"></i>
+                    </button>
+
+                    <!-- Print Report Button -->
+                    <button onclick="openReportModal()" class="inline-flex items-center gap-2 bg-gold-500 hover:bg-gold-600 text-nu-dark px-3.5 py-1.5 rounded-lg text-xs font-bold shadow transition duration-150 active:scale-95">
+                        <i class="fa-solid fa-print"></i>
+                        <span>Cetak Laporan</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Banner Info Google Sheet Link -->
+        <div class="bg-gradient-to-r from-emerald-800 via-nu-800 to-emerald-900 rounded-2xl p-4 sm:p-5 text-white shadow-lg relative overflow-hidden no-print">
+            <div class="absolute -right-6 -bottom-6 opacity-10 text-white pointer-events-none">
+                <i class="fa-solid fa-boxes-stacked text-9xl"></i>
+            </div>
+            <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                        <span class="bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs px-2.5 py-0.5 rounded-full font-medium">
+                            <i class="fa-solid fa-database mr-1"></i> Database Terhubung
+                        </span>
+                        <span id="last-updated-tag" class="text-xs text-emerald-300/80">
+                            Terakhir disinkron: Baru saja
+                        </span>
+                    </div>
+                    <h2 class="text-base sm:text-lg font-bold">Sumber Data: Google Spreadsheet MA NU Hasyim Asy'ari 1</h2>
+                    <p class="text-xs sm:text-sm text-emerald-100/90 max-w-3xl">
+                        Aplikasi membaca kode barang, nama, jumlah, kondisi (baik/rusak), serta lokasi gedung & kelas secara langsung dari database terpusat.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <a href="https://docs.google.com/spreadsheets/d/1JfC3mhBezjhUVwjuME54dCGwqJWl4ppaHMJSnz0SdlA/edit?usp=sharing" target="_blank" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs px-3.5 py-2 rounded-xl font-medium transition backdrop-blur-sm">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-gold-400"></i>
+                        <span>Buka Spreadsheet Google</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric KPI Summary Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 no-print">
+            <!-- Total Item Jenis -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Jenis Barang</p>
+                        <h3 id="stat-total-jenis" class="text-2xl font-extrabold text-slate-800 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-2">Variasi item dalam sistem</p>
+            </div>
+
+            <!-- Total Unit Quantity -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Unit Aset</p>
+                        <h3 id="stat-total-unit" class="text-2xl font-extrabold text-nu-800 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-boxes-packing"></i>
+                    </div>
+                </div>
+                <p class="text-[11px] text-emerald-700 mt-2 font-medium">Keseluruhan fisik aset</p>
+            </div>
+
+            <!-- Kondisi Baik -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Kondisi Baik</p>
+                        <h3 id="stat-kondisi-baik" class="text-2xl font-extrabold text-emerald-600 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                </div>
+                <div class="w-full bg-slate-100 h-1.5 rounded-full mt-3 overflow-hidden">
+                    <div id="bar-baik-percent" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
+                </div>
+            </div>
+
+            <!-- Kondisi Rusak -->
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Kondisi Rusak</p>
+                        <h3 id="stat-kondisi-rusak" class="text-2xl font-extrabold text-rose-600 mt-1">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                </div>
+                <div class="w-full bg-slate-100 h-1.5 rounded-full mt-3 overflow-hidden">
+                    <div id="bar-rusak-percent" class="bg-rose-500 h-full w-0 transition-all duration-500"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 no-print">
+            <!-- Chart 1: Distribution by Condition -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-nu-700"></i>
+                        Persentase Kondisi Barang
+                    </h3>
+                </div>
+                <div class="relative h-48 flex items-center justify-center">
+                    <canvas id="chartKondisi"></canvas>
+                </div>
+            </div>
+
+            <!-- Chart 2: Top Locations distribution -->
+            <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-column text-nu-700"></i>
+                        Sebaran Unit Barang per Lokasi/Gedung
+                    </h3>
+                </div>
+                <div class="relative h-48 w-full">
+                    <canvas id="chartLokasi"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden no-print">
+            <!-- Control Header Bar -->
+            <div class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 space-y-4">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <!-- Search Input -->
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="input-search" oninput="handleSearchFilter()" placeholder="Cari Kode Barang, Nama Asset, Lokasi, atau Keterangan..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-nu-600 focus:border-transparent transition shadow-sm">
+                    </div>
+
+                    <!-- Dropdown Filters -->
+                    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+                        <!-- Filter Kondisi -->
+                        <div class="flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm text-xs">
+                            <i class="fa-solid fa-filter text-slate-400"></i>
+                            <span class="text-slate-500 font-medium">Kondisi:</span>
+                            <select id="filter-kondisi" onchange="handleSearchFilter()" class="bg-transparent font-semibold text-slate-700 focus:outline-none cursor-pointer">
+                                <option value="ALL">Semua Kondisi</option>
+                                <option value="Baik">Baik</option>
+                                <option value="Rusak">Rusak (Ringan/Berat)</option>
+                                <option value="Rusak Ringan">Rusak Ringan</option>
+                                <option value="Rusak Berat">Rusak Berat</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Lokasi -->
+                        <div class="flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-sm text-xs">
+                            <i class="fa-solid fa-building text-slate-400"></i>
+                            <span class="text-slate-500 font-medium">Lokasi:</span>
+                            <select id="filter-lokasi" onchange="handleSearchFilter()" class="bg-transparent font-semibold text-slate-700 focus:outline-none cursor-pointer">
+                                <option value="ALL">Semua Lokasi</option>
+                            </select>
+                        </div>
+
+                        <!-- Add Item Button -->
+                        <button onclick="openAddModal()" class="inline-flex items-center gap-2 bg-nu-700 hover:bg-nu-800 text-white px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold shadow-sm transition active:scale-95">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Tambah Asset</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Filters Chips & Actions Bar -->
+                <div class="flex items-center justify-between text-xs text-slate-500 pt-1">
+                    <div>
+                        Menampilkan <span id="text-showing-count" class="font-bold text-slate-800">0</span> dari <span id="text-total-count" class="font-bold text-slate-800">0</span> item
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="resetFilters()" class="hover:text-nu-700 underline flex items-center gap-1">
+                            <i class="fa-solid fa-rotate-left"></i> Reset Filter
+                        </button>
+                        <button onclick="exportToCSV()" class="hover:text-emerald-700 font-medium flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-md border border-emerald-200">
+                            <i class="fa-solid fa-file-excel"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto min-h-[350px]">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-100/80 border-b border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider">
+                            <th class="py-3.5 px-4 text-center w-12">No</th>
+                            <th class="py-3.5 px-4">Kode Barang</th>
+                            <th class="py-3.5 px-4">Nama Asset & Spesifikasi</th>
+                            <th class="py-3.5 px-4 text-center">Jumlah</th>
+                            <th class="py-3.5 px-4 text-center">Kondisi</th>
+                            <th class="py-3.5 px-4">Lokasi Gedung / Ruang</th>
+                            <th class="py-3.5 px-4">Keterangan / Sumber</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-inventory-body" class="divide-y divide-slate-100 text-xs sm:text-sm">
+                        <!-- Table rows populated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination Footer -->
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <div class="text-slate-500">
+                    Halaman <span id="page-current" class="font-bold text-slate-800">1</span> dari <span id="page-total" class="font-bold text-slate-800">1</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <button id="btn-page-prev" onclick="changePage(-1)" class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-chevron-left mr-1"></i> Sebelum
+                    </button>
+                    <button id="btn-page-next" onclick="changePage(1)" class="px-3 py-1.5 bg-white border border-slate-200 rounded-lg font-medium text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed">
+                        Berikut <i class="fa-solid fa-chevron-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-4 mt-auto text-xs text-slate-500 no-print">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <span class="font-semibold text-nu-800">MA NU Hasyim Asy'ari 1 Kudus</span>
+                <span>&bull;</span>
+                <span>Sistem Informasi Inventarisasi Barang & Aset</span>
+            </div>
+            <div>
+                Data Google Sheet: <code class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded font-mono text-[11px]">1JfC3mhBezjhUVwjuME54dCGwqJWl4ppaHMJSnz0SdlA</code>
+            </div>
+        </div>
+    </footer>
+
+    <div id="modal-item" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-nu-dark text-white p-4 flex items-center justify-between border-b-2 border-gold-500">
+                <h3 id="modal-item-title" class="font-bold text-base flex items-center gap-2">
+                    <i class="fa-solid fa-box font-normal text-gold-400"></i>
+                    Tambah Asset Barang Baru
+                </h3>
+                <button onclick="closeItemModal()" class="text-emerald-200 hover:text-white text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <form id="form-item" onsubmit="saveItem(event)" class="p-5 space-y-4 overflow-y-auto flex-1">
+                <input type="hidden" id="input-id" value="">
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Kode Barang <span class="text-rose-500">*</span></label>
+                        <div class="relative">
+                            <input type="text" id="input-kode" required placeholder="Contoh: INV/MANU1/2026/001" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-nu-600 focus:bg-white outline-none">
+                            <button type="button" onclick="generateAutoCode()" class="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] bg-nu-100 text-nu-800 px-2 py-1 rounded font-bold hover:bg-nu-200">
+                                Auto
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Jumlah (Unit) <span class="text-rose-500">*</span></label>
+                        <input type="number" id="input-jumlah" required min="1" value="1" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-nu-600 focus:bg-white outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Barang / Aset <span class="text-rose-500">*</span></label>
+                    <input type="text" id="input-nama" required placeholder="Contoh: Laptop Acer Core i5 Lab Komputer" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-nu-600 focus:bg-white outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kondisi Barang <span class="text-rose-500">*</span></label>
+                        <select id="input-kondisi" required class="w-full text-xs p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-nu-600 focus:bg-white outline-none">
+                            <option value="Baik">Baik</option>
+                            <option value="Rusak Ringan">Rusak Ringan</option>
+                            <option value="Rusak Berat">Rusak Berat</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Lokasi Gedung / Ruang <span class="text-rose-500">*</span></label>
+                        <input type="text" id="input-lokasi" required placeholder="Contoh: Gedung A - Kelas X IPA 1" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-nu-600 focus:bg-white outline-none" list="lokasi-list">
+                        <datalist id="lokasi-list"></datalist>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tahun / Tanggal Perolehan</label>
+                        <input type="text" id="input-tahun" placeholder="Contoh: 2024 / BOS" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-nu-600 focus:bg-white outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Sumber Dana</label>
+                        <input type="text" id="input-sumber" placeholder="Contoh: Dana BOS / Komite / Hibah" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-nu-600 focus:bg-white outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Keterangan Tambahan</label>
+                    <textarea id="input-keterangan" rows="2" placeholder="Catatan perbaikan, nomor seri, merk, atau spesifikasi detail..." class="w-full text-xs p-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-nu-600 focus:bg-white outline-none"></textarea>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+                    <button type="button" onclick="closeItemModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2 bg-nu-700 hover:bg-nu-800 text-white rounded-xl text-xs font-bold shadow">
+                        Simpan Data
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-qr" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden flex flex-col">
+            <div class="bg-slate-800 text-white p-4 flex items-center justify-between">
+                <h3 class="font-bold text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-qrcode text-gold-400"></i>
+                    Label Sticker Asset QR
+                </h3>
+                <button onclick="closeQrModal()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 text-center space-y-4">
+                <!-- Physical Label Sticker Preview Box -->
+                <div id="qr-sticker-card" class="bg-white border-2 border-dashed border-nu-800 rounded-xl p-4 shadow-sm relative">
+                    <div class="border-b border-slate-200 pb-2 mb-3">
+                        <p class="text-[10px] font-bold text-nu-800 uppercase tracking-widest">MA NU HASYIM ASY'ARI 1 KUDUS</p>
+                        <p class="text-[9px] text-slate-500 uppercase">Label Inventaris Sarpras</p>
+                    </div>
+                    
+                    <div class="flex items-center justify-center my-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <div id="qrcode-container"></div>
+                    </div>
+
+                    <div class="space-y-0.5">
+                        <p id="qr-kode" class="font-mono text-xs font-bold text-slate-800">INV/000</p>
+                        <p id="qr-nama" class="text-xs font-semibold text-nu-900 truncate">Nama Barang</p>
+                        <p id="qr-lokasi" class="text-[11px] text-slate-600 truncate">Lokasi Ruang</p>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="printSingleQr()" class="flex-1 bg-nu-700 hover:bg-nu-800 text-white py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-print"></i> Cetak Label
+                    </button>
+                    <button onclick="closeQrModal()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-config" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
+            <div class="bg-nu-dark text-white p-4 flex items-center justify-between border-b-2 border-gold-500">
+                <h3 class="font-bold text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-database text-gold-400"></i>
+                    Konfigurasi Source Google Sheets
+                </h3>
+                <button onclick="closeConfigModal()" class="text-emerald-200 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">URL / ID Google Sheet</label>
+                    <input type="text" id="input-sheet-url" class="w-full text-xs p-2.5 bg-slate-50 border border-slate-300 rounded-xl font-mono focus:ring-2 focus:ring-nu-600 outline-none" value="https://docs.google.com/spreadsheets/d/1JfC3mhBezjhUVwjuME54dCGwqJWl4ppaHMJSnz0SdlA/edit?usp=sharing">
+                    <p class="text-[11px] text-slate-500 mt-1">
+                        Pastikan Google Sheet berstatus publik (Anyone with the link can view).
+                    </p>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 p-3 rounded-xl text-xs text-amber-800 space-y-1">
+                    <p class="font-bold"><i class="fa-solid fa-lightbulb text-amber-600 mr-1"></i>Format Kolom yang Diisi pada Sheet:</p>
+                    <p class="text-[11px]">Sistem secara otomatis mengenali nama kolom seperti: <b>Kode Barang</b>, <b>Nama Barang</b>, <b>Jumlah</b>, <b>Kondisi</b> (Baik/Rusak), dan <b>Lokasi / Gedung</b>.</p>
+                </div>
+
+                <div class="flex items-center justify-between pt-2">
+                    <button onclick="restoreDefaultSheetUrl()" class="text-xs text-nu-700 hover:underline font-semibold">
+                        Reset Ke Sheet Default MA NU
+                    </button>
+                    <div class="flex gap-2">
+                        <button onclick="closeConfigModal()" class="px-3.5 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold">
+                            Batal
+                        </button>
+                        <button onclick="applySheetConfig()" class="px-4 py-2 bg-nu-700 hover:bg-nu-800 text-white rounded-xl text-xs font-bold">
+                            Simpan & Fetch Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-report" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden">
+            <div class="bg-slate-800 text-white p-4 flex items-center justify-between">
+                <h3 class="font-bold text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-file-invoice text-gold-400"></i>
+                    Pratinjau Laporan Resmi Sarpras
+                </h3>
+                <div class="flex items-center gap-2">
+                    <button onclick="window.print()" class="bg-gold-500 hover:bg-gold-600 text-nu-dark px-3 py-1.5 rounded-lg text-xs font-bold">
+                        <i class="fa-solid fa-print mr-1"></i> Cetak Dokumen
+                    </button>
+                    <button onclick="closeReportModal()" class="text-slate-400 hover:text-white ml-2">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-8 overflow-y-auto bg-white flex-1 text-slate-900" id="print-area">
+                <!-- Header Kop Madrasah -->
+                <div class="border-b-4 border-double border-slate-800 pb-4 mb-6 flex items-center gap-4">
+                    <img src="https://raw.githubusercontent.com/yusufajiib/yusufajiib/refs/heads/main/gambar/Logo_MA_Terbaru_1-removebg-preview.png" alt="Logo MA NU Hasyim Asy'ari 1" class="w-20 h-20 object-contain shrink-0" onerror="this.onerror=null; this.src='https://placehold.co/80x80/0B381E/ffffff?text=MA+NU';">
+                    <div class="text-center flex-1 space-y-0.5">
+                        <h2 class="text-xs font-bold uppercase tracking-widest text-slate-600">YAYASAN MA'ARIF NU KUDUS</h2>
+                        <h1 class="text-xl font-extrabold uppercase tracking-wide text-nu-900">MA NU HASYIM ASY'ARI 1 KUDUS</h1>
+                        <p class="text-xs text-slate-600">Jl. Raya Kudus - Jepara, Sunggingan, Kec. Kota Kudus, Kabupaten Kudus, Jawa Tengah</p>
+                        <p class="text-[11px] text-slate-500 italic">Website / E-mail: sarpras@manu1kudus.sch.id &bull; Telepon: (0291) 438XXX</p>
+                    </div>
+                </div>
+
+                <!-- Report Title -->
+                <div class="text-center my-6">
+                    <h3 class="font-bold text-base uppercase text-slate-900 underline underline-offset-4">LAPORAN INVENTARISASI BARANG DAN ASET MADRASAH</h3>
+                    <p class="text-xs text-slate-600 mt-1" id="report-date-string">Periode Tahun Ajaran 2026/2027</p>
+                </div>
+
+                <!-- Summary statistics table in report -->
+                <div class="grid grid-cols-3 gap-4 mb-6 text-xs text-slate-800 border border-slate-300 p-3 rounded-lg bg-slate-50">
+                    <div>
+                        <span class="text-slate-500">Total Variasi Item:</span>
+                        <p class="font-bold text-sm" id="rep-jenis">0 Jenis</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-500">Total Unit Fisik:</span>
+                        <p class="font-bold text-sm" id="rep-unit">0 Unit</p>
+                    </div>
+                    <div>
+                        <span class="text-slate-500">Rincian Kondisi:</span>
+                        <p class="font-semibold text-xs"><span class="text-emerald-700" id="rep-baik">0 Baik</span> | <span class="text-rose-700" id="rep-rusak">0 Rusak</span></p>
+                    </div>
+                </div>
+
+                <!-- Main Data Table for Print -->
+                <table class="w-full text-xs text-left border-collapse border border-slate-400 mb-8">
+                    <thead>
+                        <tr class="bg-slate-100 text-slate-800 font-bold uppercase border-b border-slate-400">
+                            <th class="border border-slate-300 p-2 text-center w-8">No</th>
+                            <th class="border border-slate-300 p-2">Kode Barang</th>
+                            <th class="border border-slate-300 p-2">Nama Asset / Jenis</th>
+                            <th class="border border-slate-300 p-2 text-center">Jumlah</th>
+                            <th class="border border-slate-300 p-2 text-center">Kondisi</th>
+                            <th class="border border-slate-300 p-2">Lokasi Ruang / Gedung</th>
+                            <th class="border border-slate-300 p-2">Keterangan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-table-body" class="divide-y divide-slate-300">
+                        <!-- Populated dynamically -->
+                    </tbody>
+                </table>
+
+                <!-- Signatures Box -->
+                <div class="grid grid-cols-2 text-xs text-center mt-12 pt-6 gap-8 print-break-inside-avoid">
+                    <div class="space-y-16">
+                        <p>Mengetahui,<br><strong>Kepala MA NU Hasyim Asy'ari 1 Kudus</strong></p>
+                        <p class="font-bold underline uppercase">( H. Muhtadi, S.Ag., M.Pd.I )<br><span class="no-underline font-normal text-[11px] text-slate-600">NIP / NPY. 19780512XXXXXXXX</span></p>
+                    </div>
+                    <div class="space-y-16">
+                        <p>Kudus, <span id="report-current-date">3 Oktober 2026</span><br><strong>Pengelola Barang / Wakasek Sarpras</strong></p>
+                        <p class="font-bold underline uppercase">( Ahmad Zaini, S.Pd. )<br><span class="no-underline font-normal text-[11px] text-slate-600">NIP / NPY. 19850920XXXXXXXX</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default Google Sheet URL provided in query
+        const DEFAULT_SHEET_ID = "1JfC3mhBezjhUVwjuME54dCGwqJWl4ppaHMJSnz0SdlA";
+        let currentSheetUrl = `https://docs.google.com/spreadsheets/d/${DEFAULT_SHEET_ID}/edit?usp=sharing`;
+
+        // Preloaded Initial Dataset (Fallback & Default state representing typical Madrasah Assets)
+        const INITIAL_INVENTORY = [
+            { id: "1", kode: "INV/MANU1/2025/001", nama: "Laptop Acer Aspire 5 Lab Komputer", jumlah: 24, kondisi: "Baik", lokasi: "Lab Komputer 1 - Gedung B", tahun: "2024", sumber: "BOS", keterangan: "Digunakan pembelajaran ANBK & Coding" },
+            { id: "2", kode: "INV/MANU1/2025/002", nama: "LCD Projector Epson EB-E500", jumlah: 12, kondisi: "Baik", lokasi: "Gedung A - Kelas X IPA 1-4", tahun: "2023", sumber: "Komite", keterangan: "Terpasang gantung di plafon kelas" },
+            { id: "3", kode: "INV/MANU1/2025/003", nama: "Meja Kursi Kayu Jati Siswa Set", jumlah: 320, kondisi: "Baik", lokasi: "Gedung A & B (Ruang Kelas)", tahun: "2022", sumber: "Yayasan", keterangan: "Kondisi terawat baik" },
+            { id: "4", kode: "INV/MANU1/2025/004", nama: "AC Split Sharp 1.5 PK", jumlah: 6, kondisi: "Rusak Ringan", lokasi: "Ruang Guru & Lab Komputer", tahun: "2021", sumber: "BOS", keterangan: "Perlu pembersihan berkala & isi freon" },
+            { id: "5", kode: "INV/MANU1/2025/005", nama: "Sound System Wireless Portable BMB", jumlah: 3, kondisi: "Baik", lokasi: "Ruang Sarpras / Aula", tahun: "2024", sumber: "BOS", keterangan: "Digunakan kegiatan upacara & majelis" },
+            { id: "6", kode: "INV/MANU1/2025/006", nama: "Papan Tulis Whiteboard Magnetik 120x240", jumlah: 18, kondisi: "Baik", lokasi: "Ruang Kelas X, XI, XII", tahun: "2023", sumber: "Komite", keterangan: "Termasuk gantung marker holder" },
+            { id: "7", kode: "INV/MANU1/2025/007", nama: "Lemari Arsip Besi Filing Cabinet", jumlah: 8, kondisi: "Baik", lokasi: "Ruang Tata Usaha (TU)", tahun: "2020", sumber: "BOS", keterangan: "Penyimpanan dokumen ijazah & berkas" },
+            { id: "8", kode: "INV/MANU1/2025/008", nama: "Mikroskop Binokuler Olympus CX23", jumlah: 10, kondisi: "Baik", lokasi: "Laboratorium IPA Biologi", tahun: "2023", sumber: "Hibah Kemenag", keterangan: "Lengkap dengan kotak penyimpanan" },
+            { id: "9", kode: "INV/MANU1/2025/009", nama: "Karpet Sajadah Musholla Madrasah", jumlah: 15, kondisi: "Baik", lokasi: "Musholla An-Nuur", tahun: "2022", sumber: "Infaq Siswa", keterangan: "Panjang 6 meter per gulung" },
+            { id: "10", kode: "INV/MANU1/2025/010", nama: "Komputer Server UNBK Lenovo ThinkSystem", jumlah: 2, kondisi: "Baik", lokasi: "Ruang Server Utama", tahun: "2023", sumber: "BOS", keterangan: "Spesifikasi Xeon 32GB RAM RAID 1" },
+            { id: "11", kode: "INV/MANU1/2025/011", nama: "Printer Canon Pixma G3010 Ink Tank", jumlah: 4, kondisi: "Rusak Berat", lokasi: "Ruang Guru & TU", tahun: "2020", sumber: "BOS", keterangan: "Printhead tersumbat, rekomendasi ganti" },
+            { id: "12", kode: "INV/MANU1/2025/012", nama: "Kipas Angin Dinding Tornado Regency", jumlah: 24, kondisi: "Rusak Ringan", lokasi: "Ruang Kelas XI & XII", tahun: "2022", sumber: "Komite", keterangan: "2 unit bunyi mendengung di Kelas XI-2" }
+        ];
+
+        // State Store
+        let inventoryData = [...INITIAL_INVENTORY];
+        let filteredData = [...INITIAL_INVENTORY];
+        let currentPage = 1;
+        const pageSize = 8;
+        let chartKondisiInstance = null;
+        let chartLokasiInstance = null;
+
+        // On DOM Load
+        document.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            populateLocationFilterOptions();
+            renderTable();
+            updateKPIs();
+            renderCharts();
+
+            // Attempt initial Google Sheet auto-fetch
+            fetchGoogleSheetData();
+            
+            // Set report current date
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('report-current-date').innerText = new Date().toLocaleDateString('id-ID', options);
+        });
+
+        async function fetchGoogleSheetData() {
+            const syncIcon = document.getElementById('sync-icon');
+            const statusText = document.getElementById('sheet-status-text');
+            const statusPing = document.getElementById('sheet-status-ping');
+            const statusDot = document.getElementById('sheet-status-dot');
+
+            syncIcon.classList.add('fa-spin');
+            statusText.innerText = "Mengambil Data...";
+            
+            try {
+                // Extract sheet ID from URL
+                let sheetId = DEFAULT_SHEET_ID;
+                const match = currentSheetUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                if (match && match[1]) {
+                    sheetId = match[1];
+                }
+
+                // Construct CSV GViz export URL
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv`;
+
+                const response = await fetch(csvUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP Error Status: ${response.status}`);
+                }
+
+                const csvText = await response.text();
+                const parsedRows = parseCSV(csvText);
+
+                if (parsedRows.length > 1) {
+                    const mappedData = mapCSVToInventory(parsedRows);
+                    if (mappedData.length > 0) {
+                        inventoryData = mappedData;
+                        showToast(`Berhasil menyinkronkan ${mappedData.length} data dari Google Sheets!`, 'success');
+                    }
+                }
+
+                // Update UI badges
+                statusText.innerText = "Google Sheet Synced";
+                statusDot.className = "relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500";
+                statusPing.className = "animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75";
+                document.getElementById('last-updated-tag').innerText = "Terakhir disinkron: " + new Date().toLocaleTimeString('id-ID');
+
+            } catch (error) {
+                console.warn('Gagal mengambil CSV Google Sheet, menggunakan data cache internal:', error);
+                showToast('Gagal terhubung ke Google Sheet. Menampilkan data lokal.', 'info');
+                statusText.innerText = "Mode Offline / Local";
+                statusDot.className = "relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500";
+                statusPing.className = "hidden";
+            } finally {
+                syncIcon.classList.remove('fa-spin');
+                populateLocationFilterOptions();
+                handleSearchFilter();
+            }
+        }
+
+        // CSV String Parser handling quotes & commas
+        function parseCSV(text) {
+            const lines = [];
+            let row = [];
+            let inQuotes = false;
+            let currentToken = '';
+
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const nextChar = text[i + 1];
+
+                if (char === '"' && inQuotes && nextChar === '"') {
+                    currentToken += '"';
+                    i++;
+                } else if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    row.push(currentToken.trim());
+                    currentToken = '';
+                } else if ((char === '\r' || char === '\n') && !inQuotes) {
+                    if (char === '\r' && nextChar === '\n') {
+                        i++;
+                    }
+                    row.push(currentToken.trim());
+                    if (row.some(field => field.length > 0)) {
+                        lines.push(row);
+                    }
+                    row = [];
+                    currentToken = '';
+                } else {
+                    currentToken += char;
+                }
+            }
+
+            if (currentToken.length > 0 || row.length > 0) {
+                row.push(currentToken.trim());
+                if (row.some(field => field.length > 0)) {
+                    lines.push(row);
+                }
+            }
+
+            return lines;
+        }
+
+        // Map CSV rows smartly to Inventory objects
+        function mapCSVToInventory(rows) {
+            if (!rows || rows.length === 0) return [];
+
+            // Detect header row index
+            let headerRowIdx = 0;
+            for (let r = 0; r < Math.min(5, rows.length); r++) {
+                const rowStr = rows[r].join(' ').toLowerCase();
+                if (rowStr.includes('nama') || rowStr.includes('barang') || rowStr.includes('kode')) {
+                    headerRowIdx = r;
+                    break;
+                }
+            }
+
+            const headers = rows[headerRowIdx].map(h => h.toLowerCase().trim());
+
+            let idxKode = -1;
+            let idxNama = -1;
+            let idxJumlah = -1;
+            let idxKondisi = -1;
+            let idxLokasi = -1;
+            let idxTahun = -1;
+            let idxSumber = -1;
+            let idxKet = -1;
+
+            headers.forEach((h, index) => {
+                const clean = h.replace(/[^a-z0-9]/g, '');
+
+                // Prioritize 'kode' for item code
+                if (clean.includes('kode') || clean === 'id' || clean === 'nokode') {
+                    if (idxKode === -1) idxKode = index;
+                }
+                // Check 'nama' or 'asset' for item name (must NOT contain 'kode')
+                else if ((clean.includes('nama') || clean.includes('uraian') || clean.includes('deskripsi') || clean === 'asset' || clean === 'namabarang' || clean === 'namaasset') && !clean.includes('kode')) {
+                    if (idxNama === -1) idxNama = index;
+                }
+                // Check jumlah / qty / unit
+                else if (clean.includes('jumlah') || clean.includes('qty') || clean.includes('unit') || clean.includes('banyak') || clean.includes('kuantitas')) {
+                    if (idxJumlah === -1) idxJumlah = index;
+                }
+                // Check kondisi
+                else if (clean.includes('kondisi') || clean.includes('keadaan') || clean.includes('status')) {
+                    if (idxKondisi === -1) idxKondisi = index;
+                }
+                // Check lokasi
+                else if (clean.includes('lokasi') || clean.includes('gedung') || clean.includes('ruang') || clean.includes('tempat') || clean.includes('kelas')) {
+                    if (idxLokasi === -1) idxLokasi = index;
+                }
+                // Check tahun / tanggal perolehan
+                else if (clean.includes('tahun') || clean.includes('tgl') || clean.includes('tanggal') || clean.includes('perolehan')) {
+                    if (idxTahun === -1) idxTahun = index;
+                }
+                // Check sumber dana
+                else if (clean.includes('sumber') || clean.includes('dana') || clean.includes('anggaran')) {
+                    if (idxSumber === -1) idxSumber = index;
+                }
+                // Check keterangan / spesifikasi
+                else if (clean.includes('keterangan') || clean.includes('ket') || clean.includes('catatan') || clean.includes('spesifikasi') || clean.includes('merk')) {
+                    if (idxKet === -1) idxKet = index;
+                }
+            });
+
+            // Fallback for idxNama if column header was 'barang' or 'asset' without 'kode'
+            if (idxNama === -1) {
+                headers.forEach((h, index) => {
+                    const clean = h.replace(/[^a-z0-9]/g, '');
+                    if (index !== idxKode && (clean.includes('barang') || clean.includes('item') || clean.includes('asset')) && !clean.includes('kode')) {
+                        if (idxNama === -1) idxNama = index;
+                    }
+                });
+            }
+
+            // Fallback index positioning if not explicitly matched
+            if (idxKode === -1) idxKode = 0;
+            if (idxNama === -1) idxNama = (idxKode === 0) ? 1 : 0;
+
+            const results = [];
+
+            for (let i = headerRowIdx + 1; i < rows.length; i++) {
+                const r = rows[i];
+                if (!r || r.length === 0) continue;
+
+                const nama = idxNama !== -1 && r[idxNama] ? r[idxNama] : `Asset #${i}`;
+                if (!nama || nama.trim() === '') continue;
+
+                let jumlah = parseInt(idxJumlah !== -1 && r[idxJumlah] ? r[idxJumlah] : r[2]) || 1;
+                let kondisiRaw = idxKondisi !== -1 && r[idxKondisi] ? r[idxKondisi] : (r[3] || 'Baik');
+                
+                // Normalize Condition
+                let kondisi = "Baik";
+                if (kondisiRaw.toLowerCase().includes('rusak berat')) kondisi = "Rusak Berat";
+                else if (kondisiRaw.toLowerCase().includes('rusak')) kondisi = "Rusak Ringan";
+
+                const kode = idxKode !== -1 && r[idxKode] ? r[idxKode] : `INV/MANU1/2026/${String(i).padStart(3, '0')}`;
+                const lokasi = idxLokasi !== -1 && r[idxLokasi] ? r[idxLokasi] : "Gedung Utama";
+                const tahun = idxTahun !== -1 && r[idxTahun] ? r[idxTahun] : "-";
+                const sumber = idxSumber !== -1 && r[idxSumber] ? r[idxSumber] : "-";
+                const ket = idxKet !== -1 && r[idxKet] ? r[idxKet] : "-";
+
+                results.push({
+                    id: String(i),
+                    kode: kode,
+                    nama: nama,
+                    jumlah: jumlah,
+                    kondisi: kondisi,
+                    lokasi: lokasi,
+                    tahun: tahun,
+                    sumber: sumber,
+                    keterangan: ket
+                });
+            }
+
+            return results;
+        }
+
+        function handleSearchFilter() {
+            const query = document.getElementById('input-search').value.toLowerCase().trim();
+            const filterKondisi = document.getElementById('filter-kondisi').value;
+            const filterLokasi = document.getElementById('filter-lokasi').value;
+
+            filteredData = inventoryData.filter(item => {
+                const matchQuery = 
+                    item.kode.toLowerCase().includes(query) ||
+                    item.nama.toLowerCase().includes(query) ||
+                    item.lokasi.toLowerCase().includes(query) ||
+                    (item.keterangan && item.keterangan.toLowerCase().includes(query));
+
+                let matchKondisi = true;
+                if (filterKondisi === 'Baik') matchKondisi = item.kondisi === 'Baik';
+                else if (filterKondisi === 'Rusak') matchKondisi = item.kondisi.includes('Rusak');
+                else if (filterKondisi === 'Rusak Ringan') matchKondisi = item.kondisi === 'Rusak Ringan';
+                else if (filterKondisi === 'Rusak Berat') matchKondisi = item.kondisi === 'Rusak Berat';
+
+                let matchLokasi = true;
+                if (filterLokasi !== 'ALL') {
+                    matchLokasi = item.lokasi.toLowerCase().includes(filterLokasi.toLowerCase());
+                }
+
+                return matchQuery && matchKondisi && matchLokasi;
+            });
+
+            currentPage = 1;
+            renderTable();
+            updateKPIs();
+            renderCharts();
+        }
+
+        function resetFilters() {
+            document.getElementById('input-search').value = '';
+            document.getElementById('filter-kondisi').value = 'ALL';
+            document.getElementById('filter-lokasi').value = 'ALL';
+            handleSearchFilter();
+        }
+
+        function populateLocationFilterOptions() {
+            const selectLokasi = document.getElementById('filter-lokasi');
+            const datalistLokasi = document.getElementById('lokasi-list');
+            
+            // Collect unique locations
+            const locations = [...new Set(inventoryData.map(i => i.lokasi).filter(Boolean))];
+            
+            selectLokasi.innerHTML = `<option value="ALL">Semua Lokasi</option>`;
+            datalistLokasi.innerHTML = ``;
+
+            locations.forEach(loc => {
+                const opt = document.createElement('option');
+                opt.value = loc;
+                opt.textContent = loc;
+                selectLokasi.appendChild(opt);
+
+                const dataOpt = document.createElement('option');
+                dataOpt.value = loc;
+                datalistLokasi.appendChild(dataOpt);
+            });
+        }
+
+        // Render Asset Table
+        function renderTable() {
+            const tbody = document.getElementById('table-inventory-body');
+            tbody.innerHTML = '';
+
+            document.getElementById('text-total-count').innerText = inventoryData.length;
+            document.getElementById('text-showing-count').innerText = filteredData.length;
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center py-12 text-slate-400">
+                            <i class="fa-solid fa-box-open text-4xl mb-3 text-slate-300 block"></i>
+                            <p class="font-medium">Tidak ada data aset yang ditemukan</p>
+                            <p class="text-xs text-slate-400 mt-1">Coba sesuaikan kata kunci atau filter pencarian Anda</p>
+                        </td>
+                    </tr>
+                `;
+                updatePaginationControls(0);
+                return;
+            }
+
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            const startIdx = (currentPage - 1) * pageSize;
+            const pageData = filteredData.slice(startIdx, startIdx + pageSize);
+
+            pageData.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/80 transition group border-b border-slate-100";
+
+                let badgeKondisiClass = "bg-emerald-100 text-emerald-800 border-emerald-200";
+                if (item.kondisi === "Rusak Ringan") badgeKondisiClass = "bg-amber-100 text-amber-800 border-amber-200";
+                if (item.kondisi === "Rusak Berat") badgeKondisiClass = "bg-rose-100 text-rose-800 border-rose-200";
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-center font-medium text-slate-400">${startIdx + index + 1}</td>
+                    <td class="py-3 px-4 font-mono font-bold text-nu-900 whitespace-nowrap text-xs">
+                        <span class="bg-slate-100 border border-slate-200 px-2 py-1 rounded-md">${escapeHtml(item.kode)}</span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <p class="font-bold text-slate-800">${escapeHtml(item.nama)}</p>
+                        ${item.tahun && item.tahun !== '-' ? `<span class="text-[11px] text-slate-500">Perolehan: ${escapeHtml(item.tahun)}</span>` : ''}
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        <span class="font-extrabold text-slate-800 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-full text-xs">
+                            ${item.jumlah} Unit
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full border ${badgeKondisiClass}">
+                            <i class="fa-solid ${item.kondisi === 'Baik' ? 'fa-check' : 'fa-triangle-exclamation'} text-[10px]"></i>
+                            ${item.kondisi}
+                        </span>
+                    </td>
+                    <td class="py-3 px-4 font-medium text-slate-700">
+                        <div class="flex items-center gap-1.5">
+                            <i class="fa-solid fa-location-dot text-nu-700"></i>
+                            <span>${escapeHtml(item.lokasi)}</span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 text-slate-500 text-xs max-w-xs truncate">
+                        ${escapeHtml(item.keterangan || '-')}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            updatePaginationControls(totalPages);
+        }
+
+        function updatePaginationControls(totalPages) {
+            document.getElementById('page-current').innerText = totalPages === 0 ? 0 : currentPage;
+            document.getElementById('page-total').innerText = totalPages;
+
+            document.getElementById('btn-page-prev').disabled = currentPage <= 1;
+            document.getElementById('btn-page-next').disabled = currentPage >= totalPages || totalPages === 0;
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            renderTable();
+        }
+
+        function updateKPIs() {
+            const totalJenis = filteredData.length;
+            const totalUnit = filteredData.reduce((acc, curr) => acc + (parseInt(curr.jumlah) || 0), 0);
+            
+            const baikUnit = filteredData
+                .filter(i => i.kondisi === 'Baik')
+                .reduce((acc, curr) => acc + (parseInt(curr.jumlah) || 0), 0);
+
+            const rusakUnit = totalUnit - baikUnit;
+
+            document.getElementById('stat-total-jenis').innerText = totalJenis.toLocaleString('id-ID');
+            document.getElementById('stat-total-unit').innerText = totalUnit.toLocaleString('id-ID');
+            document.getElementById('stat-kondisi-baik').innerText = baikUnit.toLocaleString('id-ID');
+            document.getElementById('stat-kondisi-rusak').innerText = rusakUnit.toLocaleString('id-ID');
+
+            const pctBaik = totalUnit > 0 ? Math.round((baikUnit / totalUnit) * 100) : 0;
+            const pctRusak = totalUnit > 0 ? Math.round((rusakUnit / totalUnit) * 100) : 0;
+
+            document.getElementById('bar-baik-percent').style.width = `${pctBaik}%`;
+            document.getElementById('bar-rusak-percent').style.width = `${pctRusak}%`;
+        }
+
+        function initCharts() {
+            // Doughnut Chart Kondisi
+            const ctxKondisi = document.getElementById('chartKondisi').getContext('2d');
+            chartKondisiInstance = new Chart(ctxKondisi, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Baik', 'Rusak Ringan', 'Rusak Berat'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#16a34a', '#f59e0b', '#e11d48'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+                    },
+                    cutout: '68%'
+                }
+            });
+
+            // Bar Chart Lokasi
+            const ctxLokasi = document.getElementById('chartLokasi').getContext('2d');
+            chartLokasiInstance = new Chart(ctxLokasi, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Jumlah Unit Asset',
+                        data: [],
+                        backgroundColor: '#15803d',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        function renderCharts() {
+            if (!chartKondisiInstance || !chartLokasiInstance) return;
+
+            // Kondisi counts
+            const countBaik = filteredData.filter(i => i.kondisi === 'Baik').reduce((a, c) => a + c.jumlah, 0);
+            const countRusakRingan = filteredData.filter(i => i.kondisi === 'Rusak Ringan').reduce((a, c) => a + c.jumlah, 0);
+            const countRusakBerat = filteredData.filter(i => i.kondisi === 'Rusak Berat').reduce((a, c) => a + c.jumlah, 0);
+
+            chartKondisiInstance.data.datasets[0].data = [countBaik, countRusakRingan, countRusakBerat];
+            chartKondisiInstance.update();
+
+            // Lokasi distribution (Top 6)
+            const lokasiMap = {};
+            filteredData.forEach(item => {
+                const loc = item.lokasi || 'Lainnya';
+                lokasiMap[loc] = (lokasiMap[loc] || 0) + parseInt(item.jumlah);
+            });
+
+            const sortedLocations = Object.entries(lokasiMap)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 6);
+
+            chartLokasiInstance.data.labels = sortedLocations.map(l => l[0]);
+            chartLokasiInstance.data.datasets[0].data = sortedLocations.map(l => l[1]);
+            chartLokasiInstance.update();
+        }
+
+        function openAddModal() {
+            document.getElementById('form-item').reset();
+            document.getElementById('input-id').value = '';
+            document.getElementById('modal-item-title').innerHTML = `<i class="fa-solid fa-plus text-gold-400"></i> Tambah Asset Barang Baru`;
+            generateAutoCode();
+            document.getElementById('modal-item').classList.remove('hidden');
+        }
+
+        function openEditModal(id) {
+            const item = inventoryData.find(i => i.id === String(id));
+            if (!item) return;
+
+            document.getElementById('input-id').value = item.id;
+            document.getElementById('input-kode').value = item.kode;
+            document.getElementById('input-nama').value = item.nama;
+            document.getElementById('input-jumlah').value = item.jumlah;
+            document.getElementById('input-kondisi').value = item.kondisi;
+            document.getElementById('input-lokasi').value = item.lokasi;
+            document.getElementById('input-tahun').value = item.tahun || '';
+            document.getElementById('input-sumber').value = item.sumber || '';
+            document.getElementById('input-keterangan').value = item.keterangan || '';
+
+            document.getElementById('modal-item-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-gold-400"></i> Edit Data Asset`;
+            document.getElementById('modal-item').classList.remove('hidden');
+        }
+
+        function closeItemModal() {
+            document.getElementById('modal-item').classList.add('hidden');
+        }
+
+        function generateAutoCode() {
+            const year = new Date().getFullYear();
+            const seq = String(inventoryData.length + 1).padStart(3, '0');
+            document.getElementById('input-kode').value = `INV/MANU1/${year}/${seq}`;
+        }
+
+        function saveItem(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('input-id').value;
+            const kode = document.getElementById('input-kode').value.trim();
+            const nama = document.getElementById('input-nama').value.trim();
+            const jumlah = parseInt(document.getElementById('input-jumlah').value) || 1;
+            const kondisi = document.getElementById('input-kondisi').value;
+            const lokasi = document.getElementById('input-lokasi').value.trim();
+            const tahun = document.getElementById('input-tahun').value.trim();
+            const sumber = document.getElementById('input-sumber').value.trim();
+            const keterangan = document.getElementById('input-keterangan').value.trim();
+
+            if (id) {
+                // Edit existing
+                const index = inventoryData.findIndex(i => i.id === String(id));
+                if (index !== -1) {
+                    inventoryData[index] = { id, kode, nama, jumlah, kondisi, lokasi, tahun, sumber, keterangan };
+                    showToast('Data barang berhasil diperbarui!', 'success');
+                }
+            } else {
+                // Add new item
+                const newId = String(Date.now());
+                inventoryData.unshift({ id: newId, kode, nama, jumlah, kondisi, lokasi, tahun, sumber, keterangan });
+                showToast('Barang baru berhasil ditambahkan ke inventaris!', 'success');
+            }
+
+            closeItemModal();
+            populateLocationFilterOptions();
+            handleSearchFilter();
+        }
+
+        function deleteItem(id) {
+            const item = inventoryData.find(i => i.id === String(id));
+            if (!item) return;
+
+            if (confirm(`Apakah Anda yakin ingin menghapus data asset "${item.nama}" (${item.kode})?`)) {
+                inventoryData = inventoryData.filter(i => i.id !== String(id));
+                showToast('Data asset telah dihapus.', 'info');
+                populateLocationFilterOptions();
+                handleSearchFilter();
+            }
+        }
+
+        function openQrModal(id) {
+            const item = inventoryData.find(i => i.id === String(id));
+            if (!item) return;
+
+            document.getElementById('qr-kode').innerText = item.kode;
+            document.getElementById('qr-nama').innerText = item.nama;
+            document.getElementById('qr-lokasi').innerText = `Lokasi: ${item.lokasi}`;
+
+            const container = document.getElementById('qrcode-container');
+            container.innerHTML = '';
+
+            // Generate QR Code containing asset info JSON
+            const qrText = `MA NU HASYIM ASYARI 1 KUDUS\nKode: ${item.kode}\nNama: ${item.nama}\nLokasi: ${item.lokasi}`;
+            new QRCode(container, {
+                text: qrText,
+                width: 110,
+                height: 110,
+                colorDark: "#0B381E",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('modal-qr').classList.remove('hidden');
+        }
+
+        function closeQrModal() {
+            document.getElementById('modal-qr').classList.add('hidden');
+        }
+
+        function printSingleQr() {
+            window.print();
+        }
+
+        function openReportModal() {
+            const tbody = document.getElementById('report-table-body');
+            tbody.innerHTML = '';
+
+            const totalJenis = filteredData.length;
+            const totalUnit = filteredData.reduce((a, c) => a + c.jumlah, 0);
+            const totalBaik = filteredData.filter(i => i.kondisi === 'Baik').reduce((a, c) => a + c.jumlah, 0);
+            const totalRusak = totalUnit - totalBaik;
+
+            document.getElementById('rep-jenis').innerText = `${totalJenis} Jenis`;
+            document.getElementById('rep-unit').innerText = `${totalUnit} Unit`;
+            document.getElementById('rep-baik').innerText = `${totalBaik} Baik`;
+            document.getElementById('rep-rusak').innerText = `${totalRusak} Rusak`;
+
+            filteredData.forEach((item, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="border border-slate-300 p-2 text-center font-medium">${idx + 1}</td>
+                    <td class="border border-slate-300 p-2 font-mono font-bold">${escapeHtml(item.kode)}</td>
+                    <td class="border border-slate-300 p-2 font-semibold">${escapeHtml(item.nama)}</td>
+                    <td class="border border-slate-300 p-2 text-center font-bold">${item.jumlah}</td>
+                    <td class="border border-slate-300 p-2 text-center font-medium">${escapeHtml(item.kondisi)}</td>
+                    <td class="border border-slate-300 p-2">${escapeHtml(item.lokasi)}</td>
+                    <td class="border border-slate-300 p-2 text-slate-600">${escapeHtml(item.keterangan || '-')}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('modal-report').classList.remove('hidden');
+        }
+
+        function closeReportModal() {
+            document.getElementById('modal-report').classList.add('hidden');
+        }
+
+        // Config Sheet Modal
+        function openConfigModal() {
+            document.getElementById('input-sheet-url').value = currentSheetUrl;
+            document.getElementById('modal-config').classList.remove('hidden');
+        }
+
+        function closeConfigModal() {
+            document.getElementById('modal-config').classList.add('hidden');
+        }
+
+        function restoreDefaultSheetUrl() {
+            currentSheetUrl = `https://docs.google.com/spreadsheets/d/${DEFAULT_SHEET_ID}/edit?usp=sharing`;
+            document.getElementById('input-sheet-url').value = currentSheetUrl;
+        }
+
+        function applySheetConfig() {
+            const url = document.getElementById('input-sheet-url').value.trim();
+            if (url) {
+                currentSheetUrl = url;
+                closeConfigModal();
+                fetchGoogleSheetData();
+            }
+        }
+
+        // CSV Export Download
+        function exportToCSV() {
+            if (filteredData.length === 0) {
+                showToast('Tidak ada data untuk diexport.', 'info');
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "No,Nomor Kode Barang,Nama Asset,Jumlah,Kondisi,Lokasi,Tahun,Sumber Dana,Keterangan\n";
+
+            filteredData.forEach((item, index) => {
+                const row = [
+                    index + 1,
+                    `"${item.kode}"`,
+                    `"${item.nama}"`,
+                    item.jumlah,
+                    `"${item.kondisi}"`,
+                    `"${item.lokasi}"`,
+                    `"${item.tahun || '-'}"`,
+                    `"${item.sumber || '-'}"`,
+                    `"${(item.keterangan || '-').replace(/"/g, '""')}"`
+                ].join(",");
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Inventaris_MA_NU_Hasyim_Asyari_1_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast('File CSV berhasil diunduh!', 'success');
+        }
+
+        // Toast Helper Notification
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            let bgClass = "bg-slate-800 text-white";
+            let icon = "fa-circle-info text-blue-400";
+
+            if (type === 'success') {
+                bgClass = "bg-nu-dark text-white border border-emerald-500 shadow-lg";
+                icon = "fa-circle-check text-emerald-400";
+            } else if (type === 'warning') {
+                bgClass = "bg-amber-900 text-amber-100 border border-amber-600";
+                icon = "fa-triangle-exclamation text-amber-400";
+            }
+
+            toast.className = `p-3.5 rounded-xl shadow-xl flex items-center gap-3 text-xs font-semibold pointer-events-auto transform transition duration-300 ease-out translate-y-2 opacity-0 ${bgClass}`;
+            toast.innerHTML = `
+                <i class="fa-solid ${icon} text-base shrink-0"></i>
+                <span class="flex-1">${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // Helper string HTML escape
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
