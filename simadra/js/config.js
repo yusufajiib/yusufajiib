@@ -18,11 +18,11 @@ window.SIM_CONFIG = {
       columns: { title: "Judul", body: "Isi", date: "TanggalPublikasi", target: "Target" }
     },
     jadwal: {
-      csvUrl: "",
+      csvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRD0K6p2Xozbp2LGlJEDqj7XiDrDDrUkORrGd-SUfNOcyL3yd3yfHu_ULfh2KiLt5EJ1FNozV02dQ5N/pub?gid=770069016&single=true&output=csv",
       columns: { day: "Hari", className: "Kelas", start: "JamMulai", end: "JamSelesai", subject: "MataPelajaran", teacher: "Guru" }
     },
     materi: {
-      csvUrl: "",
+      csvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRD0K6p2Xozbp2LGlJEDqj7XiDrDDrUkORrGd-SUfNOcyL3yd3yfHu_ULfh2KiLt5EJ1FNozV02dQ5N/pub?gid=341633696&single=true&output=csv",
       columns: { title: "Judul", description: "Deskripsi", subject: "MataPelajaran", url: "URL", type: "Jenis" }
     }
   }
