@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#176b3a">
+  <meta name="description" content="Portal informasi MA NU Hasyim Asy’ari 1 Kudus">
+  <title>SIM Madrasah | MA NU Hasyim Asy’ari 1 Kudus</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html" aria-label="Beranda">
+      <div class="brand-mark">MA</div>
+      <div><strong>SIM MADRASAH</strong><span>MA NU Hasyim Asy’ari 1 Kudus</span></div>
+    </a>
+    <button class="menu-toggle" id="menuToggle" aria-label="Buka navigasi">☰</button>
+    <nav id="mainNav">
+      <a class="active" href="index.html">Beranda</a>
+      <a href="#pengumuman">Pengumuman</a>
+      <a href="#jadwal">Jadwal</a>
+      <a href="#materi">Materi</a>
+      <a class="nav-login" href="login.html">Masuk Guru/Siswa</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <span class="eyebrow">PORTAL INFORMASI MADRASAH</span>
+        <h1>Belajar, bertumbuh, dan berprestasi bersama.</h1>
+        <p>Informasi akademik, jadwal pelajaran, pengumuman, dan bahan pembelajaran MA NU Hasyim Asy’ari 1 Kudus dalam satu portal.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#pengumuman">Lihat Informasi</a>
+          <a class="button button-outline" href="login.html">Masuk Guru/Siswa</a>
+        </div>
+        <p class="motto">“Berakhlak, Cerdas, dan Berwawasan Lingkungan.”</p>
+      </div>
+      <div class="hero-panel">
+        <div class="hero-icon">✦</div>
+        <span class="panel-label">SISTEM INFORMASI MADRASAH</span>
+        <h2>Informasi lebih mudah diakses.</h2>
+        <p>Gunakan portal ini untuk menemukan informasi resmi yang diterbitkan madrasah.</p>
+        <div class="panel-foot"><span class="status-dot"></span> Portal informasi</div>
+      </div>
+    </section>
+
+    <section class="section quick-links">
+      <div class="section-heading"><div><span class="eyebrow">AKSES CEPAT</span><h2>Jelajahi informasi</h2></div></div>
+      <div class="feature-grid">
+        <a class="feature-card" href="#pengumuman"><span class="feature-icon green">▤</span><h3>Pengumuman</h3><p>Informasi dan sosialisasi resmi madrasah.</p><span class="card-arrow">Lihat informasi →</span></a>
+        <a class="feature-card" href="#jadwal"><span class="feature-icon yellow">▦</span><h3>Jadwal Pelajaran</h3><p>Jadwal kelas dan mata pelajaran yang dipublikasikan.</p><span class="card-arrow">Lihat jadwal →</span></a>
+        <a class="feature-card" href="#materi"><span class="feature-icon blue">⇩</span><h3>Materi & Unduhan</h3><p>Bahan belajar dan dokumen yang boleh diakses.</p><span class="card-arrow">Buka materi →</span></a>
+      </div>
+    </section>
+
+    <section class="section section-tint" id="pengumuman">
+      <div class="section-heading">
+        <div><span class="eyebrow">INFORMASI TERBARU</span><h2>Pengumuman madrasah</h2></div>
+        <button class="button button-small button-outline" data-refresh="pengumuman">Muat ulang</button>
+      </div>
+      <div id="announcementList" class="announcement-list"><div class="loading-card">Memuat pengumuman…</div></div>
+      <p class="source-note" id="announcementStatus"></p>
+    </section>
+
+    <section class="section" id="jadwal">
+      <div class="section-heading">
+        <div><span class="eyebrow">AKADEMIK</span><h2>Jadwal pelajaran</h2></div>
+        <button class="button button-small button-outline" data-refresh="jadwal">Muat ulang</button>
+      </div>
+      <div class="toolbar">
+        <input id="scheduleSearch" type="search" placeholder="Cari kelas, hari, atau mata pelajaran…" aria-label="Cari jadwal">
+      </div>
+      <div class="table-wrap">
+        <table><thead><tr><th>Hari</th><th>Kelas</th><th>Jam</th><th>Mata Pelajaran</th><th>Guru</th></tr></thead>
+        <tbody id="scheduleRows"><tr><td colspan="5" class="empty-cell">Memuat jadwal…</td></tr></tbody></table>
+      </div>
+      <p class="source-note" id="scheduleStatus"></p>
+    </section>
+
+    <section class="section section-tint" id="materi">
+      <div class="section-heading">
+        <div><span class="eyebrow">SUMBER BELAJAR</span><h2>Materi & dokumen</h2></div>
+        <button class="button button-small button-outline" data-refresh="materi">Muat ulang</button>
+      </div>
+      <div id="materialsList" class="material-grid"><div class="loading-card">Memuat materi…</div></div>
+      <p class="source-note" id="materialsStatus"></p>
+    </section>
+
+    <section class="section login-banner">
+      <div><span class="eyebrow">GURU DAN SISWA</span><h2>Informasi sesuai kebutuhan Anda</h2><p>Halaman privat seperti nilai, presensi, dan pembayaran harus dihubungkan ke sistem login yang aman sebelum digunakan.</p></div>
+      <a class="button button-primary" href="login.html">Halaman masuk →</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-brand"><div class="brand-mark">MA</div><div><strong>MA NU Hasyim Asy’ari 1 Kudus</strong><span>Berakhlak, Cerdas, dan Berwawasan Lingkungan</span></div></div>
+    <p>© <span id="year"></span> Sistem Informasi Madrasah. Informasi mengikuti data yang diterbitkan madrasah.</p>
+  </footer>
+  <script src="js/config.js"></script>
+  <script src="js/google-sheets.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>
