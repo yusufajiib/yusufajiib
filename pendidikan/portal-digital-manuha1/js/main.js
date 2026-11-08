@@ -82,7 +82,20 @@
     try {
       const data = await jsonp(api);
       const settings = data.settings || {};
-      const apps = (data.apps || []).filter(a => a.aktif && /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/i.test(a.url));
+      const apps = (data.apps || []).filter(a => {
+        const isActive = a.aktif === true || String(a.aktif).toLowerCase() === "true";
+        const url = String(a.url || "").trim();
+        // Terima semua alamat HTTPS yang valid, termasuk Apps Script,
+        // EMIS, E-RKAM, PIP, SIMSARPRAS, dan layanan eksternal lainnya.
+        let isValidHttps = false;
+        try {
+          const parsed = new URL(url);
+          isValidHttps = parsed.protocol === "https:" && !!parsed.hostname;
+        } catch (_) {
+          isValidHttps = false;
+        }
+        return isActive && isValidHttps;
+      });
       if (settings.nama_madrasah && title) title.textContent = settings.nama_madrasah.toUpperCase();
       if (settings.logo_url) {
         logo.style.backgroundImage = `url("${settings.logo_url}")`;
