@@ -31,7 +31,16 @@ body {
   background: linear-gradient(145deg, #1c7b42, #d1a92d);
   box-shadow: 0 5px 14px rgba(20,83,45,.18);
 }
-.brand-mark.has-logo { background: #fff center/contain no-repeat; font-size: 0; border: 1px solid var(--line); }
+.brand-mark.has-logo {
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  font-size: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
 .brand-copy { display: grid; gap: 2px; }
 .brand-copy strong { font: 800 13px 'Manrope', sans-serif; letter-spacing: .035em; }
 .brand-copy span, .header-right { color: var(--muted); font-size: 12px; }
