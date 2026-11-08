@@ -1,87 +1,102 @@
 (() => {
   "use strict";
-
   const groups = document.getElementById("appGroups");
   const search = document.getElementById("searchInput");
   const noResults = document.getElementById("noResults");
   const logo = document.getElementById("brandMark");
+  const title = document.querySelector(".brand-copy strong");
+  const motto = document.querySelector(".hero p");
 
   document.getElementById("year").textContent = new Date().getFullYear();
-
-  if (MADRASAH_CONFIG.logo && /^https:\/\//i.test(MADRASAH_CONFIG.logo)) {
-    logo.style.backgroundImage = `url("${MADRASAH_CONFIG.logo}")`;
-    logo.classList.add("has-logo");
-    logo.textContent = "";
-  }
 
   function makeCard(app) {
     const card = document.createElement("article");
     card.className = "app-card";
-
     const icon = document.createElement("div");
     icon.className = "app-icon";
-    icon.textContent = app.ikon || "◈";
-
-    const title = document.createElement("h4");
-    title.textContent = app.nama;
-
-    const description = document.createElement("p");
-    description.textContent = app.deskripsi;
-
-    const action = document.createElement("a");
-    action.className = "app-action";
-    action.textContent = app.url ? "Buka aplikasi ↗" : "Segera tersedia";
-
-    if (app.url && /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/i.test(app.url)) {
-      action.href = app.url;
-      action.target = "_blank";
-      action.rel = "noopener noreferrer";
-      action.setAttribute("aria-label", `Buka ${app.nama} di tab baru`);
-    } else {
-      action.classList.add("disabled");
-      action.removeAttribute("href");
-      action.setAttribute("aria-disabled", "true");
-      action.tabIndex = -1;
-    }
-
-    card.append(icon, title, description, action);
+    icon.textContent = app.ikon || "📌";
+    const name = document.createElement("h4");
+    name.textContent = app.nama;
+    const desc = document.createElement("p");
+    desc.textContent = app.deskripsi || "";
+    const link = document.createElement("a");
+    link.className = "app-action";
+    link.textContent = "Buka aplikasi ↗";
+    link.href = app.url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.setAttribute("aria-label", `Buka ${app.nama} di tab baru`);
+    card.append(icon, name, desc, link);
     return card;
   }
 
-  function render(keyword = "") {
+  function render(apps, keyword = "") {
     groups.replaceChildren();
-    const normalized = keyword.trim().toLocaleLowerCase("id-ID");
-    const apps = MADRASAH_CONFIG.aplikasi.filter(app => {
-      const searchable = `${app.nama} ${app.kategori} ${app.deskripsi}`.toLocaleLowerCase("id-ID");
-      return searchable.includes(normalized);
-    });
-
-    const categories = [...new Set(apps.map(app => app.kategori))];
-
+    const q = keyword.trim().toLocaleLowerCase("id-ID");
+    const filtered = apps.filter(app =>
+      `${app.nama} ${app.kategori} ${app.deskripsi}`.toLocaleLowerCase("id-ID").includes(q)
+    );
+    const categories = [...new Set(filtered.map(a => a.kategori || "LAINNYA"))];
     categories.forEach(category => {
       const section = document.createElement("section");
       section.className = "category";
-
       const heading = document.createElement("div");
       heading.className = "category-title";
-      const title = document.createElement("h3");
-      title.textContent = category;
-      heading.appendChild(title);
-
+      const h = document.createElement("h3");
+      h.textContent = category;
+      heading.appendChild(h);
       const grid = document.createElement("div");
       grid.className = "app-grid";
-
-      apps.filter(app => app.kategori === category).forEach(app => {
-        grid.appendChild(makeCard(app));
-      });
-
+      filtered.filter(a => (a.kategori || "LAINNYA") === category).forEach(a => grid.appendChild(makeCard(a)));
       section.append(heading, grid);
       groups.appendChild(section);
     });
-
-    noResults.hidden = apps.length !== 0;
+    noResults.hidden = filtered.length !== 0;
   }
 
-  search.addEventListener("input", event => render(event.target.value));
-  render();
+  function jsonp(url) {
+    return new Promise((resolve, reject) => {
+      const callback = "portalCallback_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+      const script = document.createElement("script");
+      const timeout = setTimeout(() => { cleanup(); reject(new Error("Waktu koneksi ke konfigurasi portal habis.")); }, 15000);
+      function cleanup() {
+        clearTimeout(timeout);
+        delete window[callback];
+        script.remove();
+      }
+      window[callback] = data => { cleanup(); resolve(data); };
+      script.onerror = () => { cleanup(); reject(new Error("Tidak dapat memuat konfigurasi portal.")); };
+      const separator = url.includes("?") ? "&" : "?";
+      script.src = url + separator + "action=public&callback=" + encodeURIComponent(callback) + "&t=" + Date.now();
+      document.head.appendChild(script);
+    });
+  }
+
+  async function init() {
+    const api = MADRASAH_CONFIG.publicApiUrl;
+    if (!api || api.includes("GANTI_DENGAN")) {
+      noResults.hidden = false;
+      noResults.textContent = "Portal belum dihubungkan ke Public API administrator.";
+      return;
+    }
+    try {
+      const data = await jsonp(api);
+      const settings = data.settings || {};
+      const apps = (data.apps || []).filter(a => a.aktif && /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/i.test(a.url));
+      if (settings.nama_madrasah && title) title.textContent = settings.nama_madrasah.toUpperCase();
+      if (settings.logo_url) {
+        logo.style.backgroundImage = `url("${settings.logo_url}")`;
+        logo.classList.add("has-logo");
+        logo.textContent = "";
+      }
+      if (settings.motto && motto) motto.textContent = settings.motto + " — Akses layanan pembelajaran, penilaian, ujian, dan administrasi madrasah melalui satu halaman.";
+      search.addEventListener("input", e => render(apps, e.target.value));
+      render(apps);
+    } catch (err) {
+      noResults.hidden = false;
+      noResults.textContent = "Konfigurasi aplikasi belum dapat dimuat. Periksa URL Public API dan deployment Apps Script.";
+      console.error(err);
+    }
+  }
+  init();
 })();
